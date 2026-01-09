@@ -1,12 +1,12 @@
 import type { RegisterOptions } from "react-hook-form";
 
-export interface BasField {
+export interface BaseField {
     title: string;
     type: 'text' | 'tel' | 'password';
     holder: string;
 }
 
-export interface FieldConfigForm extends BasField{
+export interface FieldConfigForm extends BaseField{
     name: string;
     validation: RegisterOptions;
 }
