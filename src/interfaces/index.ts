@@ -2,7 +2,7 @@ import type { RegisterOptions } from "react-hook-form";
 
 export interface BaseField {
     title: string;
-    type: 'text' | 'tel' | 'password';
+    type: 'text' | 'tel' | 'password' | 'email';
     holder: string;
 }
 
