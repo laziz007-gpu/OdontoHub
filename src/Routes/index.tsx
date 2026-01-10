@@ -5,11 +5,6 @@ import Welcome from "../Pages/Welcome"
 export const router = createBrowserRouter([
     {
         path: paths.welcome,
-        children: [
-            {
-                index: true,
-                element: <Welcome/>
-            }
-        ]
+        element: <Welcome/>
     }
 ])
