@@ -1,3 +1,3 @@
 export const paths = {
-    welcome: '/'
+    welcome: '/Welcome'
 } as const
