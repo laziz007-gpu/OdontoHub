@@ -2,6 +2,7 @@ import { useState } from 'react';
 import logo from "../assets/img/icons/Logo.svg";
 import welcomeImg from "../assets/img/photos/WelcomeImg.png"
 
+
 const LanguageSelection = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('');
 
