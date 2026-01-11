@@ -1,16 +1,40 @@
+// src/Routes/index.tsx  yoki src/main.tsx
 
-import React from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Menu from '../pages/Menu'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import UserInterface from '../Layouts/UserInterface';
+import Menu from '../pages/Menu';
+// import Dashboard from '../pages/Dashboard';  // hali yo'q bo'lsa, komment qiling
+
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Menu/>,
+    path: '/',
+    element: (
+      <UserInterface>
+        <Menu />
+      </UserInterface>
+    ),
   },
+  {
+    path: '/menu',
+    element: (
+      <UserInterface>
+        <Menu />
+      </UserInterface>
+    ),
+  },
+  // Agar Dashboard hali tayyor bo'lmasa, shu qatorni o'chirib tashlang yoki komment qiling
+  // {
+  //   path: '/dashboard',
+  //   element: (
+  //     <UserInterface>
+  //       <Dashboard />
+  //     </UserInterface>
+  //   ),
+  // },
 ]);
 
-const AppRouter = () => {
+function Routes() {
   return <RouterProvider router={router} />;
-};
+}
 
-export default AppRouter;
+export default Routes;
