@@ -5,7 +5,6 @@ import Section from '../Layouts/Section'
 import Consultatsiya from '../Layouts/Consultatsiya'
 import Patsesionl from '../Layouts/Patsesionl'
 import Tezroq from '../Layouts/Tezroq'
-
 export default function Menu() {
   return (
     <div className="flex min-h-screen bg-[#F0F3FF]">
