@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 import { Outlet, useNavigate } from "react-router-dom"
+import { useCurrentUser } from "../api/auth"
 
 export default function PrivateRoute() {
   const access_token = localStorage.getItem('access_token')
@@ -10,13 +11,13 @@ export default function PrivateRoute() {
   const { setUsers } = userStores
   useEffect(() => {
     if (!access_token) {
-        navigate('/login')
+      navigate('/login')
     }
-  }, [access_token])
+  }, [access_token, navigate])
 
   useEffect(() => {
     if (data) setUsers(data)
-  }, [data])
+  }, [data, setUsers])
 
   return <Outlet/>
 }

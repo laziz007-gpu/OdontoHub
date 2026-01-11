@@ -10,6 +10,6 @@ export default function PublickRoute() {
      if (access_token) {
         navigate('')
      }
-   }, [access_token])
+   }, [access_token, navigate])
    return <Outlet/>
 }
