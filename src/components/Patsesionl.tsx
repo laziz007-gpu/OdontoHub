@@ -1,5 +1,4 @@
 import React from 'react';
-import { MoreVertical } from 'lucide-react';
 import Nuqta from '../assets/img/icons/3dots.svg';
 
 type Patient = {
@@ -79,10 +78,6 @@ export default function NewPatients() {
                   </p>
                 </div>
               </div>
-
-              <button className="p-1">
-                <MoreVertical className="w-5 h-5 text-gray-500" />
-              </button>
             </div>
 
             {/* Ma'lumotlar */}

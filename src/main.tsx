@@ -1,10 +1,18 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import Index from './Routes/index'      // ✅ SHU YO‘Q EDI
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import Menu from './pages/Menu'
 import './index.css'
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Menu />,
+  },
+])
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Index />
-  </StrictMode>,
+    <RouterProvider router={router} />
+  </StrictMode>
 )

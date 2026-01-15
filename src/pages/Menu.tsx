@@ -1,29 +1,28 @@
-// pages/Menu.tsx
-import React from 'react';
-import Hero from '../Layouts/Hero';
-import Section from '../Layouts/Section';
-import Consultatsiya from '../Layouts/Consultatsiya';
-import Patsesionl from '../Layouts/Patsesionl';      // ehtimol Patsesionl → NewPatients
-import Tezroq from '../Layouts/Tezroq';
+import React from 'react'
+import Header from "../components/Header"
+import Hero from "../components/Hero"
+import Patsesionl from "../components/Patsesionl"
+import Tezroq from "../components/Tezroq"
+import Section from "../components/Section"
 
-export default function Menu() {
+const Menu = () => {
   return (
-    <div className="p-6">
-      <Hero />
-
-      <div className="flex gap-6">
-        {/* Chap qism */}
-        <div className="flex-1 space-y-6">
-          <Consultatsiya />
-          <Patsesionl />   {/* NewPatients */}
-          <Tezroq />
+    <div className="min-h-screen bg-[#F4F7FE] flex">
+      <Header />
+      <main className="flex-1 px-6 py-6 overflow-auto">
+        <Hero />
+        <div className="mt-6 flex gap-6">
+          <div className="flex-1 space-y-6">
+            <Patsesionl />
+            <Tezroq />
+          </div>
+          <aside className="hidden xl:block w-[380px] shrink-0">
+            <Section />
+          </aside>
         </div>
-
-        {/* O‘ng qism — kichik ekranlarda yashirin bo‘lishi mumkin */}
-        <div className="hidden lg:block w-[340px] shrink-0">
-          <Section />
-        </div>
-      </div>
+      </main>
     </div>
-  );
+  )
 }
+
+export default Menu

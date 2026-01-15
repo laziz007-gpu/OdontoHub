@@ -116,9 +116,11 @@ const Hero: React.FC = () => {
 
             {/* Notification icon */}
             <button 
-              type="button"
-              className="w-[52px] h-[52px] flex items-center justify-center bg-gray-50 rounded-2xl relative hover:bg-gray-100 transition-colors"
-              aria-label="Уведомления"
+               type="button"
+                onClick={handleSettingsToggle} 
+                className="w-11 h-11 flex items-center justify-center rounded-xl bg-white border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow transition-all duration-200"
+                aria-label="Настройки"
+                aria-expanded={isSettingsOpen}
             >
               <img src={NotificationIcon} className="w-6 h-6" alt="Notification" />
               <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-blue-600 rounded-full ring-2 ring-white" />
@@ -126,13 +128,7 @@ const Hero: React.FC = () => {
 
             {/* Settings dropdown */}
             <div className="relative" ref={settingsRef}>
-              <button 
-                type="button"
-                onClick={handleSettingsToggle} 
-                className="w-11 h-11 flex items-center justify-center rounded-xl bg-white border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow transition-all duration-200"
-                aria-label="Настройки"
-                aria-expanded={isSettingsOpen}
-              >
+              <button >
                 <img src={SettingsIcon} alt="Settings" className="w-5 h-5 opacity-80" />
               </button>
               
