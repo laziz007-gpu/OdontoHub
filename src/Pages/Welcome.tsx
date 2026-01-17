@@ -6,10 +6,10 @@ export default function Welcome() {
     <>
       <div className="">
         <div className="relative min-h-screen overflow-hidden">
-          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage:`url(${welcomeImg})`}}></div>
+          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${welcomeImg})` }}></div>
         </div>
         <div className="
-        
+          
         ">
           <img src={logo} alt="" />
         </div>
