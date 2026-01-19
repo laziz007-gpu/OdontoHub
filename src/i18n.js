@@ -15,7 +15,5 @@ i18n
       kz: {translation: kz}
     },
     lng: 'ru',
-    fallbacklng: 'en',
-    fallbacklng: 'uz',
-    fallbacklng: 'kz'
+    fallbackLng: ['en', 'uz', 'kz'],
   })
