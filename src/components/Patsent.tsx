@@ -1,0 +1,146 @@
+import React from 'react';
+import Nuqta from '../assets/img/icons/3dots.svg';
+
+type Patient = {
+  id: number;
+  name: string;
+  age: number;
+  date: string;
+  time: string;
+  comment: string;
+  status: 'Новый' | 'Срочный';
+};
+
+const patients: Patient[] = [
+  {
+    id: 1,
+    name: "Алишер Насруллаев",
+    age: 33,
+    date: "15 Января",
+    time: "9:00",
+    comment: "Сильно болят зубы",
+    status: "Новый",
+  },
+    {
+    id: 1,
+    name: "Алишер Насруллаев",
+    age: 33,
+    date: "15 Января",
+    time: "9:00",
+    comment: "Сильно болят зубы",
+    status: "Новый",
+  },
+    {
+    id: 1,
+    name: "Алишер Насруллаев",
+    age: 33,
+    date: "15 Января",
+    time: "9:00",
+    comment: "Сильно болят зубы",
+    status: "Новый",
+  },
+  // qolgan bemorlarni ham shu tarzda qo'shish mumkin
+  // hozircha 1 ta ko'rsatamiz, chunki skrinshotda bitta ko'rinib turibdi
+];
+
+export default function NewPatients() {
+  return (
+    <div className="bg-white rounded-2xl p-6 mb-8 shadow-sm">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-bold flex items-center gap-3">
+          Новые пациенты
+          <span className="bg-black text-white text-sm px-3 py-1 rounded-full font-semibold">
+            {patients.length}
+          </span>
+        </h2>
+      </div>
+
+      {/* Kartalar - vertikal ro'yxat */}
+      <div className="space-y-4">
+        {patients.map((patient) => (
+          <div
+            key={patient.id}
+            className="bg-gray-50 rounded-2xl p-5 border border-gray-100"
+          >
+            {/* Ism va avatar */}
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex gap-4">
+                <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold text-xl shrink-0">
+                  {patient.name[0]}
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900 text-lg">
+                    {patient.name}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-0.5">
+                    {patient.age} лет
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Ma'lumotlar */}
+            <div className="space-y-2.5 text-sm text-gray-700 mb-5">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-500">📅</span>
+                <span>
+                  {patient.date} | {patient.time}
+                </span>
+              </div>
+
+              <div>
+                <span className="font-medium text-gray-800">Комментарий: </span>
+                {patient.comment}
+              </div>
+
+              <div>
+                <span className="font-medium text-gray-800">Статус: </span>
+                <span
+                  className={
+                    patient.status === 'Новый'
+                      ? 'text-green-600 font-semibold'
+                      : 'text-red-600 font-semibold'
+                  }
+                >
+                  {patient.status}
+                </span>
+              </div>
+            </div>
+
+            {/* Tugmalar */}
+            <div className="flex gap-3">
+              <button className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-medium transition-colors">
+                Принять
+              </button>
+
+              <button className="w-12 h-12 bg-gray-200 hover:bg-gray-300 rounded-xl flex items-center justify-center transition-colors">
+                <img src={Nuqta} alt="more" className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+Akbarkhanov, [20.01.2026 7:13]
+{/* Pastki qism - Быстрые действия */}
+      <div className="mt-8 pt-6 border-t border-gray-100">
+        <h3 className="text-lg font-semibold text-gray-800 mb-3">
+          Быстрые действия
+        </h3>
+        {/* Bu yerga tez tugmalar qo'shishingiz mumkin */}
+        <div className="flex flex-wrap gap-3">
+          <button className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium">
+            Сегодня
+          </button>
+          <button className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium">
+            Без комментария
+          </button>
+          <button className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium">
+            Срочные
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
