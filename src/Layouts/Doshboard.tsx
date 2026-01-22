@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   Users,
   Calendar,
@@ -10,16 +11,17 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import Logo from "../assets/img/icons/Logo3.svg"; // O'zingizning logo manzilingiz
+import Logo from "../assets/img/icons/Logo3.svg";
 
 type MenuItem = {
   id: string;
   label: string;
   icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
+  path: string;
 };
 
 export default function Sidebar() {
-  const [activeItem, setActiveItem] = useState("dashboard");
+  const location = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   // Mobile drawer ochilganda body scrollni bloklash
@@ -31,20 +33,19 @@ export default function Sidebar() {
   }, [isMobileOpen]);
 
   const menuItems: MenuItem[] = [
-    { id: "dashboard", label: "Панель управления", icon: LayoutDashboard },
-    { id: "patients", label: "Пациенты", icon: Users },
-    { id: "appointments", label: "Приёмы", icon: Calendar },
-    { id: "chats", label: "Чаты", icon: MessageCircle },
+    { id: "dashboard", label: "Панель управления", icon: LayoutDashboard, path: "/" },
+    { id: "patients", label: "Пациенты", icon: Users, path: "/patsent" },
+    { id: "appointments", label: "Приёмы", icon: Calendar, path: "/appointments" },
+    { id: "chats", label: "Чаты", icon: MessageCircle, path: "/chats" },
   ];
 
   const SidebarInner = ({ isDrawer = false }: { isDrawer?: boolean }) => (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header qismi */}
       <div className="sticky top-0 z-10 bg-white border-b lg:border-none p-5 sm:p-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-blue-600 rounded-xl flex-shrink-0" />
-          <img src={Logo} alt="OdontoHUB" className="h-8 w-auto" />
-        </div>
+        <Link to="/" className="flex items-center gap-3">
+          <img src={Logo} alt="OdontoHUB" className="w-[216px] h-[52px] w-auto" />
+        </Link>
         {isDrawer && (
           <button
             className="p-2 -mr-2 text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
@@ -60,13 +61,13 @@ export default function Sidebar() {
       <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = activeItem === item.id;
+          const isActive = location.pathname === item.path;
 
           return (
-            <button
+            <Link
               key={item.id}
+              to={item.path}
               onClick={() => {
-                setActiveItem(item.id);
                 if (isDrawer) setIsMobileOpen(false);
               }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
@@ -77,7 +78,7 @@ export default function Sidebar() {
             >
               <Icon size={22} strokeWidth={isActive ? 2.5 : 2} className="shrink-0" />
               <span className="text-[15px]">{item.label}</span>
-            </button>
+            </Link>
           );
         })}
       </nav>
@@ -112,10 +113,9 @@ export default function Sidebar() {
       {/* Mobile header */}
       <header className="lg:hidden fixed top-0 inset-x-0 z-40 bg-white border-b shadow-sm">
         <div className="flex items-center justify-between px-4 py-3.5">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-xl flex-shrink-0" />
+          <Link to="/" className="flex items-center gap-3">
             <img src={Logo} alt="OdontoHUB" className="h-7 w-auto" />
-          </div>
+          </Link>
           <button
             onClick={() => setIsMobileOpen(true)}
             className="p-2 -mr-2 rounded-lg hover:bg-gray-100 transition-colors"
