@@ -180,8 +180,6 @@ const Hero: React.FC = () => {
                       Очистить все
                     </button>
                   </div>
-
-Akbarkhanov, [20.01.2026 7:13]
 {/* Notifications List */}
                   <div className="max-h-[380px] overflow-y-auto divide-y divide-gray-100">
                     {notifications.map((notif: Notification, i: number) => (

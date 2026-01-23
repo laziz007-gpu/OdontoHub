@@ -33,9 +33,6 @@ const MobileHeaderAndDrawer = () => {
         <div className="px-4 py-3.5 flex items-center justify-between">
           {/* Logo chapda */}
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold">
-              O
-            </div>
             <img src={Logo} alt="OdontoHUB" className="h-8 w-auto" />
           </div>
 
@@ -74,7 +71,6 @@ const MobileHeaderAndDrawer = () => {
           {/* Header ichida yopish tugmasi + logo */}
           <div className="p-5 flex items-center justify-between border-b">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-blue-600 rounded-xl" />
               <img src={Logo} alt="OdontoHUB" className="h-8 w-auto" />
             </div>
             <button

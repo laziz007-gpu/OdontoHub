@@ -86,7 +86,6 @@ export default function Sidebar() {
       {/* Fokus kartasi */}
       <div className="m-5 p-6 rounded-3xl bg-gradient-to-br from-gray-900 to-gray-800 text-white relative overflow-hidden shadow-xl">
         <div className="absolute inset-0 opacity-30 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 blur-2xl scale-125 rotate-6" />
         </div>
         <div className="relative z-10 text-center">
           <h3 className="text-lg font-bold mb-4">Сегодняшний фокус</h3>
