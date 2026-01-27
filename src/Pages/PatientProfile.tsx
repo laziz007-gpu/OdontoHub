@@ -1,4 +1,4 @@
-import { ArrowLeft, MessageCircle, FileText, Download } from 'lucide-react'
+import { ArrowLeft, MessageCircle, Download } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { initialPatients } from '../data/patients'
 

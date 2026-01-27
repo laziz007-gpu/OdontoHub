@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import NotificationIcon from '../assets/img/icons/Notification.svg';
 import SettingsIcon from '../assets/img/icons/Settings.svg';
 import StarIcon from '../assets/img/icons/Star.svg';
+import DentistImg from '../assets/img/photos/Dentist.png';
 
 // Types
 interface Notification {
@@ -82,50 +83,68 @@ const Hero: React.FC = () => {
               </button>
 
               {/* Notifications */}
-              <button
-                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                className="w-11 h-11 rounded-xl border relative"
-              >
-                <img src={NotificationIcon} className="w-6 h-6 mx-auto" />
-              </button>
-
-              {/* Dropdown */}
               <div className="relative" ref={settingsRef}>
-                <button>
-                  <img src={SettingsIcon} className="w-5 h-5" />
+                <button
+                  onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                  className={`w-11 h-11 rounded-xl border transition-all flex items-center justify-center ${isSettingsOpen ? "bg-gray-100 border-gray-300 shadow-inner" : "hover:bg-gray-50 bg-white"
+                    }`}
+                >
+                  <img src={NotificationIcon} className="w-6 h-6" />
                 </button>
 
                 {isSettingsOpen && (
-                  <div className="absolute right-0 mt-2 w-[420px] bg-white rounded-xl shadow-xl">
-                    {notifications.map((n, i) => (
-                      <div key={i} className="px-6 py-4 flex gap-4">
-                        <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center">
-                          {getInitial(n.from)}
-                        </div>
-                        <div>
-                          <div className="flex justify-between">
-                            <span className="font-medium">{n.from}</span>
-                            <span className="text-xs text-gray-400">{n.time}</span>
+                  <div className="absolute right-0 mt-3 w-[400px] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="px-6 py-4 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
+                      <h3 className="font-bold text-gray-900">Уведомления</h3>
+                      <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-semibold">
+                        {notifications.length} новых
+                      </span>
+                    </div>
+                    <div className="max-h-[480px] overflow-y-auto custom-scrollbar">
+                      {notifications.map((n, i) => (
+                        <div
+                          key={i}
+                          className={`px-6 py-4 flex gap-4 hover:bg-gray-50 transition-colors cursor-pointer ${i !== notifications.length - 1 ? "border-b border-gray-50" : ""
+                            }`}
+                        >
+                          <div className="shrink-0 w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-lg shadow-blue-200">
+                            {getInitial(n.from)}
                           </div>
-                          <p className="text-sm text-gray-600">{n.message}</p>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-baseline mb-0.5">
+                              <span className="font-bold text-sm text-gray-900 truncate">{n.from}</span>
+                              <span className="text-[10px] font-medium text-gray-400 shrink-0">{n.time}</span>
+                            </div>
+                            <p className="text-sm text-gray-600 line-clamp-2 leading-tight">
+                              {n.message}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                    <button className="w-full py-3 text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-colors border-t border-gray-100">
+                      Показать все
+                    </button>
                   </div>
                 )}
               </div>
 
+              {/* Settings */}
+              <button className="w-11 h-11 flex items-center justify-center transition-opacity hover:opacity-70">
+                <img src={SettingsIcon} className="w-5 h-5 opacity-70" />
+              </button>
+
               {/* Profile */}
               <Link
-                to="/patsent/6"
-                className="flex h-[52px] pl-3 pr-5 items-center gap-3 bg-gray-900 text-white rounded-2xl"
+                to="/profile"
+                className="flex h-[52px] pl-3 pr-5 items-center gap-3 bg-[#1e2532] text-white rounded-2xl hover:bg-[#2c3545] transition-colors"
               >
-                <div className="w-10 h-10 rounded-lg bg-gray-700 flex items-center justify-center font-bold text-lg">
-                  П
+                <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center bg-gray-700">
+                  <img src={DentistImg} alt="Doctor" className="w-full h-full object-cover" />
                 </div>
-                <div className="hidden md:flex flex-col">
-                  <span className="font-semibold text-sm">Пулатов М</span>
-                  <span className="text-xs text-gray-400">Хирург</span>
+                <div className="hidden md:flex flex-col leading-tight">
+                  <span className="font-bold text-sm whitespace-nowrap">Пулатов М</span>
+                  <span className="text-[11px] text-gray-400">Хирург</span>
                 </div>
               </Link>
 

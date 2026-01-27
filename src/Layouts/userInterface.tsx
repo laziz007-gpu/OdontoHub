@@ -1,4 +1,4 @@
-import Doshboard from "../components/Doshboard"
+import Doshboard from "./Doshboard"
 
 interface UserProps {
   children: React.ReactNode

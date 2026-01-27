@@ -1,7 +1,7 @@
 import React from 'react'
-import Doshboard from "../components/Doshboard"
+import Doshboard from "../Layouts/Doshboard"
 import MobileHeaderAndDrawer from "../Layouts/MobileHeaderAndDrawer"
-import PatientProfile from '../components/PatientProfile'
+import PatientProfile from './PatientProfile'
 
 const PatientProfilePage = () => {
     return (

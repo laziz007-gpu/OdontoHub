@@ -37,7 +37,7 @@ export default function PatientsTable({ patients }: Props) {
             key={p.id}
             className="grid grid-cols-5 items-center px-6 py-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow relative"
           >
-            <Link to={`/patsent/${p.id}`} className="absolute inset-0 z-10" />
+            <Link to={`/patients/${p.id}`} className="absolute inset-0 z-10" />
             <div className="flex items-center gap-4">
               <img
                 src={p.img}

@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Users, Calendar, MessageCircle, LayoutDashboard, Menu, X} from "lucide-react";
+import { Users, Calendar, MessageCircle, LayoutDashboard, Menu, X } from "lucide-react";
 import Logo from "../assets/img/icons/Logo3.svg";
+import { paths } from "../Routes/path";
 
 type MenuItem = {
   id: string;
@@ -25,8 +26,8 @@ export default function Sidebar() {
   }, [isMobileOpen]);
 
   const menuItems: MenuItem[] = [
-    { id: "dashboard", label: "Панель управления", icon: LayoutDashboard, path: "/" },
-    { id: "patients", label: "Пациенты", icon: Users, path: "/patsent" },
+    { id: "dashboard", label: "Панель управления", icon: LayoutDashboard, path: paths.menu },
+    { id: "patients", label: "Пациенты", icon: Users, path: paths.patient },
     { id: "appointments", label: "Приёмы", icon: Calendar, path: "/appointments" },
     { id: "chats", label: "Чаты", icon: MessageCircle, path: "/chats" },
   ];
@@ -35,7 +36,7 @@ export default function Sidebar() {
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header qismi */}
       <div className="sticky top-0 z-10 bg-white border-b lg:border-none p-5 sm:p-6 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3">
+        <Link to={paths.menu} className="flex items-center gap-3">
           <img src={Logo} alt="OdontoHUB" className="w-[216px] h-[52px] w-auto" />
         </Link>
         {isDrawer && (
@@ -62,11 +63,10 @@ export default function Sidebar() {
               onClick={() => {
                 if (isDrawer) setIsMobileOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-                isActive
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive
                   ? "bg-[#1e2235] text-white font-semibold shadow-md"
                   : "text-gray-800 hover:bg-gray-50 active:bg-gray-100"
-              }`}
+                }`}
             >
               <Icon size={22} strokeWidth={isActive ? 2.5 : 2} className="shrink-0" />
               <span className="text-[15px]">{item.label}</span>
@@ -127,9 +127,8 @@ export default function Sidebar() {
 
         {/* Sidebar panel */}
         <aside
-          className={`absolute inset-y-0 left-0 w-[85vw] max-w-xs bg-white shadow-2xl transform transition-transform duration-300 ease-in-out ${
-            isMobileOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+          className={`absolute inset-y-0 left-0 w-[85vw] max-w-xs bg-white shadow-2xl transform transition-transform duration-300 ease-in-out ${isMobileOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
         >
           <div className="h-full overflow-y-auto">
             <SidebarInner isDrawer />
