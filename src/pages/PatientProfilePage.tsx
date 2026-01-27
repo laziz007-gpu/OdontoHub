@@ -1,5 +1,5 @@
 import React from 'react'
-import Doshboard from "../Layouts/Doshboard"
+import Doshboard from "../components/Doshboard"
 import MobileHeaderAndDrawer from "../Layouts/MobileHeaderAndDrawer"
 import PatientProfile from '../components/PatientProfile'
 

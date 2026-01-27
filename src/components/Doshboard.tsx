@@ -1,16 +1,8 @@
-// components/Sidebar.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import {
-  Users,
-  Calendar,
-  MessageCircle,
-  LayoutDashboard,
-  Menu,
-  X,
-} from "lucide-react";
+import { Users, Calendar, MessageCircle, LayoutDashboard, Menu, X} from "lucide-react";
 import Logo from "../assets/img/icons/Logo3.svg";
 
 type MenuItem = {

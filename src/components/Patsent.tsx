@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Nuqta from '../assets/img/icons/3dots.svg';
 
 type Patient = {
@@ -21,7 +22,7 @@ const patients: Patient[] = [
     comment: "Сильно болят зубы",
     status: "Новый",
   },
-    {
+  {
     id: 1,
     name: "Алишер Насруллаев",
     age: 33,
@@ -30,7 +31,7 @@ const patients: Patient[] = [
     comment: "Сильно болят зубы",
     status: "Новый",
   },
-    {
+  {
     id: 1,
     name: "Алишер Насруллаев",
     age: 33,
@@ -61,8 +62,9 @@ export default function NewPatients() {
         {patients.map((patient) => (
           <div
             key={patient.id}
-            className="bg-gray-50 rounded-2xl p-5 border border-gray-100"
+            className="bg-gray-50 rounded-2xl p-5 border border-gray-100 relative group transition-colors hover:bg-gray-100"
           >
+            <Link to={`/patsent/${patient.id}`} className="absolute inset-0 z-10" />
             {/* Ism va avatar */}
             <div className="flex items-start justify-between mb-4">
               <div className="flex gap-4">
@@ -109,7 +111,7 @@ export default function NewPatients() {
             </div>
 
             {/* Tugmalar */}
-            <div className="flex gap-3">
+            <div className="flex gap-3 relative z-20">
               <button className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-medium transition-colors">
                 Принять
               </button>
@@ -122,8 +124,8 @@ export default function NewPatients() {
         ))}
       </div>
 
-Akbarkhanov, [20.01.2026 7:13]
-{/* Pastki qism - Быстрые действия */}
+      Akbarkhanov, [20.01.2026 7:13]
+      {/* Pastki qism - Быстрые действия */}
       <div className="mt-8 pt-6 border-t border-gray-100">
         <h3 className="text-lg font-semibold text-gray-800 mb-3">
           Быстрые действия

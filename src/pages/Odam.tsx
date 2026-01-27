@@ -1,15 +1,12 @@
-import React from 'react'
-import Doshboard from "../Layouts/Doshboard"
-import MobileHeaderAndDrawer from "../Layouts/MobileHeaderAndDrawer"
+import Doshboard from "../components/Doshboard"
 import Patsant from '../Layouts/Patsant'
 
 const Odam = () => {
   return (
     <div className='flex min-h-screen bg-gray-50'>
-        <Doshboard/>
-        <MobileHeaderAndDrawer/>
+      <Doshboard />
       <main className='flex-1'>
-        <Patsant/>
+        <Patsant />
       </main>
     </div>
   )
