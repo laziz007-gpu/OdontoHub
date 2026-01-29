@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { type FC } from 'react';
 import DentistImg from '../../assets/img/photos/Dentist.png';
 
-const DoctorInfoCard: React.FC = () => {
+const DoctorInfoCard: FC = () => {
     return (
         <div className=" w-[443px] h-[185px] bg-[#5B7FFF] rounded-[24px] p-6 text-white flex items-center gap-5 shadow-sm">
             <div className="w-[120px] h-[120px] rounded-[18px] overflow-hidden border-2 border-white/20 shrink-0">

@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, type FC } from "react";
 import { ChevronLeft, ChevronRight, MoreVertical } from "lucide-react";
 
 type Tab = { id: string; label: string };
 type TimeSlot = { id: number; time: string; active: boolean };
 type Appointment = { id: number; name: string; time: string };
 
-export default function Section() {
+const Section: FC = () => {
   const [activeTab, setActiveTab] = useState<string>("day");
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
@@ -76,7 +76,7 @@ export default function Section() {
   };
 
   return (
-    <div className="w-full bg-white rounded-3xl shadow-sm p-6 flex flex-col gap-5">
+    <div className="w-full bg-white rounded-3xl shadow-sm p-6 flex flex-col gap-5 sticky top-6">
       <h2 className="text-2xl font-bold text-gray-900">Приёмы</h2>
 
       {/* Tabs */}
@@ -85,11 +85,10 @@ export default function Section() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-              activeTab === tab.id
-                ? "bg-gray-900 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
+            className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${activeTab === tab.id
+              ? "bg-gray-900 text-white"
+              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
           >
             {tab.label}
           </button>
@@ -101,11 +100,10 @@ export default function Section() {
         {timeSlots.map((slot) => (
           <div
             key={slot.id}
-            className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
-              slot.active
-                ? "bg-blue-500 text-white"
-                : "bg-blue-100 text-blue-600"
-            }`}
+            className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${slot.active
+              ? "bg-blue-500 text-white"
+              : "bg-blue-100 text-blue-600"
+              }`}
           >
             {slot.time}
           </div>
@@ -139,9 +137,8 @@ export default function Section() {
         {appointments.map((apt, index) => (
           <div
             key={apt.id}
-            className={`flex items-center justify-between py-4 ${
-              index !== appointments.length - 1 ? "border-b border-gray-100" : ""
-            }`}
+            className={`flex items-center justify-between py-4 ${index !== appointments.length - 1 ? "border-b border-gray-100" : ""
+              }`}
           >
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-full bg-gray-200 flex-shrink-0" />
@@ -163,3 +160,5 @@ export default function Section() {
     </div>
   );
 }
+
+export default Section;

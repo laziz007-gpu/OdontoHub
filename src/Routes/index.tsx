@@ -9,6 +9,7 @@ import Menu from "../Pages/Menu";
 import MainLayout from "../Layouts/MainLayout";
 import PatientProfile from "../Pages/PatientProfile";
 import DoctorProfile from "../Pages/DoctorProfile";
+import Settings from "../Pages/Settings";
 
 export const router = createBrowserRouter([
     {
@@ -41,6 +42,10 @@ export const router = createBrowserRouter([
                     {
                         path: paths.profile,
                         element: <DoctorProfile />
+                    },
+                    {
+                        path: paths.settings,
+                        element: <Settings />
                     }
                 ]
             }

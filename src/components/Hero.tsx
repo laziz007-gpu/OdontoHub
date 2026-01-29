@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { paths } from '../Routes/path';
 
 import NotificationIcon from '../assets/img/icons/Notification.svg';
 import SettingsIcon from '../assets/img/icons/Settings.svg';
@@ -130,9 +131,9 @@ const Hero: React.FC = () => {
               </div>
 
               {/* Settings */}
-              <button className="w-11 h-11 flex items-center justify-center transition-opacity hover:opacity-70">
+              <Link to={paths.settings} className="w-11 h-11 border rounded-xl flex items-center justify-center transition-opacity hover:opacity-70">
                 <img src={SettingsIcon} className="w-5 h-5 opacity-70" />
-              </button>
+              </Link>
 
               {/* Profile */}
               <Link

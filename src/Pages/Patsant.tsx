@@ -1,12 +1,18 @@
-import { useState } from 'react'
+import { useState, type FC } from 'react'
 import Qidiruv from "../components/Qidiruv"
 import PatientsTable from "../components/PatsentTable"
 import Rasm from "../assets/img/photos/Subtract.png"
-import { initialPatients, Patient } from '../data/patients'
+import { initialPatients, type Patient } from '../data/patients'
 
-const Patsant = () => {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filters, setFilters] = useState({
+interface Filters {
+  status: string;
+  minAge: string;
+  maxAge: string;
+}
+
+const Patsant: FC = () => {
+  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [filters, setFilters] = useState<Filters>({
     status: 'All',
     minAge: '',
     maxAge: ''

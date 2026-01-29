@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { type FC } from 'react';
 import { ArrowRight, Edit2 } from 'lucide-react';
 
-const ServicesSection: React.FC = () => {
-    const services = [
+interface Service {
+    name: string;
+    price: string;
+    currency: string;
+    edit: boolean;
+}
+
+const ServicesSection: FC = () => {
+    const services: Service[] = [
         { name: 'Имплантация', price: '2.500.000', currency: 'сум', edit: true },
         { name: 'Удаление', price: '250.000', currency: 'сум', edit: false },
         { name: 'Периостотомия', price: '300.000', currency: 'сум', edit: false },

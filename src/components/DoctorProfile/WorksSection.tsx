@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { type FC } from 'react';
 import { Plus, ImageIcon } from 'lucide-react';
 
-const WorksSection: React.FC = () => {
+const WorksSection: FC = () => {
     return (
         <div>
             <div className="flex justify-between items-center mb-5">

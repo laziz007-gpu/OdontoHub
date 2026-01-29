@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { type FC } from 'react';
 import { Smile, Star, Calendar, ArrowRight } from 'lucide-react';
 
-const StatsSection: React.FC = () => {
+const StatsSection: FC = () => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Total Patients */}

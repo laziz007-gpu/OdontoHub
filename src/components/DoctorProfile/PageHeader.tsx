@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { type FC } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { paths } from '../../Routes/path';
 
-const PageHeader: React.FC = () => {
+const PageHeader: FC = () => {
     return (
         <div className="flex items-center gap-4 mb-8">
             <Link

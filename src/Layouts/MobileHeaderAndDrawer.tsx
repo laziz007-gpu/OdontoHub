@@ -1,10 +1,16 @@
 // components/MobileHeaderAndDrawer.tsx
-import React, { useState, useEffect } from 'react';
-import { Menu, X, LayoutDashboard, Users, Calendar, MessageCircle } from 'lucide-react';
+import React, { useState, useEffect, type FC } from 'react';
+import { Menu, X, LayoutDashboard, Users, Calendar, MessageCircle, type LucideIcon } from 'lucide-react';
 import Logo from '../assets/img/icons/Logo3.svg'; // o'zingiznikini qo'ying
 
-const MobileHeaderAndDrawer = () => {
-  const [isOpen, setIsOpen] = useState(false);
+interface MenuItem {
+  icon: LucideIcon;
+  label: string;
+  id: string;
+}
+
+const MobileHeaderAndDrawer: FC = () => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   // Scroll bloklash (mobil menyuni ochganda sahifa siljimaydi)
   useEffect(() => {
@@ -16,7 +22,7 @@ const MobileHeaderAndDrawer = () => {
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  const menuItems = [
+  const menuItems: MenuItem[] = [
     { icon: LayoutDashboard, label: 'Панель управления', id: 'dashboard' },
     { icon: Users, label: 'Пациенты', id: 'patients' },
     { icon: Calendar, label: 'Приёмы', id: 'appointments' },
