@@ -123,8 +123,6 @@ export default function NewPatients() {
           </div>
         ))}
       </div>
-
-      Akbarkhanov, [20.01.2026 7:13]
       {/* Pastki qism - Быстрые действия */}
       <div className="mt-8 pt-6 border-t border-gray-100">
         <h3 className="text-lg font-semibold text-gray-800 mb-3">

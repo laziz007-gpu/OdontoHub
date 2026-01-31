@@ -8,5 +8,6 @@ export const paths = {
     patientProfile: '/patients/:id',
     profile: '/profile',
     menu: '/menu',
-    settings: '/settings'
+    settings: '/settings',
+    appointments: '/appointments'
 } as const;
