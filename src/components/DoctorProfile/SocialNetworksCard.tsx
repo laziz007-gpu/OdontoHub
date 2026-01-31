@@ -20,11 +20,17 @@ interface SocialLinkItem {
     label: string;
 }
 
-const SocialNetworksCard: FC = () => {
+interface SocialNetworksCardProps {
+    telegram: string;
+    instagram: string;
+    whatsapp: string;
+}
+
+const SocialNetworksCard: FC<SocialNetworksCardProps> = ({ telegram, instagram, whatsapp }) => {
     const socialLinks: SocialLinkItem[] = [
-        { icon: <Send className="w-5 h-5 text-sky-500 fill-sky-500" />, label: '@stom' },
-        { icon: <Instagram className="w-5 h-5 text-pink-500" />, label: 'stomatolog.uz' },
-        { icon: <Facebook className="w-5 h-5 text-blue-600 fill-blue-600" />, label: 'stomatolog.uz' },
+        { icon: <Send className="w-5 h-5 text-sky-500 fill-sky-500" />, label: telegram },
+        { icon: <Instagram className="w-5 h-5 text-pink-500" />, label: instagram },
+        { icon: <Facebook className="w-5 h-5 text-blue-600 fill-blue-600" />, label: instagram },
     ];
 
     return (
@@ -36,7 +42,7 @@ const SocialNetworksCard: FC = () => {
                 ))}
                 <SocialLink
                     icon={<Phone className="w-5 h-5 text-emerald-500" />}
-                    label="+998 90 123 45 67"
+                    label={whatsapp}
                 />
             </div>
         </div>

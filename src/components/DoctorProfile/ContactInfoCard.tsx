@@ -29,7 +29,9 @@ interface ContactData {
     whatsapp: string;
     schedule: string;
     workStart: string;
+    startMinute: string;
     workEnd: string;
+    endMinute: string;
 }
 
 /* ================= COMPONENTS ================= */
@@ -55,26 +57,16 @@ const ContactItem: FC<ContactItemProps> = ({ icon, label, value }) => (
 
 /* ================= MAIN CARD ================= */
 
-const ContactInfoCard: FC = () => {
+interface ContactInfoCardProps {
+    data: ContactData;
+    onSave: (newData: Partial<ContactData>) => void;
+}
+
+const ContactInfoCard: FC<ContactInfoCardProps> = ({ data, onSave }) => {
     const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
 
-    const [contactData, setContactData] = useState<ContactData>({
-        phone: '+998 (93) 123 45 67',
-        email: 'example@gmail.com',
-        address: 'ул. Амира Темура, 11кв, 20дом',
-        education: 'ТашПМИ (Факультет)',
-        clinic: 'Не указано',
-        specialization: 'Хирург',
-        telegram: '@stomatolog',
-        instagram: 'stomatolog.uz',
-        whatsapp: '+998 90 123 45 67',
-        schedule: 'Каждый день',
-        workStart: '08',
-        workEnd: '16',
-    });
-
     const handleSave = (newData: Partial<ContactData>): void => {
-        setContactData((prev) => ({ ...prev, ...newData }));
+        onSave(newData);
         setIsEditModalOpen(false);
     };
 
@@ -86,27 +78,27 @@ const ContactInfoCard: FC = () => {
                     <ContactItem
                         icon={<Phone className="w-3.5 h-3.5 text-gray-400" />}
                         label="Тел.номер"
-                        value={contactData.phone}
+                        value={data.phone}
                     />
                     <ContactItem
                         icon={<Mail className="w-3.5 h-3.5 text-gray-400" />}
                         label="Email"
-                        value={contactData.email}
+                        value={data.email}
                     />
                     <ContactItem
                         icon={<MapPin className="w-3.5 h-3.5 text-gray-400" />}
                         label="Адрес"
-                        value={contactData.address}
+                        value={data.address}
                     />
                     <ContactItem
                         icon={<GraduationCap className="w-3.5 h-3.5 text-gray-400" />}
                         label="Образование"
-                        value={contactData.education}
+                        value={data.education}
                     />
                     <ContactItem
                         icon={<Building2 className="w-3.5 h-3.5 text-gray-400" />}
                         label="Клиника"
-                        value={contactData.clinic}
+                        value={data.clinic}
                     />
                 </div>
 
@@ -126,7 +118,7 @@ const ContactInfoCard: FC = () => {
             <EditProfileModal
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
-                initialData={contactData}
+                initialData={data}
                 onSave={handleSave}
             />
         </>

@@ -19,18 +19,18 @@ const statusStyles: Record<AppointmentStatus, string> = {
 
 const AppointmentCard: React.FC<AppointmentCardProps> = ({ time, service, patientName, status }) => {
     return (
-        <div className="bg-white border border-gray-50 rounded-[32px] p-7 shadow-sm hover:shadow-xl transition-all duration-300 group">
-            <div className="flex items-center justify-between mb-5">
-                <span className="text-3xl font-black text-[#1a1f36]">{time}</span>
-                <span className={`px-5 py-2 rounded-full text-[13px] font-bold border ${statusStyles[status]}`}>
+        <div className="bg-white border border-gray-50 rounded-[24px] md:rounded-[32px] p-5 md:p-7 shadow-sm hover:shadow-xl transition-all duration-300 group">
+            <div className="flex items-center justify-between mb-4 md:mb-5">
+                <span className="text-2xl md:text-3xl font-black text-[#1a1f36]">{time}</span>
+                <span className={`px-3 md:px-5 py-1.5 md:py-2 rounded-full text-[11px] md:text-[13px] font-bold border ${statusStyles[status]}`}>
                     {status}
                 </span>
             </div>
-            <div className="space-y-2">
-                <h4 className="text-[22px] font-black text-[#1a1f36] leading-tight group-hover:text-[#4f6bff] transition-colors">
+            <div className="space-y-1 md:space-y-2">
+                <h4 className="text-lg md:text-[22px] font-black text-[#1a1f36] leading-tight group-hover:text-[#4f6bff] transition-colors">
                     {service}
                 </h4>
-                <p className="text-[15px] font-bold text-gray-400">{patientName}</p>
+                <p className="text-[13px] md:text-[15px] font-bold text-gray-400">{patientName}</p>
             </div>
         </div>
     );
