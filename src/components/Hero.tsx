@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { paths } from '../Routes/path';
+import { useTranslation } from 'react-i18next';
 
 import NotificationIcon from '../assets/img/icons/Notification.svg';
 import SettingsIcon from '../assets/img/icons/Settings.svg';
@@ -16,6 +17,7 @@ interface Notification {
 }
 
 const Hero: React.FC = () => {
+  const { t } = useTranslation();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
 
@@ -58,7 +60,7 @@ const Hero: React.FC = () => {
             {/* Search */}
             <div className="relative flex-1 max-w-md">
               <input
-                placeholder="Поиск пациентов, услуг..."
+                placeholder={t('dashboard.search_placeholder')}
                 className="w-full h-[52px] pl-12 pr-5 bg-gray-50 border border-gray-200 rounded-2xl text-sm"
               />
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
@@ -68,7 +70,7 @@ const Hero: React.FC = () => {
             <div className="flex items-center gap-4">
 
               <button className="hidden lg:block h-[52px] px-8 bg-blue-600 text-white rounded-2xl">
-                Консультация
+                {t('dashboard.consultation')}
               </button>
 
               {/* ⭐ Rating button */}
@@ -79,7 +81,7 @@ const Hero: React.FC = () => {
                 <img src={StarIcon} className="w-6 h-6" />
                 <div className="flex flex-col leading-none">
                   <span className="font-bold text-xl">4.5</span>
-                  <span className="text-xs">улучшить</span>
+                  <span className="text-xs">{t('dashboard.improve')}</span>
                 </div>
               </button>
 
@@ -96,9 +98,9 @@ const Hero: React.FC = () => {
                 {isSettingsOpen && (
                   <div className="absolute right-0 mt-3 w-[400px] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                     <div className="px-6 py-4 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
-                      <h3 className="font-bold text-gray-900">Уведомления</h3>
+                      <h3 className="font-bold text-gray-900">{t('dashboard.notifications.title')}</h3>
                       <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-semibold">
-                        {notifications.length} новых
+                        {t('dashboard.notifications.new_count', { count: notifications.length })}
                       </span>
                     </div>
                     <div className="max-h-[480px] overflow-y-auto custom-scrollbar">
@@ -124,7 +126,7 @@ const Hero: React.FC = () => {
                       ))}
                     </div>
                     <button className="w-full py-3 text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-colors border-t border-gray-100">
-                      Показать все
+                      {t('dashboard.notifications.show_all')}
                     </button>
                   </div>
                 )}
@@ -170,26 +172,26 @@ const Hero: React.FC = () => {
 
             <div className="w-[220px] rounded-xl bg-[#999709] text-white flex flex-col items-center justify-center">
               <div className="text-5xl font-bold">4.5</div>
-              <p className="text-sm mt-2">Ваша средняя оценка</p>
+              <p className="text-sm mt-2">{t('dashboard.rating.average')}</p>
             </div>
 
             <div className="flex-1">
               <h3 className="text-xl font-semibold mb-2">
-                Как повысить ваш рейтинг?
+                {t('dashboard.rating.how_to_improve')}
               </h3>
               <p className="text-sm text-gray-500 mb-4">
-                Рейтинг строится на основе отзывов, активности и качества обслуживания
+                {t('dashboard.rating.desc')}
               </p>
 
               <ul className="space-y-2 text-sm mb-4">
-                <li>• Старайтесь отвечать быстро в чатах</li>
-                <li>• Быстро подтверждайте записи</li>
-                <li>• Получайте отзывы от пациентов</li>
-                <li>• Завершайте приёмы на отлично</li>
+                <li>• {t('dashboard.rating.tip1')}</li>
+                <li>• {t('dashboard.rating.tip2')}</li>
+                <li>• {t('dashboard.rating.tip3')}</li>
+                <li>• {t('dashboard.rating.tip4')}</li>
               </ul>
 
               <button className="w-full bg-blue-600 text-white py-2 rounded-xl">
-                Попросить отзыв
+                {t('dashboard.rating.request_review')}
               </button>
             </div>
           </div>

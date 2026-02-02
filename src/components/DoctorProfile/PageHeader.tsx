@@ -2,8 +2,10 @@ import React, { type FC } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { paths } from '../../Routes/path';
+import { useTranslation } from 'react-i18next';
 
 const PageHeader: FC = () => {
+    const { t } = useTranslation();
     return (
         <div className="flex items-center gap-4 mb-8">
             <Link
@@ -12,7 +14,7 @@ const PageHeader: FC = () => {
             >
                 <ArrowLeft className="w-4 h-4" />
             </Link>
-            <h1 className="text-3xl font-bold text-[#1E2532]">Профиль</h1>
+            <h1 className="text-3xl font-bold text-[#1E2532]">{t('patient_profile.profile')}</h1>
         </div>
     );
 };

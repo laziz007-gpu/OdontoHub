@@ -1,17 +1,19 @@
-import React from "react";
 import { HiArrowUp, HiArrowDown } from "react-icons/hi";
+import { useTranslation } from "react-i18next";
 
 type Stat = {
   value: number;
-  title: string;
+  titleKey: string;
   change: number;
 };
 
 export default function Consultatsiya() {
+  const { t } = useTranslation();
+
   const stats: Stat[] = [
-    { value: 7, title: "Консультаций за сегодня", change: -2 },
-    { value: 125, title: "Приёмов за месяц", change: 15 },
-    { value: 5, title: "Новых пациентов в этой неделе", change: 0 },
+    { value: 7, titleKey: "dashboard.stats.consultations_today", change: -2 },
+    { value: 125, titleKey: "dashboard.stats.appointments_month", change: 15 },
+    { value: 5, titleKey: "dashboard.stats.new_patients_week", change: 0 },
   ];
 
   return (
@@ -24,12 +26,12 @@ export default function Consultatsiya() {
         const changeColor = isPositive
           ? "text-green-500"
           : isNegative
-          ? "text-red-500"
-          : "text-gray-400";
+            ? "text-red-500"
+            : "text-gray-400";
 
         return (
           <div
-            key={item.title}
+            key={item.titleKey}
             className="bg-white rounded-2xl px-6 py-5 flex-1 shadow-md"
           >
             {/* Yuqori qator */}
@@ -51,7 +53,7 @@ export default function Consultatsiya() {
 
             {/* Pastki qator */}
             <p className="text-gray-600 text-sm font-medium">
-              {item.title}
+              {t(item.titleKey)}
             </p>
           </div>
         );

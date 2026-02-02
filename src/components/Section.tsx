@@ -1,20 +1,22 @@
 "use client";
 
-import React, { useState, type FC } from "react";
+import { useState, type FC } from "react";
 import { ChevronLeft, ChevronRight, MoreVertical } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-type Tab = { id: string; label: string };
+type Tab = { id: string; labelKey: string };
 type TimeSlot = { id: number; time: string; active: boolean };
 type Appointment = { id: number; name: string; time: string };
 
 const Section: FC = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<string>("day");
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
   const tabs: Tab[] = [
-    { id: "day", label: "День" },
-    { id: "week", label: "Неделя" },
-    { id: "month", label: "Месяц" },
+    { id: "day", labelKey: "dashboard.appointments_card.tabs.day" },
+    { id: "week", labelKey: "dashboard.appointments_card.tabs.week" },
+    { id: "month", labelKey: "dashboard.appointments_card.tabs.month" },
   ];
 
   const timeSlots: TimeSlot[] = [
@@ -43,41 +45,16 @@ const Section: FC = () => {
   };
 
   const formatDate = (date: Date) => {
-    const days = [
-      "Воскресенье",
-      "Понедельник",
-      "Вторник",
-      "Среда",
-      "Четверг",
-      "Пятница",
-      "Суббота",
-    ];
-
-    const months = [
-      "Январь",
-      "Февраль",
-      "Март",
-      "Апрель",
-      "Май",
-      "Июнь",
-      "Июль",
-      "Август",
-      "Сентябрь",
-      "Октябрь",
-      "Ноябрь",
-      "Декабрь",
-    ];
-
-    const dayName = days[date.getDay()];
+    const dayName = t(`dashboard.appointments_card.weekdays.${date.getDay()}`);
     const day = date.getDate();
-    const month = months[date.getMonth()];
+    const month = t(`dashboard.appointments_card.months.${date.getMonth()}`);
 
     return `${month} ${day}, ${dayName}`;
   };
 
   return (
     <div className="w-full bg-white rounded-3xl shadow-sm p-6 flex flex-col gap-5 sticky top-6">
-      <h2 className="text-2xl font-bold text-gray-900">Приёмы</h2>
+      <h2 className="text-2xl font-bold text-gray-900">{t('dashboard.appointments_card.title')}</h2>
 
       {/* Tabs */}
       <div className="flex gap-2">
@@ -90,7 +67,7 @@ const Section: FC = () => {
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
           >
-            {tab.label}
+            {t(tab.labelKey)}
           </button>
         ))}
       </div>
@@ -120,7 +97,7 @@ const Section: FC = () => {
         </button>
 
         <div className="text-center">
-          <p className="text-xs text-gray-500 font-medium mb-0.5">Сегодня</p>
+          <p className="text-xs text-gray-500 font-medium mb-0.5">{t('dashboard.appointments_card.today')}</p>
           <p className="text-sm font-bold text-gray-900">{formatDate(currentDate)}</p>
         </div>
 
@@ -136,7 +113,7 @@ const Section: FC = () => {
       <div className="flex flex-col gap-0 mt-2">
         {appointments.map((apt, index) => (
           <div
-            key={apt.id}
+            key={index}
             className={`flex items-center justify-between py-4 ${index !== appointments.length - 1 ? "border-b border-gray-100" : ""
               }`}
           >

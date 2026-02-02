@@ -1,6 +1,6 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import Nuqta from '../assets/img/icons/3dots.svg';
+import { useTranslation } from 'react-i18next';
 
 type Patient = {
   id: number;
@@ -9,7 +9,7 @@ type Patient = {
   date: string;
   time: string;
   comment: string;
-  status: 'Новый' | 'Срочный';
+  status: 'Новый' | 'Срочный' | 'new' | 'urgent';
 };
 
 const patients: Patient[] = [
@@ -20,7 +20,7 @@ const patients: Patient[] = [
     date: "15 Января",
     time: "9:00",
     comment: "Сильно болят зубы",
-    status: "Новый",
+    status: "new",
   },
   {
     id: 1,
@@ -29,7 +29,7 @@ const patients: Patient[] = [
     date: "15 Января",
     time: "9:00",
     comment: "Сильно болят зубы",
-    status: "Новый",
+    status: "new",
   },
   {
     id: 1,
@@ -38,19 +38,19 @@ const patients: Patient[] = [
     date: "15 Января",
     time: "9:00",
     comment: "Сильно болят зубы",
-    status: "Новый",
+    status: "new",
   },
-  // qolgan bemorlarni ham shu tarzda qo'shish mumkin
-  // hozircha 1 ta ko'rsatamiz, chunki skrinshotda bitta ko'rinib turibdi
 ];
 
 export default function NewPatients() {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white rounded-2xl p-6 mb-8 shadow-sm">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold flex items-center gap-3">
-          Новые пациенты
+          {t('dashboard.new_patients.title')}
           <span className="bg-black text-white text-sm px-3 py-1 rounded-full font-semibold">
             {patients.length}
           </span>
@@ -59,9 +59,9 @@ export default function NewPatients() {
 
       {/* Kartalar - vertikal ro'yxat */}
       <div className="space-y-4">
-        {patients.map((patient) => (
+        {patients.map((patient, index) => (
           <div
-            key={patient.id}
+            key={index}
             className="bg-gray-50 rounded-2xl p-5 border border-gray-100 relative group transition-colors hover:bg-gray-100"
           >
             <Link to={`/patsent/${patient.id}`} className="absolute inset-0 z-10" />
@@ -76,7 +76,7 @@ export default function NewPatients() {
                     {patient.name}
                   </p>
                   <p className="text-sm text-gray-600 mt-0.5">
-                    {patient.age} лет
+                    {patient.age} {t('dashboard.new_patients.age_label')}
                   </p>
                 </div>
               </div>
@@ -92,20 +92,20 @@ export default function NewPatients() {
               </div>
 
               <div>
-                <span className="font-medium text-gray-800">Комментарий: </span>
+                <span className="font-medium text-gray-800">{t('dashboard.new_patients.comment')} </span>
                 {patient.comment}
               </div>
 
               <div>
-                <span className="font-medium text-gray-800">Статус: </span>
+                <span className="font-medium text-gray-800">{t('dashboard.new_patients.status_label')} </span>
                 <span
                   className={
-                    patient.status === 'Новый'
+                    patient.status === 'new' || patient.status === 'Новый'
                       ? 'text-green-600 font-semibold'
                       : 'text-red-600 font-semibold'
                   }
                 >
-                  {patient.status}
+                  {patient.status === 'new' || patient.status === 'Новый' ? t('dashboard.new_patients.today') : t('dashboard.new_patients.urgent')}
                 </span>
               </div>
             </div>
@@ -113,7 +113,7 @@ export default function NewPatients() {
             {/* Tugmalar */}
             <div className="flex gap-3 relative z-20">
               <button className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-medium transition-colors">
-                Принять
+                {t('dashboard.new_patients.accept')}
               </button>
 
               <button className="w-12 h-12 bg-gray-200 hover:bg-gray-300 rounded-xl flex items-center justify-center transition-colors">
@@ -126,18 +126,17 @@ export default function NewPatients() {
       {/* Pastki qism - Быстрые действия */}
       <div className="mt-8 pt-6 border-t border-gray-100">
         <h3 className="text-lg font-semibold text-gray-800 mb-3">
-          Быстрые действия
+          {t('dashboard.new_patients.quick_actions')}
         </h3>
-        {/* Bu yerga tez tugmalar qo'shishingiz mumkin */}
         <div className="flex flex-wrap gap-3">
           <button className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium">
-            Сегодня
+            {t('dashboard.new_patients.today')}
           </button>
           <button className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium">
-            Без комментария
+            {t('dashboard.new_patients.no_comment')}
           </button>
           <button className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium">
-            Срочные
+            {t('dashboard.new_patients.urgent')}
           </button>
         </div>
       </div>

@@ -6,7 +6,11 @@ import { PrivacySettings } from '../components/Settings/PrivacySettings';
 import Language from '../components/Settings/Language';
 import Image from '../components/Settings/Image';
 import Support from '../components/Settings/Support';
+import { useTranslation } from 'react-i18next';
+import MobileHeaderAndDrawer from '../Layouts/MobileHeaderAndDrawer';
+
 const Settings: React.FC = () => {
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('Уведомление');
 
     const tabs = [
@@ -18,11 +22,14 @@ const Settings: React.FC = () => {
     ];
 
     return (
-        <div className="w-full min-h-screen bg-[#F4F5FA] p-6 font-onest">
+        <div className="w-full min-h-screen bg-[#F4F5FA] p-6 font-onest max-lg:pt-20">
+            {/* Mobile Header */}
+            <MobileHeaderAndDrawer />
+
             {/* Top Bar */}
             <SettingsHeader />
 
-            <h1 className="text-3xl font-bold text-[#1E2532] mb-6">Настройки</h1>
+            <h1 className="text-3xl font-bold text-[#1E2532] mb-6">{t('settings.title')}</h1>
 
             {/* Tabs */}
             <SettingsTabs

@@ -3,6 +3,7 @@ import Qidiruv from "../components/Qidiruv"
 import PatientsTable from "../components/PatsentTable"
 import Rasm from "../assets/img/photos/Subtract.png"
 import { initialPatients, type Patient } from '../data/patients'
+import { useTranslation } from 'react-i18next'
 
 interface Filters {
   status: string;
@@ -11,6 +12,7 @@ interface Filters {
 }
 
 const Patsant: FC = () => {
+  const { t } = useTranslation()
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [filters, setFilters] = useState<Filters>({
     status: 'All',
@@ -24,16 +26,16 @@ const Patsant: FC = () => {
     // Basic implementation to add a new patient
     const newPatient: Patient = {
       id: patients.length + 1,
-      name: data.name || 'Новый Пациент',
+      name: data.name || t('patients_list.defaults.new_patient'),
       age: 25, // Default age
       phone: data.phone || '+998 90 000 00 00',
-      diagnosis: data.diagnosis || 'Осмотр',
-      status: 'НОВЫЙ',
+      diagnosis: data.diagnosis || t('patients_list.defaults.checkup'),
+      status: 'НОВЫЙ', // Logic uses Russian values for now, will handle in table
       statusColor: 'text-green-600',
       img: Rasm // Default image
     }
     setPatients([...patients, newPatient])
-    alert('Новый пациент добавлен!')
+    alert(t('patients_list.new_patient_added'))
   }
 
   const filteredPatients = patients.filter(p => {

@@ -1,4 +1,5 @@
 import React, { type FC, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Plus, Edit2 } from 'lucide-react';
 
 interface ScheduleCardProps {
@@ -16,6 +17,7 @@ const ScheduleCard: FC<ScheduleCardProps> = ({
     endMinute = '00',
     onSave
 }) => {
+    const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
     const minutes = ['00', '15', '30', '45'];
@@ -28,12 +30,12 @@ const ScheduleCard: FC<ScheduleCardProps> = ({
 
     return (
         <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-50 h-full">
-            <h3 className="text-2xl font-bold text-[#1E2532] mb-8">График работы</h3>
+            <h3 className="text-2xl font-bold text-[#1E2532] mb-8">{t('doctor_profile.schedule')}</h3>
 
             <div className="space-y-8">
                 <div>
                     <div className="flex justify-between items-center mb-4">
-                        <span className="font-bold text-[#1E2532] text-sm">Каждый день</span>
+                        <span className="font-bold text-[#1E2532] text-sm">{t('doctor_profile.every_day')}</span>
                     </div>
                     <div className="flex gap-4 items-center">
                         <div className="flex-1 bg-[#F5F7FA] py-4 rounded-[20px] px-6 flex items-center justify-between border border-gray-100 transition-all hover:border-blue-200">
@@ -117,9 +119,9 @@ const ScheduleCard: FC<ScheduleCardProps> = ({
                 </div>
 
                 <div>
-                    <span className="font-bold text-[#1E2532] text-sm mb-4 block">Выходные дни</span>
+                    <span className="font-bold text-[#1E2532] text-sm mb-4 block">{t('doctor_profile.weekend')}</span>
                     <button className="w-full bg-[#5B7FFF] text-white py-4 rounded-[22px] font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-100 hover:bg-blue-600 transition-all">
-                        <Plus className="w-4 h-4" strokeWidth={3} /> Добавить
+                        <Plus className="w-4 h-4" strokeWidth={3} /> {t('doctor_profile.add')}
                     </button>
                 </div>
             </div>

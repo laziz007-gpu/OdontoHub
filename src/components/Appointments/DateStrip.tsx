@@ -7,16 +7,16 @@ interface DayItem {
 }
 
 const DateStrip: React.FC = () => {
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date(2026, 5, 16)); // Mock active date for visual match (June 16)
     const [days, setDays] = useState<DayItem[]>([]);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        // Generate dates for the next 12 months (365 days)
+        // Generate dates for June 2026 for visual matching
         const generatedDays: DayItem[] = [];
-        const start = new Date();
+        const start = new Date(2026, 5, 14); // Start few days before today
 
-        for (let i = 0; i < 365; i++) {
+        for (let i = 0; i < 14; i++) {
             const current = new Date(start);
             current.setDate(start.getDate() + i);
 
@@ -42,7 +42,7 @@ const DateStrip: React.FC = () => {
     return (
         <div
             ref={scrollRef}
-            className="flex items-center bg-white rounded-[24px] md:rounded-[32px] p-3 md:p-5 shadow-sm overflow-x-auto gap-3 md:gap-4 no-scrollbar scroll-smooth"
+            className="flex items-center bg-white rounded-[24px] p-4 shadow-sm overflow-x-auto gap-2 md:gap-4 no-scrollbar scroll-smooth w-full"
         >
             <style>{`
                 .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -54,15 +54,20 @@ const DateStrip: React.FC = () => {
                     <div
                         key={index}
                         onClick={() => handleDateClick(item.fullDate)}
-                        className={`flex flex-col items-center justify-center min-w-[65px] md:min-w-[75px] h-[85px] md:h-[95px] rounded-[18px] md:rounded-[24px] cursor-pointer transition-all duration-300 shrink-0 ${active
-                            ? 'bg-[#4f6bff] text-white shadow-xl shadow-blue-100 scale-105'
-                            : 'text-[#4f6bff] hover:bg-blue-50'
-                            }`}
+                        className={`
+                             flex flex-col items-center justify-center min-w-[70px] md:min-w-[80px] h-[90px] md:h-[100px] rounded-[20px] md:rounded-[24px] cursor-pointer transition-all duration-300 shrink-0
+                             ${active
+                                ? 'bg-[#4f6bff] text-white shadow-lg shadow-[#4f6bff]/30 scale-105'
+                                : 'text-[#4f6bff] hover:bg-blue-50'
+                            }
+                        `}
                     >
-                        <span className={`text-[15px] font-bold mb-1 capitalize ${active ? 'text-white/80' : 'text-[#4f6bff]/70'}`}>
+                        <span className={`text-base md:text-lg font-bold mb-1 capitalize ${active ? 'text-white' : 'text-[#4f6bff]'}`}>
                             {item.day}
                         </span>
-                        <span className="text-2xl font-black">{item.date}</span>
+                        <span className={`text-2xl md:text-3xl font-black ${active ? 'text-white' : 'text-[#4f6bff]'}`}>
+                            {item.date}
+                        </span>
                     </div>
                 );
             })}
