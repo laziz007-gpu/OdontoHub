@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calculator, Plus, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { ChevronLeft, ChevronRight, Calculator } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface CalendarViewProps {
     onBack: () => void;
 }
 
 const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
-    // Hardcoded date for visual matching "Июнь" as per image, relying on viewDate state
-    // Initializing to June 2023 based on image days (June 1st 2023 was Thursday... wait, let's check image)
-    // Image: 1st is Thursday.
-    // June 2023: 1st is Thursday. OK.
+    const { t } = useTranslation();
     const [viewDate, setViewDate] = useState(new Date(2023, 5, 1)); // June 2023
-
-    const weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+    const weekDays = React.useMemo(() => {
+        return [1, 2, 3, 4, 5, 6, 0].map(d => t(`common.weekdays.${d}`));
+    }, [t]);
 
     const days = React.useMemo(() => {
         const year = viewDate.getFullYear();
@@ -20,32 +19,23 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
         const firstDayOfMonth = new Date(year, month, 1);
         const lastDayOfMonth = new Date(year, month + 1, 0);
 
-        // Get day of week (0-6, where 0 is Sunday)
-        // Adjust for Monday start (0: Пн, 6: Bc)
         let firstDayIndex = firstDayOfMonth.getDay() - 1;
         if (firstDayIndex === -1) firstDayIndex = 6;
 
         const generatedDays = [];
-
-        // Previous month days
         const prevMonthLastDay = new Date(year, month, 0).getDate();
         for (let i = firstDayIndex - 1; i >= 0; i--) {
             generatedDays.push({
                 date: prevMonthLastDay - i,
                 isPrevMonth: true,
-                appointments: 0 // Usually empty in prev month for visual clarity
+                appointments: 0
             });
         }
 
-        // Current month days
         for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
             const currentDayDate = new Date(year, month, i);
             const dayOfWeek = currentDayDate.getDay();
-
-            // Randomly assign appointments count for visuals (9 as per image commonly)
             const aptCount = 9;
-
-            // Weekend logic: Saturday (6) and Sunday (0)
             const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
             generatedDays.push({
@@ -56,7 +46,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
             });
         }
 
-        // Next month days to fill grid (6 rows * 7 cols = 42)
         const totalSlots = 42;
         const remainingSlots = totalSlots - generatedDays.length;
 
@@ -70,10 +59,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
                 isNextMonth: true,
                 isWeekend: isWeekend,
                 appointments: 0
-            }); // Only next month days, weekends might still be colored green in some designs, but usually next month is faded.
-            // Looking at image: Days 1, 2, 3, 4 at end are Green (Weekend) or Faded? 
-            // Image showing dates 1, 2, 3, 4 at the end. 3 and 4 are Green (Weekend). 1 and 2 are Gray.
-            // So Weekend logic applies to next month too? Yes, likely.
+            });
         }
 
         return generatedDays;
@@ -83,8 +69,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
         setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
     };
 
-    const monthName = new Intl.DateTimeFormat('ru-RU', { month: 'long' }).format(viewDate);
-    const capitalizedMonth = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+    const capitalizedMonth = t(`common.months.${viewDate.getMonth()}`);
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-5 duration-500 pb-10">
@@ -99,12 +84,12 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
                             <ChevronLeft className="w-5 h-5 text-white" />
                         </div>
                     </button>
-                    <h1 className="text-3xl font-black text-[#1a1f36] tracking-tight">Приёмы</h1>
+                    <h1 className="text-3xl font-black text-[#1a1f36] tracking-tight">{t('appointments.title')}</h1>
                 </div>
 
                 <div className="flex items-center">
                     <div className="flex items-center bg-[#1a1f36] rounded-[16px] p-1.5 pl-5 pr-1.5 gap-3">
-                        <span className="text-white font-bold text-sm">Приёмов за месяц</span>
+                        <span className="text-white font-bold text-sm">{t('appointments.month_view.month_appointments')}</span>
                         <div className="bg-white rounded-[12px] px-3 py-2 min-w-[40px] flex items-center justify-center">
                             <span className="text-[#1a1f36] font-black text-lg">58</span>
                         </div>
@@ -131,10 +116,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
                 <div className="flex items-center gap-4">
                     <button className="flex items-center gap-2 bg-white px-6 py-3 rounded-[16px] shadow-sm text-[#1a1f36] font-black hover:bg-gray-50 transition-colors">
                         <Calculator className="w-5 h-5" />
-                        <span>Приёмы</span>
+                        <span>{t('appointments.title')}</span>
                     </button>
                     <button className="bg-[#10d16d] px-8 py-3 rounded-[16px] shadow-lg shadow-[#10d16d]/20 text-white font-black hover:bg-[#0ebf63] transition-colors">
-                        Записать приём
+                        {t('appointments.record_appointment')}
                     </button>
                 </div>
             </div>
@@ -144,7 +129,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
                 {/* Weekday Headers */}
                 <div className="grid grid-cols-7 gap-4 mb-4">
                     {weekDays.map(day => (
-                        <div key={day} className="text-xl font-black text-[#1a1f36] text-center">
+                        <div key={day} className="text-xl font-black text-[#1a1f36] text-center capitalize">
                             {day}
                         </div>
                     ))}
@@ -170,16 +155,14 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
 
                             {/* Content */}
                             <div className="w-full mb-2">
-                                {/* If Weekend */}
                                 {day.isWeekend ? (
                                     <div className="text-center text-white font-medium text-sm">
-                                        Выходной
+                                        {t('appointments.month_view.weekend')}
                                     </div>
                                 ) : (
-                                    /* If Appointment (Normal Day) */
                                     (day.isCurrentMonth || day.isNextMonth) && !day.isWeekend && day.appointments > 0 ? (
                                         <div className="bg-[#4f6bff] mx-auto w-[90%] py-1 rounded-full flex items-center justify-between px-1.5 overflow-hidden">
-                                            <span className="text-white text-[11px] font-bold pl-2 truncate">Приёмов</span>
+                                            <span className="text-white text-[11px] font-bold pl-2 truncate">{t('dashboard.appointments_card.title')}</span>
                                             <div className="bg-white w-5 h-5 rounded-full flex items-center justify-center shrink-0">
                                                 <span className="text-[#4f6bff] text-[10px] font-black">{day.appointments}</span>
                                             </div>

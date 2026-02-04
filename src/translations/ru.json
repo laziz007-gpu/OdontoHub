@@ -10,6 +10,40 @@
         "focus_patients": "2 новых пациента",
         "analytics": "Аналитика"
     },
+    "common": {
+        "months": {
+            "0": "Январь",
+            "1": "Февраль",
+            "2": "Март",
+            "3": "Апрель",
+            "4": "Май",
+            "5": "Июнь",
+            "6": "Июль",
+            "7": "Август",
+            "8": "Сентябрь",
+            "9": "Октябрь",
+            "10": "Ноябрь",
+            "11": "Декабрь"
+        },
+        "weekdays": {
+            "0": "Вс",
+            "1": "Пн",
+            "2": "Вт",
+            "3": "Ср",
+            "4": "Чт",
+            "5": "Пт",
+            "6": "Сб"
+        },
+        "weekdays_full": {
+            "0": "Воскресенье",
+            "1": "Понедельник",
+            "2": "Вторник",
+            "3": "Среда",
+            "4": "Четверг",
+            "5": "Пятница",
+            "6": "Суббота"
+        }
+    },
     "appointments": {
         "title": "Приёмы",
         "today": "Сегодня",
@@ -22,6 +56,13 @@
             "month": "Месяц",
             "search_placeholder": "имя или диагноз...",
             "weekend": "Выходной"
+        },
+        "statuses": {
+            "completed": "Завершён",
+            "cancelled": "Отменён",
+            "rescheduled": "Перенесён",
+            "in_progress": "В процессе",
+            "in_queue": "В очереди"
         }
     },
     "modal": {
@@ -32,11 +73,55 @@
         "status_placeholder": "Статус лечения",
         "date_placeholder": "Укажите дату",
         "time_label": "Время приёма",
-        "notes_placeholder": "Напишите заметки или коментарии приёму"
+        "notes_placeholder": "Напишите заметки или коментарии приёму",
+        "services": {
+            "implantation": "Имплантация",
+            "consultation": "Консультация"
+        },
+        "patient_statuses": {
+            "primary": "Первичный",
+            "recurring": "Повторный"
+        }
     },
     "settings": {
         "title": "Настройки",
-        "language_title": "Выберите язык интерфейса"
+        "language_title": "Выберите язык интерфейса",
+        "in_development": "В разработке. Скоро.",
+        "tabs": {
+            "notification": "Уведомление",
+            "privacy": "Конфиденциальность",
+            "language": "Язык",
+            "data_management": "Управление данными",
+            "support": "Поддержка"
+        },
+        "notifications": {
+            "news_title": "Новости и обновления",
+            "news_desc": "Получать новости и обновления о приложении",
+            "new_appt_title": "Новые приёмы",
+            "new_appt_desc": "Получать уведомления о новых приёмах",
+            "appt_changes_title": "Изменения в приёмах",
+            "appt_changes_desc": "Получать уведомления об отмене или о переносе приёма",
+            "sms_label": "Разрешить получать уведомления через SMS",
+            "telegram_label": "Разрешить получать уведомления через Telegram"
+        },
+        "privacy": {
+            "change_password": "Сменить пароль",
+            "active_sessions_title": "Активные сеансы",
+            "active_sessions_desc": "Нажмите чтобы посмотреть устройства где подключён ваш аккаунт",
+            "add_device_title": "Добавить устройство",
+            "add_device_desc": "Наведите камеру вашего смартфона чтобы подключить аккаунт",
+            "backup_number_title": "Резервный номер",
+            "backup_number_desc": "Используется только для безопасности",
+            "delete_account_title": "Удалить аккаунт",
+            "delete_account_desc": "Полностью удаляются все данные этого аккаунта",
+            "logout": "Выйти"
+        },
+        "support_items": {
+            "contact": "Связаться с поддержкой",
+            "faq": "FAQ",
+            "privacy_policy": "Политика конфиденциальности",
+            "about": "О приложении"
+        }
     },
     "patient_profile": {
         "not_found": "Пациент не найден",
@@ -68,7 +153,20 @@
         "allergies_list": "Арахис, Пенициллин",
         "illnesses_list": "Сахарный диабет",
         "male": "Мужчина",
-        "female": "Женщина"
+        "female": "Женщина",
+        "patient_title": "Пациент",
+        "online": "В сети",
+        "fio": "Ф.И.О.",
+        "in_platform": "В платформе",
+        "notes": "Заметки",
+        "prescription": "Рецепт",
+        "tabs": {
+            "data": "Данные",
+            "photo": "Фото",
+            "treatments": "Лечения",
+            "appointments": "Приёмы",
+            "payments": "Оплаты"
+        }
     },
     "patients_list": {
         "search_placeholder": "Поиск пациента...",
@@ -212,6 +310,66 @@
             "status_new": "Новый",
             "status_recorded": "Записан",
             "apply_button": "Применить"
+        }
+    },
+    "analytics": {
+        "title": "Аналитика",
+        "header": {
+            "finance": "Финансы",
+            "filter": "Фильтр"
+        },
+        "stats": {
+            "total_appointments": "Всего приёмов",
+            "completed_appointments": "Завершённые приёмы",
+            "reviews": "Отзывы",
+            "revenue": "Доходы",
+            "thousand": "тыс",
+            "last_month": "в прошлом месяце",
+            "last_week": "в прошлой неделе"
+        },
+        "charts": {
+            "appointments": {
+                "title": "Приёмы",
+                "subtitle": "Приёмов за месяц",
+                "appointments_label": "приёмов"
+            },
+            "patients": {
+                "title": "Пациенты",
+                "subtitle": "Пол пациентов за всё время",
+                "male": "Мужчины",
+                "female": "Женщины",
+                "count_label": "чел"
+            },
+            "age": {
+                "title": "Возраст",
+                "subtitle": "Возраст пациентов за всё время",
+                "count_label": "чел"
+            },
+            "clients": {
+                "title": "Клиенты",
+                "old": "Старые",
+                "new": "Новые"
+            },
+            "status": {
+                "title": "Статус",
+                "completed": "ЗАВЕРШЕНЫ",
+                "rescheduled": "ПЕРЕНЕСЕНЫ",
+                "cancelled": "ОТМЕНЕНЫ"
+            }
+        },
+        "filter": {
+            "title": "Фильтр",
+            "period": "Период",
+            "period_year": "За год",
+            "statuses": "Статусы",
+            "all": "Все",
+            "completed": "Завершённые",
+            "cancelled": "Отменённые",
+            "patient": "Пациент",
+            "new": "Новые",
+            "recurring": "Повторные",
+            "apply": "Применить",
+            "reset": "Сбросить"
         }
     }
 }

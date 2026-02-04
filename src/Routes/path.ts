@@ -9,5 +9,6 @@ export const paths = {
     profile: '/profile',
     menu: '/menu',
     settings: '/settings',
-    appointments: '/appointments'
+    appointments: '/appointments',
+    analytics: '/analytics'
 } as const;

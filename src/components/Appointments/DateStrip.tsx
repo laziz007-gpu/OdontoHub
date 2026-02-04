@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface DayItem {
     day: string;
@@ -7,6 +8,7 @@ interface DayItem {
 }
 
 const DateStrip: React.FC = () => {
+    const { t, i18n } = useTranslation();
     const [selectedDate, setSelectedDate] = useState<Date>(new Date(2026, 5, 16)); // Mock active date for visual match (June 16)
     const [days, setDays] = useState<DayItem[]>([]);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -21,13 +23,13 @@ const DateStrip: React.FC = () => {
             current.setDate(start.getDate() + i);
 
             generatedDays.push({
-                day: new Intl.DateTimeFormat('ru-RU', { weekday: 'short' }).format(current),
+                day: t(`common.weekdays.${current.getDay()}`),
                 date: current.getDate(),
                 fullDate: current
             });
         }
         setDays(generatedDays);
-    }, []);
+    }, [i18n.language, t]);
 
     const isSameDay = (d1: Date, d2: Date) => {
         return d1.getDate() === d2.getDate() &&

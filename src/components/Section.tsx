@@ -53,7 +53,7 @@ const Section: FC = () => {
   };
 
   return (
-    <div className="w-full bg-white rounded-3xl shadow-sm p-6 flex flex-col gap-5 sticky top-6">
+    <div className="w-full bg-white rounded-3xl shadow-sm p-6 flex flex-col gap-5 sticky top-6 h-fit">
       <h2 className="text-2xl font-bold text-gray-900">{t('dashboard.appointments_card.title')}</h2>
 
       {/* Tabs */}

@@ -62,16 +62,16 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose }) 
                         <div className="relative">
                             <select className="w-full h-14 md:h-16 bg-[#efefef] rounded-[18px] px-6 text-lg font-bold text-gray-500 border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none appearance-none cursor-pointer">
                                 <option>{t('modal.service_placeholder')}</option>
-                                <option>Имплантация</option>
-                                <option>Консультация</option>
+                                <option>{t('modal.services.implantation')}</option>
+                                <option>{t('modal.services.consultation')}</option>
                             </select>
                             <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-6 h-6 text-[#1a1f36] pointer-events-none" />
                         </div>
                         <div className="relative">
                             <select className="w-full h-14 md:h-16 bg-[#efefef] rounded-[18px] px-6 text-lg font-bold text-gray-500 border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none appearance-none cursor-pointer">
                                 <option>{t('modal.status_placeholder')}</option>
-                                <option>Первичный</option>
-                                <option>Повторный</option>
+                                <option>{t('modal.patient_statuses.primary')}</option>
+                                <option>{t('modal.patient_statuses.recurring')}</option>
                             </select>
                             <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-6 h-6 text-[#1a1f36] pointer-events-none" />
                         </div>

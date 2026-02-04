@@ -10,6 +10,40 @@
     "focus_patients": "2 yangi bemor",
     "analytics": "Analitika"
   },
+  "common": {
+    "months": {
+      "0": "Yanvar",
+      "1": "Fevral",
+      "2": "Mart",
+      "3": "Aprel",
+      "4": "May",
+      "5": "Iyun",
+      "6": "Iyul",
+      "7": "Avgust",
+      "8": "Sentabr",
+      "9": "Oktabr",
+      "10": "Noyabr",
+      "11": "Dekabr"
+    },
+    "weekdays": {
+      "0": "Yak",
+      "1": "Du",
+      "2": "Se",
+      "3": "Cho",
+      "4": "Pay",
+      "5": "Ju",
+      "6": "Sha"
+    },
+    "weekdays_full": {
+      "0": "Yakshanba",
+      "1": "Dushanba",
+      "2": "Seshanba",
+      "3": "Chorshanba",
+      "4": "Payshanba",
+      "5": "Juma",
+      "6": "Shanba"
+    }
+  },
   "appointments": {
     "title": "Qabullar",
     "today": "Bugun",
@@ -17,11 +51,18 @@
     "record_appointment": "Qabulga yozish",
     "success_toast": "Qabul muvaffaqiyatli belgilandi",
     "month_view": {
-      "month_appointments": "Oiylik qabullar",
+      "month_appointments": "Oylik qabullar",
       "week": "Hafta",
       "month": "Oy",
       "search_placeholder": "ism yoki tashxis...",
       "weekend": "Dam olish kuni"
+    },
+    "statuses": {
+      "completed": "Yakunlandi",
+      "cancelled": "Bekor qilindi",
+      "rescheduled": "Ko'chirildi",
+      "in_progress": "Jarayonda",
+      "in_queue": "Navbatda"
     }
   },
   "modal": {
@@ -32,11 +73,55 @@
     "status_placeholder": "Davolash holati",
     "date_placeholder": "Sanani kiriting",
     "time_label": "Qabul vaqti",
-    "notes_placeholder": "Qabul bo'yicha izoh yoki eslatmalar yozing"
+    "notes_placeholder": "Qabul bo'yicha izoh yoki eslatmalar yozing",
+    "services": {
+      "implantation": "Implantatsiya",
+      "consultation": "Konsultatsiya"
+    },
+    "patient_statuses": {
+      "primary": "Birinchi marta",
+      "recurring": "Takroriy"
+    }
   },
   "settings": {
     "title": "Sozlamalar",
-    "language_title": "Interfeys tilini tanlang"
+    "language_title": "Interfeys tilini tanlang",
+    "in_development": "Ishlab chiqilmoqda. Tez orada.",
+    "tabs": {
+      "notification": "Bildirishnoma",
+      "privacy": "Konfidentsiallik",
+      "language": "Til",
+      "data_management": "Ma'lumotlarni boshqarish",
+      "support": "Qo'llab-quvvatlash"
+    },
+    "notifications": {
+      "news_title": "Yangiliklar va yangilanishlar",
+      "news_desc": "Ilova haqidagi yangiliklar va yangilanishlarni olish",
+      "new_appt_title": "Yangi qabullar",
+      "new_appt_desc": "Yangi qabullar haqida bildirishnomalarni olish",
+      "appt_changes_title": "Qabullardagi o'zgarishlar",
+      "appt_changes_desc": "Qabulni bekor qilish yoki ko'chirish haqida bildirishnomalarni olish",
+      "sms_label": "SMS orqali bildirishnomalar olishga ruxsat berish",
+      "telegram_label": "Telegram orqali bildirishnomalar olishga ruxsat berish"
+    },
+    "privacy": {
+      "change_password": "Parolni o'zgartirish",
+      "active_sessions_title": "Faol seanslar",
+      "active_sessions_desc": "Hisobingizga ulangan qurilmalarni ko'rish uchun bosing",
+      "add_device_title": "Qurilma qo'shish",
+      "add_device_desc": "Hisobni ulash uchun smartfoningiz kamerasini yo'naltiring",
+      "backup_number_title": "Zaxira raqami",
+      "backup_number_desc": "Faqat xavfsizlik uchun ishlatiladi",
+      "delete_account_title": "Hisobni o'chirish",
+      "delete_account_desc": "Ushbu hisobning barcha ma'lumotlari butunlay o'chiriladi",
+      "logout": "Chiqish"
+    },
+    "support_items": {
+      "contact": "Qo'llab-quvvatlash bilan bog'lanish",
+      "faq": "Ko'p beriladigan savollar (FAQ)",
+      "privacy_policy": "Maxfiylik siyosati",
+      "about": "Ilova haqida"
+    }
   },
   "patient_profile": {
     "not_found": "Bemor topilmadi",
@@ -68,7 +153,20 @@
     "allergies_list": "Yeryong'oq, Penitsillin",
     "illnesses_list": "Qandli diabet",
     "male": "Erkak",
-    "female": "Ayol"
+    "female": "Ayol",
+    "patient_title": "Bemor",
+    "online": "Onlayn",
+    "fio": "F.I.SH.",
+    "in_platform": "Platformada",
+    "notes": "Eslatmalar",
+    "prescription": "Retsept",
+    "tabs": {
+      "data": "Ma'lumotlar",
+      "photo": "Rasm",
+      "treatments": "Davolash",
+      "appointments": "Qabullar",
+      "payments": "To'lovlar"
+    }
   },
   "patients_list": {
     "search_placeholder": "Bemor qidirish...",
@@ -212,6 +310,66 @@
       "status_new": "Yangi",
       "status_recorded": "Yozilgan",
       "apply_button": "Qo'llash"
+    }
+  },
+  "analytics": {
+    "title": "Analitika",
+    "header": {
+      "finance": "Moliyaviy",
+      "filter": "Filtr"
+    },
+    "stats": {
+      "total_appointments": "Jami qabullar",
+      "completed_appointments": "Tugallangan qabullar",
+      "reviews": "Sharhlar",
+      "revenue": "Daromadlar",
+      "thousand": "ming",
+      "last_month": "o'tgan oyga nisbatan",
+      "last_week": "o'tgan haftaga nisbatan"
+    },
+    "charts": {
+      "appointments": {
+        "title": "Qabullar",
+        "subtitle": "Bir oydagi qabullar",
+        "appointments_label": "qabullar"
+      },
+      "patients": {
+        "title": "Bemorlar",
+        "subtitle": "Bemorlarning jinsi (jami)",
+        "male": "Erkaklar",
+        "female": "Ayollar",
+        "count_label": "kishi"
+      },
+      "age": {
+        "title": "Yosh",
+        "subtitle": "Bemorlarning yoshi (jami)",
+        "count_label": "kishi"
+      },
+      "clients": {
+        "title": "Mijozlar",
+        "old": "Eskilar",
+        "new": "Yangilar"
+      },
+      "status": {
+        "title": "Holat",
+        "completed": "YAKUNLANDI",
+        "rescheduled": "KO'CHIRILDI",
+        "cancelled": "BEKOR QILINDI"
+      }
+    },
+    "filter": {
+      "title": "Filtr",
+      "period": "Davr",
+      "period_year": "Bir yil",
+      "statuses": "Holatlar",
+      "all": "Hammasi",
+      "completed": "Yakunlanganlar",
+      "cancelled": "Bekor qilinganlar",
+      "patient": "Bemor",
+      "new": "Yangilar",
+      "recurring": "Takroriylar",
+      "apply": "Qo'llash",
+      "reset": "Bekor qilish"
     }
   }
 }

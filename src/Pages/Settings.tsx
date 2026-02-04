@@ -11,14 +11,14 @@ import MobileHeaderAndDrawer from '../Layouts/MobileHeaderAndDrawer';
 
 const Settings: React.FC = () => {
     const { t } = useTranslation();
-    const [activeTab, setActiveTab] = useState('Уведомление');
+    const [activeTab, setActiveTab] = useState('notification');
 
     const tabs = [
-        'Уведомление',
-        'Конфиденциальность',
-        'Язык',
-        'Управление данными',
-        'Поддержка'
+        { id: 'notification', label: t('settings.tabs.notification') },
+        { id: 'privacy', label: t('settings.tabs.privacy') },
+        { id: 'language', label: t('settings.tabs.language') },
+        { id: 'data_management', label: t('settings.tabs.data_management') },
+        { id: 'support', label: t('settings.tabs.support') }
     ];
 
     return (
@@ -33,18 +33,21 @@ const Settings: React.FC = () => {
 
             {/* Tabs */}
             <SettingsTabs
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                tabs={tabs}
+                activeTab={tabs.find(t => t.id === activeTab)?.label || ''}
+                setActiveTab={(label) => {
+                    const tab = tabs.find(t => t.label === label);
+                    if (tab) setActiveTab(tab.id);
+                }}
+                tabs={tabs.map(t => t.label)}
             />
 
             {/* Content Area */}
             <div className="max-w-3xl">
-                {activeTab === 'Уведомление' && <NotificationSettings />}
-                {activeTab === 'Конфиденциальность' && <PrivacySettings />}
-                {activeTab === 'Язык' && <Language />}
-                {activeTab === 'Управление данными' && <Image />}
-                {activeTab === 'Поддержка' && <Support />}
+                {activeTab === 'notification' && <NotificationSettings />}
+                {activeTab === 'privacy' && <PrivacySettings />}
+                {activeTab === 'language' && <Language />}
+                {activeTab === 'data_management' && <Image />}
+                {activeTab === 'support' && <Support />}
             </div>
         </div>
     );

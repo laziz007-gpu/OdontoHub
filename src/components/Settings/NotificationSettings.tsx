@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const NotificationSettings: React.FC = () => {
+    const { t } = useTranslation();
     // Mock states for toggles - managed locally as they are specific to this view
     const [news, setNews] = useState(false);
     const [newAppt, setNewAppt] = useState(true);
@@ -21,8 +23,8 @@ export const NotificationSettings: React.FC = () => {
                         }`} />
                 </button>
                 <div>
-                    <h3 className="text-lg font-bold text-[#1E2532]">Новости и обновления</h3>
-                    <p className="text-sm text-gray-500">Получать новости и обновления о приложении</p>
+                    <h3 className="text-lg font-bold text-[#1E2532]">{t('settings.notifications.news_title')}</h3>
+                    <p className="text-sm text-gray-500">{t('settings.notifications.news_desc')}</p>
                 </div>
             </div>
             <hr className="border-gray-200" />
@@ -38,8 +40,8 @@ export const NotificationSettings: React.FC = () => {
                         }`} />
                 </button>
                 <div>
-                    <h3 className="text-lg font-bold text-[#1E2532]">Новые приёмы</h3>
-                    <p className="text-sm text-gray-500">Получать уведомления о новых приёмах</p>
+                    <h3 className="text-lg font-bold text-[#1E2532]">{t('settings.notifications.new_appt_title')}</h3>
+                    <p className="text-sm text-gray-500">{t('settings.notifications.new_appt_desc')}</p>
                 </div>
             </div>
             <hr className="border-gray-200" />
@@ -55,8 +57,8 @@ export const NotificationSettings: React.FC = () => {
                         }`} />
                 </button>
                 <div>
-                    <h3 className="text-lg font-bold text-[#1E2532]">Изменения в приёмах</h3>
-                    <p className="text-sm text-gray-500">Получать уведомления об отмене или о переносе приёма</p>
+                    <h3 className="text-lg font-bold text-[#1E2532]">{t('settings.notifications.appt_changes_title')}</h3>
+                    <p className="text-sm text-gray-500">{t('settings.notifications.appt_changes_desc')}</p>
                 </div>
             </div>
             <hr className="border-gray-200" />
@@ -72,7 +74,7 @@ export const NotificationSettings: React.FC = () => {
                         }`} />
                 </button>
                 <div>
-                    <h3 className="text-lg font-bold text-[#1E2532]">Разрешить получать уведомления через SMS</h3>
+                    <h3 className="text-lg font-bold text-[#1E2532]">{t('settings.notifications.sms_label')}</h3>
                 </div>
             </div>
             <hr className="border-gray-200" />
@@ -88,7 +90,7 @@ export const NotificationSettings: React.FC = () => {
                         }`} />
                 </button>
                 <div>
-                    <h3 className="text-lg font-bold text-[#1E2532]">Разрешить получать уведомления через Telegram</h3>
+                    <h3 className="text-lg font-bold text-[#1E2532]">{t('settings.notifications.telegram_label')}</h3>
                 </div>
             </div>
         </div>

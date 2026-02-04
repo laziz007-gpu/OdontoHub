@@ -10,6 +10,40 @@
     "focus_patients": "2 new patients",
     "analytics": "Analytics"
   },
+  "common": {
+    "months": {
+      "0": "January",
+      "1": "February",
+      "2": "March",
+      "3": "April",
+      "4": "May",
+      "5": "June",
+      "6": "July",
+      "7": "August",
+      "8": "September",
+      "9": "October",
+      "10": "November",
+      "11": "December"
+    },
+    "weekdays": {
+      "0": "Sun",
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat"
+    },
+    "weekdays_full": {
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday"
+    }
+  },
   "appointments": {
     "title": "Appointments",
     "today": "Today",
@@ -22,6 +56,13 @@
       "month": "Month",
       "search_placeholder": "name or diagnosis...",
       "weekend": "Weekend"
+    },
+    "statuses": {
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "rescheduled": "Rescheduled",
+      "in_progress": "In progress",
+      "in_queue": "In queue"
     }
   },
   "modal": {
@@ -32,11 +73,55 @@
     "status_placeholder": "Treatment Status",
     "date_placeholder": "Select Date",
     "time_label": "Time",
-    "notes_placeholder": "Write notes or comments"
+    "notes_placeholder": "Write notes or comments",
+    "services": {
+      "implantation": "Implantation",
+      "consultation": "Consultation"
+    },
+    "patient_statuses": {
+      "primary": "Primary",
+      "recurring": "Recurring"
+    }
   },
   "settings": {
     "title": "Settings",
-    "language_title": "Select Interface Language"
+    "language_title": "Select Interface Language",
+    "in_development": "Under development. Coming soon.",
+    "tabs": {
+      "notification": "Notification",
+      "privacy": "Privacy",
+      "language": "Language",
+      "data_management": "Data Management",
+      "support": "Support"
+    },
+    "notifications": {
+      "news_title": "News and Updates",
+      "news_desc": "Receive news and updates about the application",
+      "new_appt_title": "New Appointments",
+      "new_appt_desc": "Receive notifications about new appointments",
+      "appt_changes_title": "Appointment Changes",
+      "appt_changes_desc": "Receive notifications about cancellations or rescheduling",
+      "sms_label": "Allow receiving notifications via SMS",
+      "telegram_label": "Allow receiving notifications via Telegram"
+    },
+    "privacy": {
+      "change_password": "Change Password",
+      "active_sessions_title": "Active Sessions",
+      "active_sessions_desc": "Click to see devices where your account is connected",
+      "add_device_title": "Add Device",
+      "add_device_desc": "Point your smartphone camera to connect account",
+      "backup_number_title": "Backup Number",
+      "backup_number_desc": "Used only for security",
+      "delete_account_title": "Delete Account",
+      "delete_account_desc": "All data of this account will be permanently deleted",
+      "logout": "Logout"
+    },
+    "support_items": {
+      "contact": "Contact Support",
+      "faq": "FAQ",
+      "privacy_policy": "Privacy Policy",
+      "about": "About App"
+    }
   },
   "patient_profile": {
     "not_found": "Patient not found",
@@ -68,7 +153,20 @@
     "allergies_list": "Peanuts, Penicillin",
     "illnesses_list": "Diabetes mellitus",
     "male": "Male",
-    "female": "Female"
+    "female": "Female",
+    "patient_title": "Patient",
+    "online": "Online",
+    "fio": "Full Name",
+    "in_platform": "In platform",
+    "notes": "Notes",
+    "prescription": "Prescription",
+    "tabs": {
+      "data": "Data",
+      "photo": "Photo",
+      "treatments": "Treatments",
+      "appointments": "Appointments",
+      "payments": "Payments"
+    }
   },
   "patients_list": {
     "search_placeholder": "Search patient...",
@@ -212,6 +310,66 @@
       "status_new": "New",
       "status_recorded": "Recorded",
       "apply_button": "Apply"
+    }
+  },
+  "analytics": {
+    "title": "Analytics",
+    "header": {
+      "finance": "Finance",
+      "filter": "Filter"
+    },
+    "stats": {
+      "total_appointments": "Total Appointments",
+      "completed_appointments": "Completed Appointments",
+      "reviews": "Reviews",
+      "revenue": "Revenue",
+      "thousand": "k",
+      "last_month": "last month",
+      "last_week": "last week"
+    },
+    "charts": {
+      "appointments": {
+        "title": "Appointments",
+        "subtitle": "Appointments per month",
+        "appointments_label": "appointments"
+      },
+      "patients": {
+        "title": "Patients",
+        "subtitle": "Patient gender distribution",
+        "male": "Men",
+        "female": "Women",
+        "count_label": "ppl"
+      },
+      "age": {
+        "title": "Age",
+        "subtitle": "Age distribution",
+        "count_label": "ppl"
+      },
+      "clients": {
+        "title": "Clients",
+        "old": "Old",
+        "new": "New"
+      },
+      "status": {
+        "title": "Status",
+        "completed": "COMPLETED",
+        "rescheduled": "RESCHEDULED",
+        "cancelled": "CANCELLED"
+      }
+    },
+    "filter": {
+      "title": "Filter",
+      "period": "Period",
+      "period_year": "Per year",
+      "statuses": "Statuses",
+      "all": "All",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "patient": "Patient",
+      "new": "New",
+      "recurring": "Recurring",
+      "apply": "Apply",
+      "reset": "Reset"
     }
   }
 }

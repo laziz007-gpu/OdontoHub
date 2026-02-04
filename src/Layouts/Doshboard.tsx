@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 type MenuItem = {
   id: string;
   label: string;
-  icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
+  icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
   path: string;
 };
 
@@ -88,9 +88,11 @@ export default function Sidebar() {
             <p>{t('sidebar.focus_consultations')}</p>
             <p>{t('sidebar.focus_patients')}</p>
           </div>
-          <button className="mt-5 w-full bg-white text-gray-900 py-3 rounded-2xl font-semibold shadow hover:bg-gray-100 transition-colors">
-            {t('sidebar.analytics')}
-          </button>
+          <Link to={paths.analytics}>
+            <button className="mt-5 w-full bg-white text-gray-900 py-3 rounded-2xl font-semibold shadow hover:bg-gray-100 transition-colors">
+              {t('sidebar.analytics')}
+            </button>
+          </Link>
         </div>
       </div>
     </div>
