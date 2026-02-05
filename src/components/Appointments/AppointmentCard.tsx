@@ -8,6 +8,7 @@ interface AppointmentCardProps {
     service: string;
     patientName: string;
     status: AppointmentStatus;
+    onClick?: () => void;
 }
 
 const statusStyles: Record<AppointmentStatus, string> = {
@@ -18,10 +19,13 @@ const statusStyles: Record<AppointmentStatus, string> = {
     'in_queue': 'border-[#6c757d] text-[#6c757d]',
 };
 
-const AppointmentCard: React.FC<AppointmentCardProps> = ({ time, service, patientName, status }) => {
+const AppointmentCard: React.FC<AppointmentCardProps> = ({ time, service, patientName, status, onClick }) => {
     const { t } = useTranslation();
     return (
-        <div className="bg-white rounded-[24px] md:rounded-[32px] p-5 md:p-6 shadow-sm hover:shadow-xl transition-all duration-300 group">
+        <div
+            onClick={onClick}
+            className="bg-white rounded-[24px] md:rounded-[32px] p-5 md:p-6 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer active:scale-95"
+        >
             <div className="flex items-center justify-between mb-4">
                 <span className="text-3xl font-black text-[#1a1f36]">{time}</span>
                 <span className={`px-4 py-1 rounded-[12px] text-[11px] font-bold border ${statusStyles[status]}`}>

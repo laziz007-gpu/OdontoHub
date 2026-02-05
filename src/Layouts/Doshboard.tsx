@@ -30,8 +30,8 @@ export default function Sidebar() {
   const menuItems: MenuItem[] = [
     { id: "dashboard", label: t('sidebar.dashboard'), icon: LayoutDashboard, path: paths.menu },
     { id: "patients", label: t('sidebar.patients'), icon: Users, path: paths.patient },
-    { id: "appointments", label: t('sidebar.appointments'), icon: Calendar, path: "/appointments" },
-    { id: "chats", label: t('sidebar.chats'), icon: MessageCircle, path: "/chats" },
+    { id: "appointments", label: t('sidebar.appointments'), icon: Calendar, path: paths.appointments },
+    { id: "chats", label: t('sidebar.chats'), icon: MessageCircle, path: paths.chats },
   ];
 
   const SidebarInner = ({ isDrawer = false }: { isDrawer?: boolean }) => (
@@ -56,7 +56,7 @@ export default function Sidebar() {
       <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = location.pathname === item.path;
+          const isActive = location.pathname === item.path || (item.id === 'chats' && location.pathname.startsWith('/chats'));
 
           return (
             <Link

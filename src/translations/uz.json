@@ -11,6 +11,7 @@
     "analytics": "Analitika"
   },
   "common": {
+    "close": "Yopish",
     "months": {
       "0": "Yanvar",
       "1": "Fevral",
@@ -63,6 +64,13 @@
       "rescheduled": "Ko'chirildi",
       "in_progress": "Jarayonda",
       "in_queue": "Navbatda"
+    },
+    "detail": {
+      "patient": "Bemor",
+      "time": "Vaqti",
+      "date": "Sanasi",
+      "status": "Holati",
+      "initial": "Birlamchi"
     }
   },
   "modal": {
@@ -164,8 +172,9 @@
       "data": "Ma'lumotlar",
       "photo": "Rasm",
       "treatments": "Davolash",
-      "appointments": "Qabullar",
-      "payments": "To'lovlar"
+      "appointments": "Priemlar",
+      "payments": "To'lovlar",
+      "chat": "Chat"
     }
   },
   "patients_list": {

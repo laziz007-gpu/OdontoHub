@@ -11,6 +11,7 @@
     "analytics": "Аналитика"
   },
   "common": {
+    "close": "Жабу",
     "months": {
       "0": "Қаңтар",
       "1": "Ақпан",
@@ -63,6 +64,13 @@
       "rescheduled": "Ауыстырылды",
       "in_progress": "Орындалуда",
       "in_queue": "Кезекте"
+    },
+    "detail": {
+      "patient": "Пациент",
+      "time": "Уақыты",
+      "date": "Күні",
+      "status": "Мәртебесі",
+      "initial": "Бастапқы"
     }
   },
   "modal": {
@@ -165,7 +173,8 @@
       "photo": "Фото",
       "treatments": "Емдеу",
       "appointments": "Қабылдаулар",
-      "payments": "Төлемдер"
+      "payments": "Төлемдер",
+      "chat": "Чат"
     }
   },
   "patients_list": {

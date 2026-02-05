@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom'
 import { initialPatients } from '../data/patients'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
+import { paths } from '../Routes/path'
+import PhotoGrid from '../components/PatientProfile/PhotoGrid'
 
 export default function PatientProfile() {
     const { id } = useParams()
@@ -28,6 +30,7 @@ export default function PatientProfile() {
         { id: 'treatments', label: t('patient_profile.tabs.treatments'), icon: ClipboardList },
         { id: 'appointments', label: t('patient_profile.tabs.appointments'), icon: Calendar },
         { id: 'payments', label: t('patient_profile.tabs.payments'), icon: DollarSign },
+        { id: 'chat', label: t('patient_profile.tabs.chat'), icon: MessageCircle },
     ]
 
     return (
@@ -57,9 +60,11 @@ export default function PatientProfile() {
                     <button className="bg-[#5377f7] text-white px-10 py-4 rounded-3xl font-semibold text-lg hover:bg-blue-600 transition-colors">
                         {t('patient_profile.schedule_appointment')}
                     </button>
-                    <button className="bg-[#1cdb6f] text-white w-20 h-20 rounded-full flex items-center justify-center hover:bg-[#19c762] transition-colors">
-                        <MessageCircle className="w-10 h-10" fill="currentColor" />
-                    </button>
+                    <Link to={paths.chatDetail.replace(':id', String(patient.id))}>
+                        <button className="bg-[#1cdb6f] text-white w-20 h-20 rounded-full flex items-center justify-center hover:bg-[#19c762] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-green-500/20">
+                            <MessageCircle className="w-10 h-10" fill="currentColor" />
+                        </button>
+                    </Link>
                 </div>
             </div>
 
@@ -70,8 +75,8 @@ export default function PatientProfile() {
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-3 pb-4 px-2 transition-all relative ${activeTab === tab.id
-                                ? 'text-[#5377f7]'
-                                : 'text-gray-400 hover:text-gray-600'
+                            ? 'text-[#5377f7]'
+                            : 'text-gray-400 hover:text-gray-600'
                             }`}
                     >
                         <tab.icon className={`w-8 h-8 ${activeTab === tab.id ? 'text-[#5377f7]' : 'text-gray-400'}`} />
@@ -127,6 +132,23 @@ export default function PatientProfile() {
                                 <h3 className="text-[#1e2235] text-2xl font-bold mb-4">{t('patient_profile.prescription')}</h3>
                             </div>
                         </div>
+                    </div>
+                )}
+
+                {activeTab === 'photo' && <PhotoGrid patientId={id} />}
+
+                {activeTab === 'chat' && (
+                    <div className="flex flex-col items-center justify-center h-full min-h-[400px] gap-6 animate-in fade-in zoom-in-95 duration-300">
+                        <div className="bg-[#f1f4f9] p-8 rounded-[40px] flex flex-col items-center gap-4">
+                            <MessageCircle size={64} className="text-[#5377f7]" />
+                            <h3 className="text-2xl font-bold text-[#1e2235]">{t('patient_profile.tabs.chat')}</h3>
+                        </div>
+                        <Link
+                            to={paths.chatDetail.replace(':id', String(patient.id))}
+                            className="bg-[#5377f7] text-white px-12 py-5 rounded-[24px] font-bold text-xl shadow-xl shadow-blue-500/20 hover:scale-105 transition-transform"
+                        >
+                            Открыть личные сообщения
+                        </Link>
                     </div>
                 )}
             </div>

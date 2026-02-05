@@ -11,6 +11,7 @@
         "analytics": "Аналитика"
     },
     "common": {
+        "close": "Закрыть",
         "months": {
             "0": "Январь",
             "1": "Февраль",
@@ -63,6 +64,13 @@
             "rescheduled": "Перенесён",
             "in_progress": "В процессе",
             "in_queue": "В очереди"
+        },
+        "detail": {
+            "patient": "Пациент",
+            "time": "Время",
+            "date": "Дата",
+            "status": "Статус",
+            "initial": "Начальный"
         }
     },
     "modal": {
@@ -165,7 +173,8 @@
             "photo": "Фото",
             "treatments": "Лечения",
             "appointments": "Приёмы",
-            "payments": "Оплаты"
+            "payments": "Оплаты",
+            "chat": "Чат"
         }
     },
     "patients_list": {

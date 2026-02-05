@@ -4,6 +4,7 @@ import DateStrip from '../components/Appointments/DateStrip';
 import AppointmentCard, { AppointmentStatus } from '../components/Appointments/AppointmentCard';
 import CalendarView from '../components/Appointments/CalendarView';
 import AppointmentModal from '../components/Appointments/AppointmentModal';
+import AppointmentDetailModal from '../components/Appointments/AppointmentDetailModal';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,6 +28,13 @@ const Appointments: React.FC = () => {
     const navigate = useNavigate();
     const [view, setView] = useState<'list' | 'calendar'>('list');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
+    const [isDetailOpen, setIsDetailOpen] = useState(false);
+
+    const handleAptClick = (apt: any) => {
+        setSelectedAppointment(apt);
+        setIsDetailOpen(true);
+    };
 
     // Mock date to match image for visual consistency
     // June 16, 2026 is a Tuesday.
@@ -95,15 +103,25 @@ const Appointments: React.FC = () => {
                         {/* Appointments List */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                             {appointmentsData.map((apt, idx) => (
-                                <AppointmentCard key={idx} {...apt} service={apt.service === 'Имплантация' ? t('modal.services.implantation') : apt.service} />
+                                <AppointmentCard
+                                    key={idx}
+                                    {...apt}
+                                    service={apt.service === 'Имплантация' ? t('modal.services.implantation') : apt.service}
+                                    onClick={() => handleAptClick(apt)}
+                                />
                             ))}
                         </div>
                     </>
                 )}
             </div>
 
-            {/* Modal */}
+            {/* Modals */}
             <AppointmentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+            <AppointmentDetailModal
+                isOpen={isDetailOpen}
+                onClose={() => setIsDetailOpen(false)}
+                appointment={selectedAppointment}
+            />
         </div>
     );
 };

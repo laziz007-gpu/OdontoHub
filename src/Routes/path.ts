@@ -10,5 +10,7 @@ export const paths = {
     menu: '/menu',
     settings: '/settings',
     appointments: '/appointments',
-    analytics: '/analytics'
+    analytics: '/analytics',
+    chats: '/chats',
+    chatDetail: '/chats/:id'
 } as const;

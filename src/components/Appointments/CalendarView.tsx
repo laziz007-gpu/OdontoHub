@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Calculator } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import AppointmentModal from './AppointmentModal';
 
 interface CalendarViewProps {
     onBack: () => void;
@@ -9,6 +10,7 @@ interface CalendarViewProps {
 const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
     const { t } = useTranslation();
     const [viewDate, setViewDate] = useState(new Date(2023, 5, 1)); // June 2023
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const weekDays = React.useMemo(() => {
         return [1, 2, 3, 4, 5, 6, 0].map(d => t(`common.weekdays.${d}`));
     }, [t]);
@@ -118,7 +120,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
                         <Calculator className="w-5 h-5" />
                         <span>{t('appointments.title')}</span>
                     </button>
-                    <button className="bg-[#10d16d] px-8 py-3 rounded-[16px] shadow-lg shadow-[#10d16d]/20 text-white font-black hover:bg-[#0ebf63] transition-colors">
+                    <button onClick={() => setIsModalOpen(true)} className="px-6 md:px-10 py-3 bg-[#00e396] text-white font-bold rounded-[16px] shadow-lg shadow-[#00e396]/20 hover:bg-[#00d08a] transition-all active:scale-95 text-sm md:text-base cursor-pointer">
                         {t('appointments.record_appointment')}
                     </button>
                 </div>
@@ -174,6 +176,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
                     ))}
                 </div>
             </div>
+
+            {/* Modal */}
+            <AppointmentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </div>
     );
 };
