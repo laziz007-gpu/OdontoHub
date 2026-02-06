@@ -175,6 +175,26 @@
             "appointments": "Приёмы",
             "payments": "Оплаты",
             "chat": "Чат"
+        },
+        "treatments_table": {
+            "no": "№",
+            "name": "Название",
+            "period": "Период",
+            "appointments": "Приёмы",
+            "amount": "Сумма(сум)",
+            "status1": "Статус#1",
+            "status2": "Статус#2",
+            "paid": "Оплачено",
+            "unpaid": "Не оплачено",
+            "completed": "Завершён"
+        },
+        "payments_view": {
+            "payment_percentage": "Процент оплаты",
+            "paid": "Оплачено",
+            "paid_to_you": "Оплачено вам",
+            "percentage": "Процент",
+            "debts": "Долги",
+            "currency": "сум"
         }
     },
     "patients_list": {

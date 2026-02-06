@@ -175,6 +175,26 @@
       "appointments": "Appointments",
       "payments": "Payments",
       "chat": "Chat"
+    },
+    "treatments_table": {
+      "no": "№",
+      "name": "Name",
+      "period": "Period",
+      "appointments": "Appointments",
+      "amount": "Amount(sum)",
+      "status1": "Status#1",
+      "status2": "Status#2",
+      "paid": "Paid",
+      "unpaid": "Unpaid",
+      "completed": "Completed"
+    },
+    "payments_view": {
+      "payment_percentage": "Payment percentage",
+      "paid": "Paid",
+      "paid_to_you": "Paid to you",
+      "percentage": "Percentage",
+      "debts": "Debts",
+      "currency": "sum"
     }
   },
   "patients_list": {

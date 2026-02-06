@@ -16,11 +16,11 @@ export default function AddChatModal({ isOpen, onClose, onAdd }: AddChatModalPro
     return (
         <div
             onClick={onClose}
-            className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300"
         >
             <div
                 onClick={(e) => e.stopPropagation()}
-                className="bg-white w-full max-w-[500px] rounded-[40px] p-8 shadow-2xl animate-in zoom-in-95 duration-300 relative"
+                className="bg-white w-full max-w-[500px] rounded-[24px] md:rounded-[40px] p-6 md:p-8 shadow-2xl animate-in zoom-in-95 duration-300 relative"
             >
                 <div className="flex justify-between items-center mb-8">
                     <h2 className="text-2xl font-black text-[#1e2235]">Добавить чат</h2>

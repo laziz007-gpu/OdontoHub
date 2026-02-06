@@ -1,17 +1,29 @@
 import { ArrowLeft, MessageCircle, User, Camera, ClipboardList, Calendar, DollarSign } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { initialPatients } from '../data/patients'
+import type { Patient } from '../data/patients'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { paths } from '../Routes/path'
 import PhotoGrid from '../components/PatientProfile/PhotoGrid'
+import TreatmentsTable from '../components/PatientProfile/TreatmentsTable'
+import PaymentsView from '../components/PatientProfile/PaymentsView'
+
+type TabId = 'data' | 'photo' | 'treatments' | 'appointments' | 'payments'
+
+interface Tab {
+    id: TabId
+    label: string
+    icon: LucideIcon
+}
 
 export default function PatientProfile() {
-    const { id } = useParams()
+    const { id } = useParams<{ id: string }>()
     const { t } = useTranslation()
-    const [activeTab, setActiveTab] = useState('data')
+    const [activeTab, setActiveTab] = useState<TabId>('data')
 
-    const patient = initialPatients.find(p => p.id === Number(id))
+    const patient: Patient | undefined = initialPatients.find(p => p.id === Number(id))
 
     if (!patient) {
         return (
@@ -24,63 +36,63 @@ export default function PatientProfile() {
         )
     }
 
-    const tabs = [
+    const tabs: Tab[] = [
         { id: 'data', label: t('patient_profile.tabs.data'), icon: User },
         { id: 'photo', label: t('patient_profile.tabs.photo'), icon: Camera },
         { id: 'treatments', label: t('patient_profile.tabs.treatments'), icon: ClipboardList },
         { id: 'appointments', label: t('patient_profile.tabs.appointments'), icon: Calendar },
         { id: 'payments', label: t('patient_profile.tabs.payments'), icon: DollarSign },
-        { id: 'chat', label: t('patient_profile.tabs.chat'), icon: MessageCircle },
     ]
 
     return (
-        <div className="p-8 bg-[#f5f7fb] min-h-screen font-sans">
+        <div className="p-4 md:p-8 bg-[#f5f7fb] min-h-screen font-sans">
             {/* Header */}
-            <div className="flex items-center gap-4 mb-8">
-                <Link to="/patients" className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors">
+            <div className="flex items-center gap-4 mb-6 md:mb-8">
+                <Link to="/patients" className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors shrink-0">
                     <ArrowLeft className="w-5 h-5 text-[#1e2235]" />
                 </Link>
-                <h1 className="text-4xl font-bold text-[#1e2235]">{t('patient_profile.patient_title')}</h1>
+                <h1 className="text-2xl md:text-4xl font-bold text-[#1e2235] truncate">{t('patient_profile.patient_title')}</h1>
             </div>
 
             {/* Profile Info Card */}
-            <div className="bg-white rounded-[40px] p-8 mb-8 flex items-center justify-between shadow-sm">
-                <div className="flex items-center gap-8">
+            <div className="bg-white rounded-[24px] md:rounded-[40px] p-6 md:p-8 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between shadow-sm gap-6">
+                <div className="flex items-center gap-4 md:gap-8">
                     <img
                         src={patient.img}
                         alt={patient.name}
-                        className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-sm"
+                        className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover border-4 border-white shadow-sm shrink-0"
                     />
                     <div>
-                        <h2 className="text-3xl font-bold text-[#1e2235] mb-1">{patient.name}</h2>
+                        <h2 className="text-xl md:text-3xl font-bold text-[#1e2235] mb-1 leading-tight">{patient.name}</h2>
                         <span className="text-blue-500 font-medium">{t('patient_profile.online')}</span>
                     </div>
                 </div>
-                <div className="flex gap-4">
-                    <button className="bg-[#5377f7] text-white px-10 py-4 rounded-3xl font-semibold text-lg hover:bg-blue-600 transition-colors">
+                <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                    <button className="bg-[#5377f7] text-white px-6 md:px-10 py-3 md:py-4 rounded-2xl md:rounded-3xl font-semibold text-base md:text-lg hover:bg-blue-600 transition-colors w-full md:w-auto">
                         {t('patient_profile.schedule_appointment')}
                     </button>
-                    <Link to={paths.chatDetail.replace(':id', String(patient.id))}>
-                        <button className="bg-[#1cdb6f] text-white w-20 h-20 rounded-full flex items-center justify-center hover:bg-[#19c762] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-green-500/20">
-                            <MessageCircle className="w-10 h-10" fill="currentColor" />
+                    <Link to={paths.chatDetail.replace(':id', String(patient.id))} className="w-full md:w-auto flex justify-center">
+                        <button className="bg-[#1cdb6f] text-white w-full sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 rounded-2xl sm:rounded-full flex items-center justify-center hover:bg-[#19c762] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-green-500/20">
+                            <MessageCircle className="w-6 h-6 md:w-10 md:h-10" fill="currentColor" />
+                            <span className="sm:hidden ml-2 font-bold">{t('patient_profile.tabs.chat')}</span>
                         </button>
                     </Link>
                 </div>
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-12 mb-8 px-4 border-b border-gray-100">
+            <div className="flex gap-8 md:gap-12 mb-8 px-4 border-b border-gray-100 overflow-x-auto no-scrollbar scroll-smooth">
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center gap-3 pb-4 px-2 transition-all relative ${activeTab === tab.id
-                            ? 'text-[#5377f7]'
-                            : 'text-gray-400 hover:text-gray-600'
+                        className={`flex items-center gap-2 md:gap-3 pb-4 px-1 transition-all relative whitespace-nowrap ${activeTab === tab.id
+                                ? 'text-[#5377f7]'
+                                : 'text-gray-400 hover:text-gray-600'
                             }`}
                     >
-                        <tab.icon className={`w-8 h-8 ${activeTab === tab.id ? 'text-[#5377f7]' : 'text-gray-400'}`} />
-                        <span className="font-semibold text-lg">{tab.label}</span>
+                        <tab.icon className={`w-6 h-6 md:w-8 md:h-8 ${activeTab === tab.id ? 'text-[#5377f7]' : 'text-gray-400'}`} />
+                        <span className="font-semibold text-base md:text-lg">{tab.label}</span>
                         {activeTab === tab.id && (
                             <div className="absolute bottom-0 left-0 w-full h-1 bg-[#5377f7] rounded-full"></div>
                         )}
@@ -89,68 +101,57 @@ export default function PatientProfile() {
             </div>
 
             {/* Main Content Area */}
-            <div className="bg-white rounded-[40px] p-12 shadow-sm min-h-[500px]">
+            <div className="bg-white rounded-[24px] md:rounded-[40px] p-6 md:p-12 shadow-sm min-h-[400px]">
                 {activeTab === 'data' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
                         {/* Column 1: Personal Info */}
-                        <div className="space-y-8">
+                        <div className="space-y-6 md:space-y-8">
                             <div className="space-y-1">
-                                <p className="text-gray-400 font-medium text-lg uppercase tracking-wider">{t('patient_profile.fio')}</p>
-                                <p className="text-[#1e2235] font-bold text-xl">{patient.name}</p>
+                                <p className="text-gray-400 font-medium text-base md:text-lg uppercase tracking-wider">{t('patient_profile.fio')}</p>
+                                <p className="text-[#1e2235] font-bold text-lg md:text-xl">{patient.name}</p>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-gray-400 font-medium text-lg uppercase tracking-wider">{t('patient_profile.birth_date')}</p>
-                                <p className="text-[#1e2235] font-bold text-xl">{patient.birthDate || '01.01.1999'}</p>
+                                <p className="text-gray-400 font-medium text-base md:text-lg uppercase tracking-wider">{t('patient_profile.birth_date')}</p>
+                                <p className="text-[#1e2235] font-bold text-lg md:text-xl">{patient.birthDate || '01.01.1999'}</p>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-gray-400 font-medium text-lg uppercase tracking-wider">{t('patient_profile.gender')}</p>
-                                <p className="text-[#1e2235] font-bold text-xl">{patient.gender || t('patient_profile.male')}</p>
+                                <p className="text-gray-400 font-medium text-base md:text-lg uppercase tracking-wider">{t('patient_profile.gender')}</p>
+                                <p className="text-[#1e2235] font-bold text-lg md:text-xl">{patient.gender || t('patient_profile.male')}</p>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-gray-400 font-medium text-lg uppercase tracking-wider">{t('patient_profile.phone')}</p>
-                                <p className="text-[#1e2235] font-bold text-xl">{patient.phone}</p>
+                                <p className="text-gray-400 font-medium text-base md:text-lg uppercase tracking-wider">{t('patient_profile.phone')}</p>
+                                <p className="text-[#1e2235] font-bold text-lg md:text-xl">{patient.phone}</p>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-gray-400 font-medium text-lg uppercase tracking-wider">{t('patient_profile.in_platform')}</p>
-                                <p className="text-[#1e2235] font-bold text-xl">С 22.05.2025</p>
+                                <p className="text-gray-400 font-medium text-base md:text-lg uppercase tracking-wider">{t('patient_profile.in_platform')}</p>
+                                <p className="text-[#1e2235] font-bold text-lg md:text-xl">С 22.05.2025</p>
                             </div>
                         </div>
 
                         {/* Column 2: Notes Card */}
-                        <div>
-                            <div className="bg-[#fbc947] rounded-[30px] p-8 h-full min-h-[400px]">
-                                <h3 className="text-white text-2xl font-bold mb-4">{t('patient_profile.notes')}</h3>
+                        <div className="min-h-[250px] md:min-h-[400px]">
+                            <div className="bg-[#fbc947] rounded-[24px] md:rounded-[30px] p-6 md:p-8 h-full">
+                                <h3 className="text-white text-xl md:text-2xl font-bold mb-4">{t('patient_profile.notes')}</h3>
                             </div>
                         </div>
 
                         {/* Column 3: Allergies and Prescription */}
                         <div className="flex flex-col gap-6">
-                            <div className="bg-[#ff0000] rounded-[30px] p-8 flex-1 min-h-[200px]">
-                                <h3 className="text-white text-2xl font-bold mb-4">{t('patient_profile.allergies')}</h3>
+                            <div className="bg-[#ff0000] rounded-[24px] md:rounded-[30px] p-6 md:p-8 flex-1 min-h-[150px] md:min-h-[200px]">
+                                <h3 className="text-white text-xl md:text-2xl font-bold mb-4">{t('patient_profile.allergies')}</h3>
                             </div>
-                            <div className="bg-[#e8e8e8] rounded-[30px] p-8 flex-1 min-h-[200px]">
-                                <h3 className="text-[#1e2235] text-2xl font-bold mb-4">{t('patient_profile.prescription')}</h3>
+                            <div className="bg-[#e8e8e8] rounded-[24px] md:rounded-[30px] p-6 md:p-8 flex-1 min-h-[150px] md:min-h-[200px]">
+                                <h3 className="text-[#1e2235] text-xl md:text-2xl font-bold mb-4">{t('patient_profile.prescription')}</h3>
                             </div>
                         </div>
                     </div>
                 )}
 
-                {activeTab === 'photo' && <PhotoGrid patientId={id} />}
+                {activeTab === 'photo' && <PhotoGrid patientId={id!} />}
 
-                {activeTab === 'chat' && (
-                    <div className="flex flex-col items-center justify-center h-full min-h-[400px] gap-6 animate-in fade-in zoom-in-95 duration-300">
-                        <div className="bg-[#f1f4f9] p-8 rounded-[40px] flex flex-col items-center gap-4">
-                            <MessageCircle size={64} className="text-[#5377f7]" />
-                            <h3 className="text-2xl font-bold text-[#1e2235]">{t('patient_profile.tabs.chat')}</h3>
-                        </div>
-                        <Link
-                            to={paths.chatDetail.replace(':id', String(patient.id))}
-                            className="bg-[#5377f7] text-white px-12 py-5 rounded-[24px] font-bold text-xl shadow-xl shadow-blue-500/20 hover:scale-105 transition-transform"
-                        >
-                            Открыть личные сообщения
-                        </Link>
-                    </div>
-                )}
+                {activeTab === 'treatments' && <TreatmentsTable />}
+
+                {activeTab === 'payments' && <PaymentsView />}
             </div>
         </div>
     )

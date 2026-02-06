@@ -9,7 +9,7 @@ const Render = () => {
     <div className="px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
 
       {/* Hero qismi - to'liq kenglikda */}
-      <div className="mb-6 max-lg:pt-11">
+      <div className="mb-6 max-lg:pt-16">
         <Hero />
       </div>
 

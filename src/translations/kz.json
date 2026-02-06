@@ -175,6 +175,26 @@
       "appointments": "Қабылдаулар",
       "payments": "Төлемдер",
       "chat": "Чат"
+    },
+    "treatments_table": {
+      "no": "№",
+      "name": "Атауы",
+      "period": "Кезең",
+      "appointments": "Қабылдаулар",
+      "amount": "Сома(сом)",
+      "status1": "Статус#1",
+      "status2": "Статус#2",
+      "paid": "Төленген",
+      "unpaid": "Төленбеген",
+      "completed": "Аяқталды"
+    },
+    "payments_view": {
+      "payment_percentage": "Төлем пайызы",
+      "paid": "Төленді",
+      "paid_to_you": "Сізге төленді",
+      "percentage": "Пайыз",
+      "debts": "Қарыздар",
+      "currency": "сом"
     }
   },
   "patients_list": {

@@ -175,6 +175,26 @@
       "appointments": "Priemlar",
       "payments": "To'lovlar",
       "chat": "Chat"
+    },
+    "treatments_table": {
+      "no": "№",
+      "name": "Nomi",
+      "period": "Davr",
+      "appointments": "Qabullar",
+      "amount": "Summa(so'm)",
+      "status1": "Status#1",
+      "status2": "Status#2",
+      "paid": "To'langan",
+      "unpaid": "To'lanmagan",
+      "completed": "Yakunlandi"
+    },
+    "payments_view": {
+      "payment_percentage": "To'lov foizi",
+      "paid": "To'langan",
+      "paid_to_you": "Sizga to'langan",
+      "percentage": "Foiz",
+      "debts": "Qarzlar",
+      "currency": "so'm"
     }
   },
   "patients_list": {

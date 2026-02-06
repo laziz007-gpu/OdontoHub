@@ -129,21 +129,21 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
             {/* Calendar Grid */}
             <div className="mt-6">
                 {/* Weekday Headers */}
-                <div className="grid grid-cols-7 gap-4 mb-4">
+                <div className="grid grid-cols-7 gap-1 md:gap-4 mb-2 md:mb-4">
                     {weekDays.map(day => (
-                        <div key={day} className="text-xl font-black text-[#1a1f36] text-center capitalize">
+                        <div key={day} className="text-xs md:text-xl font-black text-[#1a1f36] text-center capitalize">
                             {day}
                         </div>
                     ))}
                 </div>
 
                 {/* Days Grid */}
-                <div className="grid grid-cols-7 gap-3 sm:gap-4">
+                <div className="grid grid-cols-7 gap-1 md:gap-3 sm:gap-4">
                     {days.map((day, idx) => (
                         <div
                             key={idx}
                             className={`
-                                relative aspect-[1/0.85] rounded-[24px] overflow-hidden p-2 flex flex-col items-center justify-end
+                                relative aspect-square md:aspect-[1/0.85] rounded-[12px] md:rounded-[24px] overflow-hidden p-1 md:p-2 flex flex-col items-center justify-end
                                 ${day.isWeekend
                                     ? 'bg-[#10d16d]'
                                     : (day.isPrevMonth || day.isNextMonth ? 'bg-[#f0f0f0]' : 'bg-[#eef2f6]')
@@ -151,22 +151,23 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
                             `}
                         >
                             {/* Day Number */}
-                            <div className={`absolute top-3 right-4 text-2xl font-bold ${day.isWeekend ? 'text-white' : 'text-[#bdbdbd]'}`}>
+                            <div className={`absolute top-1 right-1.5 md:top-3 md:right-4 text-sm md:text-2xl font-bold ${day.isWeekend ? 'text-white' : 'text-[#bdbdbd]'}`}>
                                 {day.date}
                             </div>
 
                             {/* Content */}
-                            <div className="w-full mb-2">
+                            <div className="w-full mb-1 md:mb-2">
                                 {day.isWeekend ? (
-                                    <div className="text-center text-white font-medium text-sm">
-                                        {t('appointments.month_view.weekend')}
+                                    <div className="text-center text-white font-medium text-[8px] md:text-sm leading-tight">
+                                        <span className="hidden md:inline">{t('appointments.month_view.weekend')}</span>
+                                        <span className="md:hidden">Вых.</span>
                                     </div>
                                 ) : (
                                     (day.isCurrentMonth || day.isNextMonth) && !day.isWeekend && day.appointments > 0 ? (
-                                        <div className="bg-[#4f6bff] mx-auto w-[90%] py-1 rounded-full flex items-center justify-between px-1.5 overflow-hidden">
-                                            <span className="text-white text-[11px] font-bold pl-2 truncate">{t('dashboard.appointments_card.title')}</span>
-                                            <div className="bg-white w-5 h-5 rounded-full flex items-center justify-center shrink-0">
-                                                <span className="text-[#4f6bff] text-[10px] font-black">{day.appointments}</span>
+                                        <div className="bg-[#4f6bff] mx-auto w-full md:w-[90%] py-0.5 md:py-1 rounded-full flex items-center justify-center md:justify-between px-1 md:px-1.5 overflow-hidden">
+                                            <span className="text-white text-[11px] font-bold pl-2 truncate hidden md:block">{t('dashboard.appointments_card.title')}</span>
+                                            <div className="bg-white w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center shrink-0">
+                                                <span className="text-[#4f6bff] text-[9px] md:text-[10px] font-black">{day.appointments}</span>
                                             </div>
                                         </div>
                                     ) : null

@@ -53,7 +53,7 @@ const Hero: React.FC = () => {
   return (
     <>
       {/* HEADER */}
-      <header className="w-full bg-white border-b border-gray-100 shadow-sm max-md:pt-5">
+      <header className="w-full bg-white border-b border-gray-100 shadow-sm">
         <div className="mx-auto max-w-7xl px-6 py-4">
           <div className="flex items-center justify-between gap-6">
 
