@@ -71,7 +71,24 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
         setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
     };
 
-    const capitalizedMonth = t(`common.months.${viewDate.getMonth()}`);
+    const handlePrevMonth = () => {
+        setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1));
+    };
+
+    const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setViewDate(new Date(viewDate.getFullYear(), parseInt(e.target.value), 1));
+    };
+
+    const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setViewDate(new Date(parseInt(e.target.value), viewDate.getMonth(), 1));
+    };
+
+    const months = Array.from({ length: 12 }, (_, i) => ({
+        value: i,
+        label: t(`common.months.${i}`)
+    }));
+
+    const years = Array.from({ length: 11 }, (_, i) => 2020 + i);
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-5 duration-500 pb-10">
@@ -101,11 +118,44 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
 
             {/* Controls Bar */}
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                {/* Month Selector */}
+                {/* Month/Year Selector */}
                 <div className="flex items-center gap-2">
-                    <div className="bg-white px-6 py-3 rounded-[16px] shadow-sm min-w-[120px]">
-                        <span className="text-xl font-black text-[#1a1f36]">{capitalizedMonth}</span>
+                    <button
+                        onClick={handlePrevMonth}
+                        className="bg-[#d1d5db] w-12 h-12 flex items-center justify-center rounded-[16px] hover:bg-gray-400 transition-colors"
+                    >
+                        <ChevronLeft className="w-6 h-6 text-[#1a1f36]" />
+                    </button>
+
+                    <div className="flex gap-2">
+                        <div className="relative group">
+                            <select
+                                value={viewDate.getMonth()}
+                                onChange={handleMonthChange}
+                                className="appearance-none bg-white px-6 py-3 pr-12 rounded-[16px] shadow-sm text-xl font-black text-[#1a1f36] cursor-pointer outline-none hover:bg-gray-50 transition-colors"
+                            >
+                                {months.map(m => (
+                                    <option key={m.value} value={m.value}>{m.label}</option>
+                                ))}
+                            </select>
+                            <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a1f36] pointer-events-none rotate-90" />
+                        </div>
+
+                        {/* Year Select */}
+                        <div className="relative group">
+                            <select
+                                value={viewDate.getFullYear()}
+                                onChange={handleYearChange}
+                                className="appearance-none bg-white px-6 py-3 pr-12 rounded-[16px] shadow-sm text-xl font-black text-[#1a1f36] cursor-pointer outline-none hover:bg-gray-50 transition-colors"
+                            >
+                                {years.map(y => (
+                                    <option key={y} value={y}>{y}</option>
+                                ))}
+                            </select>
+                            <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a1f36] pointer-events-none rotate-90" />
+                        </div>
                     </div>
+
                     <button
                         onClick={handleNextMonth}
                         className="bg-[#d1d5db] w-12 h-12 flex items-center justify-center rounded-[16px] hover:bg-gray-400 transition-colors"

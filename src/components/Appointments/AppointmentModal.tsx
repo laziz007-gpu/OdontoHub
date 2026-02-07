@@ -1,5 +1,5 @@
-import React from 'react';
-import { Calendar, ChevronDown, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { ChevronDown, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface AppointmentModalProps {
@@ -9,6 +9,17 @@ interface AppointmentModalProps {
 
 const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose }) => {
     const { t } = useTranslation();
+    const [selectedDay, setSelectedDay] = useState(new Date().getDate());
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+    const days = Array.from({ length: 31 }, (_, i) => i + 1);
+    const months = Array.from({ length: 12 }, (_, i) => ({
+        value: i,
+        label: t(`common.months.${i}`)
+    }));
+    const years = Array.from({ length: 11 }, (_, i) => 2020 + i);
+
     if (!isOpen) return null;
 
     return (
@@ -50,7 +61,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose }) 
                                 </span>
                             </div>
                             <input
-                                type="text"
+                                type="number"
                                 placeholder={t('modal.phone_placeholder')}
                                 className="w-full h-14 md:h-16 bg-[#efefef] rounded-[18px] pl-28 pr-6 text-lg font-bold text-[#1a1f36] placeholder:text-gray-500 border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none"
                             />
@@ -79,26 +90,58 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose }) 
 
                     {/* Row 3: Date and Time */}
                     <div className="grid grid-cols-1 md:grid-cols-[1.5fr,1fr] gap-4 md:gap-6 items-end">
-                        <div className="relative">
-                            <input
-                                type="text"
-                                placeholder={t('modal.date_placeholder')}
-                                className="w-full h-14 md:h-16 bg-[#efefef] rounded-[18px] px-6 text-lg font-bold text-[#1a1f36] placeholder:text-gray-500 border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none cursor-pointer"
-                            />
-                            <Calendar className="absolute right-6 top-1/2 -translate-y-1/2 w-6 h-6 text-[#5f6377] pointer-events-none" />
+                        <div className="flex flex-col gap-2">
+                            <label className="text-left text-sm md:text-base font-bold text-gray-500 ml-2">{t('modal.date_placeholder')}</label>
+                            <div className="flex gap-2 md:gap-4 h-14 md:h-16">
+                                {/* Day Select */}
+                                <div className="relative flex-1">
+                                    <select
+                                        value={selectedDay}
+                                        onChange={(e) => setSelectedDay(parseInt(e.target.value))}
+                                        className="w-full h-full bg-[#efefef] rounded-[18px] px-4 pr-10 text-lg font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none appearance-none cursor-pointer"
+                                    >
+                                        {days.map(d => <option key={d} value={d}>{d}</option>)}
+                                    </select>
+                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5f6377] pointer-events-none" />
+                                </div>
+
+                                {/* Month Select */}
+                                <div className="relative flex-[2]">
+                                    <select
+                                        value={selectedMonth}
+                                        onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                                        className="w-full h-full bg-[#efefef] rounded-[18px] px-4 pr-10 text-lg font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none appearance-none cursor-pointer"
+                                    >
+                                        {months.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+                                    </select>
+                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5f6377] pointer-events-none" />
+                                </div>
+
+                                {/* Year Select */}
+                                <div className="relative flex-1">
+                                    <select
+                                        value={selectedYear}
+                                        onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                                        className="w-full h-full bg-[#efefef] rounded-[18px] px-4 pr-10 text-lg font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none appearance-none cursor-pointer"
+                                    >
+                                        {years.map(y => <option key={y} value={y}>{y}</option>)}
+                                    </select>
+                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5f6377] pointer-events-none" />
+                                </div>
+                            </div>
                         </div>
 
                         <div className="flex flex-col gap-2">
                             <label className="text-right text-sm md:text-base font-bold text-gray-500 mr-2">{t('modal.time_label')}</label>
                             <div className="flex items-center gap-2 bg-[#efefef] rounded-[18px] p-2 h-14 md:h-16 px-4 justify-center">
                                 <input
-                                    type="text"
+                                    type="number"
                                     defaultValue="08"
                                     className="w-16 bg-transparent text-center text-3xl font-black text-[#1a1f36] outline-none border-none p-0 focus:ring-0"
                                 />
                                 <div className="h-8 w-[2px] bg-gray-300 mx-2"></div>
                                 <input
-                                    type="text"
+                                    type="number"
                                     defaultValue="00"
                                     className="w-16 bg-transparent text-center text-3xl font-black text-[#1a1f36] outline-none border-none p-0 focus:ring-0"
                                 />

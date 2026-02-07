@@ -249,7 +249,7 @@
         "weekend": "Выходные дни"
     },
     "dashboard": {
-        "search_placeholder": "Поиск пациентов, услуг...",
+        "search_placeholder": "Пациент",
         "consultation": "Консультация",
         "improve": "улучшить",
         "notifications": {

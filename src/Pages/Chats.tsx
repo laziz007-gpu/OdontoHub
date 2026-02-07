@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, MoreVertical, Paperclip, Send, VolumeX, Eraser, Trash2, Pin, MessageCircle, Users, Phone, ArrowLeft } from 'lucide-react';
+import { Search, MoreVertical, Paperclip, Send, VolumeX, Eraser, Trash2, Pin, MessageCircle, Users, Phone, ArrowLeft, X, FileText } from 'lucide-react';
 import { initialConversations } from '../data/chats';
 import type { Message, Conversation } from '../data/chats';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,9 @@ export default function Chats() {
     const [searchQuery, setSearchQuery] = useState('');
     const [showContext, setShowContext] = useState<number | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState<{ file: File; preview: string; type: 'image' | 'file' }[]>([]);
+    const [isDragging, setIsDragging] = useState(false);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (id) {
@@ -30,22 +33,41 @@ export default function Chats() {
 
     const handleSendMessage = (e?: React.FormEvent) => {
         e?.preventDefault();
-        if (!newMessage.trim() || !activeChat) return;
+        if ((!newMessage.trim() && selectedFiles.length === 0) || !activeChat) return;
 
-        const msg: Message = {
-            id: Date.now(),
-            text: newMessage,
-            sender: 'me',
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
-        };
+        const newMessages: Message[] = [];
+        const baseId = Date.now();
+
+        // Add attachments first if any
+        selectedFiles.forEach((fileObj, index) => {
+            newMessages.push({
+                id: baseId + index,
+                text: index === selectedFiles.length - 1 ? newMessage : '', // Add text to last attachment or separate
+                sender: 'me',
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+                type: fileObj.type === 'image' ? 'image' : 'text', // Assuming simple text for files for now, or extend type
+                imageUrl: fileObj.type === 'image' ? fileObj.preview : undefined,
+                // If it's a file, we could add file-specific info here
+            });
+        });
+
+        // Add text message if no attachments but text exists
+        if (selectedFiles.length === 0 && newMessage.trim()) {
+            newMessages.push({
+                id: baseId,
+                text: newMessage,
+                sender: 'me',
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+            });
+        }
 
         const updatedConversations = conversations.map(conv => {
             if (conv.id === activeChatId) {
                 return {
                     ...conv,
-                    messages: [...conv.messages, msg],
-                    time: msg.time,
-                    lastMessage: msg.text
+                    messages: [...conv.messages, ...newMessages],
+                    time: newMessages[newMessages.length - 1].time,
+                    lastMessage: newMessages[newMessages.length - 1].text || (selectedFiles.length > 0 ? 'Файл' : '')
                 };
             }
             return conv;
@@ -53,6 +75,44 @@ export default function Chats() {
 
         setConversations(updatedConversations);
         setNewMessage('');
+        setSelectedFiles([]);
+    };
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || []);
+        processFiles(files);
+    };
+
+    const processFiles = (files: File[]) => {
+        const newFiles = files.map(file => ({
+            file,
+            preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : '',
+            type: (file.type.startsWith('image/') ? 'image' : 'file') as 'image' | 'file'
+        }));
+        setSelectedFiles(prev => [...prev, ...newFiles]);
+    };
+
+    const removeFile = (index: number) => {
+        const fileToRemove = selectedFiles[index];
+        if (fileToRemove.preview) URL.revokeObjectURL(fileToRemove.preview);
+        setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const onDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const onDragLeave = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(false);
+    };
+
+    const onDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(false);
+        const files = Array.from(e.dataTransfer.files);
+        processFiles(files);
     };
 
     const handleChatSelect = (chatId: number) => {
@@ -94,9 +154,6 @@ export default function Chats() {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full bg-[#f1f4f9] border-none rounded-[16px] md:rounded-[20px] py-3 md:py-4 pl-12 pr-12 text-base md:text-lg focus:ring-2 focus:ring-[#5377f7]/20 transition-all outline-none"
                             />
-                            <button className="absolute right-4 top-1/2 -translate-y-1/2">
-                                <MoreVertical className="w-5 h-5 text-gray-400" />
-                            </button>
                         </div>
                     </div>
 
@@ -230,12 +287,61 @@ export default function Chats() {
                         </div>
 
                         {/* Input Area */}
-                        <div className="p-4 md:p-6 border-t border-gray-50 lg:border-none">
+                        <div
+                            onDragOver={onDragOver}
+                            onDragLeave={onDragLeave}
+                            onDrop={onDrop}
+                            className={`p-4 md:p-6 border-t border-gray-50 lg:border-none relative ${isDragging ? 'bg-blue-50/50' : ''}`}
+                        >
+                            {isDragging && (
+                                <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none">
+                                    <div className="bg-white/90 backdrop-blur-sm border-2 border-dashed border-[#5377f7] rounded-3xl p-8 flex flex-col items-center gap-4 shadow-xl">
+                                        <Paperclip className="w-12 h-12 text-[#5377f7] animate-bounce" />
+                                        <p className="text-[#5377f7] font-bold text-xl">Перетащите файлы сюда</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* attachment Preview */}
+                            {selectedFiles.length > 0 && (
+                                <div className="flex flex-wrap gap-3 mb-4 p-4 bg-[#f1f4f9] rounded-2xl animate-in slide-in-from-bottom-2 duration-300">
+                                    {selectedFiles.map((file, idx) => (
+                                        <div key={idx} className="relative group/file w-20 h-20 md:w-24 md:h-24">
+                                            {file.type === 'image' ? (
+                                                <img src={file.preview} alt="preview" className="w-full h-full object-cover rounded-xl shadow-sm border-2 border-white" />
+                                            ) : (
+                                                <div className="w-full h-full bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center p-2">
+                                                    <FileText className="w-8 h-8 text-[#5377f7] mb-1" />
+                                                    <span className="text-[10px] text-gray-500 truncate w-full text-center">{file.file.name}</span>
+                                                </div>
+                                            )}
+                                            <button
+                                                onClick={() => removeFile(idx)}
+                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
+                                            >
+                                                <X size={14} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
                             <form
                                 onSubmit={handleSendMessage}
                                 className="bg-[#f1f4f9] rounded-[20px] md:rounded-[24px] p-1.5 md:p-2 flex items-center gap-2 md:gap-3 pr-3 md:pr-4 group focus-within:ring-2 focus-within:ring-[#5377f7]/20 transition-all"
                             >
-                                <button type="button" className="p-2 md:p-3 text-gray-400 hover:text-[#5377f7] transition-colors shrink-0">
+                                <input
+                                    type="file"
+                                    multiple
+                                    className="hidden"
+                                    ref={fileInputRef}
+                                    onChange={handleFileSelect}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="p-2 md:p-3 text-gray-400 hover:text-[#5377f7] transition-colors shrink-0"
+                                >
                                     <Paperclip className="w-5 h-5 md:w-6 md:h-6" />
                                 </button>
                                 <input
@@ -247,7 +353,7 @@ export default function Chats() {
                                 />
                                 <button
                                     type="submit"
-                                    className={`p-2 md:p-3 rounded-xl transition-all shrink-0 ${newMessage.trim() ? 'bg-[#5377f7] text-white scale-105 md:scale-110 shadow-lg shadow-blue-500/30' : 'text-gray-400'}`}
+                                    className={`p-2 md:p-3 rounded-xl transition-all shrink-0 ${(newMessage.trim() || selectedFiles.length > 0) ? 'bg-[#5377f7] text-white scale-105 md:scale-110 shadow-lg shadow-blue-500/30' : 'text-gray-400'}`}
                                 >
                                     <Send className="w-5 h-5 md:w-6 md:h-6" />
                                 </button>

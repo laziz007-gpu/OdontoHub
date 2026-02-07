@@ -16,13 +16,26 @@ interface Notification {
   time: string;
 }
 
-const Hero: React.FC = () => {
+interface HeroProps {
+  onSearch?: (query: string) => void;
+}
+
+const Hero: React.FC<HeroProps> = ({ onSearch }) => {
   const { t } = useTranslation();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
 
   const settingsRef = useRef<HTMLDivElement>(null);
   const ratingModalRef = useRef<HTMLDivElement>(null);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchValue(value);
+    if (onSearch) {
+      onSearch(value);
+    }
+  };
 
   const notifications: Notification[] = [
     { from: 'Odonto', message: 'Следующий приём через 15 минут', time: '5 мин' },
@@ -60,6 +73,8 @@ const Hero: React.FC = () => {
             {/* Search */}
             <div className="relative flex-1 max-w-md">
               <input
+                value={searchValue}
+                onChange={handleSearch}
                 placeholder={t('dashboard.search_placeholder')}
                 className="w-full h-[52px] pl-12 pr-5 bg-gray-50 border border-gray-200 rounded-2xl text-sm"
               />
