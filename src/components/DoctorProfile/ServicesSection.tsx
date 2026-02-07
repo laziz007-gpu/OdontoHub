@@ -1,4 +1,5 @@
 import React, { type FC } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ArrowRight, Edit2 } from 'lucide-react';
 
 interface Service {
@@ -9,18 +10,19 @@ interface Service {
 }
 
 const ServicesSection: FC = () => {
+    const { t } = useTranslation();
     const services: Service[] = [
-        { name: 'Имплантация', price: '2.500.000', currency: 'сум', edit: true },
-        { name: 'Удаление', price: '250.000', currency: 'сум', edit: false },
-        { name: 'Периостотомия', price: '300.000', currency: 'сум', edit: false },
+        { name: 'Имплантация', price: '2.500.000', currency: t('doctor_profile.currency'), edit: true },
+        { name: 'Удаление', price: '250.000', currency: t('doctor_profile.currency'), edit: false },
+        { name: 'Периостотомия', price: '300.000', currency: t('doctor_profile.currency'), edit: false },
     ];
 
     return (
         <div>
             <div className="flex justify-between items-center mb-5">
-                <h3 className="text-2xl font-bold text-[#1E2532]">Мои услуги</h3>
+                <h3 className="text-2xl font-bold text-[#1E2532]">{t('doctor_profile.my_services')}</h3>
                 <button className="flex items-center gap-1.5 bg-[#5B7FFF] text-white px-4 py-1.5 rounded-full text-[11px] font-bold hover:bg-blue-600 transition-all">
-                    Все
+                    {t('doctor_profile.all')}
                     <div className="w-4 h-4 bg-white rounded-full flex items-center justify-center">
                         <ArrowRight className="w-2.5 h-2.5 text-blue-600 rotate-[-45deg]" strokeWidth={3} />
                     </div>

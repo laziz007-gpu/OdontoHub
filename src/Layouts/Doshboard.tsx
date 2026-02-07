@@ -5,17 +5,19 @@ import { Link, useLocation } from "react-router-dom";
 import { Users, Calendar, MessageCircle, LayoutDashboard, Menu, X } from "lucide-react";
 import Logo from "../assets/img/icons/Logo3.svg";
 import { paths } from "../Routes/path";
+import { useTranslation } from "react-i18next";
 
 type MenuItem = {
   id: string;
   label: string;
-  icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
+  icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
   path: string;
 };
 
 export default function Sidebar() {
   const location = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { t } = useTranslation();
 
   // Mobile drawer ochilganda body scrollni bloklash
   useEffect(() => {
@@ -26,10 +28,10 @@ export default function Sidebar() {
   }, [isMobileOpen]);
 
   const menuItems: MenuItem[] = [
-    { id: "dashboard", label: "Панель управления", icon: LayoutDashboard, path: paths.menu },
-    { id: "patients", label: "Пациенты", icon: Users, path: paths.patient },
-    { id: "appointments", label: "Приёмы", icon: Calendar, path: "/appointments" },
-    { id: "chats", label: "Чаты", icon: MessageCircle, path: "/chats" },
+    { id: "dashboard", label: t('sidebar.dashboard'), icon: LayoutDashboard, path: paths.menu },
+    { id: "patients", label: t('sidebar.patients'), icon: Users, path: paths.patient },
+    { id: "appointments", label: t('sidebar.appointments'), icon: Calendar, path: paths.appointments },
+    { id: "chats", label: t('sidebar.chats'), icon: MessageCircle, path: paths.chats },
   ];
 
   const SidebarInner = ({ isDrawer = false }: { isDrawer?: boolean }) => (
@@ -54,7 +56,7 @@ export default function Sidebar() {
       <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = location.pathname === item.path;
+          const isActive = location.pathname === item.path || (item.id === 'chats' && location.pathname.startsWith('/chats'));
 
           return (
             <Link
@@ -64,8 +66,8 @@ export default function Sidebar() {
                 if (isDrawer) setIsMobileOpen(false);
               }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive
-                  ? "bg-[#1e2235] text-white font-semibold shadow-md"
-                  : "text-gray-800 hover:bg-gray-50 active:bg-gray-100"
+                ? "bg-[#1e2235] text-white font-semibold shadow-md"
+                : "text-gray-800 hover:bg-gray-50 active:bg-gray-100"
                 }`}
             >
               <Icon size={22} strokeWidth={isActive ? 2.5 : 2} className="shrink-0" />
@@ -80,15 +82,17 @@ export default function Sidebar() {
         <div className="absolute inset-0 opacity-30 pointer-events-none">
         </div>
         <div className="relative z-10 text-center">
-          <h3 className="text-lg font-bold mb-4">Сегодняшний фокус</h3>
+          <h3 className="text-lg font-bold mb-4">{t('sidebar.focus_title')}</h3>
           <div className="space-y-1.5 text-base font-medium">
-            <p>7 приёмов</p>
-            <p>3 онлайн-консульт.</p>
-            <p>2 новых пациента</p>
+            <p>{t('sidebar.focus_appointments')}</p>
+            <p>{t('sidebar.focus_consultations')}</p>
+            <p>{t('sidebar.focus_patients')}</p>
           </div>
-          <button className="mt-5 w-full bg-white text-gray-900 py-3 rounded-2xl font-semibold shadow hover:bg-gray-100 transition-colors">
-            Аналитика
-          </button>
+          <Link to={paths.analytics}>
+            <button className="mt-5 w-full bg-white text-gray-900 py-3 rounded-2xl font-semibold shadow hover:bg-gray-100 transition-colors">
+              {t('sidebar.analytics')}
+            </button>
+          </Link>
         </div>
       </div>
     </div>

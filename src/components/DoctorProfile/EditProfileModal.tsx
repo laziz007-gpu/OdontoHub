@@ -111,25 +111,49 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, in
                         <div>
                             <label className="block text-[#8A94A6] text-sm mb-2">Время работы</label>
                             <div className="flex items-center gap-4">
-                                <div className="flex bg-white rounded-[16px] border border-blue-200 h-[56px] items-center px-4 gap-2 w-[140px]">
-                                    <input
-                                        type="text"
+                                <div className="flex bg-white rounded-[16px] border border-blue-200 h-[56px] items-center px-4 gap-1 w-[160px] relative">
+                                    <select
                                         value={formData.workStart || '08'}
                                         onChange={(e) => handleChange('workStart', e.target.value)}
-                                        className="w-full font-bold text-2xl text-[#1E2532] text-center focus:outline-none"
-                                    />
-                                    <span className="text-gray-300">|</span>
-                                    <input type="text" defaultValue="00" className="w-full font-bold text-2xl text-[#1E2532] text-center focus:outline-none" />
+                                        className="w-full font-bold text-2xl text-[#1E2532] text-center focus:outline-none appearance-none bg-transparent pr-4"
+                                    >
+                                        {Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0')).map(h => (
+                                            <option key={h} value={h}>{h}</option>
+                                        ))}
+                                    </select>
+                                    <span className="text-gray-300">:</span>
+                                    <select
+                                        value={formData.startMinute || '00'}
+                                        onChange={(e) => handleChange('startMinute', e.target.value)}
+                                        className="w-full font-bold text-2xl text-[#1E2532] text-center focus:outline-none appearance-none bg-transparent pr-4"
+                                    >
+                                        {['00', '15', '30', '45'].map(m => (
+                                            <option key={m} value={m}>{m}</option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
                                 </div>
-                                <div className="flex bg-white rounded-[16px] border border-blue-200 h-[56px] items-center px-4 gap-2 w-[140px]">
-                                    <input
-                                        type="text"
+                                <div className="flex bg-white rounded-[16px] border border-blue-200 h-[56px] items-center px-4 gap-1 w-[160px] relative">
+                                    <select
                                         value={formData.workEnd || '16'}
                                         onChange={(e) => handleChange('workEnd', e.target.value)}
-                                        className="w-full font-bold text-2xl text-[#1E2532] text-center focus:outline-none"
-                                    />
-                                    <span className="text-gray-300">|</span>
-                                    <input type="text" defaultValue="00" className="w-full font-bold text-2xl text-[#1E2532] text-center focus:outline-none" />
+                                        className="w-full font-bold text-2xl text-[#1E2532] text-center focus:outline-none appearance-none bg-transparent pr-4"
+                                    >
+                                        {Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0')).map(h => (
+                                            <option key={h} value={h}>{h}</option>
+                                        ))}
+                                    </select>
+                                    <span className="text-gray-300">:</span>
+                                    <select
+                                        value={formData.endMinute || '00'}
+                                        onChange={(e) => handleChange('endMinute', e.target.value)}
+                                        className="w-full font-bold text-2xl text-[#1E2532] text-center focus:outline-none appearance-none bg-transparent pr-4"
+                                    >
+                                        {['00', '15', '30', '45'].map(m => (
+                                            <option key={m} value={m}>{m}</option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
                                 </div>
                             </div>
                         </div>

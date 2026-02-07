@@ -1,4 +1,5 @@
 import React, { type FC, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Send, Instagram, Facebook, Phone } from 'lucide-react';
 
 interface SocialLinkProps {
@@ -20,23 +21,30 @@ interface SocialLinkItem {
     label: string;
 }
 
-const SocialNetworksCard: FC = () => {
+interface SocialNetworksCardProps {
+    telegram: string;
+    instagram: string;
+    whatsapp: string;
+}
+
+const SocialNetworksCard: FC<SocialNetworksCardProps> = ({ telegram, instagram, whatsapp }) => {
+    const { t } = useTranslation();
     const socialLinks: SocialLinkItem[] = [
-        { icon: <Send className="w-5 h-5 text-sky-500 fill-sky-500" />, label: '@stom' },
-        { icon: <Instagram className="w-5 h-5 text-pink-500" />, label: 'stomatolog.uz' },
-        { icon: <Facebook className="w-5 h-5 text-blue-600 fill-blue-600" />, label: 'stomatolog.uz' },
+        { icon: <Send className="w-5 h-5 text-sky-500 fill-sky-500" />, label: telegram },
+        { icon: <Instagram className="w-5 h-5 text-pink-500" />, label: instagram },
+        { icon: <Facebook className="w-5 h-5 text-blue-600 fill-blue-600" />, label: instagram },
     ];
 
     return (
         <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-50">
-            <h3 className="text-2xl font-bold text-[#1E2532] mb-8">Соц.сети</h3>
+            <h3 className="text-2xl font-bold text-[#1E2532] mb-8">{t('doctor_profile.social_networks')}</h3>
             <div className="space-y-4">
                 {socialLinks.map((link, i) => (
                     <SocialLink key={i} icon={link.icon} label={link.label} />
                 ))}
                 <SocialLink
                     icon={<Phone className="w-5 h-5 text-emerald-500" />}
-                    label="+998 90 123 45 67"
+                    label={whatsapp}
                 />
             </div>
         </div>

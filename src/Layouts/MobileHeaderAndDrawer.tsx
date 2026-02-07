@@ -1,4 +1,3 @@
-// components/MobileHeaderAndDrawer.tsx
 import React, { useState, useEffect, type FC } from 'react';
 import { Menu, X, LayoutDashboard, Users, Calendar, MessageCircle, type LucideIcon } from 'lucide-react';
 import Logo from '../assets/img/icons/Logo3.svg'; // o'zingiznikini qo'ying

@@ -1,19 +1,17 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import OnlineSupport from '../../assets/img/icons/OnlineSupport.svg';
 import FAQ from '../../assets/img/icons/FAQ.svg';
 import PrivacyPolicy from '../../assets/img/icons/PrivacyPolicy.svg';
 import About from '../../assets/img/icons/About.svg';
 
-// Based on the image, the items look like buttons/links.
-// The user provided image shows just the list.
-// I'll implement them as a list of clickable items.
-
 const Support: React.FC = () => {
+    const { t } = useTranslation();
     const items = [
-        { icon: OnlineSupport, label: 'Связаться с поддержкой' },
-        { icon: FAQ, label: 'FAQ' },
-        { icon: PrivacyPolicy, label: 'Политика конфиденциальности' },
-        { icon: About, label: 'О приложении' },
+        { icon: OnlineSupport, label: t('settings.support_items.contact') },
+        { icon: FAQ, label: t('settings.support_items.faq') },
+        { icon: PrivacyPolicy, label: t('settings.support_items.privacy_policy') },
+        { icon: About, label: t('settings.support_items.about') },
     ];
 
     return (

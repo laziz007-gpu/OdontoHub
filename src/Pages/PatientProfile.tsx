@@ -1,164 +1,158 @@
-import { ArrowLeft, MessageCircle, Download } from 'lucide-react'
+import { ArrowLeft, MessageCircle, User, Camera, ClipboardList, Calendar, DollarSign } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { initialPatients } from '../data/patients'
+import type { Patient } from '../data/patients'
+import { useTranslation } from 'react-i18next'
+import { useState } from 'react'
+import { paths } from '../Routes/path'
+import PhotoGrid from '../components/PatientProfile/PhotoGrid'
+import TreatmentsTable from '../components/PatientProfile/TreatmentsTable'
+import PaymentsView from '../components/PatientProfile/PaymentsView'
+
+type TabId = 'data' | 'photo' | 'treatments' | 'appointments' | 'payments'
+
+interface Tab {
+    id: TabId
+    label: string
+    icon: LucideIcon
+}
 
 export default function PatientProfile() {
-    const { id } = useParams()
+    const { id } = useParams<{ id: string }>()
+    const { t } = useTranslation()
+    const [activeTab, setActiveTab] = useState<TabId>('data')
 
-    const patient = initialPatients.find(p => p.id === Number(id))
+    const patient: Patient | undefined = initialPatients.find(p => p.id === Number(id))
 
     if (!patient) {
         return (
-            <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
+            <div className="p-6 bg-[#f5f7fb] min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <h2 className="text-xl font-bold text-gray-800 mb-2">Пациент не найден</h2>
-                    <Link to="/patsent" className="text-blue-600 hover:underline">Вернуться к списку</Link>
+                    <h2 className="text-xl font-bold text-gray-800 mb-2">{t('patient_profile.not_found')}</h2>
+                    <Link to="/patients" className="text-blue-600 hover:underline">{t('patient_profile.back_to_list')}</Link>
                 </div>
             </div>
         )
     }
 
+    const tabs: Tab[] = [
+        { id: 'data', label: t('patient_profile.tabs.data'), icon: User },
+        { id: 'photo', label: t('patient_profile.tabs.photo'), icon: Camera },
+        { id: 'treatments', label: t('patient_profile.tabs.treatments'), icon: ClipboardList },
+        { id: 'appointments', label: t('patient_profile.tabs.appointments'), icon: Calendar },
+        { id: 'payments', label: t('patient_profile.tabs.payments'), icon: DollarSign },
+    ]
+
     return (
-        <div className="p-6 bg-gray-50 min-h-screen">
+        <div className="p-4 md:p-8 bg-[#f5f7fb] min-h-screen font-sans">
+            {/* Header */}
+            <div className="flex items-center gap-4 mb-6 md:mb-8">
+                <Link to="/patients" className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors shrink-0">
+                    <ArrowLeft className="w-5 h-5 text-[#1e2235]" />
+                </Link>
+                <h1 className="text-2xl md:text-4xl font-bold text-[#1e2235] truncate">{t('patient_profile.patient_title')}</h1>
+            </div>
 
-            <Link to="/patsent" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 transition-colors">
-                <ArrowLeft className="w-5 h-5" />
-                <span>Назад</span>
-            </Link>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                {/* Profile Card */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm relative overflow-hidden ring-1 ring-blue-100">
-                    <div className="absolute top-0 left-0 w-2 h-full bg-blue-500"></div>
-                    <h2 className="text-xl font-bold mb-6">Профиль</h2>
-
-                    <div className="flex gap-6 items-start">
-                        <img
-                            src={patient.img}
-                            alt={patient.name}
-                            className="w-32 h-32 rounded-full object-cover border-4 border-gray-100"
-                        />
-
-                        <div className="space-y-2 flex-1">
-                            <h3 className="text-2xl font-bold text-gray-900">{patient.name}</h3>
-
-                            <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
-                                <div className="text-gray-500">Возраст</div>
-                                <div className="font-semibold">{patient.age}</div>
-
-                                <div className="text-gray-500">Пол</div>
-                                <div className="font-semibold">{patient.gender || 'Не указан'}</div>
-
-                                <div className="text-gray-500">Статус</div>
-                                <div className={`font-semibold ${patient.statusColor}`}>{patient.status}</div>
-                            </div>
-                        </div>
+            {/* Profile Info Card */}
+            <div className="bg-white rounded-[24px] md:rounded-[40px] p-6 md:p-8 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between shadow-sm gap-6">
+                <div className="flex items-center gap-4 md:gap-8">
+                    <img
+                        src={patient.img}
+                        alt={patient.name}
+                        className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover border-4 border-white shadow-sm shrink-0"
+                    />
+                    <div>
+                        <h2 className="text-xl md:text-3xl font-bold text-[#1e2235] mb-1 leading-tight">{patient.name}</h2>
+                        <span className="text-blue-500 font-medium">{t('patient_profile.online')}</span>
                     </div>
-
-                    <button className="absolute bottom-6 right-6 flex items-center gap-2 bg-[#1e2532] text-white px-4 py-2 rounded-lg hover:bg-[#2c3545] transition-colors">
-                        <MessageCircle className="w-4 h-4" />
-                        <span>Чат</span>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                    <button className="bg-[#5377f7] text-white px-6 md:px-10 py-3 md:py-4 rounded-2xl md:rounded-3xl font-semibold text-base md:text-lg hover:bg-blue-600 transition-colors w-full md:w-auto">
+                        {t('patient_profile.schedule_appointment')}
                     </button>
-                </div>
-
-                {/* Appointments Prompt */}
-                <div className="bg-gray-800 rounded-2xl p-6 shadow-sm flex flex-col items-center justify-center text-center text-white relative overflow-hidden">
-                    <div className="absolute top-4 left-4 bg-white/10 px-3 py-1 rounded-full text-xs">Прием: 24 Декабря</div>
-
-                    <div className="z-10 max-w-xs">
-                        <h3 className="text-lg font-medium mb-4">Пока что у вас нет приёмов в данный момент</h3>
-                        <button className="bg-[#1e2532] border border-gray-600 px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                            Назначить приём
+                    <Link to={paths.chatDetail.replace(':id', String(patient.id))} className="w-full md:w-auto flex justify-center">
+                        <button className="bg-[#1cdb6f] text-white w-full sm:w-16 md:w-20 h-12 sm:h-16 md:h-20 rounded-2xl sm:rounded-full flex items-center justify-center hover:bg-[#19c762] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-green-500/20">
+                            <MessageCircle className="w-6 h-6 md:w-10 md:h-10" fill="currentColor" />
+                            <span className="sm:hidden ml-2 font-bold">{t('patient_profile.tabs.chat')}</span>
                         </button>
-                    </div>
+                    </Link>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                {/* Data Card */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm">
-                    <h2 className="text-xl font-bold mb-6">Данные</h2>
-
-                    <div className="grid grid-cols-2 gap-y-6">
-                        <div>
-                            <div className="text-gray-500 text-sm mb-1">Диагноз</div>
-                            <div className="font-semibold">{patient.diagnosis}</div>
-                        </div>
-                        <div>
-                            <div className="text-gray-500 text-sm mb-1">Дата рождения</div>
-                            <div className="font-semibold">{patient.birthDate || 'Не указана'}</div>
-                        </div>
-                        <div>
-                            <div className="text-gray-500 text-sm mb-1">Врач</div>
-                            <div className="font-semibold">{patient.doctor || 'Не назначен'}</div>
-                        </div>
-                        <div>
-                            <div className="text-gray-500 text-sm mb-1">Номер</div>
-                            <div className="font-semibold">{patient.phone}</div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Diseases Card */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm">
-                    <h2 className="text-xl font-bold mb-6">Заболевания</h2>
-
-                    <div className="space-y-4">
-                        <div className="border border-gray-200 rounded-xl p-4 flex justify-between items-center">
-                            <div>
-                                <div className="text-gray-500 text-xs mb-1">Аллергии</div>
-                                <div className="font-medium">Арахис, Пенициллин</div>
-                            </div>
-                            <div className="text-center">
-                                <div className="text-gray-500 text-xs mb-1">Тяжесть</div>
-                                <div className="text-green-600 font-medium text-sm">Лёгкая</div>
-                            </div>
-                        </div>
-
-                        <div className="border border-gray-200 rounded-xl p-4 flex justify-between items-center">
-                            <div>
-                                <div className="text-gray-500 text-xs mb-1">Болезни</div>
-                                <div className="font-medium">Сахарный диабет</div>
-                            </div>
-                            <div className="text-center">
-                                <div className="text-gray-500 text-xs mb-1">Тяжесть</div>
-                                <div className="text-red-500 font-medium text-sm">Тяжёлое</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            {/* Tabs */}
+            <div className="flex gap-8 md:gap-12 mb-8 px-4 border-b border-gray-100 overflow-x-auto no-scrollbar scroll-smooth">
+                {tabs.map((tab) => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center gap-2 md:gap-3 pb-4 px-1 transition-all relative whitespace-nowrap ${activeTab === tab.id
+                                ? 'text-[#5377f7]'
+                                : 'text-gray-400 hover:text-gray-600'
+                            }`}
+                    >
+                        <tab.icon className={`w-6 h-6 md:w-8 md:h-8 ${activeTab === tab.id ? 'text-[#5377f7]' : 'text-gray-400'}`} />
+                        <span className="font-semibold text-base md:text-lg">{tab.label}</span>
+                        {activeTab === tab.id && (
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-[#5377f7] rounded-full"></div>
+                        )}
+                    </button>
+                ))}
             </div>
 
-            {/* Appointments Table */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-                <h2 className="text-xl font-bold mb-6">Приёмы</h2>
+            {/* Main Content Area */}
+            <div className="bg-white rounded-[24px] md:rounded-[40px] p-6 md:p-12 shadow-sm min-h-[400px]">
+                {activeTab === 'data' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
+                        {/* Column 1: Personal Info */}
+                        <div className="space-y-6 md:space-y-8">
+                            <div className="space-y-1">
+                                <p className="text-gray-400 font-medium text-base md:text-lg uppercase tracking-wider">{t('patient_profile.fio')}</p>
+                                <p className="text-[#1e2235] font-bold text-lg md:text-xl">{patient.name}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-gray-400 font-medium text-base md:text-lg uppercase tracking-wider">{t('patient_profile.birth_date')}</p>
+                                <p className="text-[#1e2235] font-bold text-lg md:text-xl">{patient.birthDate || '01.01.1999'}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-gray-400 font-medium text-base md:text-lg uppercase tracking-wider">{t('patient_profile.gender')}</p>
+                                <p className="text-[#1e2235] font-bold text-lg md:text-xl">{patient.gender || t('patient_profile.male')}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-gray-400 font-medium text-base md:text-lg uppercase tracking-wider">{t('patient_profile.phone')}</p>
+                                <p className="text-[#1e2235] font-bold text-lg md:text-xl">{patient.phone}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-gray-400 font-medium text-base md:text-lg uppercase tracking-wider">{t('patient_profile.in_platform')}</p>
+                                <p className="text-[#1e2235] font-bold text-lg md:text-xl">С 22.05.2025</p>
+                            </div>
+                        </div>
 
-                <div className="w-full overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="border-b border-gray-200 text-gray-500 text-sm">
-                                <th className="pb-3 font-medium">Врач</th>
-                                <th className="pb-3 font-medium">Дата</th>
-                                <th className="pb-3 font-medium">Диагноз</th>
-                                <th className="pb-3 font-medium text-right">Отчет</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr className="text-sm">
-                                <td className="py-4 font-medium">{patient.doctor || 'Не назначен'}</td>
-                                <td className="py-4">19.12.2025</td>
-                                <td className="py-4">{patient.diagnosis}</td>
-                                <td className="py-4 text-right">
-                                    <button className="inline-flex items-center gap-1 text-gray-800 hover:text-blue-600 font-medium underline">
-                                        PDF <Download className="w-3 h-3" />
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                        {/* Column 2: Notes Card */}
+                        <div className="min-h-[250px] md:min-h-[400px]">
+                            <div className="bg-[#fbc947] rounded-[24px] md:rounded-[30px] p-6 md:p-8 h-full">
+                                <h3 className="text-white text-xl md:text-2xl font-bold mb-4">{t('patient_profile.notes')}</h3>
+                            </div>
+                        </div>
+
+                        {/* Column 3: Allergies and Prescription */}
+                        <div className="flex flex-col gap-6">
+                            <div className="bg-[#ff0000] rounded-[24px] md:rounded-[30px] p-6 md:p-8 flex-1 min-h-[150px] md:min-h-[200px]">
+                                <h3 className="text-white text-xl md:text-2xl font-bold mb-4">{t('patient_profile.allergies')}</h3>
+                            </div>
+                            <div className="bg-[#e8e8e8] rounded-[24px] md:rounded-[30px] p-6 md:p-8 flex-1 min-h-[150px] md:min-h-[200px]">
+                                <h3 className="text-[#1e2235] text-xl md:text-2xl font-bold mb-4">{t('patient_profile.prescription')}</h3>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'photo' && <PhotoGrid patientId={id!} />}
+
+                {activeTab === 'treatments' && <TreatmentsTable />}
+
+                {activeTab === 'payments' && <PaymentsView />}
             </div>
-
         </div>
     )
 }
