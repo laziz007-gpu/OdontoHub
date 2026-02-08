@@ -61,9 +61,12 @@ const ContactItem: FC<ContactItemProps> = ({ icon, label, value }) => (
 interface ContactInfoCardProps {
     data: ContactData;
     onSave: (newData: Partial<ContactData>) => void;
+    avatar?: string;
+    onAvatarChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    triggerAvatarUpload?: () => void;
 }
 
-const ContactInfoCard: FC<ContactInfoCardProps> = ({ data, onSave }) => {
+const ContactInfoCard: FC<ContactInfoCardProps> = ({ data, onSave, avatar, onAvatarChange, triggerAvatarUpload }) => {
     const { t } = useTranslation();
     const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
 
@@ -74,9 +77,9 @@ const ContactInfoCard: FC<ContactInfoCardProps> = ({ data, onSave }) => {
 
     return (
         <>
-            <div className="w-full lg:w-[517px] h-[195px] bg-white rounded-[24px] p-4 shadow-sm border border-gray-100 relative flex flex-col justify-center">
+            <div className="w-full h-full bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 relative flex flex-col justify-center">
                 {/* Contact Items */}
-                <div className="grid grid-cols-1 gap-y-2 pr-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 pr-12">
                     <ContactItem
                         icon={<Phone className="w-3.5 h-3.5 text-gray-400" />}
                         label={t('doctor_profile.phone_number')}
@@ -107,7 +110,7 @@ const ContactInfoCard: FC<ContactInfoCardProps> = ({ data, onSave }) => {
                 {/* Edit Button */}
                 <button
                     onClick={() => setIsEditModalOpen(true)}
-                    className="absolute bottom-4 right-4 bg-[#5B7FFF] text-white pl-3 pr-1.5 py-1.5 rounded-full text-[10.5px] font-bold flex items-center gap-1.5 hover:bg-blue-600 transition-all shadow-md group"
+                    className="absolute top-6 right-6 bg-[#5B7FFF] text-white pl-3 pr-1.5 py-1.5 rounded-full text-[10.5px] font-bold flex items-center gap-1.5 hover:bg-blue-600 transition-all shadow-md group"
                 >
                     {t('doctor_profile.edit')}
                     <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center transition-transform group-hover:scale-110">
@@ -122,6 +125,8 @@ const ContactInfoCard: FC<ContactInfoCardProps> = ({ data, onSave }) => {
                 onClose={() => setIsEditModalOpen(false)}
                 initialData={data}
                 onSave={handleSave}
+                avatar={avatar}
+                triggerAvatarUpload={triggerAvatarUpload}
             />
         </>
     );

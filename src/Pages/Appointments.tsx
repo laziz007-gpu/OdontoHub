@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ChevronLeft, Calculator } from 'lucide-react';
 import DateStrip from '../components/Appointments/DateStrip';
-import AppointmentCard, { AppointmentStatus } from '../components/Appointments/AppointmentCard';
+import AppointmentCard, { type AppointmentStatus } from '../components/Appointments/AppointmentCard';
 import CalendarView from '../components/Appointments/CalendarView';
 import AppointmentModal from '../components/Appointments/AppointmentModal';
 import AppointmentDetailModal from '../components/Appointments/AppointmentDetailModal';
@@ -68,28 +68,36 @@ const Appointments: React.FC = () => {
 
                                 {/* Center: Toast */}
                                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:flex">
-                                    <div className="bg-[#10d16d] rounded-[16px] px-6 py-3 flex items-center gap-3 shadow-lg shadow-[#10d16d]/20 animate-in slide-in-from-top-2 fade-in duration-500">
+                                    <button
+                                        onClick={() => {
+                                            setView('list');
+                                            navigate('/patients');
+                                        }}
+                                        className="bg-[#10d16d] rounded-[16px] px-6 py-3 flex items-center gap-3 shadow-lg shadow-[#10d16d]/20 animate-in slide-in-from-top-2 fade-in duration-500 hover:bg-[#0eca69] transition-colors cursor-pointer"
+                                    >
                                         <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div>
-                                        <span className="text-white font-bold text-sm md:text-[15px]">{t('appointments.success_toast')}</span>
-                                    </div>
+                                        <span className="text-white font-bold text-sm md:text-[15px] hover:underline">
+                                            {t('appointments.success_toast')}
+                                        </span>
+                                    </button>
                                 </div>
                             </div>
 
                             {/* Date and Controls */}
-                            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                                <h2 className="text-4xl md:text-5xl font-black text-[#1a1f36] tracking-tight">{formattedDate}</h2>
+                            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 pb-2">
+                                <h2 className="text-3xl md:text-4xl xl:text-5xl font-black text-[#1a1f36] tracking-tight truncate">{formattedDate}</h2>
 
-                                <div className="flex items-center gap-4 self-start lg:self-auto">
+                                <div className="flex flex-wrap items-center gap-3 md:gap-4 self-start xl:self-auto">
                                     <button
                                         onClick={() => setView('calendar')}
-                                        className="flex items-center gap-2 px-6 md:px-8 py-3 bg-white text-[#1a1f36] font-bold rounded-[16px] shadow-sm hover:shadow-md transition-all active:scale-95 text-sm md:text-base cursor-pointer"
+                                        className="flex items-center gap-2 px-5 md:px-8 py-3 bg-white text-[#1a1f36] font-bold rounded-[16px] shadow-sm hover:shadow-md transition-all active:scale-95 text-xs md:text-base cursor-pointer shrink-0"
                                     >
-                                        <Calculator className="w-5 h-5" />
+                                        <Calculator className="w-5 h-5 flex-shrink-0" />
                                         <span>{t('appointments.calendar')}</span>
                                     </button>
                                     <button
                                         onClick={() => setIsModalOpen(true)}
-                                        className="px-6 md:px-10 py-3 bg-[#00e396] text-white font-bold rounded-[16px] shadow-lg shadow-[#00e396]/20 hover:bg-[#00d08a] transition-all active:scale-95 text-sm md:text-base cursor-pointer"
+                                        className="px-5 md:px-10 py-3 bg-[#00e396] text-white font-bold rounded-[16px] shadow-lg shadow-[#00e396]/20 hover:bg-[#00d08a] transition-all active:scale-95 text-xs md:text-base cursor-pointer shrink-0"
                                     >
                                         {t('appointments.record_appointment')}
                                     </button>

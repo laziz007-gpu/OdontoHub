@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Hero from '../components/Hero'
 import Consultatsiya from '../components/Consultatsiya'
 import Patsent from "../components/Patsent"
@@ -5,12 +6,14 @@ import Tezroq from '../components/Tezroq'
 import Section from '../components/Section'
 
 const Render = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
 
       {/* Hero qismi - to'liq kenglikda */}
       <div className="mb-6 max-lg:pt-16">
-        <Hero />
+        <Hero onSearch={setSearchQuery} />
       </div>
 
       {/* Asosiy grid - mobilda 1 ustun, lg dan boshlab 12 ustun grid */}
@@ -19,7 +22,7 @@ const Render = () => {
         {/* Chap tomon (asosiy kontent) */}
         <div className="lg:col-span-8 flex flex-col space-y-6">
           <Consultatsiya />
-          <Patsent />
+          <Patsent searchQuery={searchQuery} />
           <Tezroq />
         </div>
 

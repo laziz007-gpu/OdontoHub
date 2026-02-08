@@ -53,7 +53,7 @@ const Section: FC = () => {
   };
 
   return (
-    <div className="w-full bg-white rounded-3xl shadow-sm p-6 flex flex-col gap-5 sticky top-24 h-fit">
+    <div className="sticky top-6 w-full bg-white rounded-3xl shadow-sm p-6 flex flex-col gap-5 h-fit max-h-[calc(100vh-48px)] overflow-y-auto custom-scrollbar">
       <h2 className="text-2xl font-bold text-gray-900">{t('dashboard.appointments_card.title')}</h2>
 
       {/* Tabs */}
@@ -62,10 +62,11 @@ const Section: FC = () => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${activeTab === tab.id
-              ? "bg-gray-900 text-white"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
+            className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+              activeTab === tab.id
+                ? "bg-gray-900 text-white"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            }`}
           >
             {t(tab.labelKey)}
           </button>
@@ -77,10 +78,11 @@ const Section: FC = () => {
         {timeSlots.map((slot) => (
           <div
             key={slot.id}
-            className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${slot.active
-              ? "bg-blue-500 text-white"
-              : "bg-blue-100 text-blue-600"
-              }`}
+            className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
+              slot.active
+                ? "bg-blue-500 text-white"
+                : "bg-blue-100 text-blue-600"
+            }`}
           >
             {slot.time}
           </div>
@@ -113,9 +115,10 @@ const Section: FC = () => {
       <div className="flex flex-col gap-0 mt-2">
         {appointments.map((apt, index) => (
           <div
-            key={index}
-            className={`flex items-center justify-between py-4 ${index !== appointments.length - 1 ? "border-b border-gray-100" : ""
-              }`}
+            key={apt.id}
+            className={`flex items-center justify-between py-4 ${
+              index !== appointments.length - 1 ? "border-b border-gray-100" : ""
+            }`}
           >
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-full bg-gray-200 flex-shrink-0" />

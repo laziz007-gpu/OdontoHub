@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Nuqta from '../assets/img/icons/3dots.svg';
 import { useTranslation } from 'react-i18next';
 
@@ -23,27 +24,45 @@ const patients: Patient[] = [
     status: "new",
   },
   {
-    id: 1,
-    name: "Алишер Насруллаев",
-    age: 33,
+    id: 2,
+    name: "Зарина Каримова",
+    age: 28,
     date: "15 Января",
-    time: "9:00",
-    comment: "Сильно болят зубы",
-    status: "new",
+    time: "10:30",
+    comment: "Консультация",
+    status: "urgent",
   },
   {
-    id: 1,
-    name: "Алишер Насруллаев",
-    age: 33,
+    id: 3,
+    name: "Сардор Умаров",
+    age: 45,
     date: "15 Января",
-    time: "9:00",
-    comment: "Сильно болят зубы",
+    time: "14:00",
+    comment: "Удаление зуба",
     status: "new",
   },
 ];
 
-export default function NewPatients() {
+
+interface NewPatientsProps {
+  searchQuery?: string;
+}
+
+export default function NewPatients({ searchQuery = '' }: NewPatientsProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(true);
+
+  useEffect(() => {
+    if (searchQuery) {
+      setIsOpen(true);
+    }
+  }, [searchQuery]);
+
+  const filteredPatients = patients.filter(patient =>
+    patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    patient.comment.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="bg-white rounded-2xl p-6 mb-8 shadow-sm">
@@ -52,14 +71,27 @@ export default function NewPatients() {
         <h2 className="text-xl font-bold flex items-center gap-3">
           {t('dashboard.new_patients.title')}
           <span className="bg-black text-white text-sm px-3 py-1 rounded-full font-semibold">
-            {patients.length}
+            {filteredPatients.length}
           </span>
         </h2>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <svg
+            className={`w-6 h-6 transform transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
       </div>
 
       {/* Kartalar - vertikal ro'yxat */}
       <div className="space-y-4">
-        {patients.map((patient, index) => (
+        {(isOpen ? filteredPatients : filteredPatients.slice(0, 1)).map((patient, index) => (
           <div
             key={index}
             className="bg-gray-50 rounded-2xl p-5 border border-gray-100 relative group transition-colors hover:bg-gray-100"
@@ -112,7 +144,10 @@ export default function NewPatients() {
 
             {/* Tugmalar */}
             <div className="flex gap-3 relative z-20">
-              <button className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-medium transition-colors">
+              <button
+                onClick={() => navigate('/appointments')}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-medium transition-colors"
+              >
                 {t('dashboard.new_patients.accept')}
               </button>
 
@@ -123,23 +158,26 @@ export default function NewPatients() {
           </div>
         ))}
       </div>
+
       {/* Pastki qism - Быстрые действия */}
-      <div className="mt-8 pt-6 border-t border-gray-100">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">
-          {t('dashboard.new_patients.quick_actions')}
-        </h3>
-        <div className="flex flex-wrap gap-3">
-          <button className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium">
-            {t('dashboard.new_patients.today')}
-          </button>
-          <button className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium">
-            {t('dashboard.new_patients.no_comment')}
-          </button>
-          <button className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium">
-            {t('dashboard.new_patients.urgent')}
-          </button>
+      {isOpen && (
+        <div className="mt-8 pt-6 border-t border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">
+            {t('dashboard.new_patients.quick_actions')}
+          </h3>
+          <div className="flex flex-wrap gap-3">
+            <button className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium">
+              {t('dashboard.new_patients.today')}
+            </button>
+            <button className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium">
+              {t('dashboard.new_patients.no_comment')}
+            </button>
+            <button className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium">
+              {t('dashboard.new_patients.urgent')}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -1,9 +1,11 @@
 import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Smile, Star, Calendar, ArrowRight } from 'lucide-react';
 
 const StatsSection: FC = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Total Patients */}
@@ -15,7 +17,10 @@ const StatsSection: FC = () => {
                     </div>
                     <span className="text-4xl font-extrabold text-[#1E2532]">230</span>
                 </div>
-                <button className="w-full mt-8 py-2 bg-[#5B7FFF] text-white rounded-xl text-[11px] font-bold hover:bg-blue-600 transition-all">
+                <button
+                    onClick={() => navigate('/patients')}
+                    className="w-full mt-8 py-2 bg-[#5B7FFF] text-white rounded-xl text-[11px] font-bold hover:bg-blue-600 transition-all cursor-pointer"
+                >
                     {t('sidebar.patients')}
                 </button>
             </div>
@@ -41,7 +46,10 @@ const StatsSection: FC = () => {
                     </div>
                     <span className="text-4xl font-extrabold text-white">750</span>
                 </div>
-                <button className="w-fit mt-6 bg-[#27D27F] text-white px-4 py-1.5 rounded-full text-[11px] font-bold flex items-center gap-2 border border-white/20 relative z-10 hover:bg-emerald-600 transition-all">
+                <button
+                    onClick={() => navigate('/appointments')}
+                    className="w-fit mt-6 bg-[#27D27F] text-white px-4 py-1.5 rounded-full text-[11px] font-bold flex items-center gap-2 border border-white/20 relative z-10 hover:bg-emerald-600 transition-all cursor-pointer"
+                >
                     {t('doctor_profile.view')}
                     <div className="w-4 h-4 bg-white text-emerald-600 rounded-full flex items-center justify-center">
                         <ArrowRight className="w-2.5 h-2.5 -rotate-45" strokeWidth={3} />

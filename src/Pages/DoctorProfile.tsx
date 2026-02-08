@@ -1,7 +1,8 @@
-import React from 'react';
+import { useState, useRef, type FC } from 'react';
 import PageHeader from '../components/DoctorProfile/PageHeader';
 import DoctorInfoCard from '../components/DoctorProfile/DoctorInfoCard';
 import ContactInfoCard from '../components/DoctorProfile/ContactInfoCard';
+import DentistImg from '../assets/img/photos/Dentist.png';
 import StatsSection from '../components/DoctorProfile/StatsSection';
 import ServicesSection from '../components/DoctorProfile/ServicesSection';
 import WorksSection from '../components/DoctorProfile/WorksSection';
@@ -28,8 +29,8 @@ interface ProfileData {
   name: string;
 }
 
-const DoctorProfile: React.FC = () => {
-  const [profileData, setProfileData] = React.useState<ProfileData>({
+const DoctorProfile: FC = () => {
+  const [profileData, setProfileData] = useState<ProfileData>({
     phone: '+998 (93) 123 45 67',
     email: 'example@gmail.com',
     address: 'ул. Амира Темура, 11кв, 20дом',
@@ -49,8 +50,28 @@ const DoctorProfile: React.FC = () => {
     name: 'Пулатов Махмуд'
   });
 
+  const [avatarUrl, setAvatarUrl] = useState<string>(DentistImg);
+  const [works, setWorks] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleUpdateProfile = (newData: Partial<ProfileData>) => {
     setProfileData(prev => ({ ...prev, ...newData }));
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setAvatarUrl(url);
+    }
+  };
+
+  const triggerAvatarUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAddWork = (url: string) => {
+    setWorks(prev => [...prev, url]);
   };
 
   return (
@@ -60,22 +81,33 @@ const DoctorProfile: React.FC = () => {
         {/* PAGE HEADER */}
         <PageHeader />
 
-        <div className="mt-6 space-y-6">
+        <div className="mt-8 space-y-8">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleAvatarChange}
+            className="hidden"
+            accept="image/*"
+          />
 
           {/* Doctor info + Contacts */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-12 xl:col-span-5">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-12 xl:col-span-4">
               <DoctorInfoCard
                 name={profileData.name}
                 specialization={profileData.specialization}
                 gender={profileData.gender}
                 age={profileData.age}
+                avatar={avatarUrl}
+                onAvatarClick={triggerAvatarUpload}
               />
             </div>
-            <div className="lg:col-span-12 xl:col-span-7">
+            <div className="lg:col-span-12 xl:col-span-8">
               <ContactInfoCard
                 data={profileData}
                 onSave={handleUpdateProfile}
+                avatar={avatarUrl}
+                triggerAvatarUpload={triggerAvatarUpload}
               />
             </div>
           </div>
@@ -87,10 +119,10 @@ const DoctorProfile: React.FC = () => {
           <ServicesSection />
 
           {/* Works */}
-          <WorksSection />
+          <WorksSection works={works} onAddWork={handleAddWork} />
 
           {/* Schedule + Socials */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-12">
             <ScheduleCard
               workStart={profileData.workStart}
               startMinute={profileData.startMinute}
