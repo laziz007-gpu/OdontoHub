@@ -5,6 +5,7 @@ import AppointmentCard, { type AppointmentStatus } from '../components/Appointme
 import CalendarView from '../components/Appointments/CalendarView';
 import AppointmentModal from '../components/Appointments/AppointmentModal';
 import AppointmentDetailModal from '../components/Appointments/AppointmentDetailModal';
+import InProgressView from '../components/Appointments/InProgressView';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -26,14 +27,18 @@ const appointmentsData = [
 const Appointments: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const [view, setView] = useState<'list' | 'calendar'>('list');
+    const [view, setView] = useState<'list' | 'calendar' | 'in_progress'>('list');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
 
     const handleAptClick = (apt: any) => {
         setSelectedAppointment(apt);
-        setIsDetailOpen(true);
+        if (apt.status === 'in_progress') {
+            setView('in_progress');
+        } else {
+            setIsDetailOpen(true);
+        }
     };
 
     // Mock date to match image for visual consistency
@@ -49,6 +54,11 @@ const Appointments: React.FC = () => {
             <div className="max-w-[1600px] mx-auto space-y-6 md:space-y-10">
                 {view === 'calendar' ? (
                     <CalendarView onBack={() => setView('list')} />
+                ) : view === 'in_progress' ? (
+                    <InProgressView
+                        appointment={selectedAppointment}
+                        onBack={() => setView('list')}
+                    />
                 ) : (
                     <>
                         {/* Header Section */}

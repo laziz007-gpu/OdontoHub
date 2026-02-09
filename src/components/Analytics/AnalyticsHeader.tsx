@@ -3,6 +3,7 @@ import { ArrowLeft, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AnalyticsFilter from './AnalyticsFilter';
+import { paths } from '../../Routes/path';
 
 const AnalyticsHeader: React.FC = () => {
     const navigate = useNavigate();
@@ -20,8 +21,12 @@ const AnalyticsHeader: React.FC = () => {
                 </button>
                 <h1 className="text-4xl font-bold text-[#1e2235]">{t('analytics.title')}</h1>
             </div>
+
             <div className="flex items-center gap-4">
-                <button className="px-6 py-2.5 rounded-2xl border border-gray-300 font-semibold text-[#1e2235] hover:bg-gray-50 transition-colors">
+                <button
+                    onClick={() => navigate(paths.finance)}
+                    className="px-6 py-2.5 rounded-2xl border border-gray-300 font-semibold text-[#1e2235] hover:bg-gray-50 transition-colors"
+                >
                     {t('analytics.header.finance')}
                 </button>
                 <button

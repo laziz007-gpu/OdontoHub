@@ -26,6 +26,20 @@
       "10": "Noyabr",
       "11": "Dekabr"
     },
+    "months_short": {
+      "0": "Yan",
+      "1": "Fev",
+      "2": "Mar",
+      "3": "Apr",
+      "4": "May",
+      "5": "Iyun",
+      "6": "Iyul",
+      "7": "Avg",
+      "8": "Sen",
+      "9": "Okt",
+      "10": "Noy",
+      "11": "Dek"
+    },
     "weekdays": {
       "0": "Yak",
       "1": "Du",
@@ -64,6 +78,15 @@
       "rescheduled": "Ko'chirildi",
       "in_progress": "Jarayonda",
       "in_queue": "Navbatda"
+    },
+    "progress": {
+      "recipe": "Retsept",
+      "notes": "Eslatmalar",
+      "allergies": "Allergiyalar",
+      "attach_photo": "Rasm biriktirish",
+      "schedule_next": "Keyingi qabulni tayinlash",
+      "finish": "Yakunlash",
+      "add_payment": "To'lov qo'shish"
     },
     "detail": {
       "patient": "Bemor",
@@ -344,7 +367,9 @@
   "analytics": {
     "title": "Analitika",
     "header": {
-      "finance": "Moliyaviy",
+      "monitoring": "Monitoring",
+      "analytics": "Analitika",
+      "finance": "Moliya",
       "filter": "Filtr"
     },
     "stats": {
@@ -353,6 +378,7 @@
       "reviews": "Sharhlar",
       "revenue": "Daromadlar",
       "thousand": "ming",
+      "million": "mln",
       "last_month": "o'tgan oyga nisbatan",
       "last_week": "o'tgan haftaga nisbatan"
     },
@@ -399,6 +425,38 @@
       "recurring": "Takroriylar",
       "apply": "Qo'llash",
       "reset": "Bekor qilish"
+    },
+    "monitoring": {
+      "title": "Monitoring",
+      "name": "Ism",
+      "date": "Sana",
+      "sum": "Summa"
+    },
+    "finance": {
+      "title": "Moliya",
+      "income": "Daromad",
+      "net_profit": "Sof foyda",
+      "expenses": "Xarajatlar",
+      "daily_expenses": "Kunlik xarajatlar",
+      "stats_title": "Statistika",
+      "for_year": "Yillik",
+      "total": "Jami",
+      "today": "Bugun",
+      "add_expense": "Xarajat",
+      "profit": "Foyda",
+      "today_expenses": "Xarajat",
+      "appointments": "Qabullar",
+      "view": "Ko'rish",
+      "top_services": "Eng ko'p sotiladigan xizmatlar",
+      "per_month": "Oyiga",
+      "avg_per_day": "O'rtacha",
+      "services": {
+        "implantation": "Plomba",
+        "removal": "Olib tashlash",
+        "filling": "Implantatsiya",
+        "prosthetics": "Periostotomiya",
+        "crown": "Toj"
+      }
     }
   }
 }
