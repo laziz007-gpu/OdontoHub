@@ -458,5 +458,87 @@
         "crown": "Тәж"
       }
     }
+  },
+  "patient": {
+    "navbar": {
+      "home": "Басты бет",
+      "appointments": "Қабылдаулар",
+      "chats": "Хабарламалар",
+      "history": "Тарих",
+      "profile": "Профиль"
+    },
+    "home": {
+      "search": "Іздеу...",
+      "upcoming": "Жақын арадағы қабылдаулар",
+      "services": "Біздің қызметтеріміз",
+      "services_all": "Барлығы",
+      "services_treatment": "Емдеу",
+      "services_hygiene": "Гигиена",
+      "services_surgery": "Хирургия",
+      "action_book": "Стоматологқа жазылу",
+      "action_doctors": "Дәрігерлер",
+      "action_chat": "Чат",
+      "action_notifications": "Хабарлама",
+      "more_details": "Толығырақ",
+      "until_appointment": "Қабылдауға дейін:",
+      "time_days": "күн",
+      "time_day": "күн",
+      "time_hours": "сағ",
+      "time_minutes": "мин",
+      "time_seconds": "сек"
+    },
+    "chats": {
+      "title": "Хабарламалар",
+      "search": "Іздеу...",
+      "typing": "Жазып жатыр...",
+      "online": "Желіде",
+      "today": "Бүгін",
+      "write_message": "Хабарлама жазыңыз..."
+    },
+    "profile": {
+      "title": "Профиль",
+      "gender": "Жынысы",
+      "male": "Ер",
+      "female": "Әйел",
+      "birth_date": "Туған күні",
+      "edit": "Өңдеу",
+      "logout": "Есептік жазбадан шығу",
+      "language": "Тіл",
+      "notification": "Хабарландыру",
+      "select_language": "Тілді таңдаңыз"
+    },
+    "appointment_detail": {
+      "title": "Қабылдау мәліметтері",
+      "doctor": "Дәрігер",
+      "price": "Бағасы",
+      "back": "Артқа",
+      "status_label": "Мәртебесі",
+      "when_label": "Қашан",
+      "duration_label": "Болжалды ұзақтығы",
+      "tip_label": "Кеңес",
+      "notes_label": "Жазбалар",
+      "direction_label": "Бағыты",
+      "experience_label": "Жұмыс тәжірибесі",
+      "rating_label": "Бағалау",
+      "contact_btn": "Байланысу",
+      "reschedule_btn": "Ауыстыру",
+      "cancel_btn": "Болдырмау",
+      "view_doctor": "Өту"
+    },
+    "appointments": {
+      "title": "Қабылдаулар",
+      "upcoming_tab": "Жақын арадағы",
+      "past_tab": "Өткен",
+      "doctor_label": "Дәрігерлер",
+      "date_time_label": "Қабылдау күні мен уақыты",
+      "success_status": "Сәтті өтті",
+      "cancelled_status": "Болдырылмады",
+      "rescheduled_status": "Ауыстырылды",
+      "comment_label": "Пікірлер",
+      "new_date_label": "Ауыстырылған қабылдау күні мен уақыты",
+      "type_extraction": "Ақыл тісін жұлдыру",
+      "type_examination": "Тексеру",
+      "specialty_general": "Жалпы-профильді стоматолог"
+    }
   }
 }

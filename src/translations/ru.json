@@ -458,5 +458,87 @@
                 "crown": "Коронка"
             }
         }
+    },
+    "patient": {
+        "navbar": {
+            "home": "Главная",
+            "appointments": "Приёмы",
+            "chats": "Сообщения",
+            "history": "Рекорды",
+            "profile": "Профиль"
+        },
+        "home": {
+            "search": "Поиск...",
+            "upcoming": "Ближайшие приёмы",
+            "services": "Наши услуги",
+            "services_all": "Все",
+            "services_treatment": "Лечение",
+            "services_hygiene": "Гигиена",
+            "services_surgery": "Хирургия",
+            "action_book": "Запись к стоматологу",
+            "action_doctors": "Врачи",
+            "action_chat": "Чат",
+            "action_notifications": "Уведомление",
+            "more_details": "Подробнее",
+            "until_appointment": "До приёма:",
+            "time_days": "дней",
+            "time_day": "день",
+            "time_hours": "ч",
+            "time_minutes": "мин",
+            "time_seconds": "сек"
+        },
+        "chats": {
+            "title": "Сообщения",
+            "search": "Поиск...",
+            "typing": "Печатает...",
+            "online": "В сети",
+            "today": "Сегодня",
+            "write_message": "Напишите сообщение..."
+        },
+        "profile": {
+            "title": "Профиль",
+            "gender": "Пол",
+            "male": "Мужчина",
+            "female": "Женщина",
+            "birth_date": "Дата рождения",
+            "edit": "Редактировать",
+            "logout": "Выйти из аккаунта",
+            "language": "Язык",
+            "notification": "Уведомление",
+            "select_language": "Выберите язык"
+        },
+        "appointment_detail": {
+            "title": "Детали приёма",
+            "doctor": "Врач",
+            "price": "Цена",
+            "back": "Назад",
+            "status_label": "Статус",
+            "when_label": "Когда",
+            "duration_label": "Примерная длительность",
+            "tip_label": "Подсказка",
+            "notes_label": "Заметки",
+            "direction_label": "Направление",
+            "experience_label": "Опыт работы",
+            "rating_label": "Оценка",
+            "contact_btn": "Связаться",
+            "reschedule_btn": "Перенести",
+            "cancel_btn": "Отменить",
+            "view_doctor": "Перейти"
+        },
+        "appointments": {
+            "title": "Приёмы",
+            "upcoming_tab": "Ближайшие",
+            "past_tab": "Прошедшие",
+            "doctor_label": "Врачи",
+            "date_time_label": "Дата и время приёма",
+            "success_status": "Прошёл успешно",
+            "cancelled_status": "Отменено",
+            "rescheduled_status": "Перенесено",
+            "comment_label": "Комментарии",
+            "new_date_label": "Дата и время перенесённого приёма",
+            "type_extraction": "Удаление зуба мудрости",
+            "type_examination": "Осмотр",
+            "specialty_general": "Общий-профильный стоматолог"
+        }
     }
 }

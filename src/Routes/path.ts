@@ -13,5 +13,12 @@ export const paths = {
     analytics: '/analytics',
     finance: '/analytics/finance',
     chats: '/chats',
-    chatDetail: '/chats/:id'
+    chatDetail: '/chats/:id',
+    patientHome: '/home',
+    patientCalendar: '/calendar',
+    patientHistory: '/history',
+    patientProfileSettings: '/profile_pat',
+    patientAppointmentDetail: '/appointment/:id',
+    patientChats: '/patient/chats',
+    patientChatDetail: '/patient/chats/:id'
 } as const;

@@ -15,6 +15,14 @@ import Analitic from "../Pages/Analitic";
 import Finance from "../Pages/Finance";
 import Chats from "../Pages/Chats";
 
+import PatientLayout from "../Layouts/PatientLayout";
+import PatientHome from "../Pages/PatientHome";
+import PatientAppointments from "../Pages/PatientAppointments";
+import PatientAppointmentDetail from "../Pages/PatientAppointmentDetail";
+import PatientChats from "../Pages/PatientChats";
+import PatientChatDetail from "../Pages/PatientChatDetail";
+import PatientProfilePage from "../Pages/PatientProfilePage";
+
 export const router = createBrowserRouter([
     {
         path: '/',
@@ -72,6 +80,39 @@ export const router = createBrowserRouter([
                         element: <Chats />
                     }
                 ]
+            }
+        ]
+    },
+    {
+        element: <PatientLayout />,
+        children: [
+            {
+                path: paths.patientHome,
+                element: <PatientHome />
+            },
+            {
+                path: paths.patientCalendar,
+                element: <PatientAppointments />
+            },
+            {
+                path: paths.patientAppointmentDetail,
+                element: <PatientAppointmentDetail />
+            },
+            {
+                path: paths.patientHistory,
+                element: <div>History Page (Soon)</div>
+            },
+            {
+                path: paths.patientProfileSettings,
+                element: <PatientProfilePage />
+            },
+            {
+                path: paths.patientChats,
+                element: <PatientChats />
+            },
+            {
+                path: paths.patientChatDetail,
+                element: <PatientChatDetail />
             }
         ]
     }

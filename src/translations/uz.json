@@ -458,5 +458,87 @@
         "crown": "Toj"
       }
     }
+  },
+  "patient": {
+    "navbar": {
+      "home": "Bosh sahifa",
+      "appointments": "Qabullar",
+      "chats": "Xabarlar",
+      "history": "Rekordlar",
+      "profile": "Profil"
+    },
+    "home": {
+      "search": "Qidiruv...",
+      "upcoming": "Yaqindagi qabullar",
+      "services": "Bizning xizmatlar",
+      "services_all": "Hammasi",
+      "services_treatment": "Davolash",
+      "services_hygiene": "Gigiyena",
+      "services_surgery": "Xirurgiya",
+      "action_book": "Stomatologga yozilish",
+      "action_doctors": "Shifokorlar",
+      "action_chat": "Suhbat",
+      "action_notifications": "Bildirishnoma",
+      "more_details": "Batafsil",
+      "until_appointment": "Qabulgacha:",
+      "time_days": "kun",
+      "time_day": "kun",
+      "time_hours": "soat",
+      "time_minutes": "daqiqa",
+      "time_seconds": "soniya"
+    },
+    "chats": {
+      "title": "Xabarlar",
+      "search": "Qidiruv...",
+      "typing": "Yozmoqda...",
+      "online": "Onlayn",
+      "today": "Bugun",
+      "write_message": "Xabar yozing..."
+    },
+    "profile": {
+      "title": "Profil",
+      "gender": "Jinsi",
+      "male": "Erkak",
+      "female": "Ayol",
+      "birth_date": "Tug'ilgan sana",
+      "edit": "Tahrirlash",
+      "logout": "Hisobdan chiqish",
+      "language": "Til",
+      "notification": "Bildirishnoma",
+      "select_language": "Tilni tanlang"
+    },
+    "appointment_detail": {
+      "title": "Qabul tafsilotlari",
+      "doctor": "Shifokor",
+      "price": "Narxi",
+      "back": "Orqaga",
+      "status_label": "Holati",
+      "when_label": "Qachon",
+      "duration_label": "Taxminiy davomiyligi",
+      "tip_label": "Maslahat",
+      "notes_label": "Eslatmalar",
+      "direction_label": "Yo'nalish",
+      "experience_label": "Ish tajribasi",
+      "rating_label": "Baho",
+      "contact_btn": "Bog'lanish",
+      "reschedule_btn": "Ko'chirish",
+      "cancel_btn": "Bekor qilish",
+      "view_doctor": "O'tish"
+    },
+    "appointments": {
+      "title": "Qabullar",
+      "upcoming_tab": "Yaqindagi",
+      "past_tab": "O'tgan",
+      "doctor_label": "Shifokorlar",
+      "date_time_label": "Qabul sanasi va vaqti",
+      "success_status": "Muvaffaqiyatli o'tdi",
+      "cancelled_status": "Bekor qilingan",
+      "rescheduled_status": "Ko'chirilgan",
+      "comment_label": "Izohlar",
+      "new_date_label": "Ko'chirilgan qabul sanasi va vaqti",
+      "type_extraction": "Aql tishini oldirish",
+      "type_examination": "Ko'rik",
+      "specialty_general": "Umumiy-profil stomatolog"
+    }
   }
 }

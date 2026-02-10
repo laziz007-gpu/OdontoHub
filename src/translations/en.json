@@ -458,5 +458,87 @@
         "crown": "Crown"
       }
     }
+  },
+  "patient": {
+    "navbar": {
+      "home": "Home",
+      "appointments": "Appointments",
+      "chats": "Messages",
+      "history": "History",
+      "profile": "Profile"
+    },
+    "home": {
+      "search": "Search...",
+      "upcoming": "Upcoming Appointments",
+      "services": "Our Services",
+      "services_all": "All",
+      "services_treatment": "Treatment",
+      "services_hygiene": "Hygiene",
+      "services_surgery": "Surgery",
+      "action_book": "Book an Appointment",
+      "action_doctors": "Doctors",
+      "action_chat": "Chat",
+      "action_notifications": "Notifications",
+      "more_details": "Details",
+      "until_appointment": "Until appointment:",
+      "time_days": "days",
+      "time_day": "day",
+      "time_hours": "h",
+      "time_minutes": "min",
+      "time_seconds": "sec"
+    },
+    "chats": {
+      "title": "Messages",
+      "search": "Search...",
+      "typing": "Typing...",
+      "online": "Online",
+      "today": "Today",
+      "write_message": "Write a message..."
+    },
+    "profile": {
+      "title": "Profile",
+      "gender": "Gender",
+      "male": "Male",
+      "female": "Female",
+      "birth_date": "Date of Birth",
+      "edit": "Edit",
+      "logout": "Logout",
+      "language": "Language",
+      "notification": "Notification",
+      "select_language": "Select Language"
+    },
+    "appointment_detail": {
+      "title": "Appointment details",
+      "doctor": "Doctor",
+      "price": "Price",
+      "back": "Back",
+      "status_label": "Status",
+      "when_label": "When",
+      "duration_label": "Estimated duration",
+      "tip_label": "Tip",
+      "notes_label": "Notes",
+      "direction_label": "Direction",
+      "experience_label": "Experience",
+      "rating_label": "Rating",
+      "contact_btn": "Contact",
+      "reschedule_btn": "Reschedule",
+      "cancel_btn": "Cancel",
+      "view_doctor": "View"
+    },
+    "appointments": {
+      "title": "Appointments",
+      "upcoming_tab": "Upcoming",
+      "past_tab": "Past",
+      "doctor_label": "Doctors",
+      "date_time_label": "Appointment date and time",
+      "success_status": "Successful",
+      "cancelled_status": "Cancelled",
+      "rescheduled_status": "Rescheduled",
+      "comment_label": "Comments",
+      "new_date_label": "Rescheduled appointment date and time",
+      "type_extraction": "Wisdom Tooth Extraction",
+      "type_examination": "Examination",
+      "specialty_general": "General-profile dentist"
+    }
   }
 }
