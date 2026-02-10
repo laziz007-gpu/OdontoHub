@@ -12,6 +12,7 @@ import DoctorProfile from "../Pages/DoctorProfile";
 import Settings from "../Pages/Settings";
 import Appointments from "../Pages/Appointments";
 import Analitic from "../Pages/Analitic";
+import Finance from "../Pages/Finance";
 import Chats from "../Pages/Chats";
 
 export const router = createBrowserRouter([
@@ -57,6 +58,10 @@ export const router = createBrowserRouter([
                     {
                         path: paths.analytics,
                         element: <Analitic />
+                    },
+                    {
+                        path: paths.finance,
+                        element: <Finance />
                     },
                     {
                         path: paths.chats,

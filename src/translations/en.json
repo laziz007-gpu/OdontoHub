@@ -26,6 +26,20 @@
       "10": "November",
       "11": "December"
     },
+    "months_short": {
+      "0": "Jan",
+      "1": "Feb",
+      "2": "Mar",
+      "3": "Apr",
+      "4": "May",
+      "5": "Jun",
+      "6": "Jul",
+      "7": "Aug",
+      "8": "Sep",
+      "9": "Oct",
+      "10": "Nov",
+      "11": "Dec"
+    },
     "weekdays": {
       "0": "Sun",
       "1": "Mon",
@@ -64,6 +78,15 @@
       "rescheduled": "Rescheduled",
       "in_progress": "In progress",
       "in_queue": "In queue"
+    },
+    "progress": {
+      "recipe": "Prescription",
+      "notes": "Notes",
+      "allergies": "Allergies",
+      "attach_photo": "Attach Photo",
+      "schedule_next": "Schedule Next Appointment",
+      "finish": "Finish",
+      "add_payment": "Add Payment"
     },
     "detail": {
       "patient": "Patient",
@@ -344,6 +367,8 @@
   "analytics": {
     "title": "Analytics",
     "header": {
+      "monitoring": "Monitoring",
+      "analytics": "Analytics",
       "finance": "Finance",
       "filter": "Filter"
     },
@@ -353,6 +378,7 @@
       "reviews": "Reviews",
       "revenue": "Revenue",
       "thousand": "k",
+      "million": "m",
       "last_month": "last month",
       "last_week": "last week"
     },
@@ -399,6 +425,38 @@
       "recurring": "Recurring",
       "apply": "Apply",
       "reset": "Reset"
+    },
+    "monitoring": {
+      "title": "Monitoring",
+      "name": "Name",
+      "date": "Date",
+      "sum": "Sum"
+    },
+    "finance": {
+      "title": "Finance",
+      "income": "Income",
+      "net_profit": "Net Profit",
+      "expenses": "Expenses",
+      "daily_expenses": "Daily Expenses",
+      "stats_title": "Statistics",
+      "for_year": "For year",
+      "total": "Total",
+      "today": "Today",
+      "add_expense": "Expense",
+      "profit": "Profit",
+      "today_expenses": "Expenses",
+      "appointments": "Appointments",
+      "view": "View",
+      "top_services": "Top Selling Services",
+      "per_month": "Per month",
+      "avg_per_day": "On average",
+      "services": {
+        "implantation": "Filling",
+        "removal": "Removal",
+        "filling": "Implantation",
+        "prosthetics": "Periostotomy",
+        "crown": "Crown"
+      }
     }
   }
 }
