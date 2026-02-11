@@ -22,6 +22,7 @@ import PatientAppointmentDetail from "../Pages/PatientAppointmentDetail";
 import PatientChats from "../Pages/PatientChats";
 import PatientChatDetail from "../Pages/PatientChatDetail";
 import PatientProfilePage from "../Pages/PatientProfilePage";
+import PatientHistory from "../Pages/PatientHistory";
 
 export const router = createBrowserRouter([
     {
@@ -100,7 +101,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: paths.patientHistory,
-                element: <div>History Page (Soon)</div>
+                element: <PatientHistory />
             },
             {
                 path: paths.patientProfileSettings,

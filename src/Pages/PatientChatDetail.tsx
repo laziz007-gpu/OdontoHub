@@ -3,14 +3,7 @@ import { ArrowLeft, Send, Paperclip, MoreVertical, X } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import DentistImg from "../assets/img/photos/Dentist.png";
-
-interface Message {
-    id: number;
-    text: string;
-    time: string;
-    sender: "me" | "other";
-    image: string | null;
-}
+import type { Message, Chat } from "../types/patient";
 
 const PatientChatDetail = () => {
     const navigate = useNavigate();
@@ -21,12 +14,12 @@ const PatientChatDetail = () => {
     const [attachedImage, setAttachedImage] = useState<string | null>(null);
 
     // Mock data for the specific chat
-    const chatInfo = {
-        id: id,
+    const chatInfo: Partial<Chat> = {
+        id: Number(id),
         name: "Алишер Насруллаев",
         avatar: DentistImg,
-        status: t("patient.chats.online"),
     };
+    const chatStatus = t("patient.chats.online");
 
     const initialMessages: Message[] = [
         { id: 1, text: "Здравствуйте! Как ваши дела?", time: "08:30", sender: "other", image: null },
@@ -82,7 +75,7 @@ const PatientChatDetail = () => {
                         </div>
                         <div className="min-w-0">
                             <h3 className="text-base md:text-xl font-extrabold text-[#1D1D2B] truncate leading-tight">{chatInfo.name}</h3>
-                            <p className="text-xs md:text-sm font-bold text-emerald-500 mt-0.5">{chatInfo.status}</p>
+                            <p className="text-xs md:text-sm font-bold text-emerald-500 mt-0.5">{chatStatus}</p>
                         </div>
                     </div>
                 </div>

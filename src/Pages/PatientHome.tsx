@@ -7,21 +7,20 @@ import ScrollUp from "../assets/img/icons/Scroll Up.svg"
 import Doctor from "../assets/img/icons/healthicons_doctor-male.svg"
 import Consultation from "../assets/img/icons/Consultation.svg"
 import Notification2 from "../assets/img/icons/Notification2.svg"
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { paths } from "../Routes/path";
+import type { Service, QuickAction } from "../types/patient";
 
 const PatientHome = () => {
-    const navigate = useNavigate();
     const { t } = useTranslation();
-    const services = [
+    const services: Service[] = [
         { icon: Rasm, label: "Все" },
         { icon: Rasm2, label: "Лечение" },
         { icon: Rasm3, label: "Гигиена" },
         { icon: Rasm4, label: "Хирургия" },
     ];
 
-    const quickActions = [
+    const quickActions: QuickAction[] = [
         { label: "Запись к стоматологу", icon: ScrollUp, color: "bg-blue-600 text-white", path: "#" },
         { label: "Врачи", icon: Doctor, color: "bg-white text-blue-600", path: "#" },
         { label: "Чат", icon: Consultation, color: "bg-emerald-400 text-white", path: paths.chats },
@@ -121,8 +120,7 @@ const PatientHome = () => {
                 {quickActions.map((action, idx) => (
                     <div
                         key={idx}
-                        onClick={() => action.path !== "#" && navigate(action.path)}
-                        className={`${action.color} rounded-4xl p-6 md:p-10 flex flex-col justify-between min-h-[160px] md:min-h-[220px] lg:min-h-[280px] shadow-md hover:shadow-2xl cursor-pointer transition-all duration-500 active:scale-[0.98] md:hover:scale-[1.03] border border-transparent hover:border-white/20`}
+                        className={`${action.color} rounded-4xl p-6 md:p-10 flex flex-col justify-between min-h-[160px] md:min-h-[220px] lg:min-h-[280px] shadow-md transition-all duration-500 border border-transparent`}
                     >
                         <div className="flex flex-col items-center justify-center py-2 h-full">
                             <div className="flex mb-4 lg:mb-8">

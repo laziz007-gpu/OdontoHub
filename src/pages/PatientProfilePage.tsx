@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, Bell, Globe, Shield, HelpCircle, Headphones, Info, ChevronRight, LogOut, Check, X } from "lucide-react";
 import DentistImg from "../assets/img/photos/Dentist.png";
+import type { Language, MenuItem, SupportItem } from "../types/patient";
 
 const PatientProfilePage = () => {
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
     const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
 
-    const languages = [
+    const languages: Language[] = [
         { code: "ru", name: "Русский", flag: "🇷🇺" },
         { code: "uz", name: "O'zbekcha", flag: "🇺🇿" },
         { code: "en", name: "English", flag: "🇺🇸" },
@@ -22,7 +23,7 @@ const PatientProfilePage = () => {
         setIsLanguageModalOpen(false);
     };
 
-    const menuItems = [
+    const menuItems: MenuItem[] = [
         { icon: <Bell size={24} />, label: t("patient.profile.notification"), color: "bg-white", textColor: "text-gray-900" },
         {
             icon: <Globe size={24} />,
@@ -32,7 +33,7 @@ const PatientProfilePage = () => {
         },
     ];
 
-    const supportItems = [
+    const supportItems: SupportItem[] = [
         { icon: <Shield size={20} />, label: t("settings.support_items.privacy_policy"), path: "#" },
         { icon: <HelpCircle size={20} />, label: t("settings.support_items.faq"), path: "#" },
         { icon: <Headphones size={20} />, label: t("settings.support_items.contact"), path: "#" },

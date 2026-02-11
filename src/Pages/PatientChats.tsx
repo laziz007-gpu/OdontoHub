@@ -4,13 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { paths } from "../Routes/path";
 import DentistImg from "../assets/img/photos/Dentist.png";
+import type { Chat } from "../types/patient";
 
 const PatientChats = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState("");
 
-    const chats = [
+    const chats: Chat[] = [
         {
             id: 1,
             name: "Алишер Насруллаев",

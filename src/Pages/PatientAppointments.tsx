@@ -3,13 +3,15 @@ import { ArrowLeft, User, Calendar, Clock, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import DentistImg from "../assets/img/photos/Dentist.png";
+import type { Appointment } from "../types/patient";
+import { paths } from "../Routes/path";
 
 const PatientAppointments = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
 
-    const appointments = [
+    const appointments: Appointment[] = [
         // Upcoming Appointments
         {
             id: 1,
@@ -124,7 +126,8 @@ const PatientAppointments = () => {
                         activeTab === "upcoming" ? (
                             <div
                                 key={app.id}
-                                className="bg-blue-600 rounded-4xl p-4 flex gap-4 text-white shadow-xl shadow-blue-500/20 group hover:scale-[1.01] transition-transform duration-300"
+                                onClick={() => navigate(paths.patientAppointmentDetail.replace(":id", app.id.toString()))}
+                                className="bg-blue-600 rounded-4xl p-4 flex gap-4 text-white shadow-xl shadow-blue-500/20 group hover:scale-[1.01] transition-transform duration-300 cursor-pointer"
                             >
                                 {/* Doctor Card */}
                                 <div className="w-32 h-40 sm:w-40 sm:h-48 bg-white rounded-3xl p-1 shrink-0 overflow-hidden shadow-inner">
@@ -169,7 +172,8 @@ const PatientAppointments = () => {
                         ) : (
                             <div
                                 key={app.id}
-                                className="bg-blue-600 rounded-4xl p-6 sm:p-8 flex flex-col justify-between text-white relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300 min-h-[220px]"
+                                onClick={() => navigate(paths.patientAppointmentDetail.replace(":id", app.id.toString()))}
+                                className="bg-blue-600 rounded-4xl p-6 sm:p-8 flex flex-col justify-between text-white relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300 min-h-[220px] cursor-pointer"
                             >
                                 <div className="flex justify-between items-start gap-4">
                                     <div className="space-y-4">
