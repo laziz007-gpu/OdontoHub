@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import Hero from '../components/Hero'
-import Consultatsiya from '../components/Consultatsiya'
-import Patsent from "../components/Patsent"
-import Tezroq from '../components/Tezroq'
-import Section from '../components/Section'
+import Hero from '../components/Bosh sahifa/Hero'
+import Consultatsiya from '../components/Bosh sahifa/Consultatsiya'
+import Patsent from "../components/Bosh sahifa/Patsent"
+import Tezroq from '../components/Bosh sahifa/Tezroq'
+import Section from '../components/Bosh sahifa/Section'
 
 const Render = () => {
   const [searchQuery, setSearchQuery] = useState('');

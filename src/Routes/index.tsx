@@ -23,6 +23,9 @@ import PatientChats from "../Pages/PatientChats";
 import PatientChatDetail from "../Pages/PatientChatDetail";
 import PatientProfilePage from "../Pages/PatientProfilePage";
 import PatientHistory from "../Pages/PatientHistory";
+import Doctors from "../Pages/Doctors";
+import Booking from "../Pages/Booking";
+import CheckupBookingPreview from "../Pages/CheckupBookingPreview";
 
 export const router = createBrowserRouter([
     {
@@ -114,6 +117,18 @@ export const router = createBrowserRouter([
             {
                 path: paths.patientChatDetail,
                 element: <PatientChatDetail />
+            },
+            {
+                path: paths.doctors,
+                element: <Doctors />
+            },
+            {
+                path: paths.booking,
+                element: <Booking />
+            },
+            {
+                path: paths.checkupPreview,
+                element: <CheckupBookingPreview />
             }
         ]
     }

@@ -1,42 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaArrowLeft } from "react-icons/fa";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import DentistImg from "../assets/img/photos/Dentist.png";
 import DoctorInfoCard from "../components/PatientAppointmentDetail/DoctorInfoCard";
 import AppointmentDetailsCard from "../components/PatientAppointmentDetail/AppointmentDetailsCard";
 import PriceCard from "../components/PatientAppointmentDetail/PriceCard";
-import ReviewButton from "../components/PatientAppointmentDetail/ReviewButton";
-import ActionButtons from "../components/PatientAppointmentDetail/ActionButtons";
-import type { AppointmentDetail } from "../types/patient";
+import ReviewModal from "../components/PatientAppointmentDetail/ReviewModal";
 
-const PatientAppointmentDetail = () => {
+const CheckupBookingPreview = () => {
     const navigate = useNavigate();
-    const { id } = useParams<{ id: string }>();
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Mock data based on screenshot
-    // Mock data based on ID - assuming generic "1" or "3" is upcoming wisdom tooth
-    const isUpcoming = id !== '101' && id !== '102' && id !== '103'; // Assuming 100+ are past
-
-    const appointment: AppointmentDetail = isUpcoming ? {
-        title: "Удаление зуба мудрости",
-        date: "30 сентябрь",
-        time: "16:00",
-        doctor: {
-            name: "Махмуд Пулатов",
-            direction: "Ортодонтия",
-            experience: "3 года",
-            rating: "4.7",
-            image: DentistImg
-        },
-        details: {
-            status: "запланирован",
-            date: "25.10.2025",
-            duration: "40 минут",
-            tip: "Принести снимки рентгена",
-            notes: "Нету заметок"
-        },
-        price: "500.000сум"
-    } : {
+    const appointment = {
         title: "Осмотр",
         date: "25 сентябрь",
         time: "16:00",
@@ -57,8 +32,14 @@ const PatientAppointmentDetail = () => {
         price: "20.000сум"
     };
 
+    const handleReviewSubmit = (rating: number, comment: string) => {
+        console.log("Review Submitted:", { rating, comment });
+        // Here you would typically send data to API
+        setIsModalOpen(false);
+    };
+
     return (
-        <div className="min-h-screen bg-[#F5F7FA] p-4 flex flex-col font-sans max-w-md mx-auto w-full">
+        <div className="min-h-screen bg-[#F5F7FA] p-4 flex flex-col font-sans max-w-md mx-auto w-full relative">
             {/* Header */}
             <div className="flex items-center gap-4 mb-8">
                 <button
@@ -78,16 +59,26 @@ const PatientAppointmentDetail = () => {
             </div>
 
             <div className="space-y-6 pb-12">
-                <div className="space-y-6 pb-12">
-                    <DoctorInfoCard doctor={appointment.doctor} />
-                    <AppointmentDetailsCard details={appointment.details} />
-                    <PriceCard price={appointment.price} />
-                    {isUpcoming ? <ActionButtons /> : <ReviewButton />}
-                </div>
+                <DoctorInfoCard doctor={appointment.doctor} />
+                <AppointmentDetailsCard details={appointment.details} />
+                <PriceCard price={appointment.price} />
+
+                {/* Re-implementing the yellow Review button locally since the shared component changed */}
+                <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="w-full bg-[#FBBC05] text-white text-lg md:text-xl font-bold py-4 rounded-2xl shadow-md hover:bg-[#e0a800] transition-colors"
+                >
+                    Оценить и оставить отзыв
+                </button>
             </div>
+
+            <ReviewModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleReviewSubmit}
+            />
         </div>
     );
 };
 
-export default PatientAppointmentDetail;
-
+export default CheckupBookingPreview;

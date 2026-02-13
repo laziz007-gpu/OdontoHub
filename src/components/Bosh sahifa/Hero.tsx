@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { paths } from '../Routes/path';
+import { paths } from '../../Routes/path';
 import { useTranslation } from 'react-i18next';
 
-import NotificationIcon from '../assets/img/icons/Notification.svg';
-import SettingsIcon from '../assets/img/icons/Settings.svg';
-import StarIcon from '../assets/img/icons/Star.svg';
-import DentistImg from '../assets/img/photos/Dentist.png';
+import NotificationIcon from '../../assets/img/icons/Notification.svg';
+import SettingsIcon from '../../assets/img/icons/Settings.svg';
+import StarIcon from '../../assets/img/icons/Star.svg';
+import DentistImg from '../../assets/img/photos/Dentist.png';
 
 // Types
 interface Notification {

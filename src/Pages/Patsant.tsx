@@ -1,6 +1,6 @@
 import { useState, type FC } from 'react'
-import Qidiruv from "../components/Qidiruv"
-import PatientsTable from "../components/PatsentTable"
+import Qidiruv from "../components/Bosh sahifa/Qidiruv"
+import PatientsTable from "../components/Bosh sahifa/PatsentTable"
 import Rasm from "../assets/img/photos/Subtract.png"
 import { initialPatients, type Patient } from '../data/patients'
 import { useTranslation } from 'react-i18next'

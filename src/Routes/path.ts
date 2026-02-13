@@ -20,5 +20,8 @@ export const paths = {
     patientProfileSettings: '/profile_pat',
     patientAppointmentDetail: '/appointment/:id',
     patientChats: '/patient/chats',
-    patientChatDetail: '/patient/chats/:id'
+    patientChatDetail: '/patient/chats/:id',
+    doctors: '/doctors',
+    booking: '/booking',
+    checkupPreview: '/booking/checkup-preview'
 } as const;

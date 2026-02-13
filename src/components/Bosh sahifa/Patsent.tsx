@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Nuqta from '../assets/img/icons/3dots.svg';
+import Nuqta from '../../assets/img/icons/3dots.svg';
 import { useTranslation } from 'react-i18next';
 
 type Patient = {

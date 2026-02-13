@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import PatientNavbar from "../components/PatientNavbar";
+import PatientNavbar from "../components/Bosh sahifa/PatientNavbar";
 
 const PatientLayout = () => {
     return (

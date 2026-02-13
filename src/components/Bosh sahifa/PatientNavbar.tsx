@@ -1,8 +1,8 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Home, Calendar, MessageSquare, FileText, User } from "lucide-react";
-import { paths } from "../Routes/path";
-import Logo from "../assets/img/icons/Logo2.svg";
+import { paths } from "../../Routes/path";
+import Logo from "../../assets/img/icons/Logo2.svg";
 const PatientNavbar = () => {
     const navigate = useNavigate();
     const location = useLocation();

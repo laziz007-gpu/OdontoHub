@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { paths } from '../Routes/path';
+import { paths } from '../../Routes/path';
 
 // Action turi
 type Action = {
