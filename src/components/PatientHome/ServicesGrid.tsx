@@ -1,5 +1,7 @@
 import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { paths } from "../../Routes/path";
 import Rasm from "../../assets/img/icons/image 4 (1).svg";
 import Rasm2 from "../../assets/img/icons/image 4.svg";
 import Rasm3 from "../../assets/img/icons/image 4 (2).svg";
@@ -8,6 +10,7 @@ import type { Service } from "../../types/patient";
 
 const ServicesGrid = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     const services: Service[] = [
         { icon: Rasm, label: "Все" },
@@ -20,7 +23,10 @@ const ServicesGrid = () => {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-xl md:text-3xl font-extrabold text-gray-900 tracking-tight">{t("patient.home.services")}</h2>
-                <button className="p-2.5 bg-white rounded-full shadow-lg text-blue-600 hover:scale-110 active:scale-95 transition-all">
+                <button
+                    onClick={() => navigate(paths.specialties)}
+                    className="p-2.5 bg-white rounded-full shadow-lg text-blue-600 hover:scale-110 active:scale-95 transition-all"
+                >
                     <Plus size={24} />
                 </button>
             </div>
