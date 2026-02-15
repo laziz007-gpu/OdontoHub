@@ -8,7 +8,7 @@ import {
     Building2,
     Edit2,
 } from 'lucide-react';
-import EditProfileModal from './EditProfileModal';
+import EditProfileModal from '../Shared/EditProfileModal';
 
 /* ================= TYPES ================= */
 

@@ -22,6 +22,11 @@ export const paths = {
     patientChats: '/patient/chats',
     patientChatDetail: '/patient/chats/:id',
     doctors: '/doctors',
+    specialties: '/specialties',
+    notifications: '/notifications',
     booking: '/booking',
-    checkupPreview: '/booking/checkup-preview'
+    checkupPreview: '/booking/checkup-preview',
+    myDentist: '/my-dentist',
+    patientChatProfile: '/patient/chats/:id/profile',
+    treatments: '/treatments'
 } as const;

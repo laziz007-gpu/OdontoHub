@@ -24,8 +24,13 @@ import PatientChatDetail from "../Pages/PatientChatDetail";
 import PatientProfilePage from "../Pages/PatientProfilePage";
 import PatientHistory from "../Pages/PatientHistory";
 import Doctors from "../Pages/Doctors";
+import Specialties from "../Pages/Specialties";
+import Notifications from "../Pages/Notifications";
 import Booking from "../Pages/Booking";
 import CheckupBookingPreview from "../Pages/CheckupBookingPreview";
+import DoctorProfilePreview from "../Pages/DoctorProfilePreview";
+import ChatProfilePage from "../Pages/ChatProfilePage";
+import TreatmentsListPage from "../Pages/TreatmentsListPage";
 
 export const router = createBrowserRouter([
     {
@@ -119,8 +124,20 @@ export const router = createBrowserRouter([
                 element: <PatientChatDetail />
             },
             {
+                path: paths.patientChatProfile,
+                element: <ChatProfilePage />
+            },
+            {
                 path: paths.doctors,
                 element: <Doctors />
+            },
+            {
+                path: paths.specialties,
+                element: <Specialties />
+            },
+            {
+                path: paths.notifications,
+                element: <Notifications />
             },
             {
                 path: paths.booking,
@@ -129,6 +146,14 @@ export const router = createBrowserRouter([
             {
                 path: paths.checkupPreview,
                 element: <CheckupBookingPreview />
+            },
+            {
+                path: paths.myDentist,
+                element: <DoctorProfilePreview />
+            },
+            {
+                path: paths.treatments,
+                element: <TreatmentsListPage />
             }
         ]
     }

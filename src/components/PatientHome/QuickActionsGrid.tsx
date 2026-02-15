@@ -8,10 +8,10 @@ import type { QuickAction } from "../../types/patient";
 
 const QuickActionsGrid = () => {
     const quickActions: QuickAction[] = [
-        { label: "Запись к стоматологу", icon: ScrollUp, color: "bg-blue-600 text-white", path: "#" },
+        { label: "Запись к стоматологу", icon: ScrollUp, color: "bg-blue-600 text-white", path: paths.booking },
         { label: "Врачи", icon: Doctor, color: "bg-white text-blue-600", path: paths.doctors },
-        { label: "Мой стоматолог", icon: Consultation, color: "bg-emerald-400 text-white", path: paths.chats },
-        { label: "Уведомление", icon: Notification2, color: "bg-amber-400 text-white", path: paths.patientAppointmentDetail.replace(":id", "1") },
+        { label: "Мой стоматолог", icon: Consultation, color: "bg-emerald-400 text-white", path: paths.myDentist },
+        { label: "Уведомление", icon: Notification2, color: "bg-amber-400 text-white", path: paths.notifications },
     ];
 
     return (

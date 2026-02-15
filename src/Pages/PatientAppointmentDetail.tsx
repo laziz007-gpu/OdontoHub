@@ -58,31 +58,54 @@ const PatientAppointmentDetail = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#F5F7FA] p-4 flex flex-col font-sans max-w-md mx-auto w-full">
+        <div className="min-h-screen bg-[#F5F7FA] p-4 md:p-8 max-w-5xl mx-auto w-full flex flex-col font-sans">
             {/* Header */}
-            <div className="flex items-center gap-4 mb-8">
-                <button
-                    onClick={() => navigate(-1)}
-                    className="w-10 h-10 bg-[#1D1D2B] rounded-full flex items-center justify-center text-white shrink-0"
-                >
-                    <FaArrowLeft />
-                </button>
-                <div className="flex flex-col">
-                    <h1 className="text-[#1D1D2B] text-2xl font-black leading-tight">
-                        {appointment.title}
-                    </h1>
-                    <p className="text-[#1D1D2B] text-lg font-bold">
-                        {appointment.date} | {appointment.time}
-                    </p>
+            <div className="flex items-center justify-between mb-8 md:mb-12">
+                <div className="flex items-center gap-6">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="w-12 h-12 bg-white border border-gray-100 rounded-2xl flex items-center justify-center text-[#1D1D2B] shadow-sm hover:bg-gray-50 transition-all active:scale-95"
+                    >
+                        <FaArrowLeft />
+                    </button>
+                    <div className="flex flex-col">
+                        <h1 className="text-[#1D1D2B] text-2xl md:text-3xl font-black leading-tight">
+                            {appointment.title}
+                        </h1>
+                        <p className="text-gray-400 text-sm md:text-base font-bold">
+                            {appointment.date} | {appointment.time}
+                        </p>
+                    </div>
+                </div>
+                <div className="hidden md:block">
+                    <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${isUpcoming ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'}`}>
+                        {isUpcoming ? 'Предстоит' : 'Завершено'}
+                    </span>
                 </div>
             </div>
 
-            <div className="space-y-6 pb-12">
-                <div className="space-y-6 pb-12">
+            <div className="flex flex-col space-y-6 lg:space-y-8">
+                {/* Doctor Info Card - Full Width, Larger on Desktop */}
+                <div className="transition-transform hover:scale-[1.01]">
                     <DoctorInfoCard doctor={appointment.doctor} />
-                    <AppointmentDetailsCard details={appointment.details} />
-                    <PriceCard price={appointment.price} />
-                    {isUpcoming ? <ActionButtons /> : <ReviewButton />}
+                </div>
+
+                {/* Two Column Layout for Details and Price/Actions */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                    {/* Left: Details */}
+                    <div className="bg-white rounded-[2rem] lg:rounded-[2.5rem] p-2 shadow-sm border border-gray-50">
+                        <AppointmentDetailsCard details={appointment.details} />
+                    </div>
+
+                    {/* Right: Price & Actions Stacked Vertically */}
+                    <div className="space-y-6 flex flex-col">
+                        <div className="bg-white rounded-[2rem] lg:rounded-[2.5rem] p-1 shadow-sm border border-gray-50 overflow-hidden">
+                            <PriceCard price={appointment.price} />
+                        </div>
+                        <div>
+                            {isUpcoming ? <ActionButtons /> : <ReviewButton />}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

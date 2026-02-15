@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import type { Treatment } from "../../types/patient";
 
 interface TreatmentsTableProps {
@@ -7,6 +8,7 @@ interface TreatmentsTableProps {
 
 const TreatmentsTable = ({ treatments }: TreatmentsTableProps) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     return (
         <div className="space-y-6">
@@ -24,7 +26,10 @@ const TreatmentsTable = ({ treatments }: TreatmentsTableProps) => {
                     ))}
                 </div>
                 <div className="p-6 pt-2">
-                    <button className="w-full bg-blue-600 text-white py-4 rounded-3xl font-black text-xl hover:bg-blue-700 transition-all active:scale-[0.98] shadow-[0_10px_20px_rgba(37,99,235,0.2)]">
+                    <button 
+                        onClick={() => navigate('/treatments')}
+                        className="w-full bg-blue-600 text-white py-4 rounded-3xl font-black text-xl hover:bg-blue-700 transition-all active:scale-[0.98] shadow-[0_10px_20px_rgba(37,99,235,0.2)]"
+                    >
                         Перейти
                     </button>
                 </div>

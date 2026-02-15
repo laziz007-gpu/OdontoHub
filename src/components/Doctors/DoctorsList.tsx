@@ -66,10 +66,10 @@ const DoctorsList: React.FC = () => {
                 ))}
             </div>
 
-            <div className="fixed bottom-6 left-0 right-0 flex justify-center z-10 px-4">
+            <div className="fixed bottom-4 sm:bottom-6 left-0 right-0 flex justify-center z-10 px-4">
                 <button
                     onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=стоматология+${district}+${location}`, '_blank')}
-                    className="bg-[#11D76A] text-white font-bold text-lg py-4 px-12 rounded-full shadow-[0_4px_20px_rgba(17,215,106,0.3)] hover:bg-[#0fc460] transition-colors w-max active:scale-95"
+                    className="bg-[#11D76A] text-white font-bold text-base sm:text-lg md:text-xl py-3 sm:py-4 px-8 sm:px-12 md:px-16 rounded-full shadow-[0_4px_20px_rgba(17,215,106,0.3)] hover:bg-[#0fc460] transition-all w-max active:scale-95 hover:shadow-[0_6px_24px_rgba(17,215,106,0.4)]"
                 >
                     На карте
                 </button>
