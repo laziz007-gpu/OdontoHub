@@ -8,16 +8,16 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
 
-    # 🗄 Database
-    DB_USER: str
-    DB_PASSWORD: str
-    DB_HOST: str
-    DB_PORT: int
-    DB_NAME: str
+    # 🗄 Database - Optional for SQLite
+    DB_USER: str = ""
+    DB_PASSWORD: str = ""
+    DB_HOST: str = ""
+    DB_PORT: int = 5432
+    DB_NAME: str = ""
 
     model_config = ConfigDict(
         env_file=".env",
-        extra="forbid"
+        extra="ignore"  # Changed from "forbid" to "ignore"
     )
 
 
