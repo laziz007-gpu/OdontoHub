@@ -1,14 +1,16 @@
-import { ArrowLeft, MessageCircle, User, Camera, ClipboardList, Calendar, DollarSign } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { ArrowLeft, MessageCircle, User, Camera, ClipboardList, Calendar, DollarSign, Loader2 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
-import { initialPatients } from '../data/patients'
-import type { Patient } from '../data/patients'
 import { useTranslation } from 'react-i18next'
-import { useState } from 'react'
 import { paths } from '../Routes/path'
 import PhotoGrid from '../components/PatientProfile/PhotoGrid'
 import TreatmentsTable from '../components/PatientProfile/TreatmentsTable'
 import PaymentsView from '../components/PatientProfile/PaymentsView'
+import AppointmentsView from '../components/PatientProfile/AppointmentsView'
+import AppointmentModal from '../components/Appointments/AppointmentModal'
+import { usePatient } from '../api/profile'
+import Rasm from "../assets/img/photos/Subtract.png"
 
 type TabId = 'data' | 'photo' | 'treatments' | 'appointments' | 'payments'
 
@@ -22,8 +24,31 @@ export default function PatientProfile() {
     const { id } = useParams<{ id: string }>()
     const { t } = useTranslation()
     const [activeTab, setActiveTab] = useState<TabId>('data')
+    const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false)
 
-    const patient: Patient | undefined = initialPatients.find(p => p.id === Number(id))
+    const { data: apiPatient, isLoading } = usePatient(Number(id))
+
+    const patient = useMemo(() => {
+        if (!apiPatient) return null;
+        return {
+            id: apiPatient.id,
+            name: apiPatient.full_name || 'No Name',
+            phone: apiPatient.phone || '',
+            birthDate: apiPatient.birth_date ? new Date(apiPatient.birth_date).toLocaleDateString() : '01.01.1999',
+            gender: apiPatient.gender === 'male' ? t('patient_profile.male') : apiPatient.gender === 'female' ? t('patient_profile.female') : t('patient_profile.not_specified'),
+            img: Rasm, // Default image for now
+            status: 'НОВЫЙ',
+            diagnosis: apiPatient.source || 'Checkup'
+        } as any;
+    }, [apiPatient, t]);
+
+    if (isLoading) {
+        return (
+            <div className="p-6 bg-[#f5f7fb] min-h-screen flex items-center justify-center">
+                <Loader2 className="w-12 h-12 animate-spin text-[#5377f7]" />
+            </div>
+        )
+    }
 
     if (!patient) {
         return (
@@ -68,7 +93,10 @@ export default function PatientProfile() {
                     </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-                    <button className="bg-[#5377f7] text-white px-6 md:px-10 py-3 md:py-4 rounded-2xl md:rounded-3xl font-semibold text-base md:text-lg hover:bg-blue-600 transition-colors w-full md:w-auto">
+                    <button
+                        onClick={() => setIsAppointmentModalOpen(true)}
+                        className="bg-[#5377f7] text-white px-6 md:px-10 py-3 md:py-4 rounded-2xl md:rounded-3xl font-semibold text-base md:text-lg hover:bg-blue-600 transition-colors w-full md:w-auto"
+                    >
                         {t('patient_profile.schedule_appointment')}
                     </button>
                     <Link to={paths.chatDetail.replace(':id', String(patient.id))} className="w-full md:w-auto flex justify-center">
@@ -87,8 +115,8 @@ export default function PatientProfile() {
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 md:gap-3 pb-4 px-1 transition-all relative whitespace-nowrap ${activeTab === tab.id
-                                ? 'text-[#5377f7]'
-                                : 'text-gray-400 hover:text-gray-600'
+                            ? 'text-[#5377f7]'
+                            : 'text-gray-400 hover:text-gray-600'
                             }`}
                     >
                         <tab.icon className={`w-6 h-6 md:w-8 md:h-8 ${activeTab === tab.id ? 'text-[#5377f7]' : 'text-gray-400'}`} />
@@ -151,8 +179,16 @@ export default function PatientProfile() {
 
                 {activeTab === 'treatments' && <TreatmentsTable />}
 
+                {activeTab === 'appointments' && <AppointmentsView patientId={Number(id)} />}
+
                 {activeTab === 'payments' && <PaymentsView />}
             </div>
+
+            <AppointmentModal
+                isOpen={isAppointmentModalOpen}
+                onClose={() => setIsAppointmentModalOpen(false)}
+                initialPatientId={Number(id)}
+            />
         </div>
     )
 }

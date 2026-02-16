@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { paths } from '../../Routes/path';
 import { useTranslation } from 'react-i18next';
+import type { RootState } from '../../store/store';
 
 import NotificationIcon from '../../assets/img/icons/Notification.svg';
 import SettingsIcon from '../../assets/img/icons/Settings.svg';
@@ -22,6 +24,7 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onSearch }) => {
   const { t } = useTranslation();
+  const user = useSelector((state: RootState) => state.user.user);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -154,15 +157,19 @@ const Hero: React.FC<HeroProps> = ({ onSearch }) => {
 
               {/* Profile */}
               <Link
-                to="/profile"
+                to={user?.role === 'dentist' ? paths.profile : paths.patientProfileSettings}
                 className="flex h-[52px] pl-3 pr-5 items-center gap-3 bg-[#1e2532] text-white rounded-2xl hover:bg-[#2c3545] transition-colors"
               >
                 <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center bg-gray-700">
-                  <img src={DentistImg} alt="Doctor" className="w-full h-full object-cover" />
+                  <img src={DentistImg} alt="Profile" className="w-full h-full object-cover" />
                 </div>
                 <div className="hidden md:flex flex-col leading-tight">
-                  <span className="font-bold text-sm whitespace-nowrap">Пулатов М</span>
-                  <span className="text-[11px] text-gray-400">Хирург</span>
+                  <span className="font-bold text-sm whitespace-nowrap">
+                    {user?.full_name || 'Пользователь'}
+                  </span>
+                  <span className="text-[11px] text-gray-400">
+                    {user?.role === 'dentist' ? 'Врач' : 'Пациент'}
+                  </span>
                 </div>
               </Link>
 

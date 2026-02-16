@@ -1,10 +1,22 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { User, Stethoscope } from "lucide-react";
 import { paths } from "../Routes/path";
 import logo from "../assets/img/icons/Logo.svg";
+import { RootState } from "../store/store";
 
 export default function Role() {
   const navigate = useNavigate();
+  const role = useSelector((state: RootState) => state.user.role);
+
+  useEffect(() => {
+    if (role === 'dentist') {
+      navigate(paths.menu, { replace: true });
+    } else if (role === 'patient') {
+      navigate(paths.patientHome, { replace: true });
+    }
+  }, [role, navigate]);
 
   return (
     <div className="min-h-screen bg-blue-600 flex flex-col items-center justify-center p-6 text-white text-center">

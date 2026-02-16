@@ -7,5 +7,32 @@ export default defineConfig({
     tailwindcss(),
     react()
   ],
+  server: {
+    proxy: {
+      '/auth': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/patients': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/dentists': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/services': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/appointments': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+    }
+  },
+  optimizeDeps: {
+    include: ['lucide-react', 'react-icons', 'react-router-dom', '@reduxjs/toolkit', 'react-redux']
+  }
 })
 

@@ -1,8 +1,24 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { clearUser } from '../../store/slices/userSlice';
+import { paths } from '../../Routes/path';
 
 export const PrivacySettings: React.FC = () => {
     const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        // 1. Очищаем токен
+        localStorage.removeItem('access_token');
+        // 2. Очищаем Redux state
+        dispatch(clearUser());
+        // 3. Редирект на вход
+        navigate(paths.login, { replace: true });
+    };
+
     return (
         <div className="space-y-4">
             <button className="bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-2xl text-sm mb-6 transition-colors">
@@ -30,7 +46,10 @@ export const PrivacySettings: React.FC = () => {
             </div>
 
             <div className="pt-20">
-                <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-12 rounded-2xl text-sm transition-colors">
+                <button
+                    onClick={handleLogout}
+                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-12 rounded-2xl text-sm transition-colors"
+                >
                     {t('settings.privacy.logout')}
                 </button>
             </div>

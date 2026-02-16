@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ChevronLeft, Calculator } from 'lucide-react';
 import DateStrip from '../components/Appointments/DateStrip';
 import AppointmentCard, { type AppointmentStatus } from '../components/Appointments/AppointmentCard';
@@ -8,21 +8,7 @@ import AppointmentDetailModal from '../components/Appointments/AppointmentDetail
 import InProgressView from '../components/Appointments/InProgressView';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-
-const appointmentsData = [
-    { time: '8:00', status: 'completed' as AppointmentStatus, service: 'Имплантация', patientName: 'Шерзод Бахромов' },
-    { time: '10:00', status: 'completed' as AppointmentStatus, service: 'Имплантация', patientName: 'Шерзод Бахромов' },
-    { time: '11:00', status: 'cancelled' as AppointmentStatus, service: 'Имплантация', patientName: 'Шерзод Бахромов' },
-    { time: '12:30', status: 'rescheduled' as AppointmentStatus, service: 'Имплантация', patientName: 'Шерзод Бахромов' },
-    { time: '13:30', status: 'completed' as AppointmentStatus, service: 'Имплантация', patientName: 'Шерзод Бахромов' },
-    { time: '13:30', status: 'in_progress' as AppointmentStatus, service: 'Имплантация', patientName: 'Шерзод Бахромов' },
-    { time: '13:30', status: 'in_queue' as AppointmentStatus, service: 'Имплантация', patientName: 'Шерзод Бахромов' },
-    { time: '14:40', status: 'in_queue' as AppointmentStatus, service: 'Имплантация', patientName: 'Шерзод Бахромов' },
-    { time: '16:00', status: 'in_queue' as AppointmentStatus, service: 'Имплантация', patientName: 'Шерзод Бахромов' },
-    { time: '17:10', status: 'in_queue' as AppointmentStatus, service: 'Имплантация', patientName: 'Шерзод Бахромов' },
-    { time: '18:00', status: 'in_queue' as AppointmentStatus, service: 'Имплантация', patientName: 'Шерзод Бахромов' },
-    { time: '19:30', status: 'in_queue' as AppointmentStatus, service: 'Имплантация', patientName: 'Шерзод Бахромов' },
-];
+import { useMyAppointments } from '../api/appointments';
 
 const Appointments: React.FC = () => {
     const { t } = useTranslation();
@@ -32,8 +18,42 @@ const Appointments: React.FC = () => {
     const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
 
+    const { data: apiAppointments, isLoading } = useMyAppointments();
+
+    const appointmentsData = useMemo(() => {
+        if (!apiAppointments || !Array.isArray(apiAppointments)) return [];
+        return apiAppointments.map(app => {
+            const startDate = new Date(app.start_time);
+            const time = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
+
+            let status: AppointmentStatus = 'in_queue';
+            if (app.status === 'completed') status = 'completed';
+            else if (app.status === 'cancelled') status = 'cancelled';
+            else if (app.status === 'moved') status = 'rescheduled';
+            else if (app.status === 'confirmed') status = 'in_progress';
+
+            const serviceLabel = app.service === 'implantation' ? t('modal.services.implantation') :
+                app.service === 'hygiene' ? 'Гигиена' :
+                    app.service === 'treatment' ? 'Лечение' :
+                        app.service === 'extraction' ? 'Удаление' :
+                            app.service || t('modal.services.implantation');
+
+            const date = `${startDate.getDate().toString().padStart(2, '0')}.${(startDate.getMonth() + 1).toString().padStart(2, '0')}.${startDate.getFullYear()}`;
+
+            return {
+                id: app.id,
+                time,
+                date,
+                status,
+                service: serviceLabel,
+                patientName: app.patient_name || 'Пациент',
+                raw: app
+            };
+        });
+    }, [apiAppointments, t]);
+
     const handleAptClick = (apt: any) => {
-        setSelectedAppointment(apt);
+        setSelectedAppointment(apt.raw);
         if (apt.status === 'in_progress') {
             setView('in_progress');
         } else {
@@ -41,9 +61,8 @@ const Appointments: React.FC = () => {
         }
     };
 
-    // Mock date to match image for visual consistency
-    // June 16, 2026 is a Tuesday.
-    const displayDate = new Date(2026, 5, 16);
+    // Use current date or first appointment's date
+    const displayDate = new Date();
     const day = displayDate.getDate();
     const month = t(`common.months.${displayDate.getMonth()}`);
     const year = displayDate.getFullYear();
@@ -119,16 +138,26 @@ const Appointments: React.FC = () => {
                         <DateStrip />
 
                         {/* Appointments List */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                            {appointmentsData.map((apt, idx) => (
-                                <AppointmentCard
-                                    key={idx}
-                                    {...apt}
-                                    service={apt.service === 'Имплантация' ? t('modal.services.implantation') : apt.service}
-                                    onClick={() => handleAptClick(apt)}
-                                />
-                            ))}
-                        </div>
+                        {isLoading ? (
+                            <div className="flex justify-center py-20">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1a1f36]" />
+                            </div>
+                        ) : appointmentsData.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                                {appointmentsData.map((apt, idx) => (
+                                    <AppointmentCard
+                                        key={apt.id || idx}
+                                        {...apt}
+                                        service={apt.service}
+                                        onClick={() => handleAptClick(apt)}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-40 text-gray-400 font-bold text-xl">
+                                {t('appointments.empty_list') || 'На сегодня записей нет'}
+                            </div>
+                        )}
                     </>
                 )}
             </div>

@@ -1,4 +1,6 @@
-import { useState, useRef, type FC } from 'react';
+import { useState, useRef, useEffect, type FC } from 'react';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../store/store';
 import PageHeader from '../components/DoctorProfile/PageHeader';
 import DoctorInfoCard from '../components/DoctorProfile/DoctorInfoCard';
 import ContactInfoCard from '../components/DoctorProfile/ContactInfoCard';
@@ -30,16 +32,18 @@ interface ProfileData {
 }
 
 const DoctorProfile: FC = () => {
+  const user = useSelector((state: RootState) => state.user.user);
+
   const [profileData, setProfileData] = useState<ProfileData>({
-    phone: '+998 (93) 123 45 67',
-    email: 'example@gmail.com',
+    phone: user?.phone || '+998 (93) 123 45 67',
+    email: user?.email || 'example@gmail.com',
     address: 'ул. Амира Темура, 11кв, 20дом',
     education: 'ТашПМИ (Факультет)',
     clinic: 'OdontoHub',
     specialization: 'Хирург',
     telegram: '@stom',
     instagram: 'stomatolog.uz',
-    whatsapp: '+998 90 123 45 67',
+    whatsapp: user?.phone || '+998 90 123 45 67',
     schedule: 'Каждый день',
     workStart: '08',
     startMinute: '00',
@@ -47,8 +51,20 @@ const DoctorProfile: FC = () => {
     endMinute: '00',
     gender: 'Мужчина',
     age: '25 лет',
-    name: 'Пулатов Махмуд'
+    name: user?.full_name || 'Пулатов Махмуд'
   });
+
+  useEffect(() => {
+    if (user) {
+      setProfileData(prev => ({
+        ...prev,
+        name: user.full_name || prev.name,
+        phone: user.phone || prev.phone,
+        email: user.email || prev.email,
+        whatsapp: user.phone || prev.whatsapp
+      }));
+    }
+  }, [user]);
 
   const [avatarUrl, setAvatarUrl] = useState<string>(DentistImg);
   const [works, setWorks] = useState<string[]>([]);

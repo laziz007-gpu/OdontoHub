@@ -6,11 +6,13 @@ interface AppointmentDetailModalProps {
     isOpen: boolean;
     onClose: () => void;
     appointment: {
+        id: number;
         time: string;
+        date: string;
         service: string;
         patientName: string;
         status: AppointmentStatus;
-        date?: string;
+        raw: any;
     } | null;
 }
 
@@ -53,7 +55,7 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
                         </div>
                         <div className="flex justify-between items-center">
                             <span className="text-gray-500 font-bold">{t('appointments.detail.date')}</span>
-                            <span className="text-[#1a1f36] text-xl font-black">{appointment.date || '16.06.26'}</span>
+                            <span className="text-[#1a1f36] text-xl font-black">{appointment.date || '—'}</span>
                         </div>
                         <div className="flex justify-between items-center">
                             <span className="text-gray-500 font-bold">{t('appointments.detail.status')}</span>
@@ -62,6 +64,13 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
                             </span>
                         </div>
                     </div>
+
+                    {appointment.raw?.notes && (
+                        <div className="pt-4 border-t border-gray-100">
+                            <span className="text-gray-500 font-bold block mb-2">Заметки:</span>
+                            <p className="text-[#1a1f36] font-medium italic">{appointment.raw.notes}</p>
+                        </div>
+                    )}
 
                     {/* Service Box */}
                     <div className="mt-10 bg-[#4f6bff] rounded-[20px] p-6 text-white space-y-4">

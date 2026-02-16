@@ -1,52 +1,55 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import type { RegisterData } from "../interfaces"
+import type { RegisterData, LoginData, TokenResponse } from "../interfaces"
 import api from "./api"
 
 export const useRegister = () => {
-    const mutation = useMutation({
+  return useMutation({
+    mutationFn: (data: RegisterData) =>
+      api.post<TokenResponse>('/auth/register', data),
 
-        /* Это функция делает запрос */
-        mutationFn: (data: RegisterData) => api.post('/auth/register'),
+    onSuccess: ({ data }) => {
+      if (data?.access_token) {
+        localStorage.setItem('access_token', data.access_token)
+      }
+    },
 
-        /* Функция сработает если, ответ положительный и есть данные, мы их получим в response */
-        onSuccess: (response) => {
-            console.log(response);
-        },
-
-        /* Если ошибка, то получим в error */
-        onError: (error) => {
-            setTimeout(() => {
-          }, 3000);
-        },
-    });
-    return { ...mutation }
-};
-
-export const useLogin = () => {
-    const mutation = useMutation({
-        mutationFn: (data) => api.post('/auth/login', data),
-        onSuccess: ({ data }) => {
-          if (data && data.access) {
-            localStorage.setItem('access_token', data.access)
-          }
-        },
-        onError: (error) => {
-            setTimeout(() => {
-          }, 3000); 
-          console.log(error); 
-        },
-    });
-    return { ...mutation }
-};
-
-export const useCurrentUser = () => {
-  const accessToken = localStorage.getiTem('access_token')
-  return useQuery({
-    queryKey: ['current'],
-    queryFn: () => api.get('/auth/me'),
-    enabled: !!accessToken,
-    select: (response) => response.data
+    onError: (error) => {
+      console.error('Register error:', error)
+    },
   })
 }
 
+export const useLogin = () => {
+  return useMutation({
+    mutationFn: (data: LoginData) => {
+      // Backend expects OAuth2 form-data (application/x-www-form-urlencoded)
+      const formData = new URLSearchParams()
+      formData.append('username', data.username)
+      formData.append('password', data.password)
 
+      return api.post<TokenResponse>('/auth/login', formData, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      })
+    },
+
+    onSuccess: ({ data }) => {
+      if (data?.access_token) {
+        localStorage.setItem('access_token', data.access_token)
+      }
+    },
+
+    onError: (error) => {
+      console.error('Login error:', error)
+    },
+  })
+}
+
+export const useCurrentUser = () => {
+  const accessToken = localStorage.getItem('access_token')
+  return useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => api.get('/auth/me'),
+    enabled: !!accessToken,
+    select: (response) => response.data,
+  })
+}

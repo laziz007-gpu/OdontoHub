@@ -2,7 +2,10 @@ import { createBrowserRouter } from "react-router-dom";
 import { paths } from "./path";
 import Welcome from "../Pages/Welcome"
 import PublickRoute from "../HOC/PublickRoute";
+import PrivateRoute from "../HOC/PrivateRoute";
 import Role from "../Pages/Role";
+import Login from "../Pages/Login";
+import Register1 from "../Pages/Register1";
 
 import Patsant from "../Pages/Patsant";
 import Menu from "../Pages/Menu";
@@ -33,6 +36,7 @@ import ChatProfilePage from "../Pages/ChatProfilePage";
 import TreatmentsListPage from "../Pages/TreatmentsListPage";
 
 export const router = createBrowserRouter([
+    // ─── Public routes (unauthenticated) ───
     {
         path: '/',
         element: <PublickRoute />,
@@ -42,9 +46,35 @@ export const router = createBrowserRouter([
                 element: <Welcome />
             },
             {
+                path: paths.login,
+                element: <Login />
+            },
+            {
+                path: paths.registerPat,
+                element: <Register1 />
+            },
+            {
+                path: paths.registrDoc,
+                element: <Register1 />
+            },
+        ]
+    },
+
+    // ─── Protected: Role dispatcher ───
+    {
+        element: <PrivateRoute />,
+        children: [
+            {
                 path: paths.role,
                 element: <Role />
             },
+        ]
+    },
+
+    // ─── Protected: Doctor routes ───
+    {
+        element: <PrivateRoute requiredRole="dentist" />,
+        children: [
             {
                 element: <MainLayout />,
                 children: [
@@ -92,68 +122,75 @@ export const router = createBrowserRouter([
             }
         ]
     },
+
+    // ─── Protected: Patient routes ───
     {
-        element: <PatientLayout />,
+        element: <PrivateRoute requiredRole="patient" />,
         children: [
             {
-                path: paths.patientHome,
-                element: <PatientHome />
-            },
-            {
-                path: paths.patientCalendar,
-                element: <PatientAppointments />
-            },
-            {
-                path: paths.patientAppointmentDetail,
-                element: <PatientAppointmentDetail />
-            },
-            {
-                path: paths.patientHistory,
-                element: <PatientHistory />
-            },
-            {
-                path: paths.patientProfileSettings,
-                element: <PatientProfilePage />
-            },
-            {
-                path: paths.patientChats,
-                element: <PatientChats />
-            },
-            {
-                path: paths.patientChatDetail,
-                element: <PatientChatDetail />
-            },
-            {
-                path: paths.patientChatProfile,
-                element: <ChatProfilePage />
-            },
-            {
-                path: paths.doctors,
-                element: <Doctors />
-            },
-            {
-                path: paths.specialties,
-                element: <Specialties />
-            },
-            {
-                path: paths.notifications,
-                element: <Notifications />
-            },
-            {
-                path: paths.booking,
-                element: <Booking />
-            },
-            {
-                path: paths.checkupPreview,
-                element: <CheckupBookingPreview />
-            },
-            {
-                path: paths.myDentist,
-                element: <DoctorProfilePreview />
-            },
-            {
-                path: paths.treatments,
-                element: <TreatmentsListPage />
+                element: <PatientLayout />,
+                children: [
+                    {
+                        path: paths.patientHome,
+                        element: <PatientHome />
+                    },
+                    {
+                        path: paths.patientCalendar,
+                        element: <PatientAppointments />
+                    },
+                    {
+                        path: paths.patientAppointmentDetail,
+                        element: <PatientAppointmentDetail />
+                    },
+                    {
+                        path: paths.patientHistory,
+                        element: <PatientHistory />
+                    },
+                    {
+                        path: paths.patientProfileSettings,
+                        element: <PatientProfilePage />
+                    },
+                    {
+                        path: paths.patientChats,
+                        element: <PatientChats />
+                    },
+                    {
+                        path: paths.patientChatDetail,
+                        element: <PatientChatDetail />
+                    },
+                    {
+                        path: paths.patientChatProfile,
+                        element: <ChatProfilePage />
+                    },
+                    {
+                        path: paths.doctors,
+                        element: <Doctors />
+                    },
+                    {
+                        path: paths.specialties,
+                        element: <Specialties />
+                    },
+                    {
+                        path: paths.notifications,
+                        element: <Notifications />
+                    },
+                    {
+                        path: paths.booking,
+                        element: <Booking />
+                    },
+                    {
+                        path: paths.checkupPreview,
+                        element: <CheckupBookingPreview />
+                    },
+                    {
+                        path: paths.myDentist,
+                        element: <DoctorProfilePreview />
+                    },
+                    {
+                        path: paths.treatments,
+                        element: <TreatmentsListPage />
+                    }
+                ]
             }
         ]
     }

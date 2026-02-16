@@ -6,14 +6,27 @@ export interface BaseField {
     holder: string;
 }
 
-export interface FieldConfigForm extends BaseField{
+export interface FieldConfigForm extends BaseField {
     name: string;
     validation: RegisterOptions;
 }
 
+export type UserRole = 'patient' | 'dentist'
+
 export interface RegisterData {
-    username: string;
-    number: number;
+    phone: string;
     password: string;
-    password2: string; 
+    role: UserRole;
+    full_name: string;
+    email?: string;
+}
+
+export interface LoginData {
+    username: string;
+    password: string;
+}
+
+export interface TokenResponse {
+    access_token: string;
+    token_type: string;
 }

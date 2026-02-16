@@ -1,11 +1,18 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
 import DentistImg from "../assets/img/photos/Dentist.png";
+import { useCreateAppointment } from "../api/appointments";
+import { usePatientProfile } from "../api/profile";
+import { useState } from "react";
 
 const DoctorProfilePreview = () => {
     const navigate = useNavigate();
+    const [isBooked, setIsBooked] = useState(false);
+    const createAppointment = useCreateAppointment();
+    const { data: patient } = usePatientProfile();
 
     const doctorData = {
+        id: 1, // Placeholder dentist_id
         name: "Откир Комилов",
         phone: "+998 (90) 123 45 67",
         gender: "Мужчина",
@@ -17,12 +24,30 @@ const DoctorProfilePreview = () => {
         clinic: "Не указано"
     };
 
+    const handleBook = async () => {
+        if (!patient) return;
+
+        const start = new Date();
+        start.setDate(start.getDate() + 1);
+        start.setHours(10, 0, 0, 0);
+        const end = new Date(start.getTime() + 60 * 60 * 1000);
+
+        try {
+            await createAppointment.mutateAsync({
+                dentist_id: doctorData.id,
+                start_time: start.toISOString(),
+                end_time: end.toISOString()
+            });
+            setIsBooked(true);
+            setTimeout(() => setIsBooked(false), 3000);
+        } catch (error) {
+            console.error("Booking failed", error);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-[#F5F7FF] pb-10">
-            {/* Main Container - Responsive width */}
             <div className="max-w-xl mx-auto w-full flex flex-col min-h-screen">
-
-                {/* Header */}
                 <div className="flex items-center justify-between p-6">
                     <button
                         onClick={() => navigate(-1)}
@@ -35,10 +60,7 @@ const DoctorProfilePreview = () => {
                     </h1>
                 </div>
 
-                {/* Content Area */}
                 <div className="flex-1 px-4 space-y-4">
-
-                    {/* Doctor Image & Basic Info */}
                     <div className="flex flex-col items-center">
                         <div className="w-[180px] h-[180px] md:w-[220px] md:h-[220px] rounded-full overflow-hidden border-8 border-white shadow-xl mb-4">
                             <img src={DentistImg} alt="Doctor" className="w-full h-full object-cover" />
@@ -50,7 +72,6 @@ const DoctorProfilePreview = () => {
                         </div>
                     </div>
 
-                    {/* Gender & Age Info Card */}
                     <div className="bg-white rounded-[24px] p-6 shadow-sm space-y-4">
                         <div>
                             <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest">Пол</p>
@@ -64,7 +85,6 @@ const DoctorProfilePreview = () => {
                         </div>
                     </div>
 
-                    {/* Services Action Button */}
                     <button className="w-full bg-[#4E70FF] text-white py-5 px-8 rounded-[24px] flex items-center justify-between group active:scale-[0.98] transition-all shadow-lg shadow-blue-500/20">
                         <span className="text-xl font-black text-black">Услуги</span>
                         <div className="p-1 border-2 border-white rounded-lg bg-black">
@@ -74,7 +94,6 @@ const DoctorProfilePreview = () => {
                         </div>
                     </button>
 
-                    {/* Cases Action Button */}
                     <button className="w-full bg-[#FFBC00] text-white py-5 px-8 rounded-[24px] flex items-center justify-between group active:scale-[0.98] transition-all shadow-lg shadow-amber-500/20">
                         <span className="text-xl font-black text-black">Кейсы</span>
                         <div className="p-1 border-2 border-white rounded-lg bg-black">
@@ -84,7 +103,6 @@ const DoctorProfilePreview = () => {
                         </div>
                     </button>
 
-                    {/* Detailed Contact Info */}
                     <div className="bg-white rounded-[24px] p-8 shadow-sm space-y-5">
                         <div className="flex items-start gap-4">
                             <span className="text-[11px] font-bold text-gray-400 whitespace-nowrap pt-1">Тел.номер</span>
@@ -108,13 +126,24 @@ const DoctorProfilePreview = () => {
                         </div>
                     </div>
 
-                    {/* Main Action Button */}
                     <div className="pt-6 pb-12">
-                        <button className="w-full bg-[#11D76A] text-white py-6 rounded-[24px] text-xl font-black shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/40 transition-all active:scale-[0.98]">
-                            Записаться
+                        <button
+                            onClick={handleBook}
+                            disabled={createAppointment.isPending || isBooked}
+                            className={`w-full py-6 rounded-[24px] text-xl font-black transition-all active:scale-[0.98] shadow-lg flex items-center justify-center gap-3 ${isBooked
+                                    ? "bg-white text-[#11D76A] border-2 border-[#11D76A]"
+                                    : "bg-[#11D76A] text-white hover:shadow-emerald-500/40 shadow-emerald-500/30"
+                                }`}
+                        >
+                            {createAppointment.isPending && <Loader2 className="animate-spin" />}
+                            {isBooked ? (
+                                <>
+                                    <CheckCircle2 size={24} />
+                                    Готово!
+                                </>
+                            ) : "Записаться"}
                         </button>
                     </div>
-
                 </div>
             </div>
         </div>

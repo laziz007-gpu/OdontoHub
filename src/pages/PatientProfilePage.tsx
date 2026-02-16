@@ -1,25 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { clearUser } from "../store/slices/userSlice";
+import { paths } from "../Routes/path";
+import type { RootState } from "../store/store";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, Bell, Globe, Shield, HelpCircle, Headphones, Info, ChevronRight, LogOut, Check, X, Camera } from "lucide-react";
 import DentistImg from "../assets/img/photos/Dentist.png";
 import type { Language, MenuItem, SupportItem } from "../types/patient";
 import EditProfileModal from "../components/Shared/EditProfileModal";
-import { useRef } from "react";
 
 const PatientProfilePage = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { t, i18n } = useTranslation();
+    const user = useSelector((state: RootState) => state.user.user);
+
     const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [userData, setUserData] = useState({
-        name: "Дункан Факовский",
-        phone: "+998 (90) 123 45 67",
+        name: user?.full_name || "Дункан Факовский",
+        phone: user?.phone || "+998 (90) 123 45 67",
         gender: "Мужчина",
         age: "26 лет",
         address: "г. Ташкент",
         avatar: DentistImg
     });
+
+    useEffect(() => {
+        if (user) {
+            setUserData(prev => ({
+                ...prev,
+                name: user.full_name || prev.name,
+                phone: user.phone || prev.phone
+            }));
+        }
+    }, [user]);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -39,6 +55,15 @@ const PatientProfilePage = () => {
     const handleSaveProfile = (newData: any) => {
         setUserData(prev => ({ ...prev, ...newData }));
         setIsEditModalOpen(false);
+    };
+
+    const handleLogout = () => {
+        // 1. Очищаем токен
+        localStorage.removeItem('access_token');
+        // 2. Очищаем Redux state
+        dispatch(clearUser());
+        // 3. Редирект на вход
+        navigate(paths.login, { replace: true });
     };
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,7 +164,10 @@ const PatientProfilePage = () => {
                             >
                                 {t("patient.profile.edit")}
                             </button>
-                            <button className="w-full bg-white text-[#EA4335] border-2 border-transparent hover:border-[#EA4335]/10 py-5 rounded-[2rem] text-lg font-black transition-all flex items-center justify-center gap-3 cursor-pointer">
+                            <button
+                                onClick={handleLogout}
+                                className="w-full bg-white text-[#EA4335] border-2 border-transparent hover:border-[#EA4335]/10 py-5 rounded-[2rem] text-lg font-black transition-all flex items-center justify-center gap-3 cursor-pointer"
+                            >
                                 <LogOut size={20} />
                                 {t("patient.profile.logout")}
                             </button>

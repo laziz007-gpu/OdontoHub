@@ -105,6 +105,7 @@
         "date_placeholder": "Укажите дату",
         "time_label": "Время приёма",
         "notes_placeholder": "Напишите заметки или коментарии приёму",
+        "record": "Добавить",
         "services": {
             "implantation": "Имплантация",
             "consultation": "Консультация"
