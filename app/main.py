@@ -23,10 +23,10 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-app.include_router(patients.router, prefix="/patients", tags=["Patients"])
-app.include_router(dentists.router, prefix="/dentists", tags=["Dentists"])
-app.include_router(services.router, prefix="/services", tags=["Services"])
-app.include_router(appointments.router, prefix="/appointments", tags=["Appointments"])
+app.include_router(patients.router, tags=["Patients"])
+app.include_router(dentists.router, tags=["Dentists"])
+app.include_router(services.router, tags=["Services"])
+app.include_router(appointments.router, tags=["Appointments"])
 
 
 @app.get("/")

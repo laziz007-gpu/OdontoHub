@@ -9,7 +9,8 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
 
-    # 🗄 Database - Not used with SQLite, but kept for compatibility
+    # 🗄 Database
+    DATABASE_URL: Optional[str] = None
     DB_USER: Optional[str] = None
     DB_PASSWORD: Optional[str] = None
     DB_HOST: Optional[str] = None
