@@ -1,16 +1,13 @@
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { useLogin } from '../api/auth'
 import type { LoginData } from '../interfaces'
-import { Eye, EyeOff } from 'lucide-react'
 import logo from '../assets/img/icons/Logo.svg'
 import { paths } from '../Routes/path'
 
 export default function Login() {
   const navigate = useNavigate()
   const { mutate: login, isPending, error } = useLogin()
-  const [showPassword, setShowPassword] = useState(false)
 
   const {
     register,
@@ -21,8 +18,7 @@ export default function Login() {
   const onSubmit = (data: LoginData) => {
     // Чистим телефон от пробелов перед отправкой
     const cleanData = {
-      ...data,
-      username: data.username.replace(/\s+/g, ''),
+      phone: data.phone.replace(/\s+/g, ''),
     }
 
     login(cleanData, {
@@ -40,63 +36,38 @@ export default function Login() {
       </div>
 
       <h1 className="text-3xl font-bold text-white mb-2">Вход</h1>
-      <p className="text-white/70 mb-8">Войдите в свой аккаунт</p>
+      <p className="text-white/70 mb-8">Войдите по номеру телефона</p>
 
       {/* Card */}
       <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {/* Username / Phone */}
+          {/* Phone */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Телефон или имя пользователя
+              Номер телефона
             </label>
             <input
-              type="text"
+              type="tel"
               placeholder="+998 90 123 45 67"
-              className={`w-full px-4 py-3 rounded-xl border ${errors.username ? 'border-red-400' : 'border-gray-200'
+              className={`w-full px-4 py-3 rounded-xl border ${errors.phone ? 'border-red-400' : 'border-gray-200'
                 } focus:outline-none focus:ring-2 focus:ring-blue-500 transition`}
-              {...register('username', {
-                required: 'Введите телефон или имя пользователя',
+              {...register('phone', {
+                required: 'Введите номер телефона',
+                pattern: {
+                  value: /^\+998\d{9}$/,
+                  message: 'Неверный формат номера'
+                }
               })}
             />
-            {errors.username && (
-              <p className="text-red-500 text-xs mt-1">{errors.username.message}</p>
-            )}
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Пароль
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="••••••••"
-                className={`w-full px-4 py-3 rounded-xl border ${errors.password ? 'border-red-400' : 'border-gray-200'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500 transition pr-12`}
-                {...register('password', {
-                  required: 'Введите пароль',
-                  minLength: { value: 4, message: 'Минимум 4 символа' },
-                })}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+            {errors.phone && (
+              <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
             )}
           </div>
 
           {/* Error from server */}
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-600 text-sm">
-              {error instanceof Error ? error.message : 'Неверный логин или пароль'}
+              {error instanceof Error ? error.message : 'Пользователь не найден'}
             </div>
           )}
 

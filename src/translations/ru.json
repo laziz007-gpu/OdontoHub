@@ -77,7 +77,8 @@
             "cancelled": "Отменён",
             "rescheduled": "Перенесён",
             "in_progress": "В процессе",
-            "in_queue": "В очереди"
+            "in_queue": "В очереди",
+            "pending": "В ожидании"
         },
         "progress": {
             "recipe": "Рецепт",

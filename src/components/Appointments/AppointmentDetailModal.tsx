@@ -12,7 +12,7 @@ interface AppointmentDetailModalProps {
         service: string;
         patientName: string;
         status: AppointmentStatus;
-        raw: any;
+        raw?: any;
     } | null;
 }
 

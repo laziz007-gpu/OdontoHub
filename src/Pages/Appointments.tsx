@@ -17,43 +17,69 @@ const Appointments: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
     const { data: apiAppointments, isLoading } = useMyAppointments();
 
     const appointmentsData = useMemo(() => {
         if (!apiAppointments || !Array.isArray(apiAppointments)) return [];
-        return apiAppointments.map(app => {
-            const startDate = new Date(app.start_time);
-            const time = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
+        
+        // Format selected date for comparison (YYYY-MM-DD)
+        const selectedDateStr = `${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${selectedDate.getDate().toString().padStart(2, '0')}`;
+        
+        return apiAppointments
+            .filter(app => {
+                // Filter by selected date
+                const appointmentDate = new Date(app.start_time);
+                const appointmentDateStr = `${appointmentDate.getFullYear()}-${(appointmentDate.getMonth() + 1).toString().padStart(2, '0')}-${appointmentDate.getDate().toString().padStart(2, '0')}`;
+                return appointmentDateStr === selectedDateStr;
+            })
+            .map(app => {
+                const startDate = new Date(app.start_time);
+                const time = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
 
-            let status: AppointmentStatus = 'in_queue';
-            if (app.status === 'completed') status = 'completed';
-            else if (app.status === 'cancelled') status = 'cancelled';
-            else if (app.status === 'moved') status = 'rescheduled';
-            else if (app.status === 'confirmed') status = 'in_progress';
+                // Map backend status to frontend status
+                let status: AppointmentStatus = 'in_queue';
+                if (app.status === 'completed') status = 'completed';
+                else if (app.status === 'cancelled') status = 'cancelled';
+                else if (app.status === 'moved') status = 'rescheduled';
+                else if (app.status === 'confirmed') status = 'in_progress';
+                else if (app.status === 'pending') status = 'in_queue';
 
-            const serviceLabel = app.service === 'implantation' ? t('modal.services.implantation') :
-                app.service === 'hygiene' ? 'Гигиена' :
-                    app.service === 'treatment' ? 'Лечение' :
-                        app.service === 'extraction' ? 'Удаление' :
-                            app.service || t('modal.services.implantation');
+                const serviceLabel = app.service === 'implantation' ? t('modal.services.implantation') :
+                    app.service === 'hygiene' ? 'Гигиена' :
+                        app.service === 'treatment' ? 'Лечение' :
+                            app.service === 'extraction' ? 'Удаление' :
+                                app.service || t('modal.services.implantation');
 
-            const date = `${startDate.getDate().toString().padStart(2, '0')}.${(startDate.getMonth() + 1).toString().padStart(2, '0')}.${startDate.getFullYear()}`;
+                const date = `${startDate.getDate().toString().padStart(2, '0')}.${(startDate.getMonth() + 1).toString().padStart(2, '0')}.${startDate.getFullYear()}`;
 
-            return {
-                id: app.id,
-                time,
-                date,
-                status,
-                service: serviceLabel,
-                patientName: app.patient_name || 'Пациент',
-                raw: app
-            };
-        });
-    }, [apiAppointments, t]);
+                return {
+                    id: app.id,
+                    time,
+                    date,
+                    status,
+                    service: serviceLabel,
+                    patientName: app.patient_name || 'Пациент',
+                    raw: app
+                };
+            });
+    }, [apiAppointments, t, selectedDate]);
 
     const handleAptClick = (apt: any) => {
-        setSelectedAppointment(apt.raw);
+        // Prepare appointment data for modal
+        const appointmentData = {
+            id: apt.id,
+            time: apt.time,
+            date: apt.date,
+            status: apt.status,
+            service: apt.service,
+            patientName: apt.patientName,
+            raw: apt.raw
+        };
+        
+        setSelectedAppointment(appointmentData);
+        
         if (apt.status === 'in_progress') {
             setView('in_progress');
         } else {
@@ -61,8 +87,8 @@ const Appointments: React.FC = () => {
         }
     };
 
-    // Use current date or first appointment's date
-    const displayDate = new Date();
+    // Use selected date for display
+    const displayDate = selectedDate;
     const day = displayDate.getDate();
     const month = t(`common.months.${displayDate.getMonth()}`);
     const year = displayDate.getFullYear();
@@ -135,7 +161,7 @@ const Appointments: React.FC = () => {
                         </div>
 
                         {/* Date Selector */}
-                        <DateStrip />
+                        <DateStrip selectedDate={selectedDate} onDateChange={setSelectedDate} />
 
                         {/* Appointments List */}
                         {isLoading ? (

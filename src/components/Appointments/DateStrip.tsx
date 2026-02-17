@@ -7,16 +7,21 @@ interface DayItem {
     fullDate: Date;
 }
 
-const DateStrip: React.FC = () => {
+interface DateStripProps {
+    selectedDate: Date;
+    onDateChange: (date: Date) => void;
+}
+
+const DateStrip: React.FC<DateStripProps> = ({ selectedDate, onDateChange }) => {
     const { t, i18n } = useTranslation();
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date(2026, 5, 16)); // Mock active date for visual match (June 16)
     const [days, setDays] = useState<DayItem[]>([]);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        // Generate dates for June 2026 for visual matching
+        // Generate dates starting from today
         const generatedDays: DayItem[] = [];
-        const start = new Date(2026, 5, 14); // Start few days before today
+        const start = new Date();
+        start.setDate(start.getDate() - 3); // Start few days before today
 
         for (let i = 0; i < 14; i++) {
             const current = new Date(start);
@@ -38,7 +43,7 @@ const DateStrip: React.FC = () => {
     };
 
     const handleDateClick = (date: Date) => {
-        setSelectedDate(date);
+        onDateChange(date);
     };
 
     return (

@@ -3,14 +3,13 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { useRegister } from '../api/auth'
 import type { RegisterData, UserRole } from '../interfaces'
-import { Eye, EyeOff, Stethoscope, User } from 'lucide-react'
+import { Stethoscope, User } from 'lucide-react'
 import logo from '../assets/img/icons/Logo.svg'
 import { paths } from '../Routes/path'
 
 export default function Register1() {
   const navigate = useNavigate()
   const { mutate: registerUser, isPending, error } = useRegister()
-  const [showPassword, setShowPassword] = useState(false)
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null)
 
   const {
@@ -107,7 +106,7 @@ export default function Register1() {
           {/* Phone */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Телефон
+              Номер телефона
             </label>
             <input
               type="tel"
@@ -116,6 +115,10 @@ export default function Register1() {
                 } focus:outline-none focus:ring-2 focus:ring-blue-500 transition`}
               {...register('phone', {
                 required: 'Введите номер телефона',
+                pattern: {
+                  value: /^\+998\d{9}$/,
+                  message: 'Неверный формат номера'
+                }
               })}
             />
             {errors.phone && (
@@ -134,35 +137,6 @@ export default function Register1() {
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               {...register('email')}
             />
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Пароль
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="••••••••"
-                className={`w-full px-4 py-3 rounded-xl border ${errors.password ? 'border-red-400' : 'border-gray-200'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500 transition pr-12`}
-                {...register('password', {
-                  required: 'Введите пароль',
-                  minLength: { value: 6, message: 'Минимум 6 символов' },
-                })}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
-            )}
           </div>
 
           {/* Error from server */}
