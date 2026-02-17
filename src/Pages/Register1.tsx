@@ -115,9 +115,9 @@ export default function Register1() {
                 } focus:outline-none focus:ring-2 focus:ring-blue-500 transition`}
               {...register('phone', {
                 required: 'Введите номер телефона',
-                pattern: {
-                  value: /^\+998\d{9}$/,
-                  message: 'Неверный формат номера'
+                validate: (value) => {
+                  const cleaned = value.replace(/\s+/g, '');
+                  return /^\+998\d{9}$/.test(cleaned) || 'Неверный формат номера';
                 }
               })}
             />
