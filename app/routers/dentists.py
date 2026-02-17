@@ -48,6 +48,9 @@ def update_dentist_profile(
     user: User = Depends(require_role(UserRole.DENTIST)),
     db: Session = Depends(get_db)
 ):
+    print(f"🔵 PUT /dentists/me called by user {user.id}")
+    print(f"🔵 Data received: {data.dict()}")
+    
     if not user.dentist_profile:
         # Auto-create missing profile
         profile = DentistProfile(
@@ -85,6 +88,8 @@ def update_dentist_profile(
     db.commit()
     db.refresh(profile)
     db.refresh(user)
+    
+    print(f"✅ Profile updated successfully for user {user.id}")
     
     return {
         "id": profile.id,

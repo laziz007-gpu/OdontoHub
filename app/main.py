@@ -69,7 +69,7 @@ app.add_middleware(
 # Include routers
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(patients.router, tags=["Patients"])
-app.include_router(dentists.router, tags=["Dentists"])
+app.include_router(dentists.router)
 app.include_router(services.router, tags=["Services"])
 app.include_router(appointments.router, tags=["Appointments"])
 
@@ -82,6 +82,20 @@ def read_root():
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
+
+@app.get("/routes")
+def list_routes():
+    """Debug endpoint to list all registered routes"""
+    routes = []
+    for route in app.routes:
+        if hasattr(route, 'methods') and hasattr(route, 'path'):
+            routes.append({
+                "path": route.path,
+                "methods": list(route.methods),
+                "name": route.name
+            })
+    return {"routes": routes}
 
 
 
