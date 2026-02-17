@@ -23,5 +23,15 @@ class DentistProfile(Base):
     verification_status: Mapped[VerificationStatus] = mapped_column(
         Enum(VerificationStatus), default=VerificationStatus.PENDING
     )
+    
+    # Profile fields
+    specialization: Mapped[str | None] = mapped_column(String, nullable=True)
+    address: Mapped[str | None] = mapped_column(String, nullable=True)
+    clinic: Mapped[str | None] = mapped_column(String, nullable=True)
+    schedule: Mapped[str | None] = mapped_column(String, nullable=True)
+    work_hours: Mapped[str | None] = mapped_column(String, nullable=True)
+    telegram: Mapped[str | None] = mapped_column(String, nullable=True)
+    instagram: Mapped[str | None] = mapped_column(String, nullable=True)
+    whatsapp: Mapped[str | None] = mapped_column(String, nullable=True)
 
     user = relationship("User", back_populates="dentist_profile")

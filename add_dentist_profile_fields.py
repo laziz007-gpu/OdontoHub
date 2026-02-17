@@ -1,20 +1,14 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+"""
+Script to add new fields to dentist_profiles table
+Run this script to update the database schema
+"""
 from sqlalchemy import text
-from app.core.database import engine, Base
-from app.routers import auth, patients, dentists, services, appointments
+from app.core.database import engine
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
-
-app = FastAPI(title="OdontoHub API", version="1.0.0")
-
-@app.on_event("startup")
-async def startup_event():
-    """Run migrations on startup"""
+def add_dentist_profile_fields():
     with engine.connect() as conn:
+        # Add new columns to dentist_profiles table
         try:
-            # Add new columns to dentist_profiles table if they don't exist
             conn.execute(text("""
                 ALTER TABLE dentist_profiles 
                 ADD COLUMN IF NOT EXISTS specialization VARCHAR;
@@ -48,40 +42,10 @@ async def startup_event():
                 ADD COLUMN IF NOT EXISTS whatsapp VARCHAR;
             """))
             conn.commit()
-            print("✅ Database migration completed successfully")
+            print("✅ Successfully added new fields to dentist_profiles table")
         except Exception as e:
-            print(f"⚠️ Migration warning: {e}")
+            print(f"❌ Error adding fields: {e}")
             conn.rollback()
 
-# CORS configuration
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "https://odontohubapp.netlify.app",
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Include routers
-app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-app.include_router(patients.router, tags=["Patients"])
-app.include_router(dentists.router, tags=["Dentists"])
-app.include_router(services.router, tags=["Services"])
-app.include_router(appointments.router, tags=["Appointments"])
-
-
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to OdontoHub API"}
-
-
-@app.get("/health")
-def health_check():
-    return {"status": "healthy"}
-
-
-
+if __name__ == "__main__":
+    add_dentist_profile_fields()
