@@ -18,7 +18,7 @@ class User(Base):
     phone: Mapped[str] = mapped_column(String, unique=True, index=True)
     email: Mapped[str | None] = mapped_column(String, nullable=True)
     password: Mapped[str | None] = mapped_column(String, nullable=True)
-    role: Mapped[UserRole] = mapped_column(Enum(UserRole))
+    role: Mapped[str] = mapped_column(String)  # Используем String вместо Enum
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     patient_profile = relationship("PatientProfile", back_populates="user", uselist=False)

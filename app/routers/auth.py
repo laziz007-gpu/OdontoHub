@@ -23,21 +23,22 @@ def register(data: RegisterSchema, db: Session = Depends(get_db)):
         phone=data.phone,
         email=data.email,
         password=None,  # Без пароля
-        role=UserRole(data.role),
+        role=data.role.value if hasattr(data.role, 'value') else data.role,
     )
     db.add(user)
     db.commit()
     db.refresh(user)
 
     # Создаём профиль
-    if data.role.value == UserRole.PATIENT.value:
+    role_str = data.role.value if hasattr(data.role, 'value') else data.role
+    if role_str == "patient":
         profile = PatientProfile(
             user_id=user.id,
             full_name=data.full_name
         )
         db.add(profile)
 
-    elif data.role.value == UserRole.DENTIST.value:
+    elif role_str == "dentist":
         profile = DentistProfile(
             user_id=user.id,
             full_name=data.full_name
@@ -47,7 +48,7 @@ def register(data: RegisterSchema, db: Session = Depends(get_db)):
     db.commit()
 
     # Генерируем токен
-    token = create_access_token({"sub": str(user.id), "role": user.role.value})
+    token = create_access_token({"sub": str(user.id), "role": user.role})
     return {"access_token": token, "token_type": "bearer"}
 
 
@@ -64,7 +65,7 @@ def login(data: LoginSchema, db: Session = Depends(get_db)):
 
     # Генерируем токен (без проверки пароля)
     access_token = create_access_token(
-        {"sub": str(user.id), "role": user.role.value}
+        {"sub": str(user.id), "role": user.role}
     )
 
     return {
@@ -78,15 +79,15 @@ def login(data: LoginSchema, db: Session = Depends(get_db)):
 @router.get("/me")
 def get_me(user: User = Depends(get_current_user)):
     full_name = "User"
-    if user.role.value == UserRole.PATIENT.value and user.patient_profile:
+    if user.role == "patient" and user.patient_profile:
         full_name = user.patient_profile.full_name
-    elif user.role.value == UserRole.DENTIST.value and user.dentist_profile:
+    elif user.role == "dentist" and user.dentist_profile:
         full_name = user.dentist_profile.full_name
 
     return {
         "id": user.id,
         "phone": user.phone,
-        "role": user.role.value,
+        "role": user.role,
         "email": user.email,
         "full_name": full_name
     }

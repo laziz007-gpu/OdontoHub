@@ -17,3 +17,7 @@ class PatientProfile(Base):
     source: Mapped[str | None] = mapped_column(nullable=True)
 
     user = relationship("User", back_populates="patient_profile")
+    
+    # New relationships for prescriptions and allergies
+    prescriptions = relationship("Prescription", back_populates="patient", cascade="all, delete-orphan")
+    allergies = relationship("Allergy", back_populates="patient", cascade="all, delete-orphan")

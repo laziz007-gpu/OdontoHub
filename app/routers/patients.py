@@ -5,15 +5,19 @@ from app.core.database import get_db
 from app.core.security import require_role, hash_password, get_current_user
 from app.schemas.patient import PatientCreate, PatientUpdate, PatientSchema
 from app.models.patient import PatientProfile
-from app.models.user import User, UserRole
+from app.models.user import User
 
 
 router = APIRouter(prefix="/patients", tags=["Patients"])
 
+# Создаем константы для ролей (используем строки)
+DENTIST_ROLE = "dentist"
+PATIENT_ROLE = "patient"
+
 @router.get("/", response_model=List[PatientSchema])
 def list_patients(
     db: Session = Depends(get_db),
-    user: User = Depends(require_role(UserRole.DENTIST))
+    user: User = Depends(require_role(DENTIST_ROLE))
 ):
     patients = db.query(PatientProfile).all()
     result = []
@@ -27,7 +31,7 @@ def list_patients(
 def create_patient(
     data: PatientCreate,
     db: Session = Depends(get_db),
-    user: User = Depends(require_role(UserRole.DENTIST))
+    user: User = Depends(require_role(DENTIST_ROLE))
 ):
     try:
         # Check if user already exists
@@ -62,7 +66,7 @@ def create_patient(
         new_user = User(
             phone=data.phone,
             password=hashed,
-            role=UserRole.PATIENT
+            role="patient"  # Используем строку вместо enum
         )
         db.add(new_user)
         db.commit()
@@ -92,7 +96,7 @@ def create_patient(
 
 @router.get("/me", response_model=PatientSchema)
 def patient_me(
-    user: User = Depends(require_role(UserRole.PATIENT))
+    user: User = Depends(require_role(PATIENT_ROLE))
 ):
     if not user.patient_profile:
         from fastapi import HTTPException
@@ -107,7 +111,7 @@ from fastapi import HTTPException
 def get_patient(
     patient_id: int,
     db: Session = Depends(get_db),
-    user: User = Depends(require_role(UserRole.DENTIST))
+    user: User = Depends(require_role(DENTIST_ROLE))
 ):
     profile = db.query(PatientProfile).filter(PatientProfile.id == patient_id).first()
     if not profile:
@@ -121,7 +125,7 @@ def update_patient(
     patient_id: int,
     data: PatientUpdate,
     db: Session = Depends(get_db),
-    user: User = Depends(require_role(UserRole.DENTIST))
+    user: User = Depends(require_role(DENTIST_ROLE))
 ):
     profile = db.query(PatientProfile).filter(PatientProfile.id == patient_id).first()
     if not profile:
@@ -140,7 +144,7 @@ def update_patient(
 def delete_patient(
     patient_id: int,
     db: Session = Depends(get_db),
-    user: User = Depends(require_role(UserRole.DENTIST))
+    user: User = Depends(require_role(DENTIST_ROLE))
 ):
     profile = db.query(PatientProfile).filter(PatientProfile.id == patient_id).first()
     if not profile:
@@ -149,7 +153,7 @@ def delete_patient(
     # Optional: Delete associated user if they are JUST a patient
     associated_user = profile.user
     db.delete(profile)
-    if associated_user and associated_user.role == UserRole.PATIENT:
+    if associated_user and associated_user.role == "patient":
         db.delete(associated_user)
         
     db.commit()
