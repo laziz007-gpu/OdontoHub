@@ -1,49 +1,42 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, patients, dentists, appointments, services
-from app.core.database import engine
-from app.models.base import Base
-from app.models import user, patient, dentist, appointment, service
+from app.core.database import engine, Base
+from app.routers import auth, patients, dentists, services, appointments
 
-# Автоматическое создание таблиц при запуске (теперь в SQLite)
+# Create database tables
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(
-    title="Dental App API",
-    version="0.1.0"
-)
+app = FastAPI(title="OdontoHub API", version="1.0.0")
 
-# Настройка CORS
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:5174",
-    "http://127.0.0.1:5174",
-    "https://odontohubapp.netlify.app",
-    "https://*.netlify.app",  # Для preview deployments
-]
-
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://odontohubapp.netlify.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
-
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request, exc):
-    print(f"Validation Error: {exc.errors()}")
-    return JSONResponse(
-        status_code=422,
-        content={"detail": exc.errors(), "body": str(exc.body)},
-    )
-
-app.include_router(auth.router, prefix="/auth", tags=["Auth"])
-app.include_router(appointments.router, tags=["Appointments"])
+# Include routers
+app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(patients.router, tags=["Patients"])
 app.include_router(dentists.router, tags=["Dentists"])
 app.include_router(services.router, tags=["Services"])
+app.include_router(appointments.router, tags=["Appointments"])
+
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to OdontoHub API"}
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
+
+

@@ -7,26 +7,29 @@ from app.models.user import User, UserRole
 from app.models.patient import PatientProfile
 from app.models.dentist import DentistProfile
 from app.core.database import get_db
-from app.core.security import hash_password, verify_password, create_access_token
+from app.core.security import create_access_token
 
 router = APIRouter()
 
 
 @router.post("/register", response_model=TokenSchema)
 def register(data: RegisterSchema, db: Session = Depends(get_db)):
+    # Проверяем существование пользователя
     if db.query(User).filter(User.phone == data.phone).first():
-        raise HTTPException(status_code=400, detail="Phone already registered")
+        raise HTTPException(status_code=400, detail="Этот номер уже зарегистрирован")
 
+    # Создаём пользователя БЕЗ пароля
     user = User(
         phone=data.phone,
         email=data.email,
-        password=hash_password(data.password),
+        password=None,  # Без пароля
         role=UserRole(data.role),
     )
     db.add(user)
     db.commit()
     db.refresh(user)
 
+    # Создаём профиль
     if data.role.value == UserRole.PATIENT.value:
         profile = PatientProfile(
             user_id=user.id,
@@ -43,24 +46,23 @@ def register(data: RegisterSchema, db: Session = Depends(get_db)):
 
     db.commit()
 
-    token = create_access_token({"user_id": user.id, "role": user.role.value})
-    return {"access_token": token}
+    # Генерируем токен
+    token = create_access_token({"sub": str(user.id), "role": user.role.value})
+    return {"access_token": token, "token_type": "bearer"}
 
-from fastapi.security import OAuth2PasswordRequestForm
 
 @router.post("/login", response_model=TokenSchema)
-def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db)
-):
-    user = db.query(User).filter(User.phone == form_data.username).first()
+def login(data: LoginSchema, db: Session = Depends(get_db)):
+    # Ищем пользователя по телефону
+    user = db.query(User).filter(User.phone == data.phone).first()
 
-    if not user or not verify_password(form_data.password, user.password):
+    if not user:
         raise HTTPException(
             status_code=401,
-            detail="Неверный телефон или пароль"
+            detail="Пользователь с таким номером не найден"
         )
 
+    # Генерируем токен (без проверки пароля)
     access_token = create_access_token(
         {"sub": str(user.id), "role": user.role.value}
     )
