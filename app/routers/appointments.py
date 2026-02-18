@@ -3,15 +3,11 @@ from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.models.appointment import Appointment, AppointmentStatus
 from app.schemas.appointment import AppointmentCreate, AppointmentUpdate, AppointmentSchema
 
 router = APIRouter(prefix="/appointments", tags=["Appointments"])
-
-# Константы для ролей (используем строки)
-DENTIST_ROLE = "dentist"
-PATIENT_ROLE = "patient"
 
 @router.post("/", response_model=AppointmentSchema)
 def create_appointment(
@@ -22,11 +18,11 @@ def create_appointment(
     try:
         # Determine patient_id
         patient_id = None
-        if current_user.role == PATIENT_ROLE:
+        if current_user.role == UserRole.PATIENT:
             if not current_user.patient_profile:
                 raise HTTPException(status_code=400, detail="Patient profile not found")
             patient_id = current_user.patient_profile.id
-        elif current_user.role == DENTIST_ROLE:
+        elif current_user.role == UserRole.DENTIST:
             if not appointment.patient_id:
                 raise HTTPException(status_code=400, detail="patient_id is required for dentists")
             patient_id = appointment.patient_id
@@ -65,7 +61,7 @@ def get_my_appointments(
     current_user: User = Depends(get_current_user)
 ):
     query = db.query(Appointment)
-    if current_user.role == PATIENT_ROLE:
+    if current_user.role == UserRole.PATIENT:
         if not current_user.patient_profile:
             return []
         query = query.filter(Appointment.patient_id == current_user.patient_profile.id)
@@ -93,7 +89,7 @@ def get_my_appointments(
 def get_patient_appointments(
     patient_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_role(DENTIST_ROLE))
+    current_user: User = Depends(require_role(UserRole.DENTIST))
 ):
     appointments = db.query(Appointment).filter(Appointment.patient_id == patient_id).all()
     
@@ -122,7 +118,7 @@ def update_appointment(
         raise HTTPException(status_code=404, detail="Appointment not found")
     
     # Permission check
-    if current_user.role == PATIENT_ROLE:
+    if current_user.role == UserRole.PATIENT:
         if db_appointment.patient_id != current_user.patient_profile.id:
             raise HTTPException(status_code=403, detail="Not authorized to update this appointment")
     else:

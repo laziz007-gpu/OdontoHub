@@ -1,37 +1,73 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
+from datetime import datetime
 from app.core.database import get_db
 from app.core.security import require_role, hash_password, get_current_user
 from app.schemas.patient import PatientCreate, PatientUpdate, PatientSchema
 from app.models.patient import PatientProfile
-from app.models.user import User
+from app.models.user import User, UserRole
+from app.models.appointment import Appointment, AppointmentStatus
 
 
 router = APIRouter(prefix="/patients", tags=["Patients"])
 
-# Создаем константы для ролей (используем строки)
-DENTIST_ROLE = "dentist"
-PATIENT_ROLE = "patient"
+def calculate_patient_status(patient_id: int, db: Session) -> str:
+    """
+    Calculate patient status based on appointments:
+    - НОВЫЙ: no appointments
+    - ЛЕЧИТСЯ: has active appointment right now
+    - ЗАПИСАН: has past or future appointments, but no active appointment
+    """
+    now = datetime.now()
+    
+    # Check if patient has any appointments
+    has_appointments = db.query(Appointment).filter(
+        Appointment.patient_id == patient_id,
+        Appointment.status != AppointmentStatus.CANCELLED
+    ).first() is not None
+    
+    if not has_appointments:
+        return "НОВЫЙ"
+    
+    # Check if patient has active appointment right now
+    active_appointment = db.query(Appointment).filter(
+        Appointment.patient_id == patient_id,
+        Appointment.start_time <= now,
+        Appointment.end_time >= now,
+        Appointment.status.in_([AppointmentStatus.CONFIRMED, AppointmentStatus.PENDING])
+    ).first()
+    
+    if active_appointment:
+        return "ЛЕЧИТСЯ"
+    
+    return "ЗАПИСАН"
 
 @router.get("/", response_model=List[PatientSchema])
 def list_patients(
     db: Session = Depends(get_db),
-    user: User = Depends(require_role(DENTIST_ROLE))
+    user: User = Depends(require_role(UserRole.DENTIST))
 ):
-    patients = db.query(PatientProfile).all()
+    # Показываем только пациентов добавленных врачом (у них есть source)
+    patients = db.query(PatientProfile).filter(PatientProfile.source.isnot(None)).all()
     result = []
     for p in patients:
         schema = PatientSchema.model_validate(p)
         schema.phone = p.user.phone if p.user else None
+        schema.status = calculate_patient_status(p.id, db)
         result.append(schema)
+    
+    # Sort by status: НОВЫЙ -> ЛЕЧИТСЯ -> ЗАПИСАН
+    status_order = {"НОВЫЙ": 0, "ЛЕЧИТСЯ": 1, "ЗАПИСАН": 2}
+    result.sort(key=lambda x: status_order.get(x.status, 3))
+    
     return result
 
 @router.post("/", response_model=PatientSchema)
 def create_patient(
     data: PatientCreate,
     db: Session = Depends(get_db),
-    user: User = Depends(require_role(DENTIST_ROLE))
+    user: User = Depends(require_role(UserRole.DENTIST))
 ):
     try:
         # Check if user already exists
@@ -41,6 +77,7 @@ def create_patient(
             if profile:
                 schema = PatientSchema.model_validate(profile)
                 schema.phone = existing_user.phone
+                schema.status = calculate_patient_status(profile.id, db)
                 return schema
             
             # If user exists but no profile, create profile
@@ -57,6 +94,7 @@ def create_patient(
             db.refresh(profile)
             schema = PatientSchema.model_validate(profile)
             schema.phone = existing_user.phone
+            schema.status = calculate_patient_status(profile.id, db)
             return schema
 
         # Create new user and profile
@@ -66,7 +104,7 @@ def create_patient(
         new_user = User(
             phone=data.phone,
             password=hashed,
-            role="patient"  # Используем строку вместо enum
+            role=UserRole.PATIENT
         )
         db.add(new_user)
         db.commit()
@@ -84,9 +122,9 @@ def create_patient(
         db.commit()
         db.refresh(profile)
 
-        # db.refresh(profile) # Redundant
         schema = PatientSchema.model_validate(profile)
         schema.phone = new_user.phone
+        schema.status = calculate_patient_status(profile.id, db)
         return schema
     except Exception as e:
         import traceback
@@ -96,13 +134,15 @@ def create_patient(
 
 @router.get("/me", response_model=PatientSchema)
 def patient_me(
-    user: User = Depends(require_role(PATIENT_ROLE))
+    db: Session = Depends(get_db),
+    user: User = Depends(require_role(UserRole.PATIENT))
 ):
     if not user.patient_profile:
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Patient profile not found")
     schema = PatientSchema.model_validate(user.patient_profile)
     schema.phone = user.phone
+    schema.status = calculate_patient_status(user.patient_profile.id, db)
     return schema
 
 from fastapi import HTTPException
@@ -111,13 +151,14 @@ from fastapi import HTTPException
 def get_patient(
     patient_id: int,
     db: Session = Depends(get_db),
-    user: User = Depends(require_role(DENTIST_ROLE))
+    user: User = Depends(require_role(UserRole.DENTIST))
 ):
     profile = db.query(PatientProfile).filter(PatientProfile.id == patient_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="Patient not found")
     schema = PatientSchema.model_validate(profile)
     schema.phone = profile.user.phone if profile.user else None
+    schema.status = calculate_patient_status(profile.id, db)
     return schema
 
 @router.patch("/{patient_id}", response_model=PatientSchema)
@@ -125,7 +166,7 @@ def update_patient(
     patient_id: int,
     data: PatientUpdate,
     db: Session = Depends(get_db),
-    user: User = Depends(require_role(DENTIST_ROLE))
+    user: User = Depends(require_role(UserRole.DENTIST))
 ):
     profile = db.query(PatientProfile).filter(PatientProfile.id == patient_id).first()
     if not profile:
@@ -138,13 +179,14 @@ def update_patient(
     db.refresh(profile)
     schema = PatientSchema.model_validate(profile)
     schema.phone = profile.user.phone if profile.user else None
+    schema.status = calculate_patient_status(profile.id, db)
     return schema
 
 @router.delete("/{patient_id}")
 def delete_patient(
     patient_id: int,
     db: Session = Depends(get_db),
-    user: User = Depends(require_role(DENTIST_ROLE))
+    user: User = Depends(require_role(UserRole.DENTIST))
 ):
     profile = db.query(PatientProfile).filter(PatientProfile.id == patient_id).first()
     if not profile:
@@ -153,7 +195,7 @@ def delete_patient(
     # Optional: Delete associated user if they are JUST a patient
     associated_user = profile.user
     db.delete(profile)
-    if associated_user and associated_user.role == "patient":
+    if associated_user and associated_user.role == UserRole.PATIENT:
         db.delete(associated_user)
         
     db.commit()

@@ -1,19 +1,9 @@
 """
 Скрипт для создания тестового пользователя
 """
-from app.core.database import SessionLocal, Base, engine
-
-# ВАЖНО: Импортируем ВСЕ модели перед созданием таблиц
+from app.core.database import SessionLocal
 from app.models.user import User, UserRole
-from app.models.patient import PatientProfile
-from app.models.dentist import DentistProfile
-from app.models.service import Service
-from app.models.appointment import Appointment
-
-# Создаём все таблицы
-print("Создаём таблицы...")
-Base.metadata.create_all(bind=engine)
-print("✅ Таблицы созданы")
+from app.core.security import hash_password
 
 def create_test_user():
     db = SessionLocal()
@@ -23,14 +13,16 @@ def create_test_user():
         if existing_user:
             print("Пользователь с телефоном '+998901234567' уже существует")
             print(f"Phone: +998901234567")
+            print(f"Password: test123")
             return
         
-        # Создаём нового пользователя-стоматолога
+        # Создаём нового пользователя
+        hashed_password = hash_password("test123")
         new_user = User(
             phone="+998901234567",
-            email="dentist@example.com",
-            password=None,  # Без пароля
-            role="dentist",  # Используем строку вместо enum
+            email="test@example.com",
+            password=hashed_password,
+            role=UserRole.PATIENT,
             is_active=True
         )
         
@@ -38,18 +30,11 @@ def create_test_user():
         db.commit()
         db.refresh(new_user)
         
-        # Создаём профиль стоматолога
-        dentist_profile = DentistProfile(
-            user_id=new_user.id,
-            full_name="Dr. Test Dentist"
-        )
-        db.add(dentist_profile)
-        db.commit()
-        
-        print("✅ Тестовый стоматолог создан успешно!")
+        print("✅ Тестовый пользователь создан успешно!")
         print(f"Phone: +998901234567")
-        print(f"Email: dentist@example.com")
-        print(f"Role: dentist")
+        print(f"Password: test123")
+        print(f"Email: test@example.com")
+        print(f"Role: patient")
         
     except Exception as e:
         print(f"❌ Ошибка: {e}")

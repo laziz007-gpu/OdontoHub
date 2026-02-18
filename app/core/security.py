@@ -70,11 +70,7 @@ def get_current_user(
 
 def require_role(role: UserRole):
     def checker(user: User = Depends(get_current_user)):
-        # Сравниваем строки, так как role теперь String в модели
-        role_str = role.value if hasattr(role, 'value') else str(role)
-        user_role_str = user.role if isinstance(user.role, str) else user.role.value
-        
-        if user_role_str != role_str:
-            raise HTTPException(status_code=403, detail=f"Access denied. Required: {role_str}, Got: {user_role_str}")
+        if user.role != role:
+            raise HTTPException(status_code=403, detail="Access denied")
         return user
     return checker

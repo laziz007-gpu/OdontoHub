@@ -9,14 +9,13 @@ class Prescription(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     patient_id: Mapped[int] = mapped_column(Integer, ForeignKey("patient_profiles.id"), index=True)
-    medication_name: Mapped[str] = mapped_column(String(255))
-    dosage: Mapped[str] = mapped_column(String(100))  # e.g., "500mg", "2 tablets"
-    frequency: Mapped[str] = mapped_column(String(100))  # e.g., "twice daily", "every 8 hours"
-    duration: Mapped[str] = mapped_column(String(100))  # e.g., "7 days", "2 weeks"
+    medication_name: Mapped[str] = mapped_column("medication_name", String(255))
+    dosage: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    frequency: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    duration: Mapped[str | None] = mapped_column(String(100), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
-    prescribed_by: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))  # Doctor user_id
-    prescribed_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    prescribed_by: Mapped[int | None] = mapped_column("prescribed_by", Integer, ForeignKey("users.id"), nullable=True)
+    prescribed_at: Mapped[datetime] = mapped_column("prescribed_at", DateTime, default=datetime.utcnow)
     
-    # Relationships
     patient = relationship("PatientProfile", back_populates="prescriptions")
     doctor = relationship("User", foreign_keys=[prescribed_by])

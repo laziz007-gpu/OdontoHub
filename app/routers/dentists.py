@@ -1,32 +1,15 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
-from typing import Optional
 from app.core.database import get_db
 from app.core.security import require_role
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.models.dentist import DentistProfile
 
 router = APIRouter(prefix="/dentists", tags=["Dentists"])
 
-# Создаем константу для роли (используем строку)
-DENTIST_ROLE = "dentist"
-
-class UpdateDentistProfileRequest(BaseModel):
-    specialization: Optional[str] = None
-    phone: Optional[str] = None
-    address: Optional[str] = None
-    clinic: Optional[str] = None
-    schedule: Optional[str] = None
-    work_hours: Optional[str] = None
-    telegram: Optional[str] = None
-    instagram: Optional[str] = None
-    whatsapp: Optional[str] = None
-    works_photos: Optional[str] = None  # JSON string of photo URLs
-
 @router.get("/me")
 def dentist_me(
-    user: User = Depends(require_role(DENTIST_ROLE)),
+    user: User = Depends(require_role(UserRole.DENTIST)),
     db: Session = Depends(get_db)
 ):
     if not user.dentist_profile:
@@ -39,117 +22,116 @@ def dentist_me(
         db.commit()
         db.refresh(user)
 
-    profile = user.dentist_profile
-    
     return {
-        "id": profile.id,
-        "user_id": profile.user_id,
+        "id": user.dentist_profile.id,
         "role": user.role,
-        "full_name": profile.full_name,
-        "specialization": profile.specialization,
-        "phone": user.phone,
-        "address": profile.address,
-        "clinic": profile.clinic,
-        "schedule": profile.schedule,
-        "work_hours": profile.work_hours,
-        "telegram": profile.telegram,
-        "instagram": profile.instagram,
-        "whatsapp": profile.whatsapp,
-        "works_photos": profile.works_photos,
+        "full_name": user.dentist_profile.full_name,
+        "message": "Hello dentist"
     }
+
 
 @router.get("/me/stats")
 def get_dentist_stats(
-    user: User = Depends(require_role(DENTIST_ROLE)),
+    user: User = Depends(require_role(UserRole.DENTIST)),
     db: Session = Depends(get_db)
 ):
-    """Get dentist statistics: total patients, ratings, appointments"""
-    from app.models.patient import PatientProfile
+    """Get dentist statistics"""
     from app.models.appointment import Appointment
+    from app.models.patient import PatientProfile
+    from sqlalchemy import func, distinct
+    from datetime import datetime, timedelta
     
-    # Count total patients
-    total_patients = db.query(PatientProfile).count()
+    # Получаем ID врача
+    dentist_id = user.dentist_profile.id if user.dentist_profile else None
     
-    # Count total appointments for this dentist
-    total_appointments = db.query(Appointment).filter(
-        Appointment.dentist_id == user.dentist_profile.id
-    ).count() if user.dentist_profile else 0
+    if not dentist_id:
+        return {
+            "total_patients": 0,
+            "total_appointments": 0,
+            "completed_appointments": 0,
+            "pending_appointments": 0,
+            "appointments_today": 0,
+            "appointments_this_month": 0,
+            "new_patients_this_week": 0
+        }
     
-    # TODO: Calculate average rating from reviews (when review system is implemented)
-    average_rating = 4.8
-    total_reviews = 103
+    # Считаем только пациентов добавленных врачом (с source)
+    total_patients = db.query(func.count(PatientProfile.id)).filter(
+        PatientProfile.source.isnot(None)
+    ).scalar() or 0
+    
+    # Считаем все записи
+    total_appointments = db.query(func.count(Appointment.id)).filter(
+        Appointment.dentist_id == dentist_id
+    ).scalar() or 0
+    
+    # Считаем завершенные записи
+    completed_appointments = db.query(func.count(Appointment.id)).filter(
+        Appointment.dentist_id == dentist_id,
+        Appointment.status == "completed"
+    ).scalar() or 0
+    
+    # Считаем ожидающие записи
+    pending_appointments = db.query(func.count(Appointment.id)).filter(
+        Appointment.dentist_id == dentist_id,
+        Appointment.status.in_(["pending", "confirmed"])
+    ).scalar() or 0
+    
+    # Дополнительная статистика для дашборда
+    today = datetime.now().date()
+    week_ago = datetime.now() - timedelta(days=7)
+    month_start = datetime.now().replace(day=1)
+    
+    # Приёмы сегодня
+    appointments_today = db.query(func.count(Appointment.id)).filter(
+        Appointment.dentist_id == dentist_id,
+        func.date(Appointment.start_time) == today
+    ).scalar() or 0
+    
+    # Приёмы за месяц
+    appointments_this_month = db.query(func.count(Appointment.id)).filter(
+        Appointment.dentist_id == dentist_id,
+        Appointment.start_time >= month_start
+    ).scalar() or 0
+    
+    # Новые пациенты за неделю (только добавленные врачом)
+    new_patients_this_week = db.query(func.count(PatientProfile.id)).filter(
+        PatientProfile.source.isnot(None),
+        PatientProfile.created_at >= week_ago
+    ).scalar() or 0
     
     return {
         "total_patients": total_patients,
         "total_appointments": total_appointments,
-        "average_rating": average_rating,
-        "total_reviews": total_reviews
+        "completed_appointments": completed_appointments,
+        "pending_appointments": pending_appointments,
+        "appointments_today": appointments_today,
+        "appointments_this_month": appointments_this_month,
+        "new_patients_this_week": new_patients_this_week
     }
+
 
 @router.put("/me")
 def update_dentist_profile(
-    data: UpdateDentistProfileRequest,
-    user: User = Depends(require_role(DENTIST_ROLE)),
+    profile_data: dict,
+    user: User = Depends(require_role(UserRole.DENTIST)),
     db: Session = Depends(get_db)
 ):
-    print(f"🔵 PUT /dentists/me called by user {user.id}")
-    print(f"🔵 Data received: {data.dict()}")
-    
+    """Update dentist profile"""
     if not user.dentist_profile:
-        # Auto-create missing profile
-        profile = DentistProfile(
-            user_id=user.id, 
-            full_name="Dr. " + (user.email or user.phone)
-        )
-        db.add(profile)
-        db.commit()
-        db.refresh(user)
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Profile not found")
     
-    profile = user.dentist_profile
-    
-    # Update dentist profile fields
-    if data.specialization is not None:
-        profile.specialization = data.specialization
-    if data.address is not None:
-        profile.address = data.address
-    if data.clinic is not None:
-        profile.clinic = data.clinic
-    if data.schedule is not None:
-        profile.schedule = data.schedule
-    if data.work_hours is not None:
-        profile.work_hours = data.work_hours
-    if data.telegram is not None:
-        profile.telegram = data.telegram
-    if data.instagram is not None:
-        profile.instagram = data.instagram
-    if data.whatsapp is not None:
-        profile.whatsapp = data.whatsapp
-    if data.works_photos is not None:
-        profile.works_photos = data.works_photos
-    
-    # Update phone in user table
-    if data.phone is not None:
-        user.phone = data.phone
+    # Update profile fields
+    for key, value in profile_data.items():
+        if hasattr(user.dentist_profile, key):
+            setattr(user.dentist_profile, key, value)
     
     db.commit()
-    db.refresh(profile)
-    db.refresh(user)
-    
-    print(f"✅ Profile updated successfully for user {user.id}")
+    db.refresh(user.dentist_profile)
     
     return {
-        "id": profile.id,
-        "user_id": profile.user_id,
-        "full_name": profile.full_name,
-        "specialization": profile.specialization,
-        "phone": user.phone,
-        "address": profile.address,
-        "clinic": profile.clinic,
-        "schedule": profile.schedule,
-        "work_hours": profile.work_hours,
-        "telegram": profile.telegram,
-        "instagram": profile.instagram,
-        "whatsapp": profile.whatsapp,
-        "works_photos": profile.works_photos,
+        "id": user.dentist_profile.id,
+        "full_name": user.dentist_profile.full_name,
         "message": "Profile updated successfully"
     }

@@ -24,15 +24,15 @@ class DentistProfile(Base):
         Enum(VerificationStatus), default=VerificationStatus.PENDING
     )
     
-    # Profile fields
+    # Profile fields from EditDoctorProfile
     specialization: Mapped[str | None] = mapped_column(String, nullable=True)
+    phone: Mapped[str | None] = mapped_column(String, nullable=True)
     address: Mapped[str | None] = mapped_column(String, nullable=True)
     clinic: Mapped[str | None] = mapped_column(String, nullable=True)
     schedule: Mapped[str | None] = mapped_column(String, nullable=True)
-    work_hours: Mapped[str | None] = mapped_column(String, nullable=True)
+    work_hours: Mapped[str | None] = mapped_column(String, nullable=True)  # Format: "08:00-16:00"
     telegram: Mapped[str | None] = mapped_column(String, nullable=True)
     instagram: Mapped[str | None] = mapped_column(String, nullable=True)
     whatsapp: Mapped[str | None] = mapped_column(String, nullable=True)
-    works_photos: Mapped[str | None] = mapped_column(String, nullable=True)  # JSON array of photo URLs
 
     user = relationship("User", back_populates="dentist_profile")
