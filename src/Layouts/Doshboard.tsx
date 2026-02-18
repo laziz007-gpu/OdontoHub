@@ -6,6 +6,8 @@ import { Users, Calendar, MessageCircle, LayoutDashboard, Menu, X } from "lucide
 import Logo from "../assets/img/icons/Logo3.svg";
 import { paths } from "../Routes/path";
 import { useTranslation } from "react-i18next";
+import { useMyAppointments } from "../api/appointments";
+import { useAllPatients } from "../api/profile";
 
 type MenuItem = {
   id: string;
@@ -18,6 +20,29 @@ export default function Sidebar() {
   const location = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { t } = useTranslation();
+
+  // Fetch real data
+  const { data: appointments } = useMyAppointments();
+  const { data: patients } = useAllPatients();
+
+  // Calculate today's stats
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const todayAppointments = appointments?.filter((apt: any) => {
+    const aptDate = new Date(apt.start_time);
+    return aptDate >= today && aptDate < tomorrow;
+  }).length || 0;
+
+  // Calculate today's new patients
+  const newPatientsToday = patients?.filter((p: any) => {
+    if (!p.created_at) return false;
+    const createdDate = new Date(p.created_at);
+    createdDate.setHours(0, 0, 0, 0);
+    return createdDate.getTime() === today.getTime();
+  }).length || 0;
 
   // Mobile drawer ochilganda body scrollni bloklash
   useEffect(() => {
@@ -84,9 +109,8 @@ export default function Sidebar() {
         <div className="relative z-10 text-center">
           <h3 className="text-lg font-bold mb-4">{t('sidebar.focus_title')}</h3>
           <div className="space-y-1.5 text-base font-medium">
-            <p>{t('sidebar.focus_appointments')}</p>
-            <p>{t('sidebar.focus_consultations')}</p>
-            <p>{t('sidebar.focus_patients')}</p>
+            <p>{todayAppointments} {todayAppointments === 1 ? t('sidebar.focus_appointment_single') : t('sidebar.focus_appointments_plural')}</p>
+            <p>{newPatientsToday} {newPatientsToday === 1 ? t('sidebar.focus_new_patient_single') : t('sidebar.focus_new_patients_plural')}</p>
           </div>
           <Link to={paths.analytics}>
             <button className="mt-5 w-full bg-white text-gray-900 py-3 rounded-2xl font-semibold shadow hover:bg-gray-100 transition-colors">

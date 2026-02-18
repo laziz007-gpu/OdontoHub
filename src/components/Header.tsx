@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Users, Calendar, MessageCircle, LayoutDashboard, Menu, X } from 'lucide-react';
 import Logo from '../assets/img/icons/Logo3.svg';
+import { useDentistStats } from '../api/profile';
 
 // Menu item turi
 type MenuItem = {
@@ -12,6 +13,7 @@ type MenuItem = {
 export default function Header() {
   const [activeItem, setActiveItem] = useState<string>('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const { data: stats } = useDentistStats();
 
   const menuItems: MenuItem[] = [
     { id: 'dashboard', label: 'Панель управления', icon: LayoutDashboard },
@@ -60,9 +62,9 @@ export default function Header() {
         <div className="relative z-10">
           <h3 className="text-[19px] font-bold text-white mb-6">Сегодняшний фокус</h3>
           <div className="space-y-1 text-white text-[19px] font-extrabold leading-tight tracking-tight">
-            <p>7 приёмов</p>
+            <p>{stats?.appointments_today || 0} приёмов</p>
             <p>3 онлайн-консульт.</p>
-            <p>2 новых пациентов</p>
+            <p>{stats?.new_patients_this_week || 0} новых пациентов</p>
           </div>
         </div>
 

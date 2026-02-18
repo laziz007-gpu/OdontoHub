@@ -8,4 +8,17 @@ services:
       - key: PYTHON_VERSION
         value: 3.11.0
       - key: DATABASE_URL
-        value: sqlite:///./sql_app.db
+        fromDatabase:
+          name: odontohub-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 1440
+
+databases:
+  - name: odontohub-db
+    databaseName: odontohub
+    user: odontohub

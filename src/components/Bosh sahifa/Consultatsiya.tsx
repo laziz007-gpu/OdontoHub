@@ -17,7 +17,7 @@ export default function Consultatsiya() {
   ];
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 mb-8">
+    <div className="flex flex-col md:flex-row gap-6 mb-8" style={{ display: 'none' }}>
       {stats.map((item) => {
         const isPositive = item.change > 0;
         const isNegative = item.change < 0;

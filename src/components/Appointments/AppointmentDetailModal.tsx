@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type AppointmentStatus } from './AppointmentCard';
+import { useCancelAppointment, useRescheduleAppointment } from '../../api/appointments';
+import RescheduleModal from './RescheduleModal';
 
 interface AppointmentDetailModalProps {
     isOpen: boolean;
@@ -14,12 +16,43 @@ interface AppointmentDetailModalProps {
         status: AppointmentStatus;
         raw?: any;
     } | null;
+    onSuccess?: (message: string, type: 'success' | 'error') => void;
 }
 
-const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen, onClose, appointment }) => {
+const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen, onClose, appointment, onSuccess }) => {
     const { t } = useTranslation();
+    const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
+    const cancelMutation = useCancelAppointment();
+    const rescheduleMutation = useRescheduleAppointment();
 
     if (!isOpen || !appointment) return null;
+
+    const handleCancel = async () => {
+        if (confirm('Вы уверены что хотите отменить этот приём?')) {
+            try {
+                await cancelMutation.mutateAsync(appointment.id);
+                onSuccess?.('Приём успешно отменён', 'success');
+                onClose();
+            } catch (error) {
+                onSuccess?.('Ошибка при отмене приёма', 'error');
+            }
+        }
+    };
+
+    const handleReschedule = async (startTime: string, endTime: string) => {
+        try {
+            await rescheduleMutation.mutateAsync({
+                id: appointment.id,
+                start_time: startTime,
+                end_time: endTime
+            });
+            onSuccess?.('Приём успешно перенесён', 'success');
+            setIsRescheduleOpen(false);
+            onClose();
+        } catch (error) {
+            onSuccess?.('Ошибка при переносе приёма', 'error');
+        }
+    };
 
     const statusColors: Record<AppointmentStatus, string> = {
         'completed': 'text-[#10d16d]',
@@ -36,7 +69,7 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
         >
             <div
                 onClick={(e) => e.stopPropagation()}
-                className="bg-white w-full max-w-[400px] h-full shadow-2xl animate-in slide-in-from-right duration-300 p-8 flex flex-col"
+                className="bg-white w-full max-w-[400px] h-full shadow-2xl animate-in slide-in-from-right duration-300 p-8 flex flex-col overflow-y-auto"
             >
                 {/* Image Placeholder */}
                 <div className="w-full aspect-video bg-[#e0e0e0] rounded-[24px] mb-8"></div>
@@ -80,20 +113,50 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
                                 {t('appointments.detail.initial')}
                             </span>
                         </div>
-                        <div className="pt-4 border-t border-white/20">
-                            <span className="text-2xl font-black">2.500.000 <span className="text-sm">сум</span></span>
-                        </div>
+                        {appointment.raw?.price && (
+                            <div className="pt-4 border-t border-white/20">
+                                <span className="text-2xl font-black">{appointment.raw.price.toLocaleString()} <span className="text-sm">сум</span></span>
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 {/* Close Button */}
-                <button
-                    onClick={onClose}
-                    className="w-full py-5 bg-[#4f6bff] text-white text-xl font-black rounded-[20px] shadow-lg shadow-[#4f6bff]/30 hover:bg-[#3d56ff] transition-all active:scale-[0.98] mt-8"
-                >
-                    {t('common.close')}
-                </button>
+                <div className="flex gap-3 mt-8">
+                    <button
+                        onClick={onClose}
+                        className="flex-1 py-5 bg-gray-100 text-gray-600 text-xl font-black rounded-[20px] hover:bg-gray-200 transition-all active:scale-[0.98]"
+                    >
+                        {t('common.close')}
+                    </button>
+                    {appointment.status !== 'cancelled' && appointment.status !== 'completed' && (
+                        <>
+                            <button
+                                onClick={() => setIsRescheduleOpen(true)}
+                                className="flex-1 py-5 bg-[#feb019] text-white text-xl font-black rounded-[20px] shadow-lg shadow-[#feb019]/30 hover:bg-[#e09d15] transition-all active:scale-[0.98]"
+                            >
+                                Перенести
+                            </button>
+                            <button
+                                onClick={handleCancel}
+                                className="flex-1 py-5 bg-[#ff4560] text-white text-xl font-black rounded-[20px] shadow-lg shadow-[#ff4560]/30 hover:bg-[#e03d54] transition-all active:scale-[0.98]"
+                            >
+                                Отменить
+                            </button>
+                        </>
+                    )}
+                </div>
             </div>
+
+            {/* Reschedule Modal */}
+            {appointment.raw?.start_time && (
+                <RescheduleModal
+                    isOpen={isRescheduleOpen}
+                    onClose={() => setIsRescheduleOpen(false)}
+                    onConfirm={handleReschedule}
+                    currentStartTime={appointment.raw.start_time}
+                />
+            )}
         </div>
     );
 };

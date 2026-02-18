@@ -10,6 +10,7 @@ export interface Patient {
     address?: string | null;
     phone?: string | null;
     source?: string | null;
+    status?: string | null;
 }
 
 export interface DentistProfile {
@@ -19,6 +20,16 @@ export interface DentistProfile {
     pinfl: string | null;
     diploma_number: string | null;
     verification_status: "pending" | "approved" | "rejected";
+    specialization?: string;
+    phone?: string;
+    address?: string;
+    clinic?: string;
+    schedule?: string;
+    work_hours?: string;
+    telegram?: string;
+    instagram?: string;
+    whatsapp?: string;
+    works_photos?: string;  // JSON string of photo URLs
 }
 
 export const usePatientProfile = () => {
@@ -69,7 +80,7 @@ export const usePatient = (id: number) => {
 export const useCreatePatient = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (data: Omit<Patient, 'id' | 'user_id'>) => {
+        mutationFn: async (data: Omit<Patient, 'id' | 'user_id'> & { source?: string }) => {
             const response = await api.post<Patient>('/patients/', data);
             return response.data;
         },
@@ -104,4 +115,50 @@ export const useDeletePatient = () => {
             queryClient.invalidateQueries({ queryKey: ['patients'] });
         }
     });
+};
+
+export const useUpdateDentistProfile = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (data: Partial<{
+            specialization: string;
+            phone: string;
+            address: string;
+            clinic: string;
+            schedule: string;
+            work_hours: string;
+            telegram: string;
+            instagram: string;
+            whatsapp: string;
+            works_photos: string;
+        }>) => {
+            const response = await api.put<DentistProfile>('/dentists/me', data);
+            return response.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['dentistProfile'] });
+        }
+    });
+};
+
+export interface DentistStats {
+    total_patients: number;
+    total_appointments: number;
+    completed_appointments: number;
+    pending_appointments: number;
+    appointments_today: number;
+    appointments_this_month: number;
+    new_patients_this_week: number;
+}
+
+export const useDentistStats = () => {
+    const accessToken = localStorage.getItem('access_token')
+    return useQuery({
+        queryKey: ['dentistStats'],
+        queryFn: async () => {
+            const response = await api.get<DentistStats>('/dentists/me/stats');
+            return response.data;
+        },
+        enabled: !!accessToken,
+    })
 };
