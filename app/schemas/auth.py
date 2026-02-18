@@ -9,7 +9,6 @@ class UserRole(str, Enum):
 
 class RegisterSchema(BaseModel):
     phone: str
-    password: str
     role: UserRole
     full_name: str
     email: str | None = None
@@ -17,7 +16,6 @@ class RegisterSchema(BaseModel):
 
 class LoginSchema(BaseModel):
     phone: str
-    password: str
 
 
 class TokenSchema(BaseModel):

@@ -23,6 +23,7 @@ class PatientSchema(PatientBase):
     id: int
     user_id: int
     phone: Optional[str] = None
+    status: Optional[str] = None
 
     class Config:
         from_attributes = True

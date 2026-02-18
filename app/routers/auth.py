@@ -7,7 +7,7 @@ from app.models.user import User, UserRole
 from app.models.patient import PatientProfile
 from app.models.dentist import DentistProfile
 from app.core.database import get_db
-from app.core.security import hash_password, verify_password, create_access_token
+from app.core.security import create_access_token
 
 router = APIRouter()
 
@@ -17,10 +17,11 @@ def register(data: RegisterSchema, db: Session = Depends(get_db)):
     if db.query(User).filter(User.phone == data.phone).first():
         raise HTTPException(status_code=400, detail="Phone already registered")
 
+    # Passwordless: no password required
     user = User(
         phone=data.phone,
         email=data.email,
-        password=hash_password(data.password),
+        password=None,  # No password for passwordless auth
         role=UserRole(data.role),
     )
     db.add(user)
@@ -44,21 +45,16 @@ def register(data: RegisterSchema, db: Session = Depends(get_db)):
     db.commit()
 
     token = create_access_token({"user_id": user.id, "role": user.role.value})
-    return {"access_token": token}
-
-from fastapi.security import OAuth2PasswordRequestForm
+    return {"access_token": token, "token_type": "bearer"}
 
 @router.post("/login", response_model=TokenSchema)
-def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db)
-):
-    user = db.query(User).filter(User.phone == form_data.username).first()
+def login(data: LoginSchema, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.phone == data.phone).first()
 
-    if not user or not verify_password(form_data.password, user.password):
+    if not user:
         raise HTTPException(
             status_code=401,
-            detail="Неверный телефон или пароль"
+            detail="Пользователь не найден"
         )
 
     access_token = create_access_token(
