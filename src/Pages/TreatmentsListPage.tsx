@@ -13,40 +13,8 @@ interface TreatmentDetail {
 const TreatmentsListPage = () => {
     const navigate = useNavigate();
 
-    const treatments: TreatmentDetail[] = [
-        {
-            name: "Имплантация",
-            price: "2.500.000сум",
-            dateRange: "9дек-15дек",
-            status: "Завершено",
-            appointments: 3,
-            payment: "Оплачено"
-        },
-        {
-            name: "Пломбирование",
-            price: "250.000сум",
-            dateRange: "9дек-15дек",
-            status: "В процессе",
-            appointments: 3,
-            payment: "Не оплачено"
-        },
-        {
-            name: "Удаление",
-            price: "250.000сум",
-            dateRange: "9дек-15дек",
-            status: "Отменено",
-            appointments: 3,
-            payment: "Оплачено"
-        },
-        {
-            name: "Имплантация",
-            price: "2.500.000сум",
-            dateRange: "9дек-15дек",
-            status: "Завершено",
-            appointments: 3,
-            payment: "Оплачено"
-        }
-    ];
+    // Treatments will be loaded from API in future
+    const treatments: TreatmentDetail[] = [];
 
     const getStatusColor = (status: string) => {
         switch (status) {

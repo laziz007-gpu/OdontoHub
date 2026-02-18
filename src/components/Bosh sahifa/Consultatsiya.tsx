@@ -10,11 +10,8 @@ type Stat = {
 export default function Consultatsiya() {
   const { t } = useTranslation();
 
-  const stats: Stat[] = [
-    { value: 7, titleKey: "dashboard.stats.consultations_today", change: -2 },
-    { value: 125, titleKey: "dashboard.stats.appointments_month", change: 15 },
-    { value: 5, titleKey: "dashboard.stats.new_patients_week", change: 0 },
-  ];
+  // Stats will be loaded from API in future - currently hidden
+  const stats: Stat[] = [];
 
   return (
     <div className="flex flex-col md:flex-row gap-6 mb-8" style={{ display: 'none' }}>

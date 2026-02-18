@@ -40,14 +40,8 @@ const Hero: React.FC<HeroProps> = ({ onSearch }) => {
     }
   };
 
-  const notifications: Notification[] = [
-    { from: 'Odonto', message: 'Следующий приём через 15 минут', time: '5 мин' },
-    { from: 'Пациент Алишер', message: 'Поставил вам 5 ★★★★★', time: '12 мин' },
-    { from: 'Пациент Гулнора', message: 'Оставил подробный отзыв', time: '27 мин' },
-    { from: 'Odonto', message: 'Напоминание: ежемесячная оплата', time: '1 ч' },
-    { from: 'Пациент Зарина', message: 'Перенес приём на 14:30', time: '2 ч' },
-    { from: 'Пациент Фарход', message: 'Ждёт вашего ответа уже 4+ часа', time: '4 ч' },
-  ];
+  // Notifications will be loaded from API in future
+  const notifications: Notification[] = [];
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
