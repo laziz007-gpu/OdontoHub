@@ -2,10 +2,13 @@ import React, { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Smile, Star, Calendar, ArrowRight } from 'lucide-react';
+import { useDentistStats } from '../../api/profile';
 
 const StatsSection: FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const { data: stats } = useDentistStats();
+    
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Total Patients */}
@@ -15,7 +18,7 @@ const StatsSection: FC = () => {
                     <div className="w-12 h-12 bg-[#F5F8FF] rounded-2xl flex items-center justify-center">
                         <Smile className="w-6 h-6 text-[#5B7FFF]" />
                     </div>
-                    <span className="text-4xl font-extrabold text-[#1E2532]">230</span>
+                    <span className="text-4xl font-extrabold text-[#1E2532]">{stats?.total_patients || 0}</span>
                 </div>
                 <button
                     onClick={() => navigate('/patients')}
@@ -32,9 +35,9 @@ const StatsSection: FC = () => {
                     <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center">
                         <Star className="w-6 h-6 text-amber-400 fill-amber-400" />
                     </div>
-                    <span className="text-4xl font-extrabold text-[#1E2532]">4.8</span>
+                    <span className="text-4xl font-extrabold text-[#1E2532]">{stats?.average_rating || 0}</span>
                 </div>
-                <p className="mt-8 text-[10px] text-gray-400 font-bold uppercase tracking-wider">{t('doctor_profile.from_reviews', { count: 103 })}</p>
+                <p className="mt-8 text-[10px] text-gray-400 font-bold uppercase tracking-wider">{t('doctor_profile.from_reviews', { count: stats?.total_reviews || 0 })}</p>
             </div>
 
             {/* Appointments Graph */}
@@ -44,7 +47,7 @@ const StatsSection: FC = () => {
                     <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
                         <Calendar className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-4xl font-extrabold text-white">750</span>
+                    <span className="text-4xl font-extrabold text-white">{stats?.total_appointments || 0}</span>
                 </div>
                 <button
                     onClick={() => navigate('/appointments')}

@@ -1,36 +1,46 @@
 "use client";
 
-import { useState, type FC } from "react";
+import { useState, useMemo, type FC } from "react";
 import { ChevronLeft, ChevronRight, MoreVertical } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useMyAppointments } from "../../api/appointments";
+import { useNavigate } from "react-router-dom";
 
-type Tab = { id: string; labelKey: string };
-type TimeSlot = { id: number; time: string; active: boolean };
 type Appointment = { id: number; name: string; time: string };
 
 const Section: FC = () => {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<string>("day");
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const navigate = useNavigate();
 
-  const tabs: Tab[] = [
-    { id: "day", labelKey: "dashboard.appointments_card.tabs.day" },
-    { id: "week", labelKey: "dashboard.appointments_card.tabs.week" },
-    { id: "month", labelKey: "dashboard.appointments_card.tabs.month" },
-  ];
+  const { data: apiAppointments, isLoading } = useMyAppointments();
 
-  const timeSlots: TimeSlot[] = [
-    { id: 1, time: "9:00", active: true },
-    { id: 2, time: "20:00", active: false },
-  ];
+  const appointments = useMemo(() => {
+    if (!apiAppointments || !Array.isArray(apiAppointments)) return [];
+    
+    // Format selected date for comparison (YYYY-MM-DD)
+    const selectedDateStr = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
+    
+    return apiAppointments
+      .filter(app => {
+        // Filter by selected date
+        const appointmentDate = new Date(app.start_time);
+        const appointmentDateStr = `${appointmentDate.getFullYear()}-${(appointmentDate.getMonth() + 1).toString().padStart(2, '0')}-${appointmentDate.getDate().toString().padStart(2, '0')}`;
+        return appointmentDateStr === selectedDateStr;
+      })
+      .map(app => {
+        const startDate = new Date(app.start_time);
+        const endDate = new Date(app.end_time);
+        const startTime = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
+        const endTime = `${endDate.getHours().toString().padStart(2, '0')}:${endDate.getMinutes().toString().padStart(2, '0')}`;
 
-  const appointments: Appointment[] = [
-    { id: 1, name: "Алишер Насруллаев", time: "9:00-10:00" },
-    { id: 2, name: "Алишер Насруллаев", time: "9:00-10:00" },
-    { id: 3, name: "Алишер Насруллаев", time: "14:00-15:00" },
-    { id: 4, name: "Алишер Насруллаев", time: "14:00-15:00" },
-    { id: 5, name: "Алишер Насруллаев", time: "16:00-18:00" },
-  ];
+        return {
+          id: app.id,
+          name: app.patient_name || 'Пациент',
+          time: `${startTime}-${endTime}`
+        };
+      });
+  }, [apiAppointments, currentDate]);
 
   const goToPreviousDay = () => {
     const newDate = new Date(currentDate);
@@ -56,39 +66,6 @@ const Section: FC = () => {
     <div className="sticky top-6 w-full bg-white rounded-3xl shadow-sm p-6 flex flex-col gap-5 h-fit max-h-[calc(100vh-48px)] overflow-y-auto custom-scrollbar">
       <h2 className="text-2xl font-bold text-gray-900">{t('dashboard.appointments_card.title')}</h2>
 
-      {/* Tabs */}
-      <div className="flex gap-2">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-              activeTab === tab.id
-                ? "bg-gray-900 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            {t(tab.labelKey)}
-          </button>
-        ))}
-      </div>
-
-      {/* Time Slots */}
-      <div className="flex gap-3 justify-center">
-        {timeSlots.map((slot) => (
-          <div
-            key={slot.id}
-            className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
-              slot.active
-                ? "bg-blue-500 text-white"
-                : "bg-blue-100 text-blue-600"
-            }`}
-          >
-            {slot.time}
-          </div>
-        ))}
-      </div>
-
       {/* Date Navigation */}
       <div className="flex items-center justify-between">
         <button
@@ -112,31 +89,51 @@ const Section: FC = () => {
       </div>
 
       {/* Appointments List */}
-      <div className="flex flex-col gap-0 mt-2">
-        {appointments.map((apt, index) => (
-          <div
-            key={apt.id}
-            className={`flex items-center justify-between py-4 ${
-              index !== appointments.length - 1 ? "border-b border-gray-100" : ""
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-full bg-gray-200 flex-shrink-0" />
-              <div>
-                <p className="font-semibold text-sm text-gray-900">
-                  {apt.name}
-                </p>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  {apt.time}
-                </p>
+      {isLoading ? (
+        <div className="flex justify-center py-10">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+        </div>
+      ) : appointments.length > 0 ? (
+        <div className="flex flex-col gap-0 mt-2">
+          {appointments.map((apt, index) => (
+            <div
+              key={apt.id}
+              onClick={() => navigate('/appointments')}
+              className={`flex items-center justify-between py-4 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors ${
+                index !== appointments.length - 1 ? "border-b border-gray-100" : ""
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-full bg-gray-200 flex-shrink-0 flex items-center justify-center font-bold text-gray-600">
+                  {apt.name.charAt(0)}
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-gray-900">
+                    {apt.name}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {apt.time}
+                  </p>
+                </div>
               </div>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate('/appointments');
+                }}
+                className="p-1 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                <MoreVertical className="w-5 h-5 text-gray-600" />
+              </button>
             </div>
-            <button className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
-              <MoreVertical className="w-5 h-5 text-gray-600" />
-            </button>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-10">
+          <p className="text-gray-400 font-medium">Нет записей</p>
+          <p className="text-gray-300 text-sm mt-1">На выбранную дату записей нет</p>
+        </div>
+      )}
     </div>
   );
 }

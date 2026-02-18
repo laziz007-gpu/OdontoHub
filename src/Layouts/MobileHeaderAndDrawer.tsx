@@ -1,6 +1,7 @@
 import React, { useState, useEffect, type FC } from 'react';
 import { Menu, X, LayoutDashboard, Users, Calendar, MessageCircle, type LucideIcon } from 'lucide-react';
 import Logo from '../assets/img/icons/Logo3.svg'; // o'zingiznikini qo'ying
+// import NotificationBadge from '../components/Shared/NotificationBadge';
 
 interface MenuItem {
   icon: LucideIcon;
@@ -42,13 +43,16 @@ const MobileHeaderAndDrawer: FC = () => {
           </div>
 
           {/* BURGER — o'ngda */}
-          <button
-            onClick={() => setIsOpen(true)}
-            className="p-2 -mr-2 rounded-lg hover:bg-gray-100 transition-colors"
-            aria-label="Menyuni ochish"
-          >
-            <Menu size={28} className="text-gray-800" />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* <NotificationBadge /> */}
+            <button
+              onClick={() => setIsOpen(true)}
+              className="p-2 -mr-2 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Menyuni ochish"
+            >
+              <Menu size={28} className="text-gray-800" />
+            </button>
+          </div>
         </div>
       </header>
 

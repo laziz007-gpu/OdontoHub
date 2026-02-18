@@ -9,9 +9,10 @@ interface AppointmentModalProps {
     isOpen: boolean;
     onClose: () => void;
     initialPatientId?: number;
+    onSuccess?: () => void;
 }
 
-const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, initialPatientId }) => {
+const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, initialPatientId, onSuccess }) => {
     const { t } = useTranslation();
     const [selectedPatientId, setSelectedPatientId] = useState<number | ''>('');
     const [searchTerm, setSearchTerm] = useState('');
@@ -27,6 +28,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
     const [minute, setMinute] = useState('00');
     const [notes, setNotes] = useState('');
     const [selectedService, setSelectedService] = useState('');
+    const [visitType, setVisitType] = useState<'primary' | 'repeat'>('primary');
 
     useEffect(() => {
         if (isOpen && initialPatientId) {
@@ -114,6 +116,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
                 notes: notes,
                 service: selectedService
             });
+            onSuccess?.();
             onClose();
         } catch (error: any) {
             console.error("Failed to create appointment", error);
@@ -131,22 +134,22 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
         >
             <div
                 onClick={(e) => e.stopPropagation()}
-                className="bg-white w-full max-w-4xl rounded-[40px] p-8 md:p-12 relative shadow-2xl animate-in zoom-in-95 duration-200 cursor-default overflow-visible"
+                className="bg-white w-full max-w-2xl rounded-[32px] p-6 md:p-8 relative shadow-2xl animate-in zoom-in-95 duration-200 cursor-default overflow-visible"
             >
                 <div
                     onClick={onClose}
-                    className="absolute top-6 right-6 md:top-8 md:right-8 cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors group"
+                    className="absolute top-4 right-4 md:top-6 md:right-6 cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors group"
                 >
-                    <X className="w-6 h-6 md:w-8 md:h-8 text-gray-400 group-hover:text-[#1a1f36] transition-colors" />
+                    <X className="w-5 h-5 md:w-6 md:h-6 text-gray-400 group-hover:text-[#1a1f36] transition-colors" />
                 </div>
 
-                <h2 className="text-3xl md:text-[42px] font-black text-center text-[#1a1f36] mb-10 tracking-tight">
+                <h2 className="text-2xl md:text-3xl font-black text-center text-[#1a1f36] mb-6 md:mb-8 tracking-tight">
                     {t('modal.title')}
                 </h2>
 
-                <div className="space-y-4 md:space-y-6">
+                <div className="space-y-4 md:space-y-5">
                     {/* Row 1: Searchable Patient Selection */}
-                    <div className="grid grid-cols-1 gap-4 md:gap-6 relative" ref={dropdownRef}>
+                    <div className="grid grid-cols-1 gap-4 md:gap-5 relative" ref={dropdownRef}>
                         <div className="relative">
                             <input
                                 type="text"
@@ -161,7 +164,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
                                     }
                                 }}
                                 onFocus={() => setIsDropdownOpen(true)}
-                                className="w-full h-14 md:h-16 bg-[#efefef] rounded-[18px] px-6 text-lg font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none"
+                                className="w-full h-12 md:h-14 bg-[#efefef] rounded-[16px] px-5 text-base md:text-lg font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none"
                             />
                             {isLoadingPatients ? (
                                 <Loader2 className="absolute right-6 top-1/2 -translate-y-1/2 w-6 h-6 text-[#1a1f36] animate-spin opacity-40" />
@@ -248,12 +251,12 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
                         )}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                         <div className="relative">
                             <select
                                 value={selectedService}
                                 onChange={(e) => setSelectedService(e.target.value)}
-                                className="w-full h-14 md:h-16 bg-[#efefef] rounded-[18px] px-6 text-lg font-bold text-[#1a1f36] border-none appearance-none cursor-pointer focus:ring-2 focus:ring-[#4f6bff]/20 outline-none"
+                                className="w-full h-12 md:h-14 bg-[#efefef] rounded-[16px] px-5 text-base md:text-lg font-bold text-[#1a1f36] border-none appearance-none cursor-pointer focus:ring-2 focus:ring-[#4f6bff]/20 outline-none"
                             >
                                 {services?.map((s: any) => (
                                     <option key={s.id} value={s.name}>
@@ -264,70 +267,93 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
                                     <option value="" disabled>Нет доступных услуг</option>
                                 )}
                             </select>
-                            <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-6 h-6 text-[#1a1f36] pointer-events-none opacity-40" />
+                            <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a1f36] pointer-events-none opacity-40" />
                         </div>
-                        <div className="relative text-gray-400 opacity-60">
-                            <select disabled className="w-full h-14 md:h-16 bg-[#efefef] rounded-[18px] px-6 text-lg font-bold border-none appearance-none cursor-not-allowed">
-                                <option>{t('modal.patient_statuses.primary')}</option>
+                        <div className="relative">
+                            <select
+                                value={visitType}
+                                onChange={(e) => setVisitType(e.target.value as 'primary' | 'repeat')}
+                                className="w-full h-12 md:h-14 bg-[#efefef] rounded-[16px] px-5 text-base md:text-lg font-bold text-[#1a1f36] border-none appearance-none cursor-pointer focus:ring-2 focus:ring-[#4f6bff]/20 outline-none"
+                            >
+                                <option value="primary">{t('modal.patient_statuses.primary')}</option>
+                                <option value="repeat">{t('modal.patient_statuses.recurring')}</option>
                             </select>
-                            <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-6 h-6 pointer-events-none" />
+                            <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a1f36] pointer-events-none opacity-40" />
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-[1.5fr,1fr] gap-4 md:gap-6 items-end">
+                    <div className="grid grid-cols-1 md:grid-cols-[1.5fr,1fr] gap-4 md:gap-5 items-end">
                         <div className="flex flex-col gap-2">
-                            <label className="text-left text-sm md:text-base font-bold text-gray-500 ml-2">{t('modal.date_placeholder')}</label>
-                            <div className="flex gap-2 md:gap-4 h-14 md:h-16">
+                            <label className="text-left text-sm font-bold text-gray-500 ml-2">{t('modal.date_placeholder')}</label>
+                            <div className="flex gap-2 h-12 md:h-14">
                                 <div className="relative flex-1">
                                     <select
                                         value={selectedDay}
                                         onChange={(e) => setSelectedDay(parseInt(e.target.value))}
-                                        className="w-full h-full bg-[#efefef] rounded-[18px] px-4 pr-10 text-lg font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none appearance-none cursor-pointer"
+                                        className="w-full h-full bg-[#efefef] rounded-[16px] px-3 pr-8 text-base md:text-lg font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none appearance-none cursor-pointer"
                                     >
                                         {days.map(d => <option key={d} value={d}>{d}</option>)}
                                     </select>
-                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5f6377] pointer-events-none" />
+                                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5f6377] pointer-events-none" />
                                 </div>
 
                                 <div className="relative flex-[2]">
                                     <select
                                         value={selectedMonth}
                                         onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                                        className="w-full h-full bg-[#efefef] rounded-[18px] px-4 pr-10 text-lg font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none appearance-none cursor-pointer"
+                                        className="w-full h-full bg-[#efefef] rounded-[16px] px-3 pr-8 text-base md:text-lg font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none appearance-none cursor-pointer"
                                     >
                                         {months.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
                                     </select>
-                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5f6377] pointer-events-none" />
+                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5f6377] pointer-events-none" />
                                 </div>
 
                                 <div className="relative flex-1">
                                     <select
                                         value={selectedYear}
                                         onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                                        className="w-full h-full bg-[#efefef] rounded-[18px] px-4 pr-10 text-lg font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none appearance-none cursor-pointer"
+                                        className="w-full h-full bg-[#efefef] rounded-[16px] px-3 pr-8 text-base md:text-lg font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none appearance-none cursor-pointer"
                                     >
                                         {years.map(y => <option key={y} value={y}>{y}</option>)}
                                     </select>
-                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5f6377] pointer-events-none" />
+                                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5f6377] pointer-events-none" />
                                 </div>
                             </div>
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-right text-sm md:text-base font-bold text-gray-500 mr-2">{t('modal.time_label')}</label>
-                            <div className="flex items-center gap-2 bg-[#efefef] rounded-[18px] p-2 h-14 md:h-16 px-4 justify-center">
+                            <label className="text-right text-sm font-bold text-gray-500 mr-2">{t('modal.time_label')}</label>
+                            <div className="flex items-center gap-2 bg-[#efefef] rounded-[16px] p-2 h-12 md:h-14 px-4 justify-center">
                                 <input
                                     type="text"
                                     value={hour}
-                                    onChange={(e) => setHour(e.target.value.slice(0, 2))}
-                                    className="w-16 bg-transparent text-center text-3xl font-black text-[#1a1f36] outline-none border-none p-0 focus:ring-0"
+                                    onChange={(e) => {
+                                        const val = e.target.value.replace(/\D/g, '').slice(0, 2);
+                                        const num = parseInt(val) || 0;
+                                        setHour(num > 23 ? '23' : val);
+                                    }}
+                                    onBlur={(e) => {
+                                        const val = e.target.value;
+                                        if (val.length === 1) setHour('0' + val);
+                                        if (val === '') setHour('00');
+                                    }}
+                                    className="w-12 md:w-16 bg-transparent text-center text-2xl md:text-3xl font-black text-[#1a1f36] outline-none border-none p-0 focus:ring-0"
                                 />
-                                <div className="h-8 w-[2px] bg-gray-300 mx-2"></div>
+                                <div className="h-6 md:h-8 w-[2px] bg-gray-300 mx-1 md:mx-2"></div>
                                 <input
                                     type="text"
                                     value={minute}
-                                    onChange={(e) => setMinute(e.target.value.slice(0, 2))}
-                                    className="w-16 bg-transparent text-center text-3xl font-black text-[#1a1f36] outline-none border-none p-0 focus:ring-0"
+                                    onChange={(e) => {
+                                        const val = e.target.value.replace(/\D/g, '').slice(0, 2);
+                                        const num = parseInt(val) || 0;
+                                        setMinute(num > 59 ? '59' : val);
+                                    }}
+                                    onBlur={(e) => {
+                                        const val = e.target.value;
+                                        if (val.length === 1) setMinute('0' + val);
+                                        if (val === '') setMinute('00');
+                                    }}
+                                    className="w-12 md:w-16 bg-transparent text-center text-2xl md:text-3xl font-black text-[#1a1f36] outline-none border-none p-0 focus:ring-0"
                                 />
                             </div>
                         </div>
@@ -337,13 +363,13 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
                         placeholder={t('modal.notes_placeholder')}
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
-                        className="w-full h-32 md:h-40 bg-[#efefef] rounded-[18px] p-6 text-lg font-bold text-[#1a1f36] placeholder:text-gray-500 border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none resize-none"
+                        className="w-full h-24 md:h-32 bg-[#efefef] rounded-[16px] p-4 md:p-5 text-base md:text-lg font-bold text-[#1a1f36] placeholder:text-gray-500 border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none resize-none"
                     ></textarea>
 
                     <button
                         onClick={handleSave}
                         disabled={!selectedPatientId || createAppointment.isPending}
-                        className="w-full py-6 bg-[#00e396] text-white text-2xl font-black rounded-[24px] shadow-lg shadow-[#00e396]/20 hover:bg-[#00d08a] transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                        className="w-full py-4 md:py-5 bg-[#00e396] text-white text-lg md:text-xl font-black rounded-[20px] shadow-lg shadow-[#00e396]/20 hover:bg-[#00d08a] transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                     >
                         {createAppointment.isPending && <Loader2 className="animate-spin" />}
                         {t('modal.record')}

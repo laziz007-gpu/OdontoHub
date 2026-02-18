@@ -87,10 +87,6 @@ const Hero: React.FC<HeroProps> = ({ onSearch }) => {
             {/* Right */}
             <div className="flex items-center gap-4">
 
-              <button className="hidden lg:block h-[52px] px-8 bg-blue-600 text-white rounded-2xl">
-                {t('dashboard.consultation')}
-              </button>
-
               {/* ⭐ Rating button */}
               <button
                 onClick={() => setIsRatingModalOpen(true)}

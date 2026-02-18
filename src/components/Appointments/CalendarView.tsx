@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Calculator } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import AppointmentModal from './AppointmentModal';
+import { useMyAppointments } from '../../api/appointments';
 
 interface CalendarViewProps {
     onBack: () => void;
@@ -9,8 +10,11 @@ interface CalendarViewProps {
 
 const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
     const { t } = useTranslation();
-    const [viewDate, setViewDate] = useState(new Date(2023, 5, 1)); // June 2023
+    const [viewDate, setViewDate] = useState(new Date());
     const [isModalOpen, setIsModalOpen] = useState(false);
+    
+    const { data: apiAppointments } = useMyAppointments();
+    
     const weekDays = React.useMemo(() => {
         return [1, 2, 3, 4, 5, 6, 0].map(d => t(`common.weekdays.${d}`));
     }, [t]);
@@ -23,6 +27,16 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
 
         let firstDayIndex = firstDayOfMonth.getDay() - 1;
         if (firstDayIndex === -1) firstDayIndex = 6;
+
+        // Count appointments per day
+        const appointmentCounts: Record<string, number> = {};
+        if (apiAppointments && Array.isArray(apiAppointments)) {
+            apiAppointments.forEach(apt => {
+                const aptDate = new Date(apt.start_time);
+                const dateKey = `${aptDate.getFullYear()}-${aptDate.getMonth()}-${aptDate.getDate()}`;
+                appointmentCounts[dateKey] = (appointmentCounts[dateKey] || 0) + 1;
+            });
+        }
 
         const generatedDays = [];
         const prevMonthLastDay = new Date(year, month, 0).getDate();
@@ -37,7 +51,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
         for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
             const currentDayDate = new Date(year, month, i);
             const dayOfWeek = currentDayDate.getDay();
-            const aptCount = 9;
+            const dateKey = `${year}-${month}-${i}`;
+            const aptCount = appointmentCounts[dateKey] || 0;
             const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
             generatedDays.push({
@@ -65,7 +80,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
         }
 
         return generatedDays;
-    }, [viewDate]);
+    }, [viewDate, apiAppointments]);
 
     const handleNextMonth = () => {
         setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
@@ -110,7 +125,13 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
                     <div className="flex items-center bg-[#1a1f36] rounded-[16px] p-1.5 pl-5 pr-1.5 gap-3">
                         <span className="text-white font-bold text-sm">{t('appointments.month_view.month_appointments')}</span>
                         <div className="bg-white rounded-[12px] px-3 py-2 min-w-[40px] flex items-center justify-center">
-                            <span className="text-[#1a1f36] font-black text-lg">58</span>
+                            <span className="text-[#1a1f36] font-black text-lg">
+                                {apiAppointments?.filter(apt => {
+                                    const aptDate = new Date(apt.start_time);
+                                    return aptDate.getMonth() === viewDate.getMonth() && 
+                                           aptDate.getFullYear() === viewDate.getFullYear();
+                                }).length || 0}
+                            </span>
                         </div>
                     </div>
                 </div>

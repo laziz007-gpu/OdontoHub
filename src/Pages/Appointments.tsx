@@ -6,9 +6,11 @@ import CalendarView from '../components/Appointments/CalendarView';
 import AppointmentModal from '../components/Appointments/AppointmentModal';
 import AppointmentDetailModal from '../components/Appointments/AppointmentDetailModal';
 import InProgressView from '../components/Appointments/InProgressView';
+import Toast from '../components/Toast';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useMyAppointments } from '../api/appointments';
+import { useServices } from '../api/services';
 
 const Appointments: React.FC = () => {
     const { t } = useTranslation();
@@ -17,43 +19,90 @@ const Appointments: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' | 'warning'; isVisible: boolean }>({
+        message: '',
+        type: 'success',
+        isVisible: false
+    });
 
     const { data: apiAppointments, isLoading } = useMyAppointments();
+    const { data: services } = useServices();
+
+    const showToast = (message: string, type: 'success' | 'error' | 'info' | 'warning' = 'success') => {
+        setToast({ message, type, isVisible: true });
+    };
+
+    const hideToast = () => {
+        setToast(prev => ({ ...prev, isVisible: false }));
+    };
 
     const appointmentsData = useMemo(() => {
         if (!apiAppointments || !Array.isArray(apiAppointments)) return [];
-        return apiAppointments.map(app => {
-            const startDate = new Date(app.start_time);
-            const time = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
+        
+        // Format selected date for comparison (YYYY-MM-DD)
+        const selectedDateStr = `${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${selectedDate.getDate().toString().padStart(2, '0')}`;
+        
+        return apiAppointments
+            .filter(app => {
+                // Filter by selected date
+                const appointmentDate = new Date(app.start_time);
+                const appointmentDateStr = `${appointmentDate.getFullYear()}-${(appointmentDate.getMonth() + 1).toString().padStart(2, '0')}-${appointmentDate.getDate().toString().padStart(2, '0')}`;
+                return appointmentDateStr === selectedDateStr;
+            })
+            .map(app => {
+                const startDate = new Date(app.start_time);
+                const time = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
 
-            let status: AppointmentStatus = 'in_queue';
-            if (app.status === 'completed') status = 'completed';
-            else if (app.status === 'cancelled') status = 'cancelled';
-            else if (app.status === 'moved') status = 'rescheduled';
-            else if (app.status === 'confirmed') status = 'in_progress';
+                // Map backend status to frontend status
+                let status: AppointmentStatus = 'in_queue';
+                if (app.status === 'completed') status = 'completed';
+                else if (app.status === 'cancelled') status = 'cancelled';
+                else if (app.status === 'moved') status = 'rescheduled';
+                else if (app.status === 'confirmed') status = 'in_progress';
+                else if (app.status === 'pending') status = 'in_queue';
 
-            const serviceLabel = app.service === 'implantation' ? t('modal.services.implantation') :
-                app.service === 'hygiene' ? 'Гигиена' :
-                    app.service === 'treatment' ? 'Лечение' :
-                        app.service === 'extraction' ? 'Удаление' :
-                            app.service || t('modal.services.implantation');
+                const serviceLabel = app.service === 'implantation' ? t('modal.services.implantation') :
+                    app.service === 'hygiene' ? 'Гигиена' :
+                        app.service === 'treatment' ? 'Лечение' :
+                            app.service === 'extraction' ? 'Удаление' :
+                                app.service || t('modal.services.implantation');
 
-            const date = `${startDate.getDate().toString().padStart(2, '0')}.${(startDate.getMonth() + 1).toString().padStart(2, '0')}.${startDate.getFullYear()}`;
+                const date = `${startDate.getDate().toString().padStart(2, '0')}.${(startDate.getMonth() + 1).toString().padStart(2, '0')}.${startDate.getFullYear()}`;
 
-            return {
-                id: app.id,
-                time,
-                date,
-                status,
-                service: serviceLabel,
-                patientName: app.patient_name || 'Пациент',
-                raw: app
-            };
-        });
-    }, [apiAppointments, t]);
+                // Find matching service price
+                const matchingService = services?.find(s => s.name === app.service);
+                const price = matchingService?.price;
+
+                return {
+                    id: app.id,
+                    time,
+                    date,
+                    status,
+                    service: serviceLabel,
+                    patientName: app.patient_name || 'Пациент',
+                    raw: {
+                        ...app,
+                        price
+                    }
+                };
+            });
+    }, [apiAppointments, t, selectedDate, services]);
 
     const handleAptClick = (apt: any) => {
-        setSelectedAppointment(apt.raw);
+        // Prepare appointment data for modal
+        const appointmentData = {
+            id: apt.id,
+            time: apt.time,
+            date: apt.date,
+            status: apt.status,
+            service: apt.service,
+            patientName: apt.patientName,
+            raw: apt.raw
+        };
+        
+        setSelectedAppointment(appointmentData);
+        
         if (apt.status === 'in_progress') {
             setView('in_progress');
         } else {
@@ -61,8 +110,8 @@ const Appointments: React.FC = () => {
         }
     };
 
-    // Use current date or first appointment's date
-    const displayDate = new Date();
+    // Use selected date for display
+    const displayDate = selectedDate;
     const day = displayDate.getDate();
     const month = t(`common.months.${displayDate.getMonth()}`);
     const year = displayDate.getFullYear();
@@ -82,7 +131,7 @@ const Appointments: React.FC = () => {
                     <>
                         {/* Header Section */}
                         <div className="flex flex-col gap-6">
-                            {/* Top Bar with Back, Title, and Toast */}
+                            {/* Top Bar with Back and Title */}
                             <div className="relative flex items-center h-14">
                                 {/* Left Side: Back & Title */}
                                 <div className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-4">
@@ -93,22 +142,6 @@ const Appointments: React.FC = () => {
                                         <ChevronLeft className="w-5 h-5 text-white" />
                                     </button>
                                     <h1 className="text-3xl font-black text-[#1a1f36] tracking-tight">{t('appointments.title')}</h1>
-                                </div>
-
-                                {/* Center: Toast */}
-                                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:flex">
-                                    <button
-                                        onClick={() => {
-                                            setView('list');
-                                            navigate('/patients');
-                                        }}
-                                        className="bg-[#10d16d] rounded-[16px] px-6 py-3 flex items-center gap-3 shadow-lg shadow-[#10d16d]/20 animate-in slide-in-from-top-2 fade-in duration-500 hover:bg-[#0eca69] transition-colors cursor-pointer"
-                                    >
-                                        <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div>
-                                        <span className="text-white font-bold text-sm md:text-[15px] hover:underline">
-                                            {t('appointments.success_toast')}
-                                        </span>
-                                    </button>
                                 </div>
                             </div>
 
@@ -135,7 +168,7 @@ const Appointments: React.FC = () => {
                         </div>
 
                         {/* Date Selector */}
-                        <DateStrip />
+                        <DateStrip selectedDate={selectedDate} onDateChange={setSelectedDate} />
 
                         {/* Appointments List */}
                         {isLoading ? (
@@ -154,8 +187,13 @@ const Appointments: React.FC = () => {
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-center py-40 text-gray-400 font-bold text-xl">
-                                {t('appointments.empty_list') || 'На сегодня записей нет'}
+                            <div className="text-center py-40">
+                                <p className="text-gray-400 font-bold text-xl mb-2">
+                                    Нет записей
+                                </p>
+                                <p className="text-gray-300 text-sm">
+                                    На выбранную дату записей нет
+                                </p>
                             </div>
                         )}
                     </>
@@ -163,11 +201,24 @@ const Appointments: React.FC = () => {
             </div>
 
             {/* Modals */}
-            <AppointmentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+            <AppointmentModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)}
+                onSuccess={() => showToast('Приём успешно назначен', 'success')}
+            />
             <AppointmentDetailModal
                 isOpen={isDetailOpen}
                 onClose={() => setIsDetailOpen(false)}
                 appointment={selectedAppointment}
+                onSuccess={showToast}
+            />
+
+            {/* Toast Notification */}
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                isVisible={toast.isVisible}
+                onClose={hideToast}
             />
         </div>
     );

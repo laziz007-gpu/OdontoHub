@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Search, Plus, Filter, Phone, Activity } from 'lucide-react'
+import { Search, Plus, Filter } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import AddPatientModal from '../Patients/AddPatientModal'
 
 interface FilterState {
   status: string
@@ -18,17 +19,12 @@ interface Props {
 export default function Qidiruv({ searchQuery, setSearchQuery, onAdd, onApplyFilter }: Props) {
   const { t } = useTranslation()
   const [showFilter, setShowFilter] = useState(false)
-  const [showAdd, setShowAdd] = useState(false)
+  const [showAddModal, setShowAddModal] = useState(false)
 
   // Local state for the filter popup
   const [minAge, setMinAge] = useState('')
   const [maxAge, setMaxAge] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('All')
-
-  // Local state for add popup
-  const [newName, setNewName] = useState('')
-  const [newPhone, setNewPhone] = useState('')
-  const [newDiagnosis, setNewDiagnosis] = useState('')
 
   const handleApply = () => {
     onApplyFilter({
@@ -37,22 +33,6 @@ export default function Qidiruv({ searchQuery, setSearchQuery, onAdd, onApplyFil
       maxAge
     })
     setShowFilter(false)
-  }
-
-  const handleAddClick = () => {
-    if (newName.trim()) {
-      onAdd({
-        name: newName,
-        phone: newPhone,
-        diagnosis: newDiagnosis
-      })
-
-      // Reset form
-      setNewName('')
-      setNewPhone('')
-      setNewDiagnosis('')
-      setShowAdd(false)
-    }
   }
 
   return (
@@ -70,89 +50,17 @@ export default function Qidiruv({ searchQuery, setSearchQuery, onAdd, onApplyFil
         </div>
 
         <div className="flex items-center justify-end gap-3 sm:gap-4 mt-2 sm:mt-0">
-          <div className="relative">
-            <button
-              onClick={() => {
-                setShowAdd(!showAdd)
-                setShowFilter(false)
-              }}
-              className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${showAdd ? 'bg-gray-700' : 'bg-gray-900'
-                } hover:bg-gray-800 text-white`}
-            >
-              <Plus className="w-5 h-5" />
-            </button>
-
-            {showAdd && (
-              <div className="absolute right-0 top-12 bg-white rounded-2xl shadow-xl border border-gray-100 p-5 w-[280px] sm:w-80 z-20">
-                <h3 className="text-xl font-bold mb-4">{t('dashboard.qidiruv.add_title')}</h3>
-
-                <div className="space-y-3 mb-6">
-                  <div className="bg-gray-100 rounded-xl px-4 py-3 flex items-center gap-2">
-                    <Search className="w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder={t('dashboard.qidiruv.name_placeholder')}
-                      value={newName}
-                      onChange={(e) => setNewName(e.target.value)}
-                      className="bg-transparent w-full outline-none text-gray-700 placeholder-gray-400 text-sm"
-                      autoFocus
-                    />
-                  </div>
-
-                  <div className="bg-gray-100 rounded-xl px-4 py-3 flex items-center gap-2">
-                    <Phone className="w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder={t('dashboard.qidiruv.phone_placeholder')}
-                      value={newPhone}
-                      onChange={(e) => setNewPhone(e.target.value)}
-                      className="bg-transparent w-full outline-none text-gray-700 placeholder-gray-400 text-sm"
-                    />
-                  </div>
-
-                  <div className="bg-gray-100 rounded-xl px-4 py-3 flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder={t('dashboard.qidiruv.diagnosis_placeholder')}
-                      value={newDiagnosis}
-                      onChange={(e) => setNewDiagnosis(e.target.value)}
-                      className="bg-transparent w-full outline-none text-gray-700 placeholder-gray-400 text-sm"
-                    />
-                  </div>
-                </div>
-
-                <div className="border border-gray-200 rounded-xl p-3 flex items-center gap-3 mb-6 bg-gray-50">
-                  <img
-                    src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&q=80"
-                    alt="Avatar"
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                  <div className="overflow-hidden">
-                    <div className="font-bold text-gray-900 line-clamp-1 text-sm">
-                      {newName || t('dashboard.qidiruv.name_placeholder')}
-                    </div>
-                    <div className="text-xs text-gray-500 truncate">
-                      {newDiagnosis || t('dashboard.qidiruv.not_specified')}
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleAddClick}
-                  className="w-full bg-[#1e2532] text-white rounded-full py-3 font-medium hover:bg-[#2c3545] transition-colors"
-                >
-                  {t('dashboard.qidiruv.add_button')}
-                </button>
-              </div>
-            )}
-          </div>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors bg-gray-900 hover:bg-gray-800 text-white"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
 
           <div className="relative">
             <button
               onClick={() => {
                 setShowFilter(!showFilter)
-                setShowAdd(false)
               }}
               className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${showFilter ? 'bg-blue-600' : 'bg-gray-900'
                 }`}
@@ -232,6 +140,15 @@ export default function Qidiruv({ searchQuery, setSearchQuery, onAdd, onApplyFil
           </div>
         </div>
       </div>
+
+      {/* Add Patient Modal */}
+      <AddPatientModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSuccess={() => {
+          setShowAddModal(false);
+        }}
+      />
     </div>
   )
 }

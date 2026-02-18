@@ -15,15 +15,13 @@ export type UserRole = 'patient' | 'dentist'
 
 export interface RegisterData {
     phone: string;
-    password: string;
-    role: UserRole;
-    full_name: string;
     email?: string;
+    full_name: string;
+    role: UserRole;
 }
 
 export interface LoginData {
-    username: string;
-    password: string;
+    phone: string;
 }
 
 export interface TokenResponse {

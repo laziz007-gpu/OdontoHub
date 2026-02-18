@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { User } from 'lucide-react'
 
 interface Patient {
   id: number
@@ -52,11 +53,9 @@ export default function PatientsTable({ patients }: Props) {
 
             {/* Name and Image Section */}
             <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-              <img
-                src={p.img}
-                className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover shrink-0"
-                alt={p.name}
-              />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
+                <User className="w-6 h-6 sm:w-8 sm:h-8 text-gray-500" />
+              </div>
               <div className="flex flex-col sm:block">
                 <span className="font-bold sm:font-medium text-gray-900 line-clamp-1">{p.name}</span>
                 <span className="sm:hidden text-xs text-gray-500 mt-0.5">{p.phone}</span>

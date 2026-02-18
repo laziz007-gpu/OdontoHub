@@ -65,7 +65,7 @@ export default function NewPatients({ searchQuery = '' }: NewPatientsProps) {
   );
 
   return (
-    <div className="bg-white rounded-2xl p-6 mb-8 shadow-sm">
+    <div className="bg-white rounded-2xl p-6 mb-8 shadow-sm" style={{ display: 'none' }}>
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold flex items-center gap-3">
@@ -96,7 +96,7 @@ export default function NewPatients({ searchQuery = '' }: NewPatientsProps) {
             key={index}
             className="bg-gray-50 rounded-2xl p-5 border border-gray-100 relative group transition-colors hover:bg-gray-100"
           >
-            <Link to={`/patsent/${patient.id}`} className="absolute inset-0 z-10" />
+            <Link to={`/patients/${patient.id}`} className="absolute inset-0 z-10" />
             {/* Ism va avatar */}
             <div className="flex items-start justify-between mb-4">
               <div className="flex gap-4">

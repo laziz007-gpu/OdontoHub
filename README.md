@@ -1,3 +1,24 @@
+<<<<<<< HEAD
+# Backend MVP – Dentistry App
+
+Tech stack:
+- Python
+- FastAPI
+- PostgreSQL
+- SQLAlchemy
+
+Запуск проекта:
+1. Создать и активировать venv
+2. Установить зависимости:
+   pip install -r requirements.txt
+3. Запустить сервер:
+   uvicorn app.main:app --reload
+## Статус
+✅ Аутентификация (регистрация, логин, JWT) реализована и протестирована
+
+Swagger:
+http://127.0.0.1:8000/docs
+=======
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
@@ -71,3 +92,4 @@ export default defineConfig([
   },
 ])
 ```
+>>>>>>> 091aeecce1b2e3310ebb63c547692cfbeeeea170

@@ -38,16 +38,27 @@ const Patsant: FC = () => {
 
   const patients = useMemo(() => {
     if (!apiPatients || !Array.isArray(apiPatients)) return [];
-    return apiPatients.map((p: any) => ({
-      id: p.id,
-      name: p.full_name || 'No Name',
-      age: calculateAge(p.birth_date),
-      phone: p.phone || '',
-      diagnosis: p.source || 'Checkup', // Using source as a placeholder for diagnosis if not available
-      status: 'НОВЫЙ', // Default status for API patients for now
-      statusColor: 'text-green-600',
-      img: Rasm // Default image
-    })) as Patient[];
+    return apiPatients.map((p: any) => {
+      const status = p.status || 'НОВЫЙ';
+      let statusColor = 'text-green-600';
+      
+      if (status === 'ЛЕЧИТСЯ') {
+        statusColor = 'text-blue-600';
+      } else if (status === 'ЗАПИСАН') {
+        statusColor = 'text-gray-600';
+      }
+      
+      return {
+        id: p.id,
+        name: p.full_name || 'No Name',
+        age: calculateAge(p.birth_date),
+        phone: p.phone || '',
+        diagnosis: p.source || 'Checkup',
+        status: status,
+        statusColor: statusColor,
+        img: Rasm
+      };
+    }) as Patient[];
   }, [apiPatients]);
 
   const handleAddPatient = async (data: { name: string; phone: string; diagnosis: string }) => {
