@@ -152,6 +152,14 @@
       "faq": "FAQ",
       "privacy_policy": "Privacy Policy",
       "about": "About App"
+    },
+    "about": {
+      "welcome": "Welcome to our dental clinic management system.",
+      "beta_notice": "The application is currently running in test mode (Beta version). We are actively improving functionality, optimizing performance, and enhancing user experience.",
+      "issues_notice": "Temporary errors, unstable operation of individual functions, or interface updates are possible. We would appreciate your feedback — it helps us make the system more convenient and reliable.",
+      "feedback_request": "If you have any questions or technical problems, please contact",
+      "support_link": "support service",
+      "thanks": "Thank you for helping us develop the product."
     }
   },
   "patient_profile": {
@@ -262,6 +270,9 @@
     "view": "View",
     "my_works": "My Works",
     "add": "Add",
+    "photo_saved": "Photo saved!",
+    "photo_save_error": "Error saving photo",
+    "max_photos_reached": "Maximum of 20 photos reached",
     "social_networks": "Social Networks",
     "phone_number": "Phone Number",
     "email": "Email",

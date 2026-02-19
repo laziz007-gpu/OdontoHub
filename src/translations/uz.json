@@ -152,6 +152,14 @@
       "faq": "Ko'p beriladigan savollar (FAQ)",
       "privacy_policy": "Maxfiylik siyosati",
       "about": "Ilova haqida"
+    },
+    "about": {
+      "welcome": "Stomatologiya klinikasini boshqarish tizimimizga xush kelibsiz.",
+      "beta_notice": "Hozirda ilova test rejimida (Beta-versiya) ishlaydi. Biz funksionallikni faol ravishda takomillashtiramiz, ishlashni optimallashtirmoqdamiz va foydalanuvchi tajribasini yaxshilamoqdamiz.",
+      "issues_notice": "Vaqtinchalik xatolar, alohida funksiyalarning beqaror ishlashi yoki interfeys yangilanishlari mumkin. Biz fikr-mulohazalaringiz uchun minnatdormiz — bu bizga tizimni qulayroq va ishonchliroq qilishga yordam beradi.",
+      "feedback_request": "Agar sizda savollar yoki texnik muammolar yuzaga kelsa, iltimos,",
+      "support_link": "qo'llab-quvvatlash xizmatiga",
+      "thanks": "Mahsulotni rivojlantirishda yordam berganingiz uchun rahmat."
     }
   },
   "patient_profile": {
@@ -262,6 +270,9 @@
     "view": "Ko'rish",
     "my_works": "Mening ishlarim",
     "add": "Qo'shish",
+    "photo_saved": "Rasm saqlandi!",
+    "photo_save_error": "Rasmni saqlashda xatolik",
+    "max_photos_reached": "20 ta rasmga chegara yetdi",
     "social_networks": "Ijtimoiy tarmoqlar",
     "phone_number": "Tel.raqam",
     "email": "Email",

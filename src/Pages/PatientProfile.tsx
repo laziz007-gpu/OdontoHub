@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { ArrowLeft, MessageCircle, User, Camera, ClipboardList, Calendar, DollarSign, Loader2 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
@@ -25,8 +25,26 @@ export default function PatientProfile() {
     const { t } = useTranslation()
     const [activeTab, setActiveTab] = useState<TabId>('data')
     const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false)
+    const [notes, setNotes] = useState<Array<{ id: number; text: string; date: string; createdBy: string }>>([])
 
     const { data: apiPatient, isLoading } = usePatient(Number(id))
+
+    // Load notes from localStorage
+    useEffect(() => {
+        if (id) {
+            const notesKey = `patient_notes_${id}`;
+            const storedNotes = localStorage.getItem(notesKey);
+            if (storedNotes) {
+                try {
+                    const parsedNotes = JSON.parse(storedNotes);
+                    setNotes(parsedNotes);
+                } catch (error) {
+                    console.error('Failed to parse notes:', error);
+                    setNotes([]);
+                }
+            }
+        }
+    }, [id]);
 
     const patient = useMemo(() => {
         if (!apiPatient) return null;
@@ -158,8 +176,23 @@ export default function PatientProfile() {
 
                         {/* Column 2: Notes Card */}
                         <div className="min-h-[250px] md:min-h-[400px]">
-                            <div className="bg-[#fbc947] rounded-[24px] md:rounded-[30px] p-6 md:p-8 h-full">
+                            <div className="bg-[#fbc947] rounded-[24px] md:rounded-[30px] p-6 md:p-8 h-full overflow-y-auto">
                                 <h3 className="text-white text-xl md:text-2xl font-bold mb-4">{t('patient_profile.notes')}</h3>
+                                {notes.length > 0 ? (
+                                    <div className="space-y-3">
+                                        {notes.map((note) => (
+                                            <div key={note.id} className="bg-white/20 backdrop-blur-sm rounded-2xl p-4">
+                                                <p className="text-white text-sm md:text-base mb-2 whitespace-pre-wrap">{note.text}</p>
+                                                <div className="flex items-center justify-between text-xs text-white/80">
+                                                    <span>{note.createdBy}</span>
+                                                    <span>{new Date(note.date).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-white/70 text-sm md:text-base">{t('patient_profile.no_notes')}</p>
+                                )}
                             </div>
                         </div>
 

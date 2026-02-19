@@ -10,6 +10,7 @@ import ServicesSection from '../components/DoctorProfile/ServicesSection';
 import WorksSection from '../components/DoctorProfile/WorksSection';
 import ScheduleCard from '../components/DoctorProfile/ScheduleCard';
 import SocialNetworksCard from '../components/DoctorProfile/SocialNetworksCard';
+import { useDentistProfile } from '../api/profile';
 
 interface ProfileData {
   phone: string;
@@ -33,6 +34,7 @@ interface ProfileData {
 
 const DoctorProfile: FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
+  const { data: dentistData } = useDentistProfile();
 
   const [profileData, setProfileData] = useState<ProfileData>({
     phone: user?.phone || '+998 (93) 123 45 67',
@@ -54,6 +56,32 @@ const DoctorProfile: FC = () => {
     name: user?.full_name || 'Пулатов Махмуд'
   });
 
+  // Обновляем данные из API
+  useEffect(() => {
+    if (dentistData) {
+      const workHours = dentistData.work_hours?.split('-') || ['08:00', '16:00'];
+      const [startHour, startMinute] = workHours[0]?.split(':') || ['08', '00'];
+      const [endHour, endMinute] = workHours[1]?.split(':') || ['16', '00'];
+
+      setProfileData(prev => ({
+        ...prev,
+        name: dentistData.full_name || prev.name,
+        phone: dentistData.phone || prev.phone,
+        specialization: dentistData.specialization || prev.specialization,
+        address: dentistData.address || prev.address,
+        clinic: dentistData.clinic || prev.clinic,
+        schedule: dentistData.schedule || prev.schedule,
+        telegram: dentistData.telegram || prev.telegram,
+        instagram: dentistData.instagram || prev.instagram,
+        whatsapp: dentistData.whatsapp || prev.whatsapp,
+        workStart: startHour,
+        startMinute: startMinute,
+        workEnd: endHour,
+        endMinute: endMinute,
+      }));
+    }
+  }, [dentistData]);
+
   useEffect(() => {
     if (user) {
       setProfileData(prev => ({
@@ -67,7 +95,6 @@ const DoctorProfile: FC = () => {
   }, [user]);
 
   const [avatarUrl, setAvatarUrl] = useState<string>(DentistImg);
-  const [works, setWorks] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUpdateProfile = (newData: Partial<ProfileData>) => {
@@ -84,10 +111,6 @@ const DoctorProfile: FC = () => {
 
   const triggerAvatarUpload = () => {
     fileInputRef.current?.click();
-  };
-
-  const handleAddWork = (url: string) => {
-    setWorks(prev => [...prev, url]);
   };
 
   return (
@@ -135,7 +158,7 @@ const DoctorProfile: FC = () => {
           <ServicesSection />
 
           {/* Works */}
-          <WorksSection works={works} onAddWork={handleAddWork} />
+          <WorksSection />
 
           {/* Schedule + Socials */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-12">

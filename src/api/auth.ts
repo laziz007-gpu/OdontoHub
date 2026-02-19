@@ -22,14 +22,8 @@ export const useRegister = () => {
 export const useLogin = () => {
   return useMutation({
     mutationFn: (data: LoginData) => {
-      // Backend expects OAuth2 form-data (application/x-www-form-urlencoded)
-      const formData = new URLSearchParams()
-      formData.append('username', data.username)
-      formData.append('password', data.password)
-
-      return api.post<TokenResponse>('/auth/login', formData, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      })
+      // Отправляем только телефон в JSON формате
+      return api.post<TokenResponse>('/auth/login', data)
     },
 
     onSuccess: ({ data }) => {

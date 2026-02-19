@@ -12,6 +12,7 @@ import Menu from "../Pages/Menu";
 import MainLayout from "../Layouts/MainLayout";
 import PatientProfile from "../Pages/PatientProfile";
 import DoctorProfile from "../Pages/DoctorProfile";
+import EditDoctorProfile from "../Pages/EditDoctorProfile";
 import Settings from "../Pages/Settings";
 import Appointments from "../Pages/Appointments";
 import Analitic from "../Pages/Analitic";
@@ -26,6 +27,7 @@ import PatientChats from "../Pages/PatientChats";
 import PatientChatDetail from "../Pages/PatientChatDetail";
 import PatientProfilePage from "../Pages/PatientProfilePage";
 import PatientHistory from "../Pages/PatientHistory";
+import PatientDetailPage from "../Pages/PatientDetailPage";
 import Doctors from "../Pages/Doctors";
 import Specialties from "../Pages/Specialties";
 import Notifications from "../Pages/Notifications";
@@ -87,12 +89,20 @@ export const router = createBrowserRouter([
                         element: <Patsant />
                     },
                     {
+                        path: '/patients/:id',
+                        element: <PatientDetailPage />
+                    },
+                    {
                         path: paths.patientProfile,
                         element: <PatientProfile />
                     },
                     {
                         path: paths.profile,
                         element: <DoctorProfile />
+                    },
+                    {
+                        path: paths.editProfile,
+                        element: <EditDoctorProfile />
                     },
                     {
                         path: paths.settings,
@@ -170,10 +180,11 @@ export const router = createBrowserRouter([
                         path: paths.specialties,
                         element: <Specialties />
                     },
-                    {
-                        path: paths.notifications,
-                        element: <Notifications />
-                    },
+                    // Temporarily disabled - uncomment to enable notifications:
+                    // {
+                    //     path: paths.notifications,
+                    //     element: <Notifications />
+                    // },
                     {
                         path: paths.booking,
                         element: <Booking />

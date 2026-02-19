@@ -130,7 +130,7 @@ export default function Chats() {
     );
 
     return (
-        <div className="flex h-[calc(100vh-80px)] md:h-[calc(100vh-40px)] mt-[72px] md:mt-4 m-2 md:m-4 bg-[#f8fbff] rounded-[24px] md:rounded-[32px] overflow-hidden border border-gray-100 shadow-sm relative">
+        <div className="flex h-[calc(100vh-80px)] md:h-[calc(100vh-40px)] mt-[72px] md:mt-4 m-2 md:m-4 bg-[#f8fbff] rounded-[24px] md:rounded-[32px] overflow-hidden border border-gray-100 shadow-sm relative" style={{ display: 'none' }}>
             {/* Conversations List */}
             <div className={`w-full lg:w-[400px] bg-white border-r border-gray-100 flex flex-col ${activeChatId ? 'hidden lg:flex' : 'flex'}`}>
                 <div className="flex-1 overflow-y-auto px-2 md:px-4 pb-4 no-scrollbar">

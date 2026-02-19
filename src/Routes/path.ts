@@ -7,6 +7,7 @@ export const paths = {
     patient: '/patients',
     patientProfile: '/patients/:id',
     profile: '/profile',
+    editProfile: '/profile/edit',
     menu: '/menu',
     settings: '/settings',
     appointments: '/appointments',

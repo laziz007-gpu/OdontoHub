@@ -1,4 +1,4 @@
-import React, { type FC, type ReactNode, useState } from 'react';
+import React, { type FC, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     Phone,
@@ -6,9 +6,7 @@ import {
     MapPin,
     GraduationCap,
     Building2,
-    Edit2,
 } from 'lucide-react';
-import EditProfileModal from '../Shared/EditProfileModal';
 
 /* ================= TYPES ================= */
 
@@ -66,20 +64,14 @@ interface ContactInfoCardProps {
     triggerAvatarUpload?: () => void;
 }
 
-const ContactInfoCard: FC<ContactInfoCardProps> = ({ data, onSave, avatar, onAvatarChange, triggerAvatarUpload }) => {
+const ContactInfoCard: FC<ContactInfoCardProps> = ({ data }) => {
     const { t } = useTranslation();
-    const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-
-    const handleSave = (newData: Partial<ContactData>): void => {
-        onSave(newData);
-        setIsEditModalOpen(false);
-    };
 
     return (
         <>
             <div className="w-full h-full bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 relative flex flex-col justify-center">
                 {/* Contact Items */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 pr-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
                     <ContactItem
                         icon={<Phone className="w-3.5 h-3.5 text-gray-400" />}
                         label={t('doctor_profile.phone_number')}
@@ -106,28 +98,7 @@ const ContactInfoCard: FC<ContactInfoCardProps> = ({ data, onSave, avatar, onAva
                         value={data.clinic}
                     />
                 </div>
-
-                {/* Edit Button */}
-                <button
-                    onClick={() => setIsEditModalOpen(true)}
-                    className="absolute top-6 right-6 bg-[#5B7FFF] text-white pl-3 pr-1.5 py-1.5 rounded-full text-[10.5px] font-bold flex items-center gap-1.5 hover:bg-blue-600 transition-all shadow-md group"
-                >
-                    {t('doctor_profile.edit')}
-                    <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center transition-transform group-hover:scale-110">
-                        <Edit2 className="w-2 h-2 text-[#5B7FFF]" />
-                    </div>
-                </button>
             </div>
-
-            {/* Modal */}
-            <EditProfileModal
-                isOpen={isEditModalOpen}
-                onClose={() => setIsEditModalOpen(false)}
-                initialData={data}
-                onSave={handleSave}
-                avatar={avatar}
-                triggerAvatarUpload={triggerAvatarUpload}
-            />
         </>
     );
 };

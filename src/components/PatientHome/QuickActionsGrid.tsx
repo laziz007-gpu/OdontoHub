@@ -11,7 +11,8 @@ const QuickActionsGrid = () => {
         { label: "Запись к стоматологу", icon: ScrollUp, color: "bg-blue-600 text-white", path: paths.booking },
         { label: "Врачи", icon: Doctor, color: "bg-white text-blue-600", path: paths.doctors },
         { label: "Мой стоматолог", icon: Consultation, color: "bg-emerald-400 text-white", path: paths.myDentist },
-        { label: "Уведомление", icon: Notification2, color: "bg-amber-400 text-white", path: paths.notifications },
+        // Temporarily disabled - uncomment to enable notifications:
+        // { label: "Уведомление", icon: Notification2, color: "bg-amber-400 text-white", path: paths.notifications },
     ];
 
     return (
