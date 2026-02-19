@@ -6,10 +6,24 @@ from app.routers import prescriptions, allergies, payments, photos
 # Temporarily disabled - uncomment to enable notifications:
 # from app.routers import notifications
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
-
 app = FastAPI(title="OdontoHub API", version="1.0.0")
+
+@app.on_event("startup")
+def on_startup():
+    """Create database tables on startup"""
+    # Import all models to ensure they're registered with Base
+    from app.models.user import User
+    from app.models.patient import PatientProfile
+    from app.models.dentist import DentistProfile
+    from app.models.service import Service
+    from app.models.appointment import Appointment
+    from app.models.prescription import Prescription
+    from app.models.allergy import Allergy
+    from app.models.payment import Payment
+    from app.models.photo import PatientPhoto
+    
+    # Create all tables
+    Base.metadata.create_all(bind=engine)
 
 # CORS configuration
 app.add_middleware(
