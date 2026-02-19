@@ -49,3 +49,46 @@ def read_root():
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
+
+@app.get("/init-db")
+def init_database():
+    """
+    Initialize database tables - call this endpoint once after deployment
+    This endpoint will be removed after initial setup
+    """
+    try:
+        # Import all models to ensure they're registered
+        from app.models.user import User
+        from app.models.patient import PatientProfile
+        from app.models.dentist import DentistProfile
+        from app.models.service import Service
+        from app.models.appointment import Appointment
+        from app.models.prescription import Prescription
+        from app.models.allergy import Allergy
+        from app.models.payment import Payment
+        from app.models.photo import PatientPhoto
+        
+        # Create all tables
+        Base.metadata.create_all(bind=engine)
+        
+        return {
+            "status": "success",
+            "message": "Database tables created successfully!",
+            "tables": [
+                "users",
+                "patient_profiles",
+                "dentist_profiles",
+                "services",
+                "appointments",
+                "prescriptions",
+                "allergies",
+                "payments",
+                "patient_photos"
+            ]
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Failed to create tables: {str(e)}"
+        }
