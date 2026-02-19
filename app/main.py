@@ -8,6 +8,22 @@ from app.routers import prescriptions, allergies, payments, photos
 
 app = FastAPI(title="OdontoHub API", version="1.0.0")
 
+# CORS configuration - MUST be added before routes
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://odontohubapp.netlify.app",
+        "https://odontohub.netlify.app",
+        "https://odontohub-app.netlify.app",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+)
+
 @app.on_event("startup")
 def on_startup():
     """Create database tables on startup"""
@@ -24,22 +40,6 @@ def on_startup():
     
     # Create all tables
     Base.metadata.create_all(bind=engine)
-
-# CORS configuration
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "https://odontohubapp.netlify.app",
-        "https://odontohub.netlify.app",
-        "https://odontohub-app.netlify.app",
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"],
-)
 
 # Include routers
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
