@@ -12,6 +12,10 @@ api.interceptors.request.use(
     if (accessToken && accessToken !== null) {
       config.headers['Authorization'] = `Bearer ${accessToken}`;
     }
+    
+    // Bypass localtunnel warning page
+    config.headers['Bypass-Tunnel-Reminder'] = 'true';
+    
     return config;
   },
 
