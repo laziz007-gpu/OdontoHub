@@ -17,6 +17,7 @@ app.add_middleware(
         "https://odontohubapp.netlify.app",
         "https://odontohub.netlify.app",
         "https://odontohub-app.netlify.app",
+        "https://odontohub.loca.lt",
     ],
     allow_credentials=True,
     allow_methods=["*"],

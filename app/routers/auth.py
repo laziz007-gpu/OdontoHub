@@ -14,6 +14,9 @@ router = APIRouter()
 
 @router.post("/register", response_model=TokenSchema)
 def register(data: RegisterSchema, db: Session = Depends(get_db)):
+    print(f"DEBUG: Received registration data: {data}")
+    print(f"DEBUG: Phone: {data.phone}, Role: {data.role}, Full name: {data.full_name}")
+    
     if db.query(User).filter(User.phone == data.phone).first():
         raise HTTPException(status_code=400, detail="Phone already registered")
 
