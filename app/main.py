@@ -18,6 +18,7 @@ app.add_middleware(
         "https://odontohub.netlify.app",
         "https://odontohub-app.netlify.app",
         "https://odontohub.loca.lt",
+        "https://statuesque-bonbon-133925.netlify.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
