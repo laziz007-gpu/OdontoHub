@@ -3,10 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import engine, Base
 from app.routers import auth, patients, dentists, services, appointments
 from app.routers import prescriptions, allergies, payments, photos
+
 # Temporarily disabled - uncomment to enable notifications:
 # from app.routers import notifications
 
 app = FastAPI(title="OdontoHub API", version="1.0.0")
+
 
 # CORS configuration - MUST be added before routes
 app.add_middleware(
@@ -17,6 +19,7 @@ app.add_middleware(
         "https://odontohubapp.netlify.app",
         "https://odontohub.netlify.app",
         "https://odontohub-app.netlify.app",
+        "https://statuesque-bonbon-133025.netlify.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
