@@ -18,24 +18,26 @@ def register(data: RegisterSchema, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Phone already registered")
 
     # Passwordless: no password required
+    # data.role is a Pydantic enum — use .value to get the string for SQLAlchemy enum
+    role_value = data.role.value  # e.g. "patient" or "dentist"
     user = User(
         phone=data.phone,
         email=data.email,
         password=None,  # No password for passwordless auth
-        role=UserRole(data.role),
+        role=UserRole(role_value),
     )
     db.add(user)
     db.commit()
     db.refresh(user)
 
-    if data.role.value == UserRole.PATIENT.value:
+    if role_value == "patient":
         profile = PatientProfile(
             user_id=user.id,
             full_name=data.full_name
         )
         db.add(profile)
 
-    elif data.role.value == UserRole.DENTIST.value:
+    elif role_value == "dentist":
         profile = DentistProfile(
             user_id=user.id,
             full_name=data.full_name
