@@ -1,8 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import engine, Base
 from app.routers import auth, patients, dentists, services, appointments
 from app.routers import prescriptions, allergies, payments, photos
+import traceback
 
 # Temporarily disabled - uncomment to enable notifications:
 # from app.routers import notifications
@@ -27,9 +29,37 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://odontohubapp.netlify.app",
+    "https://odontohub.netlify.app",
+    "https://odontohub-app.netlify.app",
+    "https://statuesque-bonbon-133025.netlify.app",
+]
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Return CORS headers even on 500 errors so the browser shows the real error."""
+    origin = request.headers.get("origin", "")
+    allow_origin = origin if origin in ALLOWED_ORIGINS else ""
+    traceback.print_exc()
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Internal server error: {str(exc)}"},
+        headers={
+            "Access-Control-Allow-Origin": allow_origin,
+            "Access-Control-Allow-Credentials": "true",
+        },
+    )
+
 @app.on_event("startup")
 def on_startup():
-    """Create database tables on startup"""
+    """Create database tables on startup — safe for re-runs"""
+    from sqlalchemy import text
+    import os
+
     # Import all models to ensure they're registered with Base
     from app.models.user import User
     from app.models.patient import PatientProfile
@@ -40,9 +70,27 @@ def on_startup():
     from app.models.allergy import Allergy
     from app.models.payment import Payment
     from app.models.photo import PatientPhoto
-    
-    # Create all tables
-    Base.metadata.create_all(bind=engine)
+
+    db_url = str(engine.url)
+    if "postgresql" in db_url or "postgres" in db_url:
+        # Safely create enum types — won't fail if they already exist
+        enum_types = [
+            ("userrole", ["patient", "dentist"]),
+            ("verificationstatus", ["pending", "approved", "rejected"]),
+            ("appointment_status", ["pending", "confirmed", "moved", "cancelled", "completed"]),
+        ]
+        with engine.begin() as conn:
+            for type_name, values in enum_types:
+                values_sql = ", ".join(f"'{v}'" for v in values)
+                conn.execute(text(
+                    f"DO $$ BEGIN "
+                    f"  CREATE TYPE {type_name} AS ENUM ({values_sql}); "
+                    f"EXCEPTION WHEN duplicate_object THEN NULL; "
+                    f"END $$;"
+                ))
+
+    # Create all tables (checkfirst=True skips existing tables)
+    Base.metadata.create_all(bind=engine, checkfirst=True)
 
 # Include routers
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
@@ -71,9 +119,10 @@ def health_check():
 @app.get("/init-db")
 def init_database():
     """
-    Initialize database tables - call this endpoint once after deployment
-    This endpoint will be removed after initial setup
+    Initialize database tables - safe to call multiple times.
+    Creates enum types first, then tables.
     """
+    from sqlalchemy import text
     try:
         # Import all models to ensure they're registered
         from app.models.user import User
@@ -85,23 +134,35 @@ def init_database():
         from app.models.allergy import Allergy
         from app.models.payment import Payment
         from app.models.photo import PatientPhoto
-        
-        # Create all tables
-        Base.metadata.create_all(bind=engine)
-        
+
+        db_url = str(engine.url)
+        if "postgresql" in db_url or "postgres" in db_url:
+            # Step 1: Create enum types safely (skip if already exist)
+            enum_types = [
+                ("userrole", ["patient", "dentist"]),
+                ("verificationstatus", ["pending", "approved", "rejected"]),
+                ("appointment_status", ["pending", "confirmed", "moved", "cancelled", "completed"]),
+            ]
+            with engine.begin() as conn:
+                for type_name, values in enum_types:
+                    values_sql = ", ".join(f"'{v}'" for v in values)
+                    conn.execute(text(
+                        f"DO $$ BEGIN "
+                        f"  CREATE TYPE {type_name} AS ENUM ({values_sql}); "
+                        f"EXCEPTION WHEN duplicate_object THEN NULL; "
+                        f"END $$;"
+                    ))
+
+        # Step 2: Create all tables (skip existing ones)
+        Base.metadata.create_all(bind=engine, checkfirst=True)
+
         return {
             "status": "success",
             "message": "Database tables created successfully!",
             "tables": [
-                "users",
-                "patient_profiles",
-                "dentist_profiles",
-                "services",
-                "appointments",
-                "prescriptions",
-                "allergies",
-                "payments",
-                "patient_photos"
+                "users", "patient_profiles", "dentist_profiles",
+                "services", "appointments", "prescriptions",
+                "allergies", "payments", "patient_photos"
             ]
         }
     except Exception as e:
