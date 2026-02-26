@@ -21,7 +21,7 @@ class DentistProfile(Base):
     pinfl: Mapped[str | None] = mapped_column(String, nullable=True)
     diploma_number: Mapped[str | None] = mapped_column(String, nullable=True)
     verification_status: Mapped[VerificationStatus] = mapped_column(
-        Enum(VerificationStatus), default=VerificationStatus.PENDING
+        Enum(VerificationStatus, create_type=False), default=VerificationStatus.PENDING
     )
     
     # Profile fields from EditDoctorProfile
