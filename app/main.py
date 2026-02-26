@@ -119,9 +119,10 @@ def health_check():
 @app.get("/init-db")
 def init_database():
     """
-    Initialize database tables - call this endpoint once after deployment
-    This endpoint will be removed after initial setup
+    Initialize database tables - safe to call multiple times.
+    Creates enum types first, then tables.
     """
+    from sqlalchemy import text
     try:
         # Import all models to ensure they're registered
         from app.models.user import User
@@ -133,23 +134,35 @@ def init_database():
         from app.models.allergy import Allergy
         from app.models.payment import Payment
         from app.models.photo import PatientPhoto
-        
-        # Create all tables
-        Base.metadata.create_all(bind=engine)
-        
+
+        db_url = str(engine.url)
+        if "postgresql" in db_url or "postgres" in db_url:
+            # Step 1: Create enum types safely (skip if already exist)
+            enum_types = [
+                ("userrole", ["patient", "dentist"]),
+                ("verificationstatus", ["pending", "approved", "rejected"]),
+                ("appointment_status", ["pending", "confirmed", "moved", "cancelled", "completed"]),
+            ]
+            with engine.begin() as conn:
+                for type_name, values in enum_types:
+                    values_sql = ", ".join(f"'{v}'" for v in values)
+                    conn.execute(text(
+                        f"DO $$ BEGIN "
+                        f"  CREATE TYPE {type_name} AS ENUM ({values_sql}); "
+                        f"EXCEPTION WHEN duplicate_object THEN NULL; "
+                        f"END $$;"
+                    ))
+
+        # Step 2: Create all tables (skip existing ones)
+        Base.metadata.create_all(bind=engine, checkfirst=True)
+
         return {
             "status": "success",
             "message": "Database tables created successfully!",
             "tables": [
-                "users",
-                "patient_profiles",
-                "dentist_profiles",
-                "services",
-                "appointments",
-                "prescriptions",
-                "allergies",
-                "payments",
-                "patient_photos"
+                "users", "patient_profiles", "dentist_profiles",
+                "services", "appointments", "prescriptions",
+                "allergies", "payments", "patient_photos"
             ]
         }
     except Exception as e:
