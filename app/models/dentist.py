@@ -5,7 +5,7 @@ import enum
 from .base import Base
 
 
-class VerificationStatus(enum.Enum):
+class VerificationStatus(str, enum.Enum):
     PENDING = "pending"
     APPROVED = "approved"
     REJECTED = "rejected"
@@ -21,7 +21,8 @@ class DentistProfile(Base):
     pinfl: Mapped[str | None] = mapped_column(String, nullable=True)
     diploma_number: Mapped[str | None] = mapped_column(String, nullable=True)
     verification_status: Mapped[VerificationStatus] = mapped_column(
-        Enum(VerificationStatus, create_type=False), default=VerificationStatus.PENDING
+        Enum(VerificationStatus, values_callable=lambda x: [e.value for e in x], create_type=False),
+        default=VerificationStatus.PENDING
     )
     
     # Profile fields from EditDoctorProfile
