@@ -26,7 +26,7 @@ SessionLocal = sessionmaker(
     bind=engine
 )
 
-Base = declarative_base()
+from app.models.base import Base
 
 def get_db():
     db = SessionLocal()
