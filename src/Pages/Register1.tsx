@@ -46,7 +46,12 @@ export default function Register1() {
 
     registerUser(cleanData, {
       onSuccess: () => {
-        navigate(paths.role, { replace: true })
+        // If dentist, redirect to profile setup
+        if (selectedRole === 'dentist') {
+          navigate(paths.doctorProfileSetup, { replace: true })
+        } else {
+          navigate(paths.role, { replace: true })
+        }
       },
     })
   }

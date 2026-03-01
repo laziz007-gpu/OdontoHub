@@ -731,12 +731,15 @@
       }
     },
     "specializations": {
+      "general": "General Dentist",
       "surgeon": "Surgeon",
       "therapist": "Therapist",
       "orthodontist": "Orthodontist",
       "orthopedist": "Orthopedist",
       "periodontist": "Periodontist",
-      "implantologist": "Implantologist"
+      "implantologist": "Implantologist",
+      "hygienist": "Hygienist",
+      "aesthetician": "Aesthetician"
     },
     "schedule_options": {
       "every_day": "Every day",

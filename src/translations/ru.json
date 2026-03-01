@@ -75,12 +75,15 @@
         "partial": "Частично",
         "unpaid": "Не оплачено",
         "specializations": {
+            "general": "Общий профильный",
             "surgeon": "Хирург",
             "therapist": "Терапевт",
             "orthodontist": "Ортодонт",
             "orthopedist": "Ортопед",
             "periodontist": "Пародонтолог",
-            "implantologist": "Имплантолог"
+            "implantologist": "Имплантолог",
+            "hygienist": "Гигиенист",
+            "aesthetician": "Эстетик"
         },
         "schedule_options": {
             "every_day": "Каждый день",

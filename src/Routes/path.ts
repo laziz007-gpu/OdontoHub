@@ -4,6 +4,7 @@ export const paths = {
     login: '/login',
     registrDoc: "/register_doc",
     registerPat: "/register_pat",
+    doctorProfileSetup: "/doctor-profile-setup",
     patient: '/patients',
     patientProfile: '/patients/:id',
     profile: '/profile',
