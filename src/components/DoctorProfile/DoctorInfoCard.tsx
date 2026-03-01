@@ -6,12 +6,13 @@ interface DoctorInfoCardProps {
     name: string;
     gender: string;
     age: string;
+    experience_years: string;
     specialization: string;
     avatar?: string;
     onAvatarClick?: () => void;
 }
 
-const DoctorInfoCard: FC<DoctorInfoCardProps> = ({ name, gender, age, specialization, avatar, onAvatarClick }) => {
+const DoctorInfoCard: FC<DoctorInfoCardProps> = ({ name, gender, age, experience_years, specialization, avatar, onAvatarClick }) => {
     const { t } = useTranslation();
     return (
         <div className="w-full h-[185px] bg-[#5B7FFF] rounded-[24px] p-6 text-white flex items-center gap-5 shadow-sm">
@@ -28,7 +29,8 @@ const DoctorInfoCard: FC<DoctorInfoCardProps> = ({ name, gender, age, specializa
                 <h2 className="text-xl font-bold mb-3 tracking-tight">{name}</h2>
                 <div className="space-y-0.5 text-[13px] text-blue-50">
                     <p>{t('patient_profile.gender')}: <span className="text-white font-medium">{gender}</span></p>
-                    <p>{t('patient_profile.age')}: <span className="text-white font-medium">{age}</span></p>
+                    {age && <p>Возраст: <span className="text-white font-medium">{age} лет</span></p>}
+                    {experience_years && <p>Стаж: <span className="text-white font-medium">{experience_years} лет</span></p>}
                     <p>{t('doctor_profile.services')}: <span className="text-white font-medium">{specialization}</span></p>
                 </div>
             </div>
