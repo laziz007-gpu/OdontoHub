@@ -116,6 +116,41 @@ def health_check():
     return {"status": "healthy"}
 
 
+@app.get("/debug-db")
+def debug_db():
+    """Debug endpoint: shows DB connection info and existing tables."""
+    from sqlalchemy import text
+    import os
+    raw_url = os.getenv("DATABASE_URL", "NOT SET")
+    engine_url = str(engine.url)
+
+    # Mask password for safety
+    def mask(url):
+        import re
+        return re.sub(r'://([^:@]+):([^@]+)@', r'://\1:****@', url)
+
+    try:
+        with engine.connect() as conn:
+            if "postgresql" in engine_url or "postgres" in engine_url:
+                result = conn.execute(text(
+                    "SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename"
+                ))
+                tables = [row[0] for row in result]
+            else:
+                result = conn.execute(text(
+                    "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
+                ))
+                tables = [row[0] for row in result]
+        return {
+            "db_type": "postgresql" if "postgresql" in engine_url or "postgres" in engine_url else "sqlite",
+            "engine_url_masked": mask(engine_url),
+            "env_DATABASE_URL_set": raw_url != "NOT SET",
+            "tables_in_db": tables,
+        }
+    except Exception as e:
+        return {"error": str(e), "engine_url_masked": mask(engine_url)}
+
+
 @app.get("/init-db")
 def init_database():
     """
