@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPhoto } from '../../api/photos';
 
 interface AddPhotoModalProps {
@@ -8,6 +9,7 @@ interface AddPhotoModalProps {
 }
 
 const AddPhotoModal = ({ patientId, onClose, onSuccess }: AddPhotoModalProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: '',
     category: 'treatment',
@@ -22,19 +24,18 @@ const AddPhotoModal = ({ patientId, onClose, onSuccess }: AddPhotoModalProps) =>
     const file = e.target.files?.[0];
     if (file) {
       if (!file.type.startsWith('image/')) {
-        setError('Пожалуйста, выберите изображение');
+        setError(t('modals.photo.error_file_type'));
         return;
       }
-      
+
       if (file.size > 5 * 1024 * 1024) {
-        setError('Размер файла не должен превышать 5 МБ');
+        setError(t('modals.photo.error_file_size'));
         return;
       }
 
       setSelectedFile(file);
       setError(null);
-      
-      // Create preview
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewUrl(reader.result as string);
@@ -45,50 +46,54 @@ const AddPhotoModal = ({ patientId, onClose, onSuccess }: AddPhotoModalProps) =>
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedFile) {
-      setError('Выберите файл для загрузки');
+      setError(t('modals.photo.error_file'));
       return;
     }
 
     if (!formData.title.trim()) {
-      setError('Введите название фотографии');
+      setError(t('modals.photo.error_name'));
       return;
     }
 
     try {
       setLoading(true);
       setError(null);
-      
-      // Convert file to base64 for storage (temporary solution)
-      // In production, you should upload to a file storage service
+
       const reader = new FileReader();
       reader.onloadend = async () => {
-        const base64String = reader.result as string;
-        
-        await createPhoto(patientId, {
-          title: formData.title,
-          file_url: base64String,
-          category: formData.category,
-          description: formData.description || undefined
-        });
-        
-        onSuccess();
-        onClose();
+        try {
+          const base64String = reader.result as string;
+
+          await createPhoto(patientId, {
+            title: formData.title,
+            file_url: base64String,
+            category: formData.category,
+            description: formData.description || undefined
+          });
+
+          onSuccess();
+          onClose();
+        } catch (err) {
+          console.error('Error in reader.onloadend:', err);
+          setError(t('modals.photo.error_save'));
+          setLoading(false);
+        }
       };
       reader.readAsDataURL(selectedFile);
     } catch (err) {
       console.error('Error creating photo:', err);
-      setError('Не удалось добавить фотографию');
+      setError(t('modals.photo.error_save'));
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl p-6 w-full max-w-md">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Добавить фотографию</h2>
-        
+        <h2 className="text-xl font-bold text-gray-800 mb-4">{t('modals.photo.title')}</h2>
+
         {error && (
           <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
             {error}
@@ -98,21 +103,21 @@ const AddPhotoModal = ({ patientId, onClose, onSuccess }: AddPhotoModalProps) =>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Название *
+              {t('modals.photo.name')} *
             </label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Например: Рентген зуба 16"
+              placeholder={t('modals.photo.placeholder_name')}
               required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Выберите файл *
+              {t('modals.photo.select_file')} *
             </label>
             <input
               type="file"
@@ -122,14 +127,14 @@ const AddPhotoModal = ({ patientId, onClose, onSuccess }: AddPhotoModalProps) =>
               required
             />
             <p className="text-xs text-gray-500 mt-1">
-              Максимальный размер: 5 МБ. Форматы: JPG, PNG, GIF
+              {t('modals.photo.max_size')}
             </p>
           </div>
 
           {previewUrl && (
             <div className="mt-3">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Предпросмотр:
+                {t('modals.photo.preview')}:
               </label>
               <img
                 src={previewUrl}
@@ -141,31 +146,31 @@ const AddPhotoModal = ({ patientId, onClose, onSuccess }: AddPhotoModalProps) =>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Категория *
+              {t('modals.photo.category.title')} *
             </label>
             <select
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="xray">Рентген</option>
-              <option value="treatment">Лечение</option>
-              <option value="before">До</option>
-              <option value="after">После</option>
-              <option value="other">Другое</option>
+              <option value="xray">{t('modals.photo.category.xray')}</option>
+              <option value="treatment">{t('modals.photo.category.treatment')}</option>
+              <option value="before">{t('modals.photo.category.before')}</option>
+              <option value="after">{t('modals.photo.category.after')}</option>
+              <option value="other">{t('modals.photo.category.other')}</option>
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Описание
+              {t('modals.photo.description')}
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={3}
-              placeholder="Дополнительная информация..."
+              placeholder={t('modals.photo.placeholder_description')}
             />
           </div>
 
@@ -176,14 +181,14 @@ const AddPhotoModal = ({ patientId, onClose, onSuccess }: AddPhotoModalProps) =>
               className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               disabled={loading}
             >
-              Отмена
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
               disabled={loading}
             >
-              {loading ? 'Добавление...' : 'Добавить'}
+              {loading ? t('modals.photo.adding') : t('common.add')}
             </button>
           </div>
         </form>

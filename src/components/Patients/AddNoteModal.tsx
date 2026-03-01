@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { X, Loader2, Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAllPatients } from '../../api/profile';
 
 interface AddNoteModalProps {
@@ -9,6 +10,7 @@ interface AddNoteModalProps {
 }
 
 const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, onSuccess }) => {
+    const { t } = useTranslation();
     const [selectedPatientId, setSelectedPatientId] = useState<number | ''>('');
     const [searchTerm, setSearchTerm] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -44,9 +46,9 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, onSuccess 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!selectedPatientId || !note.trim()) {
-            alert('Пожалуйста, выберите пациента и введите заметку');
+            alert(t('modals.note.error_fields'));
             return;
         }
 
@@ -54,7 +56,7 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, onSuccess 
         try {
             // Call onSuccess callback with patient ID and note
             onSuccess?.(selectedPatientId as number, note);
-            
+
             // Reset form
             setSelectedPatientId('');
             setSearchTerm('');
@@ -62,7 +64,7 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, onSuccess 
             onClose();
         } catch (error) {
             console.error("Failed to add note", error);
-            alert("Ошибка при добавлении заметки");
+            alert(t('modals.note.error_save'));
         } finally {
             setIsSubmitting(false);
         }
@@ -87,19 +89,19 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, onSuccess 
                 </button>
 
                 <h2 className="text-2xl md:text-3xl font-black text-[#1a1f36] mb-6">
-                    Новая заметка
+                    {t('modals.note.title')}
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Patient Selection */}
                     <div className="relative" ref={dropdownRef}>
                         <label className="block text-sm font-bold text-gray-600 mb-2">
-                            Пациент <span className="text-red-500">*</span>
+                            {t('modals.note.patient')} <span className="text-red-500">*</span>
                         </label>
                         <div className="relative">
                             <input
                                 type="text"
-                                placeholder="Выберите пациента"
+                                placeholder={t('modals.note.placeholder_patient')}
                                 value={isDropdownOpen ? searchTerm : selectedPatientName || searchTerm}
                                 onChange={(e) => {
                                     setSearchTerm(e.target.value);
@@ -136,13 +138,13 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, onSuccess 
                                             </div>
                                             <div>
                                                 <p className="font-bold text-[#1a1f36]">{p.full_name}</p>
-                                                <p className="text-xs text-gray-400">{p.phone || 'Нет номера'}</p>
+                                                <p className="text-xs text-gray-400">{p.phone || t('modals.note.no_phone')}</p>
                                             </div>
                                         </div>
                                     ))
                                 ) : (
                                     <div className="px-5 py-4 text-center text-gray-400 font-bold">
-                                        Пациент не найден
+                                        {t('modals.note.not_found')}
                                     </div>
                                 )}
                             </div>
@@ -152,12 +154,12 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, onSuccess 
                     {/* Note */}
                     <div>
                         <label className="block text-sm font-bold text-gray-600 mb-2">
-                            Заметка <span className="text-red-500">*</span>
+                            {t('modals.note.note_label')} <span className="text-red-500">*</span>
                         </label>
                         <textarea
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
-                            placeholder="Введите заметку"
+                            placeholder={t('modals.note.placeholder_note')}
                             rows={5}
                             className="w-full bg-[#efefef] rounded-[16px] p-4 text-base font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none resize-none"
                             required
@@ -171,7 +173,7 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, onSuccess 
                             onClick={onClose}
                             className="flex-1 py-3 bg-gray-100 text-gray-600 text-base font-black rounded-[16px] hover:bg-gray-200 transition-all active:scale-[0.98]"
                         >
-                            Отмена
+                            {t('common.cancel')}
                         </button>
                         <button
                             type="submit"
@@ -179,7 +181,7 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, onSuccess 
                             className="flex-1 py-3 bg-[#00e396] text-white text-base font-black rounded-[16px] shadow-lg shadow-[#00e396]/20 hover:bg-[#00d08a] transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {isSubmitting && <Loader2 className="w-5 h-5 animate-spin" />}
-                            Добавить
+                            {t('common.add')}
                         </button>
                     </div>
                 </form>

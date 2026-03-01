@@ -87,3 +87,19 @@ def get_me(user: User = Depends(get_current_user)):
         "full_name": full_name
     }
 
+
+@router.delete("/me")
+def delete_account(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        # For a robust deletion, we might need to delete related records manually 
+        # if the DB schema does not have ON DELETE CASCADE set.
+        # Attempting to delete the user object:
+        db.delete(user)
+        db.commit()
+        return {"message": "Account successfully deleted"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Cannot delete account due to related data or constraints: {str(e)}"
+        )

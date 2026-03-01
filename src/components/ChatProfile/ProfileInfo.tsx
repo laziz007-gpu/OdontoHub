@@ -1,4 +1,5 @@
 import { MessageSquare, Phone, Video } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ProfileInfoProps {
     avatar: string;
@@ -8,6 +9,7 @@ interface ProfileInfoProps {
 }
 
 const ProfileInfo = ({ avatar, name, status, phone }: ProfileInfoProps) => {
+    const { t } = useTranslation();
     return (
         <div className="flex flex-col items-center text-center">
             <div className="relative mb-6">
@@ -23,9 +25,9 @@ const ProfileInfo = ({ avatar, name, status, phone }: ProfileInfoProps) => {
             {/* Quick Actions */}
             <div className="grid grid-cols-3 gap-4 w-full mb-10">
                 {[
-                    { icon: <MessageSquare size={26} fill="currentColor" />, label: 'Сообщения' },
-                    { icon: <Phone size={26} fill="currentColor" />, label: 'Звонок' },
-                    { icon: <Video size={26} fill="currentColor" />, label: 'Видео' }
+                    { icon: <MessageSquare size={26} fill="currentColor" />, label: t('chat.actions.messages') },
+                    { icon: <Phone size={26} fill="currentColor" />, label: t('chat.actions.call') },
+                    { icon: <Video size={26} fill="currentColor" />, label: t('chat.actions.video') }
                 ].map((action, idx) => (
                     <button key={idx} className="bg-[#EFEEEE] rounded-[24px] py-4 flex flex-col items-center gap-1 group transition-all active:scale-95">
                         <div className="text-[#5B7FFF]">
@@ -39,15 +41,15 @@ const ProfileInfo = ({ avatar, name, status, phone }: ProfileInfoProps) => {
             {/* Contact & Links */}
             <div className="w-full flex items-center justify-between pt-2">
                 <div className="text-left">
-                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Телефон</p>
+                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">{t('doctor_profile.phone_number')}</p>
                     <p className="text-xl font-black text-[#1D1D2B]">{phone}</p>
                 </div>
                 <div className="flex gap-2">
                     <button className="bg-[#5B7FFF] text-white px-5 py-2.5 rounded-xl text-sm font-black shadow-md shadow-blue-500/20 active:scale-95 transition-all">
-                        Ссылка
+                        {t('chat.actions.link')}
                     </button>
                     <button className="bg-[#5B7FFF] text-white px-5 py-2.5 rounded-xl text-sm font-black shadow-md shadow-blue-500/20 active:scale-95 transition-all">
-                        QR-kod
+                        {t('chat.actions.qr_code')}
                     </button>
                 </div>
             </div>

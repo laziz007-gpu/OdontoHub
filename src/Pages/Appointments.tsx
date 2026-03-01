@@ -39,10 +39,10 @@ const Appointments: React.FC = () => {
 
     const appointmentsData = useMemo(() => {
         if (!apiAppointments || !Array.isArray(apiAppointments)) return [];
-        
+
         // Format selected date for comparison (YYYY-MM-DD)
         const selectedDateStr = `${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${selectedDate.getDate().toString().padStart(2, '0')}`;
-        
+
         return apiAppointments
             .filter(app => {
                 // Filter by selected date
@@ -63,9 +63,9 @@ const Appointments: React.FC = () => {
                 else if (app.status === 'pending') status = 'in_queue';
 
                 const serviceLabel = app.service === 'implantation' ? t('modal.services.implantation') :
-                    app.service === 'hygiene' ? 'Гигиена' :
-                        app.service === 'treatment' ? 'Лечение' :
-                            app.service === 'extraction' ? 'Удаление' :
+                    app.service === 'hygiene' ? t('patient.home.services_hygiene') :
+                        app.service === 'treatment' ? t('patient.home.services_treatment') :
+                            app.service === 'extraction' ? t('patient.appointments.type_extraction') :
                                 app.service || t('modal.services.implantation');
 
                 const date = `${startDate.getDate().toString().padStart(2, '0')}.${(startDate.getMonth() + 1).toString().padStart(2, '0')}.${startDate.getFullYear()}`;
@@ -80,7 +80,7 @@ const Appointments: React.FC = () => {
                     date,
                     status,
                     service: serviceLabel,
-                    patientName: app.patient_name || 'Пациент',
+                    patientName: app.patient_name || t('patient_profile.patient_title'),
                     raw: {
                         ...app,
                         price
@@ -100,9 +100,9 @@ const Appointments: React.FC = () => {
             patientName: apt.patientName,
             raw: apt.raw
         };
-        
+
         setSelectedAppointment(appointmentData);
-        
+
         if (apt.status === 'in_progress') {
             setView('in_progress');
         } else {
@@ -189,10 +189,10 @@ const Appointments: React.FC = () => {
                         ) : (
                             <div className="text-center py-40">
                                 <p className="text-gray-400 font-bold text-xl mb-2">
-                                    Нет записей
+                                    {t('patient_profile.no_appointments')}
                                 </p>
                                 <p className="text-gray-300 text-sm">
-                                    На выбранную дату записей нет
+                                    {t('common.not_found')}
                                 </p>
                             </div>
                         )}
@@ -201,10 +201,10 @@ const Appointments: React.FC = () => {
             </div>
 
             {/* Modals */}
-            <AppointmentModal 
-                isOpen={isModalOpen} 
+            <AppointmentModal
+                isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                onSuccess={() => showToast('Приём успешно назначен', 'success')}
+                onSuccess={() => showToast(t('appointments.success_toast'), 'success')}
             />
             <AppointmentDetailModal
                 isOpen={isDetailOpen}

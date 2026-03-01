@@ -2,16 +2,20 @@ import { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, MapPin, ChevronDown, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useDentistProfile, useUpdateDentistProfile } from '../api/profile';
+import { useTranslation } from 'react-i18next';
 import DentistImg from '../assets/img/photos/Dentist.png';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function EditDoctorProfile() {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { data: dentist, refetch } = useDentistProfile();
+  const { data: dentist } = useDentistProfile();
   const updateProfile = useUpdateDentistProfile();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [mapAddress, setMapAddress] = useState('');
-  const [coordinates, setCoordinates] = useState({ lat: 41.2995, lng: 69.2401 }); // Tashkent default
+  const [coordinates] = useState({ lat: 41.2995, lng: 69.2401 }); // Tashkent default
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -19,7 +23,7 @@ export default function EditDoctorProfile() {
     phone: '',
     address: '',
     clinic: '',
-    schedule: 'Каждый день',
+    schedule: 'every_day',
     workStartHour: '08',
     workStartMinute: '00',
     workEndHour: '16',
@@ -37,18 +41,18 @@ export default function EditDoctorProfile() {
       const [endHour, endMinute] = workHours[1]?.split(':') || ['16', '00'];
 
       setFormData({
-        specialization: dentist.specialization || 'Хирург',
-        phone: dentist.phone || '',
+        specialization: dentist.specialization || 'surgeon',
+        phone: dentist.phone?.startsWith('+998') ? dentist.phone : '+998 ' + (dentist.phone || ''),
         address: dentist.address || '',
         clinic: dentist.clinic || '',
-        schedule: dentist.schedule || 'Каждый день',
+        schedule: dentist.schedule || 'every_day',
         workStartHour: startHour,
         workStartMinute: startMinute,
         workEndHour: endHour,
         workEndMinute: endMinute,
         telegram: dentist.telegram || '',
         instagram: dentist.instagram || '',
-        whatsapp: dentist.whatsapp || '',
+        whatsapp: dentist.whatsapp?.startsWith('+998') ? dentist.whatsapp : '+998 ' + (dentist.whatsapp || ''),
       });
     }
   }, [dentist]);
@@ -56,20 +60,20 @@ export default function EditDoctorProfile() {
   const [avatar, setAvatar] = useState<string>(DentistImg);
 
   const specializations = [
-    'Хирург',
-    'Терапевт',
-    'Ортодонт',
-    'Ортопед',
-    'Пародонтолог',
-    'Имплантолог'
+    { key: 'surgeon', label: t('common.specializations.surgeon') },
+    { key: 'therapist', label: t('common.specializations.therapist') },
+    { key: 'orthodontist', label: t('common.specializations.orthodontist') },
+    { key: 'orthopedist', label: t('common.specializations.orthopedist') },
+    { key: 'periodontist', label: t('common.specializations.periodontist') },
+    { key: 'implantologist', label: t('common.specializations.implantologist') }
   ];
 
   const scheduleOptions = [
-    'Каждый день',
-    'Будние дни',
-    'Выходные',
-    'Понедельник - Пятница',
-    'Индивидуальный график'
+    { key: 'every_day', label: t('common.schedule_options.every_day') },
+    { key: 'weekdays', label: t('common.schedule_options.weekdays') },
+    { key: 'weekends', label: t('common.schedule_options.weekends') },
+    { key: 'mon_fri', label: t('common.schedule_options.mon_fri') },
+    { key: 'custom', label: t('common.schedule_options.custom') }
   ];
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,10 +107,12 @@ export default function EditDoctorProfile() {
         instagram: formData.instagram,
         whatsapp: formData.whatsapp,
       });
-      
-      // Обновляем данные профиля
-      await refetch();
-      
+
+      // Инвалидируем все связанные квери для мгновенного обновления во всем приложении
+      await queryClient.invalidateQueries({ queryKey: ['dentistProfile'] });
+      await queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      await queryClient.invalidateQueries({ queryKey: ['dentistStats'] });
+
       // Показываем уведомление
       setShowSuccessNotification(true);
       setTimeout(() => {
@@ -115,7 +121,7 @@ export default function EditDoctorProfile() {
       }, 2000);
     } catch (error) {
       console.error('Failed to update profile:', error);
-      alert('Ошибка при сохранении профиля');
+      alert(t('common.error'));
     }
   };
 
@@ -130,7 +136,7 @@ export default function EditDoctorProfile() {
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-3xl font-bold">Редактирование</h1>
+          <h1 className="text-3xl font-bold">{t('doctor_profile.edit')}</h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -138,7 +144,7 @@ export default function EditDoctorProfile() {
           <div className="space-y-6">
             {/* Specialization */}
             <div>
-              <label className="block text-sm text-gray-600 mb-2">Специализация</label>
+              <label className="block text-sm text-gray-600 mb-2">{t('doctor_profile.services')}</label>
               <div className="relative">
                 <select
                   value={formData.specialization}
@@ -146,7 +152,7 @@ export default function EditDoctorProfile() {
                   className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold appearance-none cursor-pointer focus:outline-none focus:border-blue-400"
                 >
                   {specializations.map((spec) => (
-                    <option key={spec} value={spec}>{spec}</option>
+                    <option key={spec.key} value={spec.key}>{spec.label}</option>
                   ))}
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -155,28 +161,16 @@ export default function EditDoctorProfile() {
 
             {/* Phone */}
             <div>
-              <label className="block text-sm text-gray-600 mb-2">Телефонный номер</label>
+              <label className="block text-sm text-gray-600 mb-2">{t('doctor_profile.phone_number')}</label>
               <input
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => {
-                  let val = e.target.value.replace(/\D/g, '');
-                  if (val.startsWith('998')) {
-                    val = val.slice(0, 12);
-                  } else {
-                    val = val.slice(0, 9);
+                  let val = e.target.value;
+                  if (!val.startsWith('+998 ')) {
+                    val = '+998 ' + val.replace(/^\+?998\s?/, '');
                   }
                   setFormData({ ...formData, phone: val });
-                }}
-                onBlur={(e) => {
-                  let val = e.target.value.replace(/\D/g, '');
-                  if (val && !val.startsWith('998')) {
-                    val = '998' + val;
-                  }
-                  if (val.length === 12) {
-                    const formatted = `+${val.slice(0, 3)} ${val.slice(3, 5)} ${val.slice(5, 8)} ${val.slice(8, 10)} ${val.slice(10, 12)}`;
-                    setFormData({ ...formData, phone: formatted });
-                  }
                 }}
                 className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold focus:outline-none focus:border-blue-400"
                 placeholder="+998 93 123 45 67"
@@ -185,7 +179,7 @@ export default function EditDoctorProfile() {
 
             {/* Address */}
             <div>
-              <label className="block text-sm text-gray-600 mb-2">Адрес</label>
+              <label className="block text-sm text-gray-600 mb-2">{t('doctor_profile.address')}</label>
               <div className="relative">
                 <input
                   type="text"
@@ -193,7 +187,7 @@ export default function EditDoctorProfile() {
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   onClick={handleMapClick}
                   className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 pr-12 text-lg font-semibold focus:outline-none focus:border-blue-400 cursor-pointer"
-                  placeholder="Выбрать на карте"
+                  placeholder={t('common.map.select_on_map')}
                   readOnly
                 />
                 <MapPin className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -207,13 +201,13 @@ export default function EditDoctorProfile() {
                 value={formData.clinic}
                 onChange={(e) => setFormData({ ...formData, clinic: e.target.value })}
                 className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold focus:outline-none focus:border-blue-400"
-                placeholder="Клиника"
+                placeholder={t('doctor_profile.clinic')}
               />
             </div>
 
             {/* Schedule */}
             <div>
-              <label className="block text-sm text-gray-600 mb-2">График работы</label>
+              <label className="block text-sm text-gray-600 mb-2">{t('doctor_profile.schedule')}</label>
               <div className="relative">
                 <select
                   value={formData.schedule}
@@ -221,7 +215,7 @@ export default function EditDoctorProfile() {
                   className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold appearance-none cursor-pointer focus:outline-none focus:border-blue-400"
                 >
                   {scheduleOptions.map((option) => (
-                    <option key={option} value={option}>{option}</option>
+                    <option key={option.key} value={option.key}>{option.label}</option>
                   ))}
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -230,7 +224,7 @@ export default function EditDoctorProfile() {
 
             {/* Work Hours */}
             <div>
-              <label className="block text-sm text-gray-600 mb-2">Время работы</label>
+              <label className="block text-sm text-gray-600 mb-2">{t('doctor_profile.work_hours')}</label>
               <div className="flex gap-4">
                 <div className="flex items-center gap-2 bg-white border-2 border-blue-200 rounded-2xl px-4 h-14">
                   <input
@@ -321,14 +315,13 @@ export default function EditDoctorProfile() {
                 onClick={() => fileInputRef.current?.click()}
                 className="text-blue-600 font-semibold text-lg hover:underline"
               >
-                Изменить фото
+                {t('doctor_profile.edit')} {t('common.photo').toLowerCase()}
               </button>
               <button className="text-blue-600 font-semibold text-lg hover:underline">
-                Добавить аватарку
+                {t('doctor_profile.add_avatar')}
               </button>
             </div>
 
-            {/* Telegram */}
             <div>
               <label className="block text-sm text-gray-600 mb-2">Telegram</label>
               <input
@@ -352,18 +345,6 @@ export default function EditDoctorProfile() {
               />
             </div>
 
-            {/* Instagram (duplicate in screenshot) */}
-            <div>
-              <label className="block text-sm text-gray-600 mb-2">Instagram</label>
-              <input
-                type="text"
-                value={formData.instagram}
-                onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
-                className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold focus:outline-none focus:border-blue-400"
-                placeholder="stomatolog.uz"
-              />
-            </div>
-
             {/* WhatsApp */}
             <div>
               <label className="block text-sm text-gray-600 mb-2">Whatsapp</label>
@@ -371,23 +352,11 @@ export default function EditDoctorProfile() {
                 type="tel"
                 value={formData.whatsapp}
                 onChange={(e) => {
-                  let val = e.target.value.replace(/\D/g, '');
-                  if (val.startsWith('998')) {
-                    val = val.slice(0, 12);
-                  } else {
-                    val = val.slice(0, 9);
+                  let val = e.target.value;
+                  if (!val.startsWith('+998 ')) {
+                    val = '+998 ' + val.replace(/^\+?998\s?/, '');
                   }
                   setFormData({ ...formData, whatsapp: val });
-                }}
-                onBlur={(e) => {
-                  let val = e.target.value.replace(/\D/g, '');
-                  if (val && !val.startsWith('998')) {
-                    val = '998' + val;
-                  }
-                  if (val.length === 12) {
-                    const formatted = `+${val.slice(0, 3)} ${val.slice(3, 5)} ${val.slice(5, 8)} ${val.slice(8, 10)} ${val.slice(10, 12)}`;
-                    setFormData({ ...formData, whatsapp: formatted });
-                  }
                 }}
                 className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold focus:outline-none focus:border-blue-400"
                 placeholder="+998 90 123 45 67"
@@ -403,7 +372,7 @@ export default function EditDoctorProfile() {
             disabled={updateProfile.isPending}
             className="px-12 py-4 bg-blue-600 text-white text-lg font-bold rounded-2xl hover:bg-blue-700 transition-colors disabled:opacity-50"
           >
-            {updateProfile.isPending ? 'Сохранение...' : 'Сохранить'}
+            {updateProfile.isPending ? t('common.loading') : t('doctor_profile.save')}
           </button>
         </div>
       </div>
@@ -414,7 +383,7 @@ export default function EditDoctorProfile() {
           <div className="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="text-xl font-bold">Выберите адрес на карте</h2>
+              <h2 className="text-xl font-bold">{t('common.map.select_on_map')}</h2>
               <button
                 onClick={() => setIsMapModalOpen(false)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -440,16 +409,16 @@ export default function EditDoctorProfile() {
 
             {/* Address Input */}
             <div className="p-4 border-t">
-              <label className="block text-sm text-gray-600 mb-2">Адрес</label>
+              <label className="block text-sm text-gray-600 mb-2">{t('doctor_profile.address')}</label>
               <input
                 type="text"
                 value={mapAddress}
                 onChange={(e) => setMapAddress(e.target.value)}
                 className="w-full h-12 bg-gray-50 border-2 border-gray-200 rounded-2xl px-4 text-base font-semibold focus:outline-none focus:border-blue-400"
-                placeholder="Введите адрес"
+                placeholder={t('common.map.enter_address')}
               />
               <p className="text-xs text-gray-500 mt-2">
-                Координаты: {coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}
+                {t('common.map.coordinates')}: {coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}
               </p>
             </div>
 
@@ -459,13 +428,13 @@ export default function EditDoctorProfile() {
                 onClick={() => setIsMapModalOpen(false)}
                 className="flex-1 px-6 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-2xl hover:bg-gray-200 transition-colors"
               >
-                Отмена
+                {t('common.modal.cancel')}
               </button>
               <button
                 onClick={handleMapConfirm}
                 className="flex-1 px-6 py-2.5 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition-colors"
               >
-                Подтвердить
+                {t('common.map.confirm')}
               </button>
             </div>
           </div>
@@ -479,7 +448,7 @@ export default function EditDoctorProfile() {
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            <span className="font-semibold text-lg">Профиль успешно обновлён!</span>
+            <span className="font-semibold text-lg">{t('common.appointments.details.success_update')}</span>
           </div>
         </div>
       )}

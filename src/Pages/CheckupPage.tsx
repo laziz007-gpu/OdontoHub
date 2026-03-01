@@ -1,12 +1,13 @@
-import React from 'react';
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import CheckupDoctorCard from '../components/CheckupBookingDetail/CheckupDoctorCard';
 import CheckupInfoCard from '../components/CheckupBookingDetail/CheckupInfoCard';
 import CheckupPriceCard from '../components/CheckupBookingDetail/CheckupPriceCard';
 import CheckupReviewButton from '../components/CheckupBookingDetail/CheckupReviewButton';
 
 const CheckupPage = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
 
     return (
@@ -23,10 +24,10 @@ const CheckupPage = () => {
                     </button>
                     <div className="flex flex-col">
                         <h1 className="text-[#1D1D2B] text-[28px] font-black leading-tight">
-                            Осмотр
+                            {t('appointments.type_hygiene')}
                         </h1>
                         <p className="text-[#1D1D2B] text-[18px] font-bold">
-                            25 сентябрь | 16:00
+                            25 {t('common.months.8')} | 16:00
                         </p>
                     </div>
                 </div>

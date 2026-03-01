@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import { useMyAppointments } from "../../api/appointments";
 import { useNavigate } from "react-router-dom";
 
-type Appointment = { id: number; name: string; time: string };
 
 const Section: FC = () => {
   const { t } = useTranslation();
@@ -17,10 +16,10 @@ const Section: FC = () => {
 
   const appointments = useMemo(() => {
     if (!apiAppointments || !Array.isArray(apiAppointments)) return [];
-    
+
     // Format selected date for comparison (YYYY-MM-DD)
     const selectedDateStr = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
-    
+
     return apiAppointments
       .filter(app => {
         // Filter by selected date
@@ -36,11 +35,11 @@ const Section: FC = () => {
 
         return {
           id: app.id,
-          name: app.patient_name || 'Пациент',
+          name: app.patient_name || t('patient_profile.patient_title'),
           time: `${startTime}-${endTime}`
         };
       });
-  }, [apiAppointments, currentDate]);
+  }, [apiAppointments, currentDate, t]);
 
   const goToPreviousDay = () => {
     const newDate = new Date(currentDate);
@@ -99,9 +98,8 @@ const Section: FC = () => {
             <div
               key={apt.id}
               onClick={() => navigate('/appointments')}
-              className={`flex items-center justify-between py-4 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors ${
-                index !== appointments.length - 1 ? "border-b border-gray-100" : ""
-              }`}
+              className={`flex items-center justify-between py-4 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors ${index !== appointments.length - 1 ? "border-b border-gray-100" : ""
+                }`}
             >
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 rounded-full bg-gray-200 flex-shrink-0 flex items-center justify-center font-bold text-gray-600">
@@ -116,7 +114,7 @@ const Section: FC = () => {
                   </p>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={(e) => {
                   e.stopPropagation();
                   navigate('/appointments');
@@ -130,8 +128,8 @@ const Section: FC = () => {
         </div>
       ) : (
         <div className="text-center py-10">
-          <p className="text-gray-400 font-medium">Нет записей</p>
-          <p className="text-gray-300 text-sm mt-1">На выбранную дату записей нет</p>
+          <p className="text-gray-400 font-medium">{t('dashboard.appointments_card.no_records')}</p>
+          <p className="text-gray-300 text-sm mt-1">{t('dashboard.appointments_card.no_records_date')}</p>
         </div>
       )}
     </div>

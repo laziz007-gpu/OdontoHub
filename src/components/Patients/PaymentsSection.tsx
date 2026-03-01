@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getPatientPayments, getPaymentStats, updatePayment, type Payment, type PaymentStats } from '../../api/payments';
 import AddPaymentModal from './AddPaymentModal';
 
@@ -7,6 +8,7 @@ interface PaymentsSectionProps {
 }
 
 const PaymentsSection = ({ patientId }: PaymentsSectionProps) => {
+  const { t, i18n } = useTranslation();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [stats, setStats] = useState<PaymentStats>({ total_amount: 0, total_paid: 0, total_debt: 0 });
   const [loading, setLoading] = useState(true);
@@ -30,7 +32,7 @@ const PaymentsSection = ({ patientId }: PaymentsSectionProps) => {
       setError(null);
     } catch (err) {
       console.error('Error fetching payments:', err);
-      setError('Не удалось загрузить данные об оплатах');
+      setError(t('patient_detail.payments.error_load'));
     } finally {
       setLoading(false);
     }
@@ -46,7 +48,7 @@ const PaymentsSection = ({ patientId }: PaymentsSectionProps) => {
       await fetchData();
     } catch (err) {
       console.error('Error updating payment:', err);
-      setError('Не удалось обновить статус платежа');
+      setError(t('patient_detail.payments.error_update'));
     } finally {
       setUpdatingPaymentId(null);
     }
@@ -54,22 +56,32 @@ const PaymentsSection = ({ patientId }: PaymentsSectionProps) => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU', {
+    const locale = i18n.language === 'ru' ? 'ru-RU' : i18n.language === 'uz' ? 'uz-UZ' : i18n.language === 'kz' ? 'kk-KZ' : 'en-US';
+    return date.toLocaleDateString(locale, {
       day: '2-digit',
       month: 'long',
       year: 'numeric'
     });
   };
 
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      'paid': t('patient_detail.payments.statuses.paid'),
+      'partial': t('patient_detail.payments.statuses.partial'),
+      'unpaid': t('patient_detail.payments.statuses.unpaid')
+    };
+    return labels[status] || status;
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-800">Оплаты</h2>
-        <button 
+        <h2 className="text-xl font-bold text-gray-800">{t('patient_detail.payments.title')}</h2>
+        <button
           onClick={() => setShowAddModal(true)}
           className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
         >
-          + Добавить платёж
+          + {t('patient_detail.payments.add_btn')}
         </button>
       </div>
 
@@ -82,16 +94,16 @@ const PaymentsSection = ({ patientId }: PaymentsSectionProps) => {
       {/* Статистика */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4">
-          <div className="text-sm text-green-700 font-medium mb-1">Оплачено</div>
-          <div className="text-2xl font-bold text-green-900">{stats.total_paid.toLocaleString()} сум</div>
+          <div className="text-sm text-green-700 font-medium mb-1">{t('patient_detail.payments.stats.paid')}</div>
+          <div className="text-2xl font-bold text-green-900">{stats.total_paid.toLocaleString()} {t('patient_profile.payments_view.currency')}</div>
         </div>
         <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-4">
-          <div className="text-sm text-red-700 font-medium mb-1">Задолженность</div>
-          <div className="text-2xl font-bold text-red-900">{stats.total_debt.toLocaleString()} сум</div>
+          <div className="text-sm text-red-700 font-medium mb-1">{t('patient_detail.payments.stats.debt')}</div>
+          <div className="text-2xl font-bold text-red-900">{stats.total_debt.toLocaleString()} {t('patient_profile.payments_view.currency')}</div>
         </div>
         <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4">
-          <div className="text-sm text-blue-700 font-medium mb-1">Всего</div>
-          <div className="text-2xl font-bold text-blue-900">{stats.total_amount.toLocaleString()} сум</div>
+          <div className="text-sm text-blue-700 font-medium mb-1">{t('patient_detail.payments.stats.total')}</div>
+          <div className="text-2xl font-bold text-blue-900">{stats.total_amount.toLocaleString()} {t('patient_profile.payments_view.currency')}</div>
         </div>
       </div>
 
@@ -105,7 +117,7 @@ const PaymentsSection = ({ patientId }: PaymentsSectionProps) => {
           <svg className="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
           </svg>
-          <p className="text-gray-500">Нет записей об оплатах</p>
+          <p className="text-gray-500">{t('patient_detail.payments.no_records')}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -114,10 +126,9 @@ const PaymentsSection = ({ patientId }: PaymentsSectionProps) => {
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className={`w-3 h-3 rounded-full ${
-                      payment.status === 'paid' ? 'bg-green-500' : 
+                    <span className={`w-3 h-3 rounded-full ${payment.status === 'paid' ? 'bg-green-500' :
                       payment.status === 'partial' ? 'bg-yellow-500' : 'bg-red-500'
-                    }`}></span>
+                      }`}></span>
                     <div className="font-semibold text-gray-900">{payment.service_name}</div>
                   </div>
                   <div className="text-sm text-gray-600 mt-1">{formatDate(payment.payment_date)}</div>
@@ -132,15 +143,13 @@ const PaymentsSection = ({ patientId }: PaymentsSectionProps) => {
                 </div>
                 <div className="text-right flex flex-col items-end gap-2">
                   <div>
-                    <div className={`text-lg font-bold ${
-                      payment.status === 'paid' ? 'text-green-600' : 
+                    <div className={`text-lg font-bold ${payment.status === 'paid' ? 'text-green-600' :
                       payment.status === 'partial' ? 'text-yellow-600' : 'text-red-600'
-                    }`}>
-                      {payment.amount.toLocaleString()} сум
+                      }`}>
+                      {payment.amount.toLocaleString()} {t('patient_profile.payments_view.currency')}
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
-                      {payment.status === 'paid' ? 'Оплачено' : 
-                       payment.status === 'partial' ? 'Частично' : 'Не оплачено'}
+                      {getStatusLabel(payment.status)}
                     </div>
                   </div>
                   {payment.status !== 'paid' && (
@@ -149,7 +158,7 @@ const PaymentsSection = ({ patientId }: PaymentsSectionProps) => {
                       disabled={updatingPaymentId === payment.id}
                       className="px-3 py-1 bg-green-500 text-white text-xs rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50"
                     >
-                      {updatingPaymentId === payment.id ? 'Обновление...' : 'Отметить оплаченным'}
+                      {updatingPaymentId === payment.id ? t('patient_detail.payments.updating') : t('patient_detail.payments.mark_paid')}
                     </button>
                   )}
                 </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useCreateAppointment } from '../../api/appointments';
 
 interface AddAppointmentModalProps {
@@ -9,6 +10,7 @@ interface AddAppointmentModalProps {
 }
 
 const AddAppointmentModal = ({ patientId, dentistId, onClose, onSuccess }: AddAppointmentModalProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     start_time: '',
     end_time: '',
@@ -20,9 +22,9 @@ const AddAppointmentModal = ({ patientId, dentistId, onClose, onSuccess }: AddAp
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.start_time || !formData.end_time) {
-      setError('Укажите время начала и окончания');
+      setError(t('modals.appointment.error_time'));
       return;
     }
 
@@ -40,15 +42,15 @@ const AddAppointmentModal = ({ patientId, dentistId, onClose, onSuccess }: AddAp
       onClose();
     } catch (err) {
       console.error('Error creating appointment:', err);
-      setError('Не удалось добавить приём');
+      setError(t('modals.appointment.error_save'));
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl p-6 w-full max-w-md">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Добавить приём</h2>
-        
+        <h2 className="text-xl font-bold text-gray-800 mb-4">{t('modals.appointment.title')}</h2>
+
         {error && (
           <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
             {error}
@@ -58,7 +60,7 @@ const AddAppointmentModal = ({ patientId, dentistId, onClose, onSuccess }: AddAp
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Время начала *
+              {t('modals.appointment.start_time')} *
             </label>
             <input
               type="datetime-local"
@@ -71,7 +73,7 @@ const AddAppointmentModal = ({ patientId, dentistId, onClose, onSuccess }: AddAp
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Время окончания *
+              {t('modals.appointment.end_time')} *
             </label>
             <input
               type="datetime-local"
@@ -84,27 +86,27 @@ const AddAppointmentModal = ({ patientId, dentistId, onClose, onSuccess }: AddAp
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Услуга
+              {t('modals.appointment.service')}
             </label>
             <input
               type="text"
               value={formData.service}
               onChange={(e) => setFormData({ ...formData, service: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Например: Консультация"
+              placeholder={t('modals.appointment.placeholder_service')}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Примечания
+              {t('modals.appointment.notes')}
             </label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={3}
-              placeholder="Дополнительная информация..."
+              placeholder={t('modals.appointment.placeholder_notes')}
             />
           </div>
 
@@ -115,14 +117,14 @@ const AddAppointmentModal = ({ patientId, dentistId, onClose, onSuccess }: AddAp
               className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               disabled={createAppointment.isPending}
             >
-              Отмена
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
               disabled={createAppointment.isPending}
             >
-              {createAppointment.isPending ? 'Добавление...' : 'Добавить'}
+              {createAppointment.isPending ? t('common.saving') : t('common.add')}
             </button>
           </div>
         </form>

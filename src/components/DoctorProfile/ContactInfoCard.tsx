@@ -1,4 +1,4 @@
-import React, { type FC, type ReactNode } from 'react';
+import { type FC, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     Phone,

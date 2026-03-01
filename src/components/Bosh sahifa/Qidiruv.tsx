@@ -100,8 +100,8 @@ export default function Qidiruv({ searchQuery, setSearchQuery, onAdd, onApplyFil
                   <label className="block text-sm font-medium mb-2">{t('dashboard.qidiruv.status_label')}</label>
                   <div className="flex flex-wrap gap-2">
                     <button
-                      onClick={() => setSelectedStatus(selectedStatus === 'ЛЕЧИТСЯ' ? 'All' : 'ЛЕЧИТСЯ')}
-                      className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm transition-colors border font-medium ${selectedStatus === 'ЛЕЧИТСЯ'
+                      onClick={() => setSelectedStatus(selectedStatus === 'TREATING' ? 'All' : 'TREATING')}
+                      className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm transition-colors border font-medium ${selectedStatus === 'TREATING'
                         ? 'bg-blue-600 text-white border-blue-600'
                         : 'bg-white text-blue-600 border-blue-200 hover:bg-blue-50'
                         }`}
@@ -109,8 +109,8 @@ export default function Qidiruv({ searchQuery, setSearchQuery, onAdd, onApplyFil
                       {t('dashboard.qidiruv.status_treating')}
                     </button>
                     <button
-                      onClick={() => setSelectedStatus(selectedStatus === 'НОВЫЙ' ? 'All' : 'НОВЫЙ')}
-                      className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm transition-colors border font-medium ${selectedStatus === 'НОВЫЙ'
+                      onClick={() => setSelectedStatus(selectedStatus === 'NEW' ? 'All' : 'NEW')}
+                      className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm transition-colors border font-medium ${selectedStatus === 'NEW'
                         ? 'bg-green-500 text-white border-green-500'
                         : 'bg-white text-green-600 border-green-200 hover:bg-green-50'
                         }`}
@@ -118,8 +118,8 @@ export default function Qidiruv({ searchQuery, setSearchQuery, onAdd, onApplyFil
                       {t('dashboard.qidiruv.status_new')}
                     </button>
                     <button
-                      onClick={() => setSelectedStatus(selectedStatus === 'ЗАПИСАН' ? 'All' : 'ЗАПИСАН')}
-                      className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm transition-colors border font-medium ${selectedStatus === 'ЗАПИСАН'
+                      onClick={() => setSelectedStatus(selectedStatus === 'RECORDED' ? 'All' : 'RECORDED')}
+                      className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm transition-colors border font-medium ${selectedStatus === 'RECORDED'
                         ? 'bg-gray-800 text-white border-gray-800'
                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                         }`}

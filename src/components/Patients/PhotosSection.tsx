@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getPatientPhotos, type PatientPhoto } from '../../api/photos';
 import AddPhotoModal from './AddPhotoModal';
 
@@ -7,6 +8,7 @@ interface PhotosSectionProps {
 }
 
 const PhotosSection = ({ patientId }: PhotosSectionProps) => {
+  const { t } = useTranslation();
   const [photos, setPhotos] = useState<PatientPhoto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -14,10 +16,10 @@ const PhotosSection = ({ patientId }: PhotosSectionProps) => {
   const [showAddModal, setShowAddModal] = useState(false);
 
   const categories = [
-    { id: 'all', label: 'Все', icon: '📁' },
-    { id: 'xray', label: 'Рентгены', icon: '🦷' },
-    { id: 'treatment', label: 'Лечение', icon: '💉' },
-    { id: 'other', label: 'Другое', icon: '📷' },
+    { id: 'all', label: t('patient_detail.photos.categories.all'), icon: '📁' },
+    { id: 'xray', label: t('patient_detail.photos.categories.xray'), icon: '🦷' },
+    { id: 'treatment', label: t('patient_detail.photos.categories.treatment'), icon: '💉' },
+    { id: 'other', label: t('patient_detail.photos.categories.other'), icon: '📷' },
   ];
 
   useEffect(() => {
@@ -32,7 +34,7 @@ const PhotosSection = ({ patientId }: PhotosSectionProps) => {
       setError(null);
     } catch (err) {
       console.error('Error fetching photos:', err);
-      setError('Не удалось загрузить фотографии');
+      setError(t('patient_detail.photos.error_load'));
     } finally {
       setLoading(false);
     }
@@ -41,12 +43,12 @@ const PhotosSection = ({ patientId }: PhotosSectionProps) => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-800">Фотографии и документы</h2>
-        <button 
+        <h2 className="text-xl font-bold text-gray-800">{t('patient_detail.photos.title')}</h2>
+        <button
           onClick={() => setShowAddModal(true)}
           className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
         >
-          + Загрузить
+          + {t('patient_detail.photos.upload_btn')}
         </button>
       </div>
 
@@ -62,11 +64,10 @@ const PhotosSection = ({ patientId }: PhotosSectionProps) => {
           <button
             key={cat.id}
             onClick={() => setSelectedCategory(cat.id)}
-            className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
-              selectedCategory === cat.id
+            className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${selectedCategory === cat.id
                 ? 'bg-blue-500 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+              }`}
           >
             <span className="mr-2">{cat.icon}</span>
             {cat.label}
@@ -84,8 +85,8 @@ const PhotosSection = ({ patientId }: PhotosSectionProps) => {
           <svg className="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          <p className="text-gray-500">Нет загруженных файлов</p>
-          <p className="text-sm text-gray-400 mt-1">Загрузите рентгены, фото лечения или другие документы</p>
+          <p className="text-gray-500">{t('patient_detail.photos.no_records')}</p>
+          <p className="text-sm text-gray-400 mt-1">{t('patient_detail.photos.no_records_desc')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -103,7 +104,7 @@ const PhotosSection = ({ patientId }: PhotosSectionProps) => {
               </div>
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
                 <button className="bg-white text-gray-900 px-3 py-1 rounded-lg text-sm font-medium">
-                  Просмотр
+                  {t('patient_detail.photos.view_btn')}
                 </button>
               </div>
               <div className="mt-2 text-sm text-gray-600 truncate">{photo.title}</div>

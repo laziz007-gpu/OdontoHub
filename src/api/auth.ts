@@ -47,3 +47,15 @@ export const useCurrentUser = () => {
     select: (response) => response.data,
   })
 }
+
+export const useDeleteAccount = () => {
+  return useMutation({
+    mutationFn: () => api.delete('/auth/me'),
+    onSuccess: () => {
+      localStorage.removeItem('access_token')
+    },
+    onError: (error) => {
+      console.error('Delete account error:', error)
+    },
+  })
+}
