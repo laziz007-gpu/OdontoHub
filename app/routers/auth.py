@@ -87,3 +87,60 @@ def get_me(user: User = Depends(get_current_user)):
         "full_name": full_name
     }
 
+
+@router.delete("/me")
+def delete_account(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        # Import models for deletion
+        from app.models.appointment import Appointment
+        from app.models.service import Service
+        from app.models.prescription import Prescription
+        from app.models.allergy import Allergy
+        from app.models.payment import Payment
+        from app.models.photo import PatientPhoto
+        
+        # Delete based on user role
+        if user.role == UserRole.DENTIST:
+            # Delete dentist's profile
+            if user.dentist_profile:
+                # Delete all appointments where this dentist is assigned
+                db.query(Appointment).filter(Appointment.dentist_id == user.dentist_profile.id).delete()
+                # Delete dentist profile
+                db.delete(user.dentist_profile)
+        
+        elif user.role == UserRole.PATIENT:
+            # Delete patient's profile and all related data
+            if user.patient_profile:
+                patient_id = user.patient_profile.id
+                
+                # Delete all appointments
+                db.query(Appointment).filter(Appointment.patient_id == patient_id).delete()
+                
+                # Delete all prescriptions
+                db.query(Prescription).filter(Prescription.patient_id == patient_id).delete()
+                
+                # Delete all allergies
+                db.query(Allergy).filter(Allergy.patient_id == patient_id).delete()
+                
+                # Delete all payments
+                db.query(Payment).filter(Payment.patient_id == patient_id).delete()
+                
+                # Delete all photos
+                db.query(PatientPhoto).filter(PatientPhoto.patient_id == patient_id).delete()
+                
+                # Delete patient profile
+                db.delete(user.patient_profile)
+        
+        # Finally, delete the user
+        db.delete(user)
+        db.commit()
+        
+        return {"message": "Account successfully deleted"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Cannot delete account: {str(e)}"
+        )
+
+
