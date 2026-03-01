@@ -479,6 +479,8 @@
       "profile": "Profile"
     },
     "home": {
+      "greeting": "Hi, {{name}}",
+      "greeting_subtitle": "Time to take care of your health",
       "search": "Search...",
       "upcoming": "Upcoming Appointments",
       "services": "Our Services",
@@ -488,6 +490,7 @@
       "services_surgery": "Surgery",
       "action_book": "Book an Appointment",
       "action_doctors": "Doctors",
+      "action_my_dentist": "My Dentist",
       "action_chat": "Chat",
       "action_notifications": "Notifications",
       "more_details": "Details",
@@ -550,6 +553,23 @@
       "type_extraction": "Wisdom Tooth Extraction",
       "type_examination": "Examination",
       "specialty_general": "General-profile dentist"
+    },
+    "alerts": {
+      "appointment_cancelled": "Appointment cancelled",
+      "select_new_date": "Please select a new date",
+      "appointment_rescheduled": "Appointment rescheduled",
+      "appointment_created": "Appointment successfully created!",
+      "fill_required_fields": "Please fill in all required fields!",
+      "booking_success": "Request successfully submitted!",
+      "user_not_found": "User not found. Please register.",
+      "patient_deleted": "Patient successfully deleted",
+      "patient_delete_error": "Error deleting patient",
+      "profile_save_error": "Error saving profile",
+      "prescription_delete_error": "Failed to delete prescription",
+      "allergy_delete_error": "Failed to delete allergy",
+      "auth_error": "Authorization error. Please log in again.",
+      "note_add_error": "Error adding note",
+      "function_in_development": "Feature in development"
     }
   }
 }

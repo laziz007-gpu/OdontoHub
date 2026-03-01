@@ -1,13 +1,16 @@
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
-import { useLogin } from '../api/auth'
+import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import { setUser } from '../store/slices/userSlice'
 import type { LoginData } from '../interfaces'
 import logo from '../assets/img/icons/Logo.svg'
 import { paths } from '../Routes/path'
 
 export default function Login() {
   const navigate = useNavigate()
-  const { mutate: login, isPending, error } = useLogin()
+  const dispatch = useDispatch()
+  const { t } = useTranslation()
 
   const {
     register,
@@ -16,16 +19,33 @@ export default function Login() {
   } = useForm<LoginData>()
 
   const onSubmit = (data: LoginData) => {
-    // Чистим телефон от пробелов перед отправкой
-    const cleanData = {
-      phone: data.phone.replace(/\s+/g, ''),
+    // Local login - check localStorage
+    const cleanPhone = data.phone.replace(/\s+/g, '');
+    const userData = localStorage.getItem('user_data');
+
+    if (userData) {
+      const user = JSON.parse(userData);
+      
+      // Check if phone matches
+      if (user.phone === cleanPhone) {
+        // Set token
+        localStorage.setItem('access_token', 'local_token_' + Date.now());
+        
+        // Save to Redux store
+        dispatch(setUser(user));
+        
+        // Navigate based on role
+        if (user.role === 'patient') {
+          navigate(paths.patientHome, { replace: true });
+        } else {
+          navigate(paths.menu, { replace: true });
+        }
+        return;
+      }
     }
 
-    login(cleanData, {
-      onSuccess: () => {
-        navigate(paths.role, { replace: true })
-      },
-    })
+    // If no user found in localStorage, show error
+    alert(t("patient.alerts.user_not_found"));
   }
 
   return (
@@ -64,27 +84,12 @@ export default function Login() {
             )}
           </div>
 
-          {/* Error from server */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-600 text-sm">
-              {error instanceof Error ? error.message : 'Пользователь не найден'}
-            </div>
-          )}
-
           {/* Submit */}
           <button
             type="submit"
-            disabled={isPending}
-            className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-semibold text-lg hover:bg-blue-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-semibold text-lg hover:bg-blue-700 active:scale-[0.98] transition-all"
           >
-            {isPending ? (
-              <span className="flex items-center justify-center gap-2">
-                <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                Вход...
-              </span>
-            ) : (
-              'Войти'
-            )}
+            Войти
           </button>
         </form>
 

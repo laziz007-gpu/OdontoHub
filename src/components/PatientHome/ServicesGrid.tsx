@@ -13,10 +13,10 @@ const ServicesGrid = () => {
     const navigate = useNavigate();
 
     const services: Service[] = [
-        { icon: Rasm, label: "Все" },
-        { icon: Rasm2, label: "Лечение" },
-        { icon: Rasm3, label: "Гигиена" },
-        { icon: Rasm4, label: "Хирургия" },
+        { icon: Rasm, label: t("patient.home.services_all") },
+        { icon: Rasm2, label: t("patient.home.services_treatment") },
+        { icon: Rasm3, label: t("patient.home.services_hygiene") },
+        { icon: Rasm4, label: t("patient.home.services_surgery") },
     ];
 
     return (

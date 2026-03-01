@@ -12,15 +12,30 @@ interface EditProfileModalProps {
 
 const EditProfileModal: FC<EditProfileModalProps> = ({ isOpen, onClose, initialData, onSave, avatar, triggerAvatarUpload }) => {
     const [formData, setFormData] = useState(initialData || {});
+    const [originalPhone, setOriginalPhone] = useState('');
+    const [phoneChanged, setPhoneChanged] = useState(false);
 
     useEffect(() => {
         if (isOpen && initialData) {
             setFormData(initialData);
+            setOriginalPhone(initialData.phone || '');
+            setPhoneChanged(false);
         }
     }, [isOpen, initialData]);
 
     const handleChange = (field: string, value: string) => {
-        setFormData((prev: any) => ({ ...prev, [field]: value }));
+        setFormData((prev: any) => {
+            const updated = { ...prev, [field]: value };
+            
+            // Check if phone changed
+            if (field === 'phone' && value !== originalPhone) {
+                setPhoneChanged(true);
+            } else if (field === 'phone' && value === originalPhone) {
+                setPhoneChanged(false);
+            }
+            
+            return updated;
+        });
     };
 
     if (!isOpen) return null;
@@ -117,7 +132,19 @@ const EditProfileModal: FC<EditProfileModalProps> = ({ isOpen, onClose, initialD
                         {/* Confirmation */}
                         <div className="space-y-2">
                             <label className="text-[14px] font-black text-[#1D1D2B] px-4">Подтверждение номера</label>
-                            <div className="w-full bg-[#D9D9D9] border-none rounded-[20px] h-[60px]"></div>
+                            {phoneChanged ? (
+                                <div className="w-full bg-[#FFF3CD] border-2 border-[#FFC107] rounded-[20px] py-4 px-6">
+                                    <p className="text-sm font-bold text-[#856404] mb-2">Старый номер:</p>
+                                    <p className="text-lg font-black text-[#1D1D2B]">{originalPhone}</p>
+                                    <p className="text-xs font-semibold text-[#856404] mt-2">
+                                        Вы изменили номер телефона. Требуется подтверждение.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="w-full bg-[#D9D9D9] border-none rounded-[20px] py-4 px-6 flex items-center justify-center">
+                                    <p className="text-sm font-bold text-gray-500">Номер не изменён</p>
+                                </div>
+                            )}
                         </div>
                     </div>
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FaArrowLeft } from "react-icons/fa";
 import BookingCalendar from '../components/Booking/BookingCalendar';
 import TimePicker from '../components/Booking/TimePicker';
@@ -10,6 +11,7 @@ import CommentInput from '../components/Booking/CommentInput';
 const Booking = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { t } = useTranslation();
     const preSelectedDoctor = location.state?.doctor;
 
     const [selectedDoctor, setSelectedDoctor] = useState(preSelectedDoctor?.value || "");
@@ -19,7 +21,7 @@ const Booking = () => {
     const [comment, setComment] = useState("");
 
     const doctors = [
-        { value: "d1", label: "Махмуд Пулатов" },
+        { value: "d1", label: "Махмуд Пулатов" }
     ];
 
     const services = [
@@ -40,10 +42,42 @@ const Booking = () => {
 
     const handleBooking = () => {
         if (!selectedDoctor || !selectedService || !selectedDate || !selectedTime) {
-            alert("Пожалуйста, заполните все обязательные поля!");
+            alert(t("patient.alerts.fill_required_fields"));
             return;
         }
 
+        // Check if local mode
+        const accessToken = localStorage.getItem('access_token');
+        const isLocalMode = accessToken?.startsWith('local_token_');
+
+        if (isLocalMode) {
+            // Get doctor name
+            const doctorName = doctors.find(d => d.value === selectedDoctor)?.label || "Махмуд Пулатов";
+            const serviceName = services.find(s => s.value === selectedService)?.label || "Консультация";
+
+            // Create new appointment
+            const newAppointment = {
+                id: Date.now(),
+                doctor_name: doctorName,
+                service: serviceName,
+                date: selectedDate.toLocaleDateString('ru-RU'),
+                time: selectedTime,
+                status: "upcoming",
+                comment: comment,
+                created_at: new Date().toISOString()
+            };
+
+            // Get existing appointments
+            const existingAppointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+            existingAppointments.push(newAppointment);
+            localStorage.setItem('appointments', JSON.stringify(existingAppointments));
+
+            alert(t("patient.alerts.booking_success"));
+            navigate('/calendar'); // Navigate to appointments page
+            return;
+        }
+
+        // API mode
         const bookingData = {
             doctor: selectedDoctor,
             service: selectedService,
@@ -57,7 +91,7 @@ const Booking = () => {
 
         // Mock success after 1 second
         setTimeout(() => {
-            alert("Заявка успешно отправлена!");
+            alert(t("patient.alerts.booking_success"));
             navigate('/'); // Navigate to home or dashboard
         }, 1000);
     };

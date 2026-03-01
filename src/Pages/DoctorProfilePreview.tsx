@@ -1,19 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import DentistImg from "../assets/img/photos/Dentist.png";
-import { useCreateAppointment } from "../api/appointments";
-import { usePatientProfile } from "../api/profile";
-import { useState } from "react";
 
 const DoctorProfilePreview = () => {
     const navigate = useNavigate();
-    const [isBooked, setIsBooked] = useState(false);
-    const createAppointment = useCreateAppointment();
-    const { data: patient } = usePatientProfile();
 
     const doctorData = {
         id: 1, // Placeholder dentist_id
-        name: "Откир Комилов",
+        name: "Махмуд Пулатов",
         phone: "+998 (90) 123 45 67",
         gender: "Мужчина",
         birthDate: "20.09.2000",
@@ -25,24 +19,18 @@ const DoctorProfilePreview = () => {
     };
 
     const handleBook = async () => {
-        if (!patient) return;
-
-        const start = new Date();
-        start.setDate(start.getDate() + 1);
-        start.setHours(10, 0, 0, 0);
-        const end = new Date(start.getTime() + 60 * 60 * 1000);
-
-        try {
-            await createAppointment.mutateAsync({
-                dentist_id: doctorData.id,
-                start_time: start.toISOString(),
-                end_time: end.toISOString()
-            });
-            setIsBooked(true);
-            setTimeout(() => setIsBooked(false), 3000);
-        } catch (error) {
-            console.error("Booking failed", error);
-        }
+        // Navigate to booking page with doctor data
+        navigate('/booking', { 
+            state: { 
+                doctor: {
+                    name: doctorData.name,
+                    value: "d1", // Махмуд Пулатов
+                    phone: doctorData.phone,
+                    specialty: "Стоматолог",
+                    image: DentistImg
+                }
+            } 
+        });
     };
 
     return (
@@ -129,19 +117,9 @@ const DoctorProfilePreview = () => {
                     <div className="pt-6 pb-12">
                         <button
                             onClick={handleBook}
-                            disabled={createAppointment.isPending || isBooked}
-                            className={`w-full py-6 rounded-[24px] text-xl font-black transition-all active:scale-[0.98] shadow-lg flex items-center justify-center gap-3 ${isBooked
-                                    ? "bg-white text-[#11D76A] border-2 border-[#11D76A]"
-                                    : "bg-[#11D76A] text-white hover:shadow-emerald-500/40 shadow-emerald-500/30"
-                                }`}
+                            className="w-full py-6 rounded-[24px] text-xl font-black transition-all active:scale-[0.98] shadow-lg flex items-center justify-center gap-3 bg-[#11D76A] text-white hover:shadow-emerald-500/40 shadow-emerald-500/30"
                         >
-                            {createAppointment.isPending && <Loader2 className="animate-spin" />}
-                            {isBooked ? (
-                                <>
-                                    <CheckCircle2 size={24} />
-                                    Готово!
-                                </>
-                            ) : "Записаться"}
+                            Записаться
                         </button>
                     </div>
                 </div>

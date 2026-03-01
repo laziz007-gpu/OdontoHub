@@ -479,6 +479,8 @@
       "profile": "Профиль"
     },
     "home": {
+      "greeting": "Сәлем, {{name}}",
+      "greeting_subtitle": "Денсаулығыңызға қамқорлық жасайтын уақыт келді",
       "search": "Іздеу...",
       "upcoming": "Жақын арадағы қабылдаулар",
       "services": "Біздің қызметтеріміз",
@@ -488,6 +490,7 @@
       "services_surgery": "Хирургия",
       "action_book": "Стоматологқа жазылу",
       "action_doctors": "Дәрігерлер",
+      "action_my_dentist": "Менің стоматологым",
       "action_chat": "Чат",
       "action_notifications": "Хабарлама",
       "more_details": "Толығырақ",
@@ -550,6 +553,23 @@
       "type_extraction": "Ақыл тісін жұлдыру",
       "type_examination": "Тексеру",
       "specialty_general": "Жалпы-профильді стоматолог"
+    },
+    "alerts": {
+      "appointment_cancelled": "Қабылдау болдырылмады",
+      "select_new_date": "Жаңа күнді таңдаңыз",
+      "appointment_rescheduled": "Қабылдау ауыстырылды",
+      "appointment_created": "Жазба сәтті жасалды!",
+      "fill_required_fields": "Барлық міндетті өрістерді толтырыңыз!",
+      "booking_success": "Өтініш сәтті жіберілді!",
+      "user_not_found": "Пайдаланушы табылмады. Тіркеліңіз.",
+      "patient_deleted": "Науқас сәтті жойылды",
+      "patient_delete_error": "Науқасты жою кезінде қате",
+      "profile_save_error": "Профильді сақтау кезінде қате",
+      "prescription_delete_error": "Рецептті жою мүмкін болмады",
+      "allergy_delete_error": "Аллергияны жою мүмкін болмады",
+      "auth_error": "Авторизация қатесі. Жүйеге қайта кіріңіз.",
+      "note_add_error": "Жазба қосу кезінде қате",
+      "function_in_development": "Функция әзірленуде"
     }
   }
 }

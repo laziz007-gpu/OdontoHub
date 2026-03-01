@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
-import { useRegister } from '../api/auth'
+import { useDispatch } from 'react-redux'
+import { setUser } from '../store/slices/userSlice'
 import type { RegisterData, UserRole } from '../interfaces'
 import { Stethoscope, User } from 'lucide-react'
 import logo from '../assets/img/icons/Logo.svg'
@@ -9,8 +10,9 @@ import { paths } from '../Routes/path'
 
 export default function Register1() {
   const navigate = useNavigate()
-  const { mutate: registerUser, isPending, error } = useRegister()
+  const dispatch = useDispatch()
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const {
     register,
@@ -21,18 +23,77 @@ export default function Register1() {
   const onSubmit = (data: Omit<RegisterData, 'role'>) => {
     if (!selectedRole) return
 
-    // Strip spaces from phone number: "+998 90 123 45 67" -> "+998901234567"
-    const cleanData = {
-      ...data,
+    setIsLoading(true)
+
+    // Local registration - save to localStorage
+    const userData = {
+      full_name: data.full_name,
       phone: data.phone.replace(/\s+/g, ''),
+      email: data.email || '',
       role: selectedRole
     }
 
-    registerUser(cleanData, {
-      onSuccess: () => {
-        navigate(paths.role, { replace: true })
-      },
-    })
+    // Save user data to localStorage
+    localStorage.setItem('user_data', JSON.stringify(userData))
+    localStorage.setItem('access_token', 'local_token_' + Date.now())
+
+    // Save to Redux store
+    dispatch(setUser(userData))
+
+    // Add demo appointments for patient
+    if (selectedRole === 'patient') {
+      const today = new Date();
+      const demoAppointments = [
+        // Past appointments
+        {
+          id: Date.now() - 3,
+          doctor_name: "Махмуд Пулатов",
+          service: "Осмотр",
+          date: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),
+          time: "10:00",
+          status: "past",
+          comment: "Прошёл успешно",
+          created_at: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          id: Date.now() - 2,
+          doctor_name: "Махмуд Пулатов",
+          service: "Пломбирование",
+          date: new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),
+          time: "14:30",
+          status: "past",
+          comment: "Завершено",
+          created_at: new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          id: Date.now() - 1,
+          doctor_name: "Махмуд Пулатов",
+          service: "Консультация",
+          date: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),
+          time: "11:00",
+          status: "past",
+          comment: "",
+          created_at: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString()
+        }
+      ];
+      localStorage.setItem('appointments', JSON.stringify(demoAppointments));
+      
+      // Mark as first time user
+      localStorage.setItem('is_first_time', 'true');
+    }
+
+    // Simulate a small delay for better UX
+    setTimeout(() => {
+      setIsLoading(false)
+      
+      // Navigate based on role
+      if (selectedRole === 'patient') {
+        // First time users go to doctors page to select a doctor
+        navigate(paths.doctors, { replace: true })
+      } else {
+        navigate(paths.menu, { replace: true })
+      }
+    }, 500)
   }
 
   return (
@@ -139,24 +200,13 @@ export default function Register1() {
             />
           </div>
 
-          {/* Error from server */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-600 text-sm overflow-x-auto">
-              <p className="font-bold mb-1">Ошибка сервера:</p>
-              <pre className="whitespace-pre-wrap">
-                {/* @ts-ignore */}
-                {JSON.stringify((error as any).response?.data || error.message, null, 2)}
-              </pre>
-            </div>
-          )}
-
           {/* Submit */}
           <button
             type="submit"
-            disabled={isPending || !selectedRole}
+            disabled={isLoading || !selectedRole}
             className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-semibold text-lg hover:bg-blue-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isPending ? (
+            {isLoading ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
                 Регистрация...

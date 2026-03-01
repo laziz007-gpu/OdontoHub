@@ -27,8 +27,15 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response && error.response.status === 401) {
+      const accessToken = localStorage.getItem('access_token');
+      const isLocalMode = accessToken?.startsWith('local_token_');
       const isLoginPage = window.location.pathname === '/login';
       const isRegisterPage = window.location.pathname.includes('/register');
+      
+      // If local mode, don't redirect - just reject the error
+      if (isLocalMode) {
+        return Promise.reject(error);
+      }
       
       // Если это страница логина или регистрации, просто возвращаем ошибку
       if (isLoginPage || isRegisterPage) {

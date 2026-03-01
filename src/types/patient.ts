@@ -17,6 +17,7 @@ export interface Doctor {
     rating?: string | number;
     image: string;
     specialty?: string;
+    phone?: string;
 }
 
 export type AppointmentStatus = 'upcoming' | 'past' | 'success' | 'cancelled' | 'rescheduled';

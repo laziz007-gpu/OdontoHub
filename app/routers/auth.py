@@ -14,57 +14,81 @@ router = APIRouter()
 
 @router.post("/register", response_model=TokenSchema)
 def register(data: RegisterSchema, db: Session = Depends(get_db)):
-    if db.query(User).filter(User.phone == data.phone).first():
-        raise HTTPException(status_code=400, detail="Phone already registered")
+    try:
+        # Check if phone already exists
+        existing_user = db.query(User).filter(User.phone == data.phone).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Phone already registered")
 
-    # Passwordless: no password required
-    user = User(
-        phone=data.phone,
-        email=data.email,
-        password=None,  # No password for passwordless auth
-        role=UserRole(data.role),
-    )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-
-    if data.role.value == UserRole.PATIENT.value:
-        profile = PatientProfile(
-            user_id=user.id,
-            full_name=data.full_name
+        # Passwordless: no password required
+        user = User(
+            phone=data.phone,
+            email=data.email,
+            password=None,  # No password for passwordless auth
+            role=UserRole(data.role),
         )
-        db.add(profile)
+        db.add(user)
+        db.commit()
+        db.refresh(user)
 
-    elif data.role.value == UserRole.DENTIST.value:
-        profile = DentistProfile(
-            user_id=user.id,
-            full_name=data.full_name
+        # Create profile based on role
+        if data.role.value == UserRole.PATIENT.value:
+            profile = PatientProfile(
+                user_id=user.id,
+                full_name=data.full_name
+            )
+            db.add(profile)
+
+        elif data.role.value == UserRole.DENTIST.value:
+            profile = DentistProfile(
+                user_id=user.id,
+                full_name=data.full_name
+            )
+            db.add(profile)
+
+        db.commit()
+
+        # Create access token
+        token = create_access_token({"user_id": user.id, "role": user.role.value})
+        return {"access_token": token, "token_type": "bearer"}
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        print(f"Registration error: {str(e)}")  # Log the error
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Registration failed: {str(e)}"
         )
-        db.add(profile)
-
-    db.commit()
-
-    token = create_access_token({"user_id": user.id, "role": user.role.value})
-    return {"access_token": token, "token_type": "bearer"}
 
 @router.post("/login", response_model=TokenSchema)
 def login(data: LoginSchema, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.phone == data.phone).first()
+    try:
+        user = db.query(User).filter(User.phone == data.phone).first()
 
-    if not user:
-        raise HTTPException(
-            status_code=401,
-            detail="Пользователь не найден"
+        if not user:
+            raise HTTPException(
+                status_code=401,
+                detail="Пользователь не найден"
+            )
+
+        access_token = create_access_token(
+            {"sub": str(user.id), "role": user.role.value}
         )
 
-    access_token = create_access_token(
-        {"sub": str(user.id), "role": user.role.value}
-    )
-
-    return {
-        "access_token": access_token,
-        "token_type": "bearer"
-    }
+        return {
+            "access_token": access_token,
+            "token_type": "bearer"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Login error: {str(e)}")  # Log the error
+        raise HTTPException(
+            status_code=500,
+            detail=f"Login failed: {str(e)}"
+        )
 
 
 

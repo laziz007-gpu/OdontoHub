@@ -22,17 +22,34 @@ const PatientProfilePage = () => {
         name: user?.full_name || "Дункан Факовский",
         phone: user?.phone || "+998 (90) 123 45 67",
         gender: "Мужчина",
+        birthYear: "2000",
         age: "26 лет",
-        address: "г. Ташкент",
+        region: "Ташкент",
+        city: "Ташкент",
+        district: "Юнусабад",
+        address: "г. Ташкент, Юнусабад",
         avatar: DentistImg
     });
 
     useEffect(() => {
-        if (user) {
+        // Load from localStorage
+        const storedUserData = localStorage.getItem('user_data');
+        if (storedUserData) {
+            const parsedData = JSON.parse(storedUserData);
             setUserData(prev => ({
                 ...prev,
-                name: user.full_name || prev.name,
-                phone: user.phone || prev.phone
+                name: parsedData.full_name || prev.name,
+                phone: parsedData.phone || prev.phone
+            }));
+        }
+
+        // Load profile data from localStorage
+        const profileData = localStorage.getItem('patient_profile');
+        if (profileData) {
+            const parsed = JSON.parse(profileData);
+            setUserData(prev => ({
+                ...prev,
+                ...parsed
             }));
         }
     }, [user]);
@@ -53,7 +70,12 @@ const PatientProfilePage = () => {
     };
 
     const handleSaveProfile = (newData: any) => {
-        setUserData(prev => ({ ...prev, ...newData }));
+        const updatedData = { ...userData, ...newData };
+        setUserData(updatedData);
+        
+        // Save to localStorage
+        localStorage.setItem('patient_profile', JSON.stringify(updatedData));
+        
         setIsEditModalOpen(false);
     };
 
@@ -144,14 +166,21 @@ const PatientProfilePage = () => {
                             <h2 className="text-2xl font-black text-[#1D1D2B]">{userData.name}</h2>
                             <p className="text-gray-400 font-bold mt-1">{userData.phone}</p>
 
-                            <div className="w-full mt-8 pt-8 border-t border-gray-50 grid grid-cols-2 gap-4">
-                                <div className="text-left">
-                                    <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest">{t("patient.profile.gender")}</p>
-                                    <p className="text-sm font-bold text-[#1D1D2B] mt-1">{userData.gender === "Мужчина" ? t("patient.profile.male") : t("patient.profile.female")}</p>
+                            <div className="w-full mt-8 pt-8 border-t border-gray-50 space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="text-left">
+                                        <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest">{t("patient.profile.gender")}</p>
+                                        <p className="text-sm font-bold text-[#1D1D2B] mt-1">{userData.gender === "Мужчина" ? t("patient.profile.male") : t("patient.profile.female")}</p>
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest">Год рождения</p>
+                                        <p className="text-sm font-bold text-[#1D1D2B] mt-1">{userData.birthYear}</p>
+                                    </div>
                                 </div>
-                                <div className="text-left">
-                                    <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest">{t("patient.profile.birth_date")}</p>
-                                    <p className="text-sm font-bold text-[#1D1D2B] mt-1">{userData.age}</p>
+                                <div className="text-left pt-2">
+                                    <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest">Местоположение</p>
+                                    <p className="text-sm font-bold text-[#1D1D2B] mt-1">{userData.region}, {userData.city}</p>
+                                    <p className="text-xs font-semibold text-gray-500 mt-0.5">{userData.district}</p>
                                 </div>
                             </div>
                         </div>

@@ -66,6 +66,20 @@ export const useAllPatients = () => {
     });
 }
 
+export const useAllDentists = () => {
+    const accessToken = localStorage.getItem('access_token');
+    const isLocalMode = accessToken?.startsWith('local_token_');
+    
+    return useQuery({
+        queryKey: ['dentists'],
+        queryFn: async () => {
+            const response = await api.get<DentistProfile[]>('/dentists/');
+            return response.data;
+        },
+        enabled: !isLocalMode && !!accessToken, // Only fetch if not in local mode
+    });
+}
+
 export const usePatient = (id: number) => {
     return useQuery({
         queryKey: ['patient', id],

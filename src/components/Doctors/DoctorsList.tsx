@@ -1,49 +1,81 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { paths } from '../../Routes/path';
 import DoctorCard from './DoctorCard';
 import DoctorFilters from './DoctorFilters';
+import { useAllDentists } from '../../api/profile';
 import type { Doctor } from '../../types/patient';
 import DoctorImg from "../../assets/img/photos/Dentist.png";
 
 const DoctorsList: React.FC = () => {
+    const accessToken = localStorage.getItem('access_token');
+    const isLocalMode = accessToken?.startsWith('local_token_');
+    const { t } = useTranslation();
+    
+    // Only fetch from API if not in local mode
+    const { data: dentists, isLoading } = useAllDentists();
     const [searchTerm, setSearchTerm] = useState("");
     const [location, setLocation] = useState("tashkent");
     const [district, setDistrict] = useState("yunusabad");
     const [rating, setRating] = useState("");
 
-    // Mock data based on screenshot
-    const doctors: Doctor[] = [
+    // Local mode: use hardcoded doctors
+    const localDoctors: Doctor[] = [
         {
             name: "Махмуд Пулатов",
-            direction: "Ортодонтия",
-            experience: "3 года",
-            rating: "4.7",
+            direction: "Терапевт",
+            experience: "5 лет",
+            rating: "4.8",
             image: DoctorImg,
-            specialty: "Ортодонтия"
-        },
-        {
-            name: "Махмуд Пулатов",
-            direction: "Ортодонтия",
-            experience: "3 года",
-            rating: "4.7",
-            image: DoctorImg, // Using same image for demo
-            specialty: "Ортодонтия"
-        },
-        {
-            name: "Махмуд Пулатов",
-            direction: "Ортодонтия",
-            experience: "3 года",
-            rating: "4.7",
-            image: DoctorImg,
-            specialty: "Ортодонтия"
+            specialty: "Терапевт"
         }
     ];
+
+    // Map backend dentists to frontend Doctor interface or use local doctors
+    const doctors: Doctor[] = isLocalMode 
+        ? localDoctors 
+        : (dentists?.map(d => ({
+            name: d.full_name,
+            direction: d.specialization || "Стоматолог",
+            experience: "3 года",
+            rating: "4.7",
+            image: DoctorImg,
+            specialty: d.specialization || "Общая стоматология"
+        })) || []);
 
     const navigate = useNavigate();
 
     const handleBook = (doctor: Doctor) => {
-        // In a real app, we'd pass the doctor ID or object via state
+        // Check if local mode
+        const accessToken = localStorage.getItem('access_token');
+        const isLocalMode = accessToken?.startsWith('local_token_');
+
+        if (isLocalMode) {
+            // Create appointment directly
+            const newAppointment = {
+                id: Date.now(),
+                doctor_name: doctor.name,
+                service: "Консультация",
+                date: new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),
+                time: "10:00",
+                status: "upcoming",
+                comment: "",
+                created_at: new Date().toISOString()
+            };
+
+            // Get existing appointments
+            const existingAppointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+            existingAppointments.push(newAppointment);
+            localStorage.setItem('appointments', JSON.stringify(existingAppointments));
+
+            // Show success message and navigate
+            alert(t("patient.alerts.appointment_created"));
+            navigate('/calendar');
+            return;
+        }
+
+        // API mode - navigate to booking page
         navigate(paths.booking, { state: { doctor } });
     };
 
@@ -60,11 +92,22 @@ const DoctorsList: React.FC = () => {
                 onRatingChange={setRating}
             />
 
-            <div className="flex-1 overflow-y-auto space-y-4 pb-24 no-scrollbar">
-                {doctors.map((doctor, index) => (
-                    <DoctorCard key={index} doctor={doctor} onBook={handleBook} />
-                ))}
-            </div>
+            {isLoading && !isLocalMode ? (
+                <div className="flex-1 flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+                </div>
+            ) : (
+                <div className="flex-1 overflow-y-auto space-y-4 pb-24 no-scrollbar">
+                    {doctors.map((doctor, index) => (
+                        <DoctorCard key={index} doctor={doctor} onBook={handleBook} />
+                    ))}
+                    {doctors.length === 0 && (
+                        <div className="text-center py-12">
+                            <p className="text-gray-500 text-lg">Врачи не найдены</p>
+                        </div>
+                    )}
+                </div>
+            )}
 
             <div className="fixed bottom-4 sm:bottom-6 left-0 right-0 flex justify-center z-10 px-4">
                 <button

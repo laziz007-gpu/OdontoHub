@@ -17,6 +17,42 @@ const PatientAppointments = () => {
     const { data: apiAppointments, isLoading } = useMyAppointments();
 
     const appointments: UIAppointment[] = useMemo(() => {
+        // Check if local mode
+        const accessToken = localStorage.getItem('access_token');
+        const isLocalMode = accessToken?.startsWith('local_token_');
+
+        if (isLocalMode) {
+            // Get appointments from localStorage
+            const localAppointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            return localAppointments.map((app: any): UIAppointment => {
+                // Parse date
+                const [day, month, year] = app.date.split('.');
+                const appointmentDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                
+                // Determine if past or upcoming
+                const isPast = appointmentDate < today;
+
+                return {
+                    id: app.id,
+                    title: app.service || "Консультация",
+                    doctor: app.doctor_name,
+                    specialty: "Стоматолог",
+                    date: app.date,
+                    time: app.time,
+                    image: DentistImg,
+                    type: isPast ? 'past' : 'upcoming',
+                    status: isPast ? 'success' : 'success',
+                    statusText: isPast ? t("patient.appointments.success_status") : t("patient.appointments.success_status"),
+                    comment: app.comment,
+                    commentTitle: t("patient.appointments.comment_label")
+                };
+            });
+        }
+
+        // API mode
         if (!apiAppointments || !Array.isArray(apiAppointments)) return [];
 
         return apiAppointments.map((app): UIAppointment => {

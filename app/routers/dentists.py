@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from typing import List
 from app.core.database import get_db
 from app.core.security import require_role
 from app.models.user import User, UserRole
 from app.models.dentist import DentistProfile
+from app.schemas.dentist import DentistProfileSchema
 
 router = APIRouter(prefix="/dentists", tags=["Dentists"])
 
@@ -28,6 +30,14 @@ def dentist_me(
         "full_name": user.dentist_profile.full_name,
         "message": "Hello dentist"
     }
+
+
+@router.get("/", response_model=List[DentistProfileSchema])
+def list_dentists(
+    db: Session = Depends(get_db)
+):
+    """List all dentists (publicly accessible for patients)"""
+    return db.query(DentistProfile).all()
 
 
 @router.get("/me/stats")

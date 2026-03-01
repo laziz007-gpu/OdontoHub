@@ -479,6 +479,8 @@
       "profile": "Profil"
     },
     "home": {
+      "greeting": "Salom, {{name}}",
+      "greeting_subtitle": "Sog'ligingizga g'amxo'rlik qilish vaqti keldi",
       "search": "Qidiruv...",
       "upcoming": "Yaqindagi qabullar",
       "services": "Bizning xizmatlar",
@@ -488,6 +490,7 @@
       "services_surgery": "Xirurgiya",
       "action_book": "Stomatologga yozilish",
       "action_doctors": "Shifokorlar",
+      "action_my_dentist": "Mening stomatologim",
       "action_chat": "Suhbat",
       "action_notifications": "Bildirishnoma",
       "more_details": "Batafsil",
@@ -550,6 +553,23 @@
       "type_extraction": "Aql tishini oldirish",
       "type_examination": "Ko'rik",
       "specialty_general": "Umumiy-profil stomatolog"
+    },
+    "alerts": {
+      "appointment_cancelled": "Qabul bekor qilindi",
+      "select_new_date": "Iltimos, yangi sanani tanlang",
+      "appointment_rescheduled": "Qabul ko'chirildi",
+      "appointment_created": "Qabul muvaffaqiyatli yaratildi!",
+      "fill_required_fields": "Iltimos, barcha majburiy maydonlarni to'ldiring!",
+      "booking_success": "Ariza muvaffaqiyatli yuborildi!",
+      "user_not_found": "Foydalanuvchi topilmadi. Iltimos, ro'yxatdan o'ting.",
+      "patient_deleted": "Bemor muvaffaqiyatli o'chirildi",
+      "patient_delete_error": "Bemorni o'chirishda xatolik",
+      "profile_save_error": "Profilni saqlashda xatolik",
+      "prescription_delete_error": "Retseptni o'chirib bo'lmadi",
+      "allergy_delete_error": "Allergiyani o'chirib bo'lmadi",
+      "auth_error": "Avtorizatsiya xatosi. Iltimos, tizimga qayta kiring.",
+      "note_add_error": "Eslatma qo'shishda xatolik",
+      "function_in_development": "Funksiya ishlab chiqilmoqda"
     }
   }
 }

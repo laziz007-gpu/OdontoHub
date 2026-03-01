@@ -26,7 +26,8 @@ const PatientAppointmentDetail = () => {
             direction: "Ортодонтия",
             experience: "3 года",
             rating: "4.7",
-            image: DentistImg
+            image: DentistImg,
+            phone: "+998901234567"
         },
         details: {
             status: "запланирован",
@@ -45,7 +46,8 @@ const PatientAppointmentDetail = () => {
             direction: "Ортодонтия",
             experience: "3 года",
             rating: "4.7",
-            image: DentistImg
+            image: DentistImg,
+            phone: "+998901234567"
         },
         details: {
             status: "завершён",
@@ -103,7 +105,7 @@ const PatientAppointmentDetail = () => {
                             <PriceCard price={appointment.price} />
                         </div>
                         <div>
-                            {isUpcoming ? <ActionButtons /> : <ReviewButton />}
+                            {isUpcoming ? <ActionButtons phone={appointment.doctor.phone} /> : <ReviewButton />}
                         </div>
                     </div>
                 </div>
