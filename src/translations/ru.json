@@ -83,7 +83,8 @@
             "periodontist": "Пародонтолог",
             "implantologist": "Имплантолог",
             "hygienist": "Гигиенист",
-            "aesthetician": "Эстетик"
+            "aesthetician": "Эстетик",
+            "pediatric": "Детский стоматолог"
         },
         "schedule_options": {
             "every_day": "Каждый день",

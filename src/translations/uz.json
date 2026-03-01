@@ -742,12 +742,16 @@
       }
     },
     "specializations": {
+      "general": "Umumiy profilli",
       "surgeon": "Xirurg",
       "therapist": "Terapevt",
       "orthodontist": "Ortodont",
       "orthopedist": "Ortoped",
       "periodontist": "Parodontolog",
-      "implantologist": "Implantolog"
+      "implantologist": "Implantolog",
+      "hygienist": "Gigiyenist",
+      "aesthetician": "Estetik",
+      "pediatric": "Bolalar stomatologi"
     },
     "schedule_options": {
       "every_day": "Har kuni",

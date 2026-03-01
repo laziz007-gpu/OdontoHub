@@ -737,12 +737,16 @@
       }
     },
     "specializations": {
+      "general": "Жалпы бейінді",
       "surgeon": "Хирург",
       "therapist": "Терапевт",
       "orthodontist": "Ортодонт",
       "orthopedist": "Ортопед",
       "periodontist": "Пародонтолог",
-      "implantologist": "Имплантолог"
+      "implantologist": "Имплантолог",
+      "hygienist": "Гигиенист",
+      "aesthetician": "Эстетик",
+      "pediatric": "Балалар стоматологы"
     },
     "schedule_options": {
       "every_day": "Күн сайын",

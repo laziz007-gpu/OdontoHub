@@ -739,7 +739,8 @@
       "periodontist": "Periodontist",
       "implantologist": "Implantologist",
       "hygienist": "Hygienist",
-      "aesthetician": "Aesthetician"
+      "aesthetician": "Aesthetician",
+      "pediatric": "Pediatric Dentist"
     },
     "schedule_options": {
       "every_day": "Every day",
