@@ -73,6 +73,7 @@ const DoctorProfile: FC = () => {
         address: dentistData.address || prev.address,
         clinic: dentistData.clinic || prev.clinic,
         age: dentistData.age ? `${dentistData.age} лет` : prev.age,
+        education: dentistData.experience_years ? `Стаж: ${dentistData.experience_years} лет` : prev.education,
         schedule: dentistData.schedule || prev.schedule,
         telegram: dentistData.telegram || prev.telegram,
         instagram: dentistData.instagram || prev.instagram,
