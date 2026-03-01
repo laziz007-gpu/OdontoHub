@@ -16,17 +16,33 @@ def dentist_me(
         # Auto-create missing profile
         profile = DentistProfile(
             user_id=user.id, 
-            full_name="Dr. " + (user.email or user.phone)
+            full_name=user.full_name or "Dr. " + (user.email or user.phone)
         )
         db.add(profile)
         db.commit()
         db.refresh(user)
 
+    profile = user.dentist_profile
+    
     return {
-        "id": user.dentist_profile.id,
-        "role": user.role,
-        "full_name": user.dentist_profile.full_name,
-        "message": "Hello dentist"
+        "id": profile.id,
+        "user_id": profile.user_id,
+        "full_name": profile.full_name,
+        "pinfl": profile.pinfl,
+        "diploma_number": profile.diploma_number,
+        "verification_status": profile.verification_status,
+        "specialization": profile.specialization,
+        "phone": profile.phone or user.phone,
+        "address": profile.address,
+        "clinic": profile.clinic,
+        "age": profile.age,
+        "experience_years": profile.experience_years,
+        "schedule": profile.schedule,
+        "work_hours": profile.work_hours,
+        "telegram": profile.telegram,
+        "instagram": profile.instagram,
+        "whatsapp": profile.whatsapp,
+        "works_photos": profile.works_photos
     }
 
 
