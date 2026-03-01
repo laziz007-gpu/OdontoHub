@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import logo from '../assets/img/icons/Logo.svg'
@@ -15,12 +15,28 @@ interface DoctorProfileData {
 export default function DoctorProfileSetup() {
   const navigate = useNavigate()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [completionPercentage, setCompletionPercentage] = useState(0)
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<DoctorProfileData>()
+
+  // Watch all fields to calculate completion percentage
+  const watchedFields = watch()
+
+  useEffect(() => {
+    const fields = ['age', 'specialization', 'experience_years', 'address', 'clinic_name']
+    const filledFields = fields.filter(field => {
+      const value = watchedFields[field as keyof DoctorProfileData]
+      return value !== undefined && value !== '' && value !== null
+    })
+    
+    const percentage = Math.round((filledFields.length / fields.length) * 100)
+    setCompletionPercentage(percentage)
+  }, [watchedFields])
 
   const onSubmit = async (data: DoctorProfileData) => {
     setIsSubmitting(true)
@@ -53,11 +69,34 @@ export default function DoctorProfileSetup() {
 
       {/* Card */}
       <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl">
+        {/* Progress Bar */}
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium text-gray-700">Заполнение профиля</span>
+            <span className="text-sm font-bold text-blue-600">{completionPercentage}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${completionPercentage}%` }}
+            >
+              {completionPercentage > 0 && (
+                <div className="h-full w-full bg-white/20 animate-pulse"></div>
+              )}
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            {completionPercentage === 100 
+              ? '✓ Профиль заполнен полностью!' 
+              : `Осталось заполнить ${5 - Math.floor(completionPercentage / 20)} полей`}
+          </p>
+        </div>
+
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Age */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Возраст
+              Возраст <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
@@ -79,7 +118,7 @@ export default function DoctorProfileSetup() {
           {/* Specialization */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Специализация
+              Специализация <span className="text-red-500">*</span>
             </label>
             <select
               className={`w-full px-4 py-3 rounded-xl border ${
@@ -108,7 +147,7 @@ export default function DoctorProfileSetup() {
           {/* Experience Years */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Стаж работы (лет)
+              Стаж работы (лет) <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
@@ -130,7 +169,7 @@ export default function DoctorProfileSetup() {
           {/* Clinic Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Название клиники
+              Название клиники <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -151,7 +190,7 @@ export default function DoctorProfileSetup() {
           {/* Address */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Адрес клиники
+              Адрес клиники <span className="text-red-500">*</span>
             </label>
             <textarea
               placeholder="Например: г. Ташкент, ул. Амира Темура, 15"
@@ -172,7 +211,7 @@ export default function DoctorProfileSetup() {
           {/* Submit */}
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || completionPercentage < 100}
             className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-semibold text-lg hover:bg-blue-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? (
@@ -180,6 +219,8 @@ export default function DoctorProfileSetup() {
                 <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
                 Сохранение...
               </span>
+            ) : completionPercentage < 100 ? (
+              'Заполните все поля'
             ) : (
               'Продолжить'
             )}
