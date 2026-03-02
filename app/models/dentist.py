@@ -30,10 +30,13 @@ class DentistProfile(Base):
     phone: Mapped[str | None] = mapped_column(String, nullable=True)
     address: Mapped[str | None] = mapped_column(String, nullable=True)
     clinic: Mapped[str | None] = mapped_column(String, nullable=True)
+    age: Mapped[int | None] = mapped_column(nullable=True)
+    experience_years: Mapped[int | None] = mapped_column(nullable=True)
     schedule: Mapped[str | None] = mapped_column(String, nullable=True)
     work_hours: Mapped[str | None] = mapped_column(String, nullable=True)  # Format: "08:00-16:00"
     telegram: Mapped[str | None] = mapped_column(String, nullable=True)
     instagram: Mapped[str | None] = mapped_column(String, nullable=True)
     whatsapp: Mapped[str | None] = mapped_column(String, nullable=True)
+    works_photos: Mapped[str | None] = mapped_column(String, nullable=True)  # JSON string of photo URLs
 
     user = relationship("User", back_populates="dentist_profile")
