@@ -39,21 +39,21 @@ const Patsant: FC = () => {
   const patients = useMemo(() => {
     if (!apiPatients || !Array.isArray(apiPatients)) return [];
     return apiPatients.map((p: any) => {
-      const status = p.status || 'НОВЫЙ';
+      const status = p.status || 'NEW';
       let statusColor = 'text-green-600';
-      
-      if (status === 'ЛЕЧИТСЯ') {
+
+      if (status === 'TREATING') {
         statusColor = 'text-blue-600';
-      } else if (status === 'ЗАПИСАН') {
+      } else if (status === 'RECORDED') {
         statusColor = 'text-gray-600';
       }
-      
+
       return {
         id: p.id,
-        name: p.full_name || 'No Name',
+        name: p.full_name || t('patients_list.defaults.new_patient'),
         age: calculateAge(p.birth_date),
         phone: p.phone || '',
-        diagnosis: p.source || 'Checkup',
+        diagnosis: p.source || t('patients_list.defaults.checkup'),
         status: status,
         statusColor: statusColor,
         img: Rasm
@@ -92,7 +92,7 @@ const Patsant: FC = () => {
   })
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>
+    return <div className="flex items-center justify-center min-h-screen font-bold text-gray-400">{t('common.preview_initial')}...</div>
   }
 
   return (

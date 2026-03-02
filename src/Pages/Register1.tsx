@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { useRegister } from '../api/auth'
@@ -6,17 +6,33 @@ import type { RegisterData, UserRole } from '../interfaces'
 import { Stethoscope, User } from 'lucide-react'
 import logo from '../assets/img/icons/Logo.svg'
 import { paths } from '../Routes/path'
+import { useTranslation } from 'react-i18next'
 
 export default function Register1() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { mutate: registerUser, isPending, error } = useRegister()
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null)
 
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
-  } = useForm<Omit<RegisterData, 'role'>>()
+  } = useForm<Omit<RegisterData, 'role'>>({
+    defaultValues: {
+      phone: '+998 '
+    }
+  })
+
+  const phoneValue = watch('phone')
+
+  useEffect(() => {
+    if (!phoneValue?.startsWith('+998 ')) {
+      setValue('phone', '+998 ')
+    }
+  }, [phoneValue, setValue])
 
   const onSubmit = (data: Omit<RegisterData, 'role'>) => {
     if (!selectedRole) return
@@ -42,8 +58,8 @@ export default function Register1() {
         <img src={logo} alt="OdontoHub" className="w-16 h-16" />
       </div>
 
-      <h1 className="text-3xl font-bold text-white mb-2">Регистрация</h1>
-      <p className="text-white/70 mb-6">Создайте новый аккаунт</p>
+      <h1 className="text-3xl font-bold text-white mb-2">{t('auth.register_title')}</h1>
+      <p className="text-white/70 mb-6">{t('auth.register_subtitle')}</p>
 
       {/* Card */}
       <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl">
@@ -51,7 +67,7 @@ export default function Register1() {
           {/* Role selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Выберите роль
+              {t('auth.role_label')}
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -63,7 +79,7 @@ export default function Register1() {
                   }`}
               >
                 <Stethoscope size={24} />
-                <span className="text-sm font-medium">Врач</span>
+                <span className="text-sm font-medium">{t('auth.role_dentist')}</span>
               </button>
 
               <button
@@ -75,27 +91,27 @@ export default function Register1() {
                   }`}
               >
                 <User size={24} />
-                <span className="text-sm font-medium">Пациент</span>
+                <span className="text-sm font-medium">{t('auth.role_patient')}</span>
               </button>
             </div>
             {!selectedRole && errors.full_name && (
-              <p className="text-red-500 text-xs mt-1">Выберите роль</p>
+              <p className="text-red-500 text-xs mt-1">{t('auth.error_role_required')}</p>
             )}
           </div>
 
           {/* Full name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Полное имя
+              {t('auth.full_name_label')}
             </label>
             <input
               type="text"
-              placeholder="Иван Иванов"
+              placeholder={t('auth.full_name_placeholder')}
               className={`w-full px-4 py-3 rounded-xl border ${errors.full_name ? 'border-red-400' : 'border-gray-200'
                 } focus:outline-none focus:ring-2 focus:ring-blue-500 transition`}
               {...register('full_name', {
-                required: 'Введите полное имя',
-                minLength: { value: 2, message: 'Минимум 2 символа' },
+                required: t('auth.error_name_required'),
+                minLength: { value: 2, message: t('auth.error_name_min') },
               })}
             />
             {errors.full_name && (
@@ -106,20 +122,29 @@ export default function Register1() {
           {/* Phone */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Номер телефона
+              {t('auth.phone_label')}
             </label>
             <input
               type="tel"
-              placeholder="+998 90 123 45 67"
+              placeholder={t('auth.phone_placeholder')}
               className={`w-full px-4 py-3 rounded-xl border ${errors.phone ? 'border-red-400' : 'border-gray-200'
                 } focus:outline-none focus:ring-2 focus:ring-blue-500 transition`}
               {...register('phone', {
-                required: 'Введите номер телефона',
+                required: t('auth.error_phone_required'),
                 validate: (value) => {
                   const cleaned = value.replace(/\s+/g, '');
-                  return /^\+998\d{9}$/.test(cleaned) || 'Неверный формат номера';
+                  return /^\+998\d{9}$/.test(cleaned) || t('auth.error_phone_format');
                 }
               })}
+              onChange={(e) => {
+                let val = e.target.value;
+                if (!val.startsWith('+998 ')) {
+                  val = '+998 ';
+                }
+                if (val.replace(/\s+/g, '').length <= 13) {
+                  setValue('phone', val);
+                }
+              }}
             />
             {errors.phone && (
               <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
@@ -129,7 +154,7 @@ export default function Register1() {
           {/* Email (optional) */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Email <span className="text-gray-400">(необязательно)</span>
+              {t('auth.email_label')} <span className="text-gray-400">{t('auth.email_optional')}</span>
             </label>
             <input
               type="email"
@@ -141,12 +166,22 @@ export default function Register1() {
 
           {/* Error from server */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-600 text-sm overflow-x-auto">
-              <p className="font-bold mb-1">Ошибка сервера:</p>
-              <pre className="whitespace-pre-wrap">
+            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+              <p className="text-red-600 text-sm font-medium">
                 {/* @ts-ignore */}
-                {JSON.stringify((error as any).response?.data || error.message, null, 2)}
-              </pre>
+                {(error as any).response?.data?.detail === "Phone already registered" 
+                  ? t('auth.error_phone_registered')
+                  : t('auth.error_registration')}
+              </p>
+              {/* @ts-ignore */}
+              {(error as any).response?.data?.detail === "Phone already registered" && (
+                <p className="text-red-500 text-xs mt-1">
+                  {t('auth.have_account')}{' '}
+                  <Link to={paths.login} className="text-blue-600 font-medium hover:underline">
+                    {t('auth.login_link')}
+                  </Link>
+                </p>
+              )}
             </div>
           )}
 
@@ -159,19 +194,19 @@ export default function Register1() {
             {isPending ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                Регистрация...
+                {t('auth.registering')}
               </span>
             ) : (
-              'Зарегистрироваться'
+              t('auth.register_button')
             )}
           </button>
         </form>
 
         {/* Login link */}
         <p className="text-center text-gray-500 text-sm mt-6">
-          Уже есть аккаунт?{' '}
+          {t('auth.have_account')}{' '}
           <Link to={paths.login} className="text-blue-600 font-medium hover:underline">
-            Войти
+            {t('auth.login_link')}
           </Link>
         </p>
       </div>

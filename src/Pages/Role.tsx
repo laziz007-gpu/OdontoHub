@@ -4,10 +4,12 @@ import { useSelector } from "react-redux";
 import { User, Stethoscope } from "lucide-react";
 import { paths } from "../Routes/path";
 import logo from "../assets/img/icons/Logo.svg";
-import { RootState } from "../store/store";
+import type { RootState } from "../store/store";
+import { useTranslation } from "react-i18next";
 
 export default function Role() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const role = useSelector((state: RootState) => state.user.role);
 
   useEffect(() => {
@@ -24,8 +26,8 @@ export default function Role() {
         <img src={logo} alt="Logo" className="w-24 h-24" />
       </div>
 
-      <h1 className="text-3xl font-bold mb-2">Добро пожаловать!</h1>
-      <p className="opacity-80 mb-12">Выберите вашу роль в системе</p>
+      <h1 className="text-3xl font-bold mb-2">{t('auth.role_welcome')}</h1>
+      <p className="opacity-80 mb-12">{t('auth.role_subtitle_choose')}</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-md">
         <button
@@ -35,7 +37,7 @@ export default function Role() {
           <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-blue-600 shadow-lg group-hover:scale-110 transition-transform">
             <Stethoscope size={32} />
           </div>
-          <span className="text-xl font-bold">Я врач</span>
+          <span className="text-xl font-bold">{t('auth.role_dentist_label')}</span>
         </button>
 
         <button
@@ -45,12 +47,12 @@ export default function Role() {
           <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-blue-600 shadow-lg group-hover:scale-110 transition-transform">
             <User size={32} />
           </div>
-          <span className="text-xl font-bold">Я пациент</span>
+          <span className="text-xl font-bold">{t('auth.role_patient_label')}</span>
         </button>
       </div>
 
       <p className="mt-12 text-sm opacity-60">
-        OdontoHub — ваша современная стоматология
+        {t('auth.footer_text')}
       </p>
     </div>
   );

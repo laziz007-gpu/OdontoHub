@@ -1,4 +1,4 @@
-import React, { type FC } from 'react';
+import { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Smile, Star, Calendar, ArrowRight } from 'lucide-react';
@@ -8,7 +8,7 @@ const StatsSection: FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { data: stats } = useDentistStats();
-    
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Total Patients */}

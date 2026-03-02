@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Users, Calendar, MessageCircle, LayoutDashboard, Menu, X } from 'lucide-react';
 import Logo from '../assets/img/icons/Logo3.svg';
 import { useDentistStats } from '../api/profile';
+import { useTranslation } from 'react-i18next';
 
 // Menu item turi
 type MenuItem = {
@@ -11,15 +12,16 @@ type MenuItem = {
 };
 
 export default function Header() {
+  const { t } = useTranslation();
   const [activeItem, setActiveItem] = useState<string>('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const { data: stats } = useDentistStats();
 
   const menuItems: MenuItem[] = [
-    { id: 'dashboard', label: 'Панель управления', icon: LayoutDashboard },
-    { id: 'patients', label: 'Пациенты', icon: Users },
-    { id: 'appointments', label: 'Приёмы', icon: Calendar },
-    { id: 'chats', label: 'Чаты', icon: MessageCircle },
+    { id: 'dashboard', label: t('sidebar.dashboard'), icon: LayoutDashboard },
+    { id: 'patients', label: t('sidebar.patients'), icon: Users },
+    { id: 'appointments', label: t('sidebar.appointments'), icon: Calendar },
+    { id: 'chats', label: t('sidebar.chats'), icon: MessageCircle },
   ];
 
   // Sidebar content
@@ -37,11 +39,10 @@ export default function Header() {
                 setActiveItem(item.id);
                 setIsMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-4 px-5 py-4 mb-2 rounded-[22px] transition-all duration-200 ${
-                isActive
+              className={`w-full flex items-center gap-4 px-5 py-4 mb-2 rounded-[22px] transition-all duration-200 ${isActive
                   ? 'bg-[#1e2235] text-white shadow-lg'
                   : 'text-[#1e2235] hover:bg-gray-50'
-              }`}
+                }`}
             >
               <div className="w-6 h-6 flex items-center justify-center shrink-0">
                 <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
@@ -60,16 +61,16 @@ export default function Header() {
         </div>
 
         <div className="relative z-10">
-          <h3 className="text-[19px] font-bold text-white mb-6">Сегодняшний фокус</h3>
+          <h3 className="text-[19px] font-bold text-white mb-6">{t('sidebar.focus_title')}</h3>
           <div className="space-y-1 text-white text-[19px] font-extrabold leading-tight tracking-tight">
-            <p>{stats?.appointments_today || 0} приёмов</p>
-            <p>3 онлайн-консульт.</p>
-            <p>{stats?.new_patients_this_week || 0} новых пациентов</p>
+            <p>{stats?.appointments_today || 0} {t('sidebar.focus_appointments')}</p>
+            <p>3 {t('sidebar.focus_consultations')}</p>
+            <p>{stats?.new_patients_this_week || 0} {t('sidebar.focus_patients')}</p>
           </div>
         </div>
 
         <button className="relative z-10 mt-6 w-full bg-white text-[#4e6ef2] py-3.5 px-4 rounded-[18px] font-bold text-[15px] shadow-sm hover:bg-gray-50 transition-colors">
-          Аналитика
+          {t('sidebar.analytics')}
         </button>
       </div>
     </div>

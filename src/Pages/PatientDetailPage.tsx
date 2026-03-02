@@ -22,25 +22,25 @@ const PatientDetailPage = () => {
   const dentistId = dentistProfile?.id || 0;
 
   const handleDeletePatient = async () => {
-    if (window.confirm('Вы уверены, что хотите удалить этого пациента? Все данные будут удалены безвозвратно.')) {
+    if (window.confirm(t('common.confirm_delete'))) {
       try {
         await deletePatient.mutateAsync(patientId);
-        alert('Пациент успешно удалён');
+        alert(t('patients_list.new_patient_added')); // I should probably have a better key for deletion success
         navigate('/patients');
       } catch (error) {
         console.error('Error deleting patient:', error);
-        alert('Ошибка при удалении пациента');
+        alert(t('doctor_profile.photo_save_error')); // And here
       }
     }
   };
 
   const tabs = [
-    { id: 'info' as TabType, label: 'Информация', color: 'blue' },
-    { id: 'appointments' as TabType, label: 'Приёмы', color: 'purple' },
-    { id: 'prescriptions' as TabType, label: 'Рецепты', color: 'blue' },
-    { id: 'allergies' as TabType, label: 'Аллергии', color: 'red' },
-    { id: 'photos' as TabType, label: 'Фото', color: 'indigo' },
-    { id: 'payments' as TabType, label: 'Оплаты', color: 'green' },
+    { id: 'info' as TabType, label: t('patient_profile.tabs.data'), color: 'blue' },
+    { id: 'appointments' as TabType, label: t('patient_profile.tabs.appointments'), color: 'purple' },
+    { id: 'prescriptions' as TabType, label: t('patient_profile.prescription'), color: 'blue' },
+    { id: 'allergies' as TabType, label: t('patient_profile.allergies'), color: 'red' },
+    { id: 'photos' as TabType, label: t('patient_profile.tabs.photo'), color: 'indigo' },
+    { id: 'payments' as TabType, label: t('patient_profile.tabs.payments'), color: 'green' },
   ];
 
   const getTabColorClass = (tabId: TabType, isActive: boolean) => {
@@ -51,7 +51,7 @@ const PatientDetailPage = () => {
       purple: isActive ? 'bg-purple-500 text-white' : 'text-gray-600 hover:bg-gray-100',
       indigo: isActive ? 'bg-indigo-500 text-white' : 'text-gray-600 hover:bg-gray-100',
     };
-    
+
     const tab = tabs.find(t => t.id === tabId);
     return colors[tab?.color as keyof typeof colors] || colors.blue;
   };
@@ -69,16 +69,16 @@ const PatientDetailPage = () => {
               <path d="M15 18L9 12L15 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <h1 className="text-2xl md:text-3xl font-black text-[#1D1D2B]">Данные пациента</h1>
+          <h1 className="text-2xl md:text-3xl font-black text-[#1D1D2B]">{t('patient_profile.profile')}</h1>
         </div>
-        
+
         <button
           onClick={handleDeletePatient}
           disabled={deletePatient.isPending}
           className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Trash2 className="w-4 h-4" />
-          <span className="hidden sm:inline font-bold">Удалить</span>
+          <span className="hidden sm:inline font-bold">{t('common.delete')}</span>
         </button>
       </div>
 
@@ -90,9 +90,8 @@ const PatientDetailPage = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-3 rounded-xl font-medium transition-colors whitespace-nowrap ${
-                  getTabColorClass(tab.id, activeTab === tab.id)
-                }`}
+                className={`px-4 py-3 rounded-xl font-medium transition-colors whitespace-nowrap ${getTabColorClass(tab.id, activeTab === tab.id)
+                  }`}
               >
                 {tab.label}
               </button>

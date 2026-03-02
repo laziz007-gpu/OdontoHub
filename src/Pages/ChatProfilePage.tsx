@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import DentistImg from "../assets/img/photos/Dentist.png";
 import ProfileHeader from "../components/ChatProfile/ProfileHeader";
 import ProfileInfo from "../components/ChatProfile/ProfileInfo";
@@ -28,7 +29,8 @@ interface FileItem {
 }
 
 const ChatProfilePage = () => {
-    const [activeTab, setActiveTab] = useState('Медиа');
+    const { t } = useTranslation();
+    const [activeTab, setActiveTab] = useState('media');
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const files: FileItem[] = [
@@ -54,14 +56,14 @@ const ChatProfilePage = () => {
 
                 {/* Profile Card */}
                 <div className="bg-white rounded-[40px] p-8 shadow-sm relative overflow-hidden">
-                    <ProfileHeader 
-                        isMenuOpen={isMenuOpen} 
-                        onMenuToggle={() => setIsMenuOpen(!isMenuOpen)} 
+                    <ProfileHeader
+                        isMenuOpen={isMenuOpen}
+                        onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
                     />
-                    <ProfileInfo 
+                    <ProfileInfo
                         avatar={DentistImg}
                         name="Алишер Насруллаев"
-                        status="Был(а) недавно"
+                        status={t('chat.status.recently')}
                         phone="+998 90 455 0556"
                     />
                 </div>
@@ -71,10 +73,10 @@ const ChatProfilePage = () => {
                     <MediaTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
                     {/* Content Section */}
-                    {activeTab === 'Медиа' && <MediaGrid />}
-                    {activeTab === 'Файлы' && <FilesList files={files} />}
-                    {activeTab === 'Голосовые' && <VoiceMessagesList voiceMessages={voiceMessages} />}
-                    {activeTab === 'Ссылки' && <LinksList links={links} />}
+                    {activeTab === 'media' && <MediaGrid />}
+                    {activeTab === 'files' && <FilesList files={files} />}
+                    {activeTab === 'voice' && <VoiceMessagesList voiceMessages={voiceMessages} />}
+                    {activeTab === 'links' && <LinksList links={links} />}
                 </div>
 
             </div>

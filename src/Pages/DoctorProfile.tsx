@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, type FC } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
 import PageHeader from '../components/DoctorProfile/PageHeader';
@@ -33,6 +34,7 @@ interface ProfileData {
 }
 
 const DoctorProfile: FC = () => {
+  const { t } = useTranslation();
   const user = useSelector((state: RootState) => state.user.user);
   const { data: dentistData } = useDentistProfile();
 
@@ -42,18 +44,18 @@ const DoctorProfile: FC = () => {
     address: 'ул. Амира Темура, 11кв, 20дом',
     education: 'ТашПМИ (Факультет)',
     clinic: 'OdontoHub',
-    specialization: 'Хирург',
+    specialization: 'surgeon',
+    gender: 'Мужчина',
+    age: '25 лет',
+    name: user?.full_name || 'Пулатов Махмуд',
     telegram: '@stom',
     instagram: 'stomatolog.uz',
     whatsapp: user?.phone || '+998 90 123 45 67',
-    schedule: 'Каждый день',
+    schedule: 'every_day',
     workStart: '08',
     startMinute: '00',
     workEnd: '16',
     endMinute: '00',
-    gender: 'Мужчина',
-    age: '25 лет',
-    name: user?.full_name || 'Пулатов Махмуд'
   });
 
   // Обновляем данные из API
@@ -134,7 +136,7 @@ const DoctorProfile: FC = () => {
             <div className="lg:col-span-12 xl:col-span-4">
               <DoctorInfoCard
                 name={profileData.name}
-                specialization={profileData.specialization}
+                specialization={t(`common.specializations.${profileData.specialization}`)}
                 gender={profileData.gender}
                 age={profileData.age}
                 avatar={avatarUrl}
@@ -163,6 +165,7 @@ const DoctorProfile: FC = () => {
           {/* Schedule + Socials */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-12">
             <ScheduleCard
+              schedule={t(`common.schedule_options.${profileData.schedule}`)}
               workStart={profileData.workStart}
               startMinute={profileData.startMinute}
               workEnd={profileData.workEnd}

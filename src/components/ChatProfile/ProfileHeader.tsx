@@ -1,5 +1,6 @@
 import { ArrowLeft, MoreVertical, Trash2, Star, Megaphone, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface ProfileHeaderProps {
     isMenuOpen: boolean;
@@ -8,6 +9,7 @@ interface ProfileHeaderProps {
 
 const ProfileHeader = ({ isMenuOpen, onMenuToggle }: ProfileHeaderProps) => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     return (
         <div className="flex justify-between items-center mb-2">
@@ -31,10 +33,10 @@ const ProfileHeader = ({ isMenuOpen, onMenuToggle }: ProfileHeaderProps) => {
                         ></div>
                         <div className="absolute right-0 top-10 w-[180px] bg-[#5B7FFF] rounded-2xl shadow-xl overflow-hidden z-20 animate-in fade-in zoom-in duration-200">
                             {[
-                                { label: 'Удалить чат', icon: <Trash2 size={16} /> },
-                                { label: 'В избранные', icon: <Star size={16} /> },
-                                { label: 'Уведомление', icon: <Megaphone size={16} /> },
-                                { label: 'В контакты', icon: <UserPlus size={16} /> }
+                                { label: t('chat.actions.delete_chat'), icon: <Trash2 size={16} /> },
+                                { label: t('chat.actions.add_favorite'), icon: <Star size={16} /> },
+                                { label: t('chat.actions.notification'), icon: <Megaphone size={16} /> },
+                                { label: t('chat.actions.add_contact'), icon: <UserPlus size={16} /> }
                             ].map((item, i) => (
                                 <button
                                     key={i}

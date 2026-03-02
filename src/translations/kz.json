@@ -1,17 +1,79 @@
 {
+  "dd": "Сіздің сандық стоматологияңыз",
+  "chooselang": "Интерфейс тілін таңдаңыз",
+  "next": "Жалғастыру",
   "sidebar": {
     "dashboard": "Басқару панелі",
     "patients": "Пациенттер",
     "appointments": "Қабылдаулар",
     "chats": "Чаттар",
     "focus_title": "Бүгінгі фокус",
-    "focus_appointments": "7 қабылдау",
-    "focus_consultations": "3 онлайн кеңес",
-    "focus_patients": "2 жаңа пациент",
+    "focus_appointment_single": "бүгінгі қабылдау",
+    "focus_appointments_plural": "бүгінгі қабылдаулар",
+    "focus_new_patient_single": "бүгінгі жаңа пациент",
+    "focus_new_patients_plural": "бүгінгі жаңа пациенттер",
+    "focus_appointments": "қабылдаулар",
+    "focus_consultations": "онлайн кеңестер",
+    "focus_patients": "жаңа пациенттер",
     "analytics": "Аналитика"
   },
+  "auth": {
+    "login_title": "Кіру",
+    "login_subtitle": "Телефон нөмірі арқылы кіріңіз",
+    "phone_label": "Телефон нөмірі",
+    "phone_placeholder": "+998 90 123 45 67",
+    "login_button": "Кіру",
+    "logging_in": "Кіру...",
+    "no_account": "Тіркелгіңіз жоқ па?",
+    "register_link": "Тіркелу",
+    "register_title": "Тіркелу",
+    "register_subtitle": "Жаңа тіркелгі жасаңыз",
+    "role_label": "Рөлді таңдаңыз",
+    "role_dentist": "Дәрігер",
+    "role_patient": "Пациент",
+    "full_name_label": "Толық аты-жөні",
+    "full_name_placeholder": "Иван Иванов",
+    "email_label": "Email",
+    "email_optional": "(міндетті емес)",
+    "have_account": "Тіркелгіңіз бар ма?",
+    "login_link": "Кіру",
+    "register_button": "Тіркелу",
+    "registering": "Тіркелу...",
+    "error_user_not_found": "Тіркелгі табылмады",
+    "error_phone_registered": "Бұл нөмір әлдеқашан тіркелген",
+    "error_registration": "Тіркелу қатесі",
+    "error_phone_required": "Телефон нөмірін енгізіңіз",
+    "error_phone_format": "Нөмір форматы қате",
+    "error_name_required": "Толық аты-жөніңізді енгізіңіз",
+    "error_name_min": "Кемінде 2 таңба",
+    "error_role_required": "Рөлді таңдаңыз",
+    "role_welcome": "Қош келдіңіз!",
+    "role_subtitle_choose": "Жүйедегі рөліңізді таңдаңыз",
+    "role_dentist_label": "Мен дәрігермін",
+    "role_patient_label": "Мен пациентпін",
+    "footer_text": "OdontoHub — сіздің заманауи стоматологияңыз"
+  },
   "common": {
+    "save": "Сақтау",
+    "cancel": "Бас тарту",
+    "add": "Қосу",
+    "saving": "Сақталуда...",
     "close": "Жабу",
+    "error": "Қате орын алды",
+    "delete": "Жою",
+    "confirm_delete": "Сенімдісіз бе?",
+    "delete_account": "Тіркелгіні жою",
+    "delete_account_warning": "Бұл әрекетті қайтару мүмкін емес. Барлық деректеріңіз толығымен жойылады.",
+    "loading": "Жүктелуде...",
+    "photo": "Фото",
+    "actions": "Әрекеттер",
+    "not_found": "Ештеңе табылмады",
+    "user": "Пайдаланушы",
+    "preview_initial": "П",
+    "session_expired": "Сессия аяқталды, қайта кіріңіз",
+    "paid": "Төленген",
+    "partial": "Жартылай",
+    "unpaid": "Төленбеген",
     "months": {
       "0": "Қаңтар",
       "1": "Ақпан",
@@ -57,14 +119,129 @@
       "4": "Бейсенбі",
       "5": "Жұма",
       "6": "Сенбі"
+    },
+    "patients": {
+      "add_patient": "Пациент қосу",
+      "full_name": "Толық аты-жөні",
+      "enter_name": "Есімін енгізіңіз",
+      "phone": "Телефон",
+      "age": "Жас",
+      "birth_date": "Туған күні",
+      "address": "Мекен-жай",
+      "enter_address": "Мекен-жайды енгізіңіз",
+      "gender": {
+        "title": "Жынысы",
+        "male": "Ер",
+        "female": "Әйел"
+      },
+      "cancel": "Болдырмау",
+      "save": "Сақтау"
+    }
+  },
+  "modals": {
+    "appointment": {
+      "title": "Қабылдауды қосу",
+      "start_time": "Басталу уақыты",
+      "end_time": "Аяқталу уақыты",
+      "service": "Қызмет",
+      "notes": "Ескертпелер",
+      "placeholder_service": "Мысалы: Консультация",
+      "placeholder_notes": "Қосымша ақпарат...",
+      "error_time": "Басталу және аяқталу уақытын көрсетіңіз",
+      "error_save": "Қабылдауды қосу мүмкін болмады"
+    },
+    "prescription": {
+      "title": "Рецепт қосу",
+      "edit_title": "Рецептті өңдеу",
+      "medication": "Препарат атауы",
+      "dosage": "Дозалануы",
+      "frequency": "Қабылдау жиілігі",
+      "duration": "Ұзақтығы",
+      "notes": "Ескертпелер",
+      "placeholder_medication": "Мысалы: Амоксициллин",
+      "placeholder_dosage": "Мысалы: 500 мг",
+      "placeholder_frequency": "Мысалы: Күніне 3 рет",
+      "placeholder_duration": "Мысалы: 7 күн",
+      "placeholder_notes": "Қосымша нұсқаулар...",
+      "error_fields": "Барлық міндетті өрістерді толтырыңыз",
+      "error_save": "Рецептті қосу мүмкін болмады",
+      "error_update": "Рецептті жаңарту мүмкін болмады"
+    },
+    "allergy": {
+      "title": "Аллергия қосу",
+      "edit_title": "Аллергияны өңдеу",
+      "allergen": "Аллерген",
+      "reaction": "Реакция түрі",
+      "severity": {
+        "title": "Ауырлық дәрежесі",
+        "mild": "Жеңіл",
+        "moderate": "Орташа",
+        "severe": "Ауыр"
+      },
+      "notes": "Ескертпелер",
+      "placeholder_allergen": "Мысалы: Пенициллин",
+      "placeholder_reaction": "Мысалы: Бөртпе, ісіну",
+      "placeholder_notes": "Қосымша ақпарат...",
+      "error_fields": "Барлық міндетті өрістерді толтырыңыз",
+      "error_save": "Аллергияны қосу мүмкін болмады",
+      "error_update": "Аллергияны жаңарту мүмкін болмады"
+    },
+    "note": {
+      "title": "Жаңа ескертпе",
+      "patient": "Пациент",
+      "placeholder_patient": "Пациентті таңдаңыз",
+      "not_found": "Пациент табылмады",
+      "note_label": "Ескертпе",
+      "placeholder_note": "Ескертпені енгізіңіз",
+      "error_fields": "Пациентті таңдап, ескертпені енгізіңіз",
+      "error_save": "Ескертпені қосудағы қате",
+      "no_phone": "Нөмір жоқ"
+    },
+    "payment": {
+      "title": "Төлем қосу",
+      "amount": "Сома",
+      "date": "Күні",
+      "method": {
+        "title": "Төлеу әдісі",
+        "cash": "Қолма-қол",
+        "card": "Карта",
+        "transfer": "Аударым"
+      },
+      "notes": "Ескертпелер",
+      "error_fields": "Соманы көрсетіңіз",
+      "error_save": "Төлемді қосу мүмкін болмады"
+    },
+    "photo": {
+      "title": "Сурет қосу",
+      "name": "Атауы",
+      "placeholder_name": "Мысалы: 16-тіс рентгені",
+      "select_file": "Файлды таңдаңыз",
+      "max_size": "Максималды мөлшер: 5 МБ. Форматтар: JPG, PNG, GIF",
+      "preview": "Алдын ала қарау",
+      "category": {
+        "title": "Санат",
+        "xray": "Рентген",
+        "treatment": "Емдеу",
+        "before": "Дейін",
+        "after": "Кейін",
+        "other": "Басқа"
+      },
+      "description": "Сипаттама",
+      "placeholder_description": "Қосымша ақпарат...",
+      "error_file": "Жүктеу үшін файлды таңдаңыз",
+      "error_file_type": "Суретті таңдаңыз",
+      "error_file_size": "Файл мөлшері 5 МБ-тан аспауы керек",
+      "error_name": "Сурет атауын енгізіңіз",
+      "error_save": "Суретті қосу мүмкін болмады",
+      "adding": "Қосылуда..."
     }
   },
   "appointments": {
-    "title": "Қабылдаулар",
+    "title": "Менің қабылдауларым",
     "today": "Бүгін",
     "calendar": "Күнтізбе",
     "record_appointment": "Қабылдауға жазу",
-    "success_toast": "Қабылдау сәтті белгіленді",
+    "success_toast": "Қабылдау сәтті тағайындалды",
     "month_view": {
       "month_appointments": "Айлық қабылдаулар",
       "week": "Апта",
@@ -94,6 +271,21 @@
       "date": "Күні",
       "status": "Мәртебесі",
       "initial": "Бастапқы"
+    },
+    "status": {
+      "completed": "аяқталды",
+      "cancelled": "бас тартылды",
+      "pending": "кезекте",
+      "confirmed": "расталды"
+    },
+    "details": {
+      "status": "Мәртебе",
+      "when": "Қашан",
+      "duration": "Ұзақтығы",
+      "prescriptions": "Тағайындаулар",
+      "empty": "Бос",
+      "minutes": "минут",
+      "success_update": "Профиль сәтті жаңартылды!"
     }
   },
   "modal": {
@@ -105,6 +297,8 @@
     "date_placeholder": "Күнді көрсетіңіз",
     "time_label": "Қабылдау уақыты",
     "notes_placeholder": "Қабылдауға ескертулер немесе түсініктемелер жазыңыз",
+    "record": "Қосу",
+    "cancel": "Бас тарту",
     "services": {
       "implantation": "Имплантация",
       "consultation": "Консультация"
@@ -228,6 +422,110 @@
       "currency": "сом"
     }
   },
+  "patient_detail": {
+    "info": {
+      "title": "Жеке деректер",
+      "extra": "Қосымша мәліметтер",
+      "name": "Аты-жөні",
+      "phone": "Телефон",
+      "age": "Жасы",
+      "gender": "Жынысы",
+      "address": "Мекенжайы",
+      "source": "Көзі",
+      "not_specified": "Көрсетілмеген",
+      "years": "жас",
+      "male": "Ер",
+      "female": "Әйел",
+      "loading": "Жүктелуде...",
+      "not_found": "Пациент туралы ақпарат табылмады"
+    },
+    "appointments": {
+      "title": "Қабылдау тарихы",
+      "add_btn": "Қабылдауды қосу",
+      "error_load": "Қабылдауларды жүктеу мүмкін болмады",
+      "no_records": "Қабылдаулар туралы жазбалар жоқ",
+      "appointment": "Қабылдау",
+      "statuses": {
+        "pending": "Күтуде",
+        "confirmed": "Расталды",
+        "completed": "Аяқталды",
+        "cancelled": "Болдырылмады",
+        "moved": "Ауыстырылды"
+      }
+    },
+    "payments": {
+      "title": "Төлемдер",
+      "add_btn": "Төлемді қосу",
+      "error_load": "Төлем деректерін жүктеу мүмкін болмады",
+      "error_update": "Төлем мәртебесін жаңарту мүмкін болмады",
+      "no_records": "Төлемдер туралы жазбалар жоқ",
+      "stats": {
+        "paid": "Төленді",
+        "debt": "Қарыз",
+        "total": "Барлығы"
+      },
+      "statuses": {
+        "paid": "Төленді",
+        "partial": "Жартылай",
+        "unpaid": "Төленбеген"
+      },
+      "mark_paid": "Төленген деп белгілеу",
+      "updating": "Жаңартылуда...",
+      "error_invalid_amount": "Дұрыс сомманы енгізіңіз",
+      "error_invalid_service": "Қызмет атауын енгізіңіз",
+      "service_name": "Қызмет атауы",
+      "amount": "Сомма",
+      "status_label": "Статусы",
+      "placeholder_service": "Мысалы: Кариесті емдеу",
+      "placeholder_notes": "Қосымша ақпарат..."
+    },
+    "prescriptions": {
+      "title": "Рецепттер",
+      "add_btn": "Рецепт қосу",
+      "error_load": "Рецепттерді жүктеу мүмкін болмады",
+      "error_delete": "Рецептті жою мүмкін болмады",
+      "no_records": "Рецепттер жоқ",
+      "confirm_delete": "Осы рецептті жойғыңыз келетініне сенімдісіз бе?",
+      "medication": "Препарат",
+      "dosage": "Дозалау",
+      "frequency": "Жиілігі",
+      "duration": "Ұзақтығы",
+      "notes": "Жазбалар",
+      "prescribed_at": "Тағайындалды",
+      "loading": "Жүктелуде..."
+    },
+    "allergies": {
+      "title": "Аллергиялар",
+      "add_btn": "Аллергия қосу",
+      "error_load": "Аллергияларды жүктеу мүмкін болмады",
+      "error_delete": "Аллергияны жою мүмкін болмады",
+      "no_records": "Аллергиялар жоқ",
+      "confirm_delete": "Осы аллергияны жойғыңыз келетініне сенімдісіз бе?",
+      "reaction": "Реакция",
+      "notes": "Жазбалар",
+      "documented_at": "Құжатталды",
+      "loading": "Жүктелуде...",
+      "severities": {
+        "mild": "Жеңіл",
+        "moderate": "Орташа",
+        "severe": "Ауыр"
+      }
+    },
+    "photos": {
+      "title": "Фотосуреттер мен құжаттар",
+      "upload_btn": "Жүктеу",
+      "error_load": "Фотосуреттерді жүктеу мүмкін болмады",
+      "no_records": "Жүктелген файлдар жоқ",
+      "no_records_desc": "Рентген, емдеу фотосуреттерін немесе басқа құжаттарды жүктеңіз",
+      "view_btn": "Көру",
+      "categories": {
+        "all": "Барлығы",
+        "xray": "Рентген",
+        "treatment": "Емдеу",
+        "other": "Басқа"
+      }
+    }
+  },
   "patients_list": {
     "search_placeholder": "Пациентті іздеу...",
     "add_patient": "Пациент қосу",
@@ -255,6 +553,8 @@
   "doctor_profile": {
     "save": "Сақтау",
     "edit": "Өңдеу",
+    "services_title": "Қызметтер мен бағалар",
+    "services_subtitle": "Ұсынылатын қызметтер тізімін басқару",
     "contacts": "Байланыс",
     "services": "Қызметтер",
     "schedule": "Жұмыс кестесі",
@@ -286,35 +586,19 @@
     "search_placeholder": "Пациенттерді, қызметтерді іздеу...",
     "consultation": "Кеңес беру",
     "improve": "жақсарту",
-    "notifications": {
-      "title": "Хабарландырулар",
-      "new_count": "{{count}} жаңа",
-      "show_all": "Барлығын көрсету"
-    },
-    "stats": {
-      "consultations_today": "Бүгінге кеңестер",
-      "appointments_month": "Осы айдағы қабылдаулар",
-      "new_patients_week": "Осы аптадағы жаңа пациенттер"
-    },
-    "new_patients": {
-      "title": "Жаңа пациенттер",
-      "age_label": "жаста",
-      "comment": "Түсініктеме:",
-      "status_label": "Мәртебесі:",
-      "accept": "Қабылдау",
-      "quick_actions": "Жылдам әрекеттер",
-      "today": "Бүгін",
-      "no_comment": "Түсініктемесіз",
-      "urgent": "Шұғыл"
+    "quick_actions": {
+      "title": "Жедел әрекеттер",
+      "add_appointment": "Қабылдауды қосу",
+      "new_note": "Жаңа жазба",
+      "message_patient": "Пациентке жазу",
+      "add_patient": "Пациентті қосу",
+      "in_development": "Өңделуде"
     },
     "appointments_card": {
       "title": "Қабылдаулар",
-      "tabs": {
-        "day": "Күн",
-        "week": "Апта",
-        "month": "Ай"
-      },
       "today": "Бүгін",
+      "no_records": "Жазбалар жоқ",
+      "no_records_date": "Таңдалған күнге жазбалар жоқ",
       "months": {
         "0": "Қаңтар",
         "1": "Ақпан",
@@ -330,26 +614,35 @@
         "11": "Желтоқсан"
       },
       "weekdays": {
-        "0": "Жексенбі",
-        "1": "Дүйсенбі",
-        "2": "Сейсенбі",
-        "3": "Сәрсенбі",
-        "4": "Бейсенбі",
-        "5": "Жұма",
-        "6": "Сенбі"
+        "0": "Жек",
+        "1": "Дүй",
+        "2": "Сей",
+        "3": "Сәр",
+        "4": "Бей",
+        "5": "Жұм",
+        "6": "Сен"
       }
     },
-    "quick_actions": {
-      "title": "Жылдам әрекеттер",
-      "add_appointment": "Қабылдауды қосу",
-      "new_note": "Жаңа ескерту",
-      "message_patient": "Пациентке жазу",
-      "add_patient": "Пациент қосу"
+    "notifications": {
+      "title": "Хабарландырулар",
+      "new_count": "{{count}} жаңа",
+      "show_all": "Барлығын көрсету",
+      "all": "Барлығы",
+      "unread": "Оқылмағандар",
+      "updates": "Жаңартулар",
+      "clear_all": "Барлығын тазалау",
+      "view_all": "Барлық хабарландыруларды көру →"
+    },
+    "stats": {
+      "consultations_today": "Бүгінге кеңестер",
+      "appointments_month": "Осы айдағы қабылдаулар",
+      "new_patients_week": "Осы аптадағы жаңа пациенттер"
     },
     "rating": {
       "average": "Сіздің орташа бағаңыз",
       "how_to_improve": "Рейтингіңізді қалай көтеруге болады?",
       "desc": "Рейтинг пікірлер, белсенділік және қызмет көрсету сапасы негізінде жасалады",
+      "recommendations": "Ұсыныстар",
       "tip1": "Чаттарда жылдам жауап беруге тырысыңыз",
       "tip2": "Жазбаларды жылдам растаңыз",
       "tip3": "Пациенттерден пікір алыңыз",
@@ -400,6 +693,26 @@
         "appointments_label": "қабылдаулар"
       },
       "patients": {
+        "add_patient": "Пациентті қосу",
+        "full_name": "Пациенттің Т.А.Ә.",
+        "phone": "Телефон нөмірі",
+        "address": "Тұратын мекенжайы",
+        "gender": {
+          "title": "Жынысы",
+          "male": "Ер",
+          "female": "Әйел"
+        },
+        "age": "Жасы",
+        "pinfl": "ЖСН",
+        "passport": "Паспорт сериясы мен нөмірі",
+        "cancel": "Болдырмау",
+        "save": "Қосу",
+        "enter_name": "Т.А.Ә. енгізіңіз",
+        "enter_phone": "Телефон нөмірін енгізіңіз",
+        "enter_address": "Мекенжайды енгізіңіз",
+        "enter_age": "Жасын енгізіңіз",
+        "enter_pinfl": "ЖСН енгізіңіз",
+        "enter_passport": "Паспорт деректерін енгізіңіз",
         "title": "Пациенттер",
         "subtitle": "Пациенттердің жынысы",
         "male": "Ерлер",
@@ -422,6 +735,27 @@
         "rescheduled": "АУЫСТЫРЫЛДЫ",
         "cancelled": "БОЛДЫРМАЛДЫ"
       }
+    },
+    "specializations": {
+      "surgeon": "Хирург",
+      "therapist": "Терапевт",
+      "orthodontist": "Ортодонт",
+      "orthopedist": "Ортопед",
+      "periodontist": "Пародонтолог",
+      "implantologist": "Имплантолог"
+    },
+    "schedule_options": {
+      "every_day": "Күн сайын",
+      "weekdays": "Жұмыс күндері",
+      "weekends": "Демалыс күндері",
+      "mon_fri": "Дүйсенбі - Жұма",
+      "custom": "Жеке график"
+    },
+    "map": {
+      "select_on_map": "Картадан таңдау",
+      "enter_address": "Мекенжайды енгізіңіз",
+      "confirm": "Растау",
+      "coordinates": "Координаттар"
     },
     "filter": {
       "title": "Сүзгі",
@@ -497,6 +831,31 @@
       "time_hours": "сағ",
       "time_minutes": "мин",
       "time_seconds": "сек"
+    },
+    "chat": {
+      "title": "Хабарламалар",
+      "search": "Хабарламаларды іздеу",
+      "no_chats": "Хабарламалар жоқ",
+      "status": {
+        "recently": "Жақында болған"
+      },
+      "tabs": {
+        "media": "Медиа",
+        "files": "Файлдар",
+        "voice": "Дауыстық",
+        "links": "Сілтемелер"
+      },
+      "actions": {
+        "messages": "Хабарламалар",
+        "call": "Қоңырау шалу",
+        "video": "Видео",
+        "link": "Сілтеме",
+        "qr_code": "QR-kod",
+        "delete_chat": "Чатты өшіру",
+        "add_favorite": "Таңдаулыларға қосу",
+        "notification": "Хабарландыру",
+        "add_contact": "Контактілерге қосу"
+      }
     },
     "chats": {
       "title": "Хабарламалар",

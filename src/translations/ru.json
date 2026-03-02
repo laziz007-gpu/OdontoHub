@@ -1,4 +1,7 @@
 {
+    "dd": "Ваша цифровая стоматология",
+    "chooselang": "Выберите язык интерфейса",
+    "next": "Далее",
     "sidebar": {
         "dashboard": "Панель управления",
         "patients": "Пациенты",
@@ -9,10 +12,89 @@
         "focus_appointments_plural": "приёмов сегодня",
         "focus_new_patient_single": "новый пациент сегодня",
         "focus_new_patients_plural": "новых пациентов сегодня",
+        "focus_appointments": "приёмов",
+        "focus_consultations": "онлайн-консульт.",
+        "focus_patients": "новых пациентов",
         "analytics": "Аналитика"
     },
+    "auth": {
+        "login_title": "Вход",
+        "login_subtitle": "Войдите по номеру телефона",
+        "phone_label": "Номер телефона",
+        "phone_placeholder": "+998 90 123 45 67",
+        "login_button": "Войти",
+        "logging_in": "Вход...",
+        "no_account": "Нет аккаунта?",
+        "register_link": "Зарегистрироваться",
+        "register_title": "Регистрация",
+        "register_subtitle": "Создайте новый аккаунт",
+        "role_label": "Выберите роль",
+        "role_dentist": "Врач",
+        "role_patient": "Пациент",
+        "full_name_label": "Полное имя",
+        "full_name_placeholder": "Иван Иванов",
+        "email_label": "Email",
+        "email_optional": "(необязательно)",
+        "have_account": "Уже есть аккаунт?",
+        "login_link": "Войти",
+        "register_button": "Зарегистрироваться",
+        "registering": "Регистрация...",
+        "error_user_not_found": "Аккаунт не найден",
+        "error_phone_registered": "Этот номер уже зарегистрирован",
+        "error_registration": "Ошибка регистрации",
+        "error_phone_required": "Введите номер телефона",
+        "error_phone_format": "Неверный формат номера",
+        "error_name_required": "Введите полное имя",
+        "error_name_min": "Минимум 2 символа",
+        "error_role_required": "Выберите роль",
+        "role_welcome": "Добро пожаловать!",
+        "role_subtitle_choose": "Выберите вашу роль в системе",
+        "role_dentist_label": "Я врач",
+        "role_patient_label": "Я пациент",
+        "footer_text": "OdontoHub — ваша современная стоматология"
+    },
     "common": {
+        "save": "Сохранить",
+        "cancel": "Отмена",
+        "add": "Добавить",
+        "saving": "Сохранение...",
         "close": "Закрыть",
+        "error": "Произошла ошибка",
+        "delete": "Удалить",
+        "confirm_delete": "Вы уверены?",
+        "delete_account": "Удалить аккаунт",
+        "delete_account_warning": "Это действие необратимо. Все ваши данные будут удалены навсегда.",
+        "loading": "Загрузка...",
+        "photo": "Фото",
+        "actions": "Действия",
+        "not_found": "Ничего не найдено",
+        "user": "Пользователь",
+        "preview_initial": "П",
+        "session_expired": "Сессия истекла, авторизуйтесь снова",
+        "paid": "Оплачено",
+        "partial": "Частично",
+        "unpaid": "Не оплачено",
+        "specializations": {
+            "surgeon": "Хирург",
+            "therapist": "Терапевт",
+            "orthodontist": "Ортодонт",
+            "orthopedist": "Ортопед",
+            "periodontist": "Пародонтолог",
+            "implantologist": "Имплантолог"
+        },
+        "schedule_options": {
+            "every_day": "Каждый день",
+            "weekdays": "Будние дни",
+            "weekends": "Выходные",
+            "mon_fri": "Понедельник - Пятница",
+            "custom": "Индивидуальный график"
+        },
+        "map": {
+            "select_on_map": "Выбрать на карте",
+            "enter_address": "Введите адрес",
+            "confirm": "Подтвердить",
+            "coordinates": "Координаты"
+        },
         "months": {
             "0": "Январь",
             "1": "Февраль",
@@ -58,14 +140,143 @@
             "4": "Четверг",
             "5": "Пятница",
             "6": "Суббота"
+        },
+        "patients": {
+            "add_patient": "Добавить пациента",
+            "full_name": "Полное имя",
+            "enter_name": "Введите имя",
+            "phone": "Телефон",
+            "age": "Возраст",
+            "birth_date": "Дата рождения",
+            "address": "Адрес",
+            "enter_address": "Введите адрес",
+            "gender": {
+                "title": "Пол",
+                "male": "Мужской",
+                "female": "Женский"
+            },
+            "cancel": "Отмена",
+            "save": "Сохранить"
+        }
+    },
+    "modals": {
+        "appointment": {
+            "title": "Добавить приём",
+            "start_time": "Время начала",
+            "end_time": "Время окончания",
+            "service": "Услуга",
+            "notes": "Примечания",
+            "placeholder_service": "Например: Консультация",
+            "placeholder_notes": "Дополнительная информация...",
+            "error_time": "Укажите время начала и окончания",
+            "error_save": "Не удалось добавить приём"
+        },
+        "prescription": {
+            "title": "Добавить рецепт",
+            "edit_title": "Редактировать рецепт",
+            "medication": "Название препарата",
+            "dosage": "Дозировка",
+            "frequency": "Частота приёма",
+            "duration": "Длительность",
+            "notes": "Примечания",
+            "placeholder_medication": "Например: Амоксициллин",
+            "placeholder_dosage": "Например: 500 мг",
+            "placeholder_frequency": "Например: 3 раза в день",
+            "placeholder_duration": "Например: 7 дней",
+            "placeholder_notes": "Дополнительные инструкции...",
+            "error_fields": "Пожалуйста, заполните все обязательные поля",
+            "error_save": "Не удалось добавить рецепт",
+            "error_update": "Не удалось обновить рецепт"
+        },
+        "allergy": {
+            "title": "Добавить аллергию",
+            "edit_title": "Редактировать аллергию",
+            "allergen": "Аллерген",
+            "reaction": "Тип реакции",
+            "severity": {
+                "title": "Степень тяжести",
+                "mild": "Легкая",
+                "moderate": "Средняя",
+                "severe": "Тяжелая"
+            },
+            "notes": "Примечания",
+            "placeholder_allergen": "Например: Пенициллин",
+            "placeholder_reaction": "Например: Сыпь, отек",
+            "placeholder_notes": "Дополнительная информация...",
+            "error_fields": "Пожалуйста, заполните все обязательные поля",
+            "error_save": "Не удалось добавить аллергию",
+            "error_update": "Не удалось обновить аллергию"
+        },
+        "note": {
+            "title": "Новая заметка",
+            "patient": "Пациент",
+            "placeholder_patient": "Выберите пациента",
+            "not_found": "Пациент не найден",
+            "note_label": "Заметка",
+            "placeholder_note": "Введите заметку",
+            "error_fields": "Пожалуйста, выберите пациента и введите заметку",
+            "error_save": "Ошибка при добавлении заметки",
+            "no_phone": "Нет номера"
+        },
+        "payment": {
+            "title": "Добавить платеж",
+            "amount": "Сумма",
+            "date": "Дата",
+            "method": {
+                "title": "Метод оплаты",
+                "cash": "Наличные",
+                "card": "Карта",
+                "transfer": "Перевод"
+            },
+            "notes": "Примечания",
+            "error_fields": "Укажите сумму",
+            "error_save": "Не удалось добавить платеж"
+        },
+        "photo": {
+            "title": "Добавить фото",
+            "name": "Название",
+            "placeholder_name": "Например: Рентген зуба 16",
+            "select_file": "Выберите файл",
+            "max_size": "Максимальный размер: 5 МБ. Форматы: JPG, PNG, GIF",
+            "preview": "Предпросмотр",
+            "category": {
+                "title": "Категория",
+                "xray": "Рентген",
+                "treatment": "Лечение",
+                "before": "До",
+                "after": "После",
+                "other": "Другое"
+            },
+            "description": "Описание",
+            "placeholder_description": "Дополнительная информация...",
+            "error_file": "Выберите файл для загрузки",
+            "error_file_type": "Пожалуйста, выберите изображение",
+            "error_file_size": "Размер файла не должен превышать 5 МБ",
+            "error_name": "Введите название фотографии",
+            "error_save": "Не удалось добавить фотографию",
+            "adding": "Добавление..."
         }
     },
     "appointments": {
-        "title": "Приёмы",
-        "today": "Сегодня",
+        "title": "Мои приёмы",
         "calendar": "Календарь",
-        "record_appointment": "Записать приём",
+        "record_appointment": "Записать на приём",
         "success_toast": "Приём успешно назначен",
+        "status": {
+            "completed": "завершён",
+            "cancelled": "отменён",
+            "pending": "в очереди",
+            "confirmed": "подтверждён"
+        },
+        "details": {
+            "status": "Статус",
+            "when": "Когда",
+            "duration": "Длительность",
+            "prescriptions": "Назначения",
+            "empty": "Пусто",
+            "minutes": "минут",
+            "success_update": "Профиль успешно обновлён!"
+        },
         "month_view": {
             "month_appointments": "Приёмов за месяц",
             "week": "Неделя",
@@ -108,6 +319,7 @@
         "time_label": "Время приёма",
         "notes_placeholder": "Напишите заметки или коментарии приёму",
         "record": "Добавить",
+        "cancel": "Отмена",
         "services": {
             "implantation": "Имплантация",
             "consultation": "Консультация"
@@ -232,6 +444,110 @@
             "currency": "сум"
         }
     },
+    "patient_detail": {
+        "info": {
+            "title": "Личные данные",
+            "extra": "Дополнительно",
+            "name": "ФИО",
+            "phone": "Телефон",
+            "age": "Возраст",
+            "gender": "Пол",
+            "address": "Адрес",
+            "source": "Источник",
+            "not_specified": "Не указан",
+            "years": "лет",
+            "male": "Мужской",
+            "female": "Женский",
+            "loading": "Загрузка...",
+            "not_found": "Информация о пациенте не найдена"
+        },
+        "appointments": {
+            "title": "История приёмов",
+            "add_btn": "Добавить приём",
+            "error_load": "Не удалось загрузить приёмы",
+            "no_records": "Нет записей о приёмах",
+            "appointment": "Приём",
+            "statuses": {
+                "pending": "Ожидает",
+                "confirmed": "Подтверждён",
+                "completed": "Завершён",
+                "cancelled": "Отменён",
+                "moved": "Перенесён"
+            }
+        },
+        "payments": {
+            "title": "Оплаты",
+            "add_btn": "Добавить платёж",
+            "error_load": "Не удалось загрузить данные об оплатах",
+            "error_update": "Не удалось обновить статус платежа",
+            "no_records": "Нет записей об оплатах",
+            "stats": {
+                "paid": "Оплачено",
+                "debt": "Задолженность",
+                "total": "Всего"
+            },
+            "statuses": {
+                "paid": "Оплачено",
+                "partial": "Частично",
+                "unpaid": "Не оплачено"
+            },
+            "mark_paid": "Отметить оплаченным",
+            "updating": "Обновление...",
+            "error_invalid_amount": "Введите корректную сумму",
+            "error_invalid_service": "Введите название услуги",
+            "service_name": "Название услуги",
+            "amount": "Сумма",
+            "status_label": "Статус",
+            "placeholder_service": "Например: Лечение кариеса",
+            "placeholder_notes": "Дополнительная информация..."
+        },
+        "prescriptions": {
+            "title": "Рецепты",
+            "add_btn": "Добавить рецепт",
+            "error_load": "Не удалось загрузить рецепты",
+            "error_delete": "Не удалось удалить рецепт",
+            "no_records": "Нет рецептов",
+            "confirm_delete": "Вы уверены, что хотите удалить этот рецепт?",
+            "medication": "Препарат",
+            "dosage": "Дозировка",
+            "frequency": "Частота",
+            "duration": "Длительность",
+            "notes": "Примечания",
+            "prescribed_at": "Назначено",
+            "loading": "Загрузка..."
+        },
+        "allergies": {
+            "title": "Аллергии",
+            "add_btn": "Добавить аллергию",
+            "error_load": "Не удалось загрузить аллергии",
+            "error_delete": "Не удалось удалить аллергию",
+            "no_records": "Нет аллергий",
+            "confirm_delete": "Вы уверены, что хотите удалить эту аллергию?",
+            "reaction": "Реакция",
+            "notes": "Примечания",
+            "documented_at": "Задокументировано",
+            "loading": "Загрузка...",
+            "severities": {
+                "mild": "Легкая",
+                "moderate": "Средняя",
+                "severe": "Тяжелая"
+            }
+        },
+        "photos": {
+            "title": "Фотографии и документы",
+            "upload_btn": "Загрузить",
+            "error_load": "Не удалось загрузить фотографии",
+            "no_records": "Нет загруженных файлов",
+            "no_records_desc": "Загрузите рентгены, фото лечения или другие документы",
+            "view_btn": "Просмотр",
+            "categories": {
+                "all": "Все",
+                "xray": "Рентгены",
+                "treatment": "Лечение",
+                "other": "Другое"
+            }
+        }
+    },
     "patients_list": {
         "search_placeholder": "Поиск пациента...",
         "add_patient": "Добавить пациента",
@@ -259,6 +575,8 @@
     "doctor_profile": {
         "save": "Сохранить",
         "edit": "Редактировать",
+        "services_title": "Услуги и цены",
+        "services_subtitle": "Управление списком предоставляемых услуг",
         "contacts": "Контакты",
         "services": "Услуги",
         "schedule": "График работы",
@@ -287,38 +605,22 @@
         "weekend": "Выходные дни"
     },
     "dashboard": {
-        "search_placeholder": "Пациент",
+        "search_placeholder": "Поиск пациентов, услуг...",
         "consultation": "Консультация",
         "improve": "улучшить",
-        "notifications": {
-            "title": "Уведомления",
-            "new_count": "{{count}} новых",
-            "show_all": "Показать все"
-        },
-        "stats": {
-            "consultations_today": "Консультаций за сегодня",
-            "appointments_month": "Приёмов за месяц",
-            "new_patients_week": "Новых пациентов в этой неделе"
-        },
-        "new_patients": {
-            "title": "Новые пациенты",
-            "age_label": "лет",
-            "comment": "Комментарий:",
-            "status_label": "Статус:",
-            "accept": "Принять",
-            "quick_actions": "Быстрые действия",
-            "today": "Сегодня",
-            "no_comment": "Без комментария",
-            "urgent": "Срочные"
+        "quick_actions": {
+            "title": "Быстрые действия",
+            "add_appointment": "Добавить приём",
+            "new_note": "Новая заметка",
+            "message_patient": "Написать пациенту",
+            "add_patient": "Добавить пациента",
+            "in_development": "В разработке"
         },
         "appointments_card": {
             "title": "Приёмы",
-            "tabs": {
-                "day": "День",
-                "week": "Неделя",
-                "month": "Месяц"
-            },
             "today": "Сегодня",
+            "no_records": "Нет записей",
+            "no_records_date": "На выбранную дату записей нет",
             "months": {
                 "0": "Январь",
                 "1": "Февраль",
@@ -334,30 +636,44 @@
                 "11": "Декабрь"
             },
             "weekdays": {
-                "0": "Воскресенье",
-                "1": "Понедельник",
-                "2": "Вторник",
-                "3": "Среда",
-                "4": "Четверг",
-                "5": "Пятница",
-                "6": "Суббота"
+                "0": "Вс",
+                "1": "Пн",
+                "2": "Вт",
+                "3": "Ср",
+                "4": "Чт",
+                "5": "Пт",
+                "6": "Сб"
             }
         },
-        "quick_actions": {
-            "title": "Быстрые действия",
-            "add_appointment": "Добавить приём",
-            "new_note": "Новая заметка",
-            "message_patient": "Написать пациенту",
-            "add_patient": "Добавить пациент"
+        "notifications": {
+            "title": "Уведомления",
+            "new_count": "{{count}} новых",
+            "show_all": "Показать все",
+            "all": "Все",
+            "unread": "Непрочитанные",
+            "updates": "Обновления",
+            "clear_all": "Очистить все",
+            "view_all": "Посмотреть все уведомления →",
+            "sample1": "Следующий приём через 15 минут",
+            "sample_patient": "Пациент {{name}}"
+        },
+        "stats": {
+            "consultations_today": "Консультации сегодня",
+            "appointments_month": "Приёмы в этом месяце",
+            "new_patients_week": "Новые пациенты за неделю"
         },
         "rating": {
             "average": "Ваша средняя оценка",
             "how_to_improve": "Как повысить ваш рейтинг?",
             "desc": "Рейтинг строится на основе отзывов, активности и качества обслуживания",
+            "recommendations": "Рекомендации",
             "tip1": "Старайтесь отвечать быстро в чатах",
             "tip2": "Быстро подтверждайте записи",
             "tip3": "Получайте отзывы от пациентов",
             "tip4": "Завершайте приёмы на отлично",
+            "your_rating_data": "Данные в мае:",
+            "completed_consultations": "Успешно выполнено консультации:",
+            "check_status": "Проверить статус",
             "request_review": "Попросить отзыв"
         },
         "qidiruv": {
@@ -404,6 +720,26 @@
                 "appointments_label": "приёмов"
             },
             "patients": {
+                "add_patient": "Добавить пациента",
+                "full_name": "Ф.И.О. пациента",
+                "phone": "Номер телефона",
+                "address": "Адрес проживания",
+                "gender": {
+                    "title": "Пол",
+                    "male": "Мужской",
+                    "female": "Женский"
+                },
+                "age": "Возраст",
+                "pinfl": "ПИНФЛ",
+                "passport": "Паспорт серия и номер",
+                "cancel": "Отмена",
+                "save": "Добавить",
+                "enter_name": "Введите Ф.И.О.",
+                "enter_phone": "Введите номер телефона",
+                "enter_address": "Введите адрес",
+                "enter_age": "Введите возраст",
+                "enter_pinfl": "Введите ПИНФЛ",
+                "enter_passport": "Введите паспортные данные",
                 "title": "Пациенты",
                 "subtitle": "Пол пациентов за всё время",
                 "male": "Мужчины",
@@ -509,6 +845,31 @@
             "online": "В сети",
             "today": "Сегодня",
             "write_message": "Напишите сообщение..."
+        },
+        "chat": {
+            "title": "Сообщения",
+            "search": "Поиск по сообщениям",
+            "no_chats": "Нет сообщений",
+            "status": {
+                "recently": "Был(а) недавно"
+            },
+            "tabs": {
+                "media": "Медиа",
+                "files": "Файлы",
+                "voice": "Голосовые",
+                "links": "Ссылки"
+            },
+            "actions": {
+                "messages": "Сообщения",
+                "call": "Звонок",
+                "video": "Видео",
+                "link": "Ссылка",
+                "qr_code": "QR-kod",
+                "delete_chat": "Удалить чат",
+                "add_favorite": "В избранные",
+                "notification": "Уведомление",
+                "add_contact": "В контакты"
+            }
         },
         "profile": {
             "title": "Профиль",

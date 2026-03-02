@@ -155,10 +155,10 @@ const Hero: React.FC<HeroProps> = ({ onSearch }) => {
                 </div>
                 <div className="hidden md:flex flex-col leading-tight">
                   <span className="font-bold text-sm whitespace-nowrap">
-                    {user?.full_name || 'Пользователь'}
+                    {user?.full_name || t('common.user')}
                   </span>
                   <span className="text-[11px] text-gray-400">
-                    {user?.role === 'dentist' ? 'Врач' : 'Пациент'}
+                    {user?.role === 'dentist' ? t('auth.role_dentist') : t('auth.role_patient')}
                   </span>
                 </div>
               </Link>

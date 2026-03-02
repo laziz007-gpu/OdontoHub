@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPayment } from '../../api/payments';
 
 interface AddPaymentModalProps {
@@ -8,6 +9,7 @@ interface AddPaymentModalProps {
 }
 
 const AddPaymentModal = ({ patientId, onClose, onSuccess }: AddPaymentModalProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     amount: '',
     service_name: '',
@@ -20,24 +22,24 @@ const AddPaymentModal = ({ patientId, onClose, onSuccess }: AddPaymentModalProps
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.amount || parseFloat(formData.amount) <= 0) {
-      setError('Введите корректную сумму');
+      setError(t('patient_detail.payments.error_invalid_amount'));
       return;
     }
 
     if (!formData.service_name.trim()) {
-      setError('Введите название услуги');
+      setError(t('patient_detail.payments.error_invalid_service'));
       return;
     }
 
     try {
       setLoading(true);
       setError(null);
-      
+
       const amount = parseFloat(formData.amount);
       const paidAmount = formData.status === 'unpaid' ? 0 : amount;
-      
+
       await createPayment(patientId, {
         amount: amount,
         paid_amount: paidAmount,
@@ -49,7 +51,7 @@ const AddPaymentModal = ({ patientId, onClose, onSuccess }: AddPaymentModalProps
       onClose();
     } catch (err) {
       console.error('Error creating payment:', err);
-      setError('Не удалось добавить платёж');
+      setError(t('patient_detail.payments.error_save'));
     } finally {
       setLoading(false);
     }
@@ -58,8 +60,8 @@ const AddPaymentModal = ({ patientId, onClose, onSuccess }: AddPaymentModalProps
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl p-6 w-full max-w-md">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Добавить платёж</h2>
-        
+        <h2 className="text-xl font-bold text-gray-800 mb-4">{t('patient_detail.payments.add_btn')}</h2>
+
         {error && (
           <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
             {error}
@@ -69,21 +71,21 @@ const AddPaymentModal = ({ patientId, onClose, onSuccess }: AddPaymentModalProps
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Название услуги *
+              {t('patient_detail.payments.service_name')} *
             </label>
             <input
               type="text"
               value={formData.service_name}
               onChange={(e) => setFormData({ ...formData, service_name: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Например: Лечение кариеса"
+              placeholder={t('patient_detail.payments.placeholder_service')}
               required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Сумма *
+              {t('patient_detail.payments.amount')} *
             </label>
             <input
               type="number"
@@ -98,29 +100,29 @@ const AddPaymentModal = ({ patientId, onClose, onSuccess }: AddPaymentModalProps
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Статус *
+              {t('patient_detail.payments.status_label')} *
             </label>
             <select
               value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="paid">Оплачено</option>
-              <option value="partial">Частично</option>
-              <option value="unpaid">Не оплачено</option>
+              <option value="paid">{t('patient_detail.payments.statuses.paid')}</option>
+              <option value="partial">{t('patient_detail.payments.statuses.partial')}</option>
+              <option value="unpaid">{t('patient_detail.payments.statuses.unpaid')}</option>
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Примечания
+              {t('patient_detail.payments.notes')}
             </label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={3}
-              placeholder="Дополнительная информация..."
+              placeholder={t('patient_detail.payments.placeholder_notes')}
             />
           </div>
 
@@ -131,14 +133,14 @@ const AddPaymentModal = ({ patientId, onClose, onSuccess }: AddPaymentModalProps
               className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               disabled={loading}
             >
-              Отмена
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
               disabled={loading}
             >
-              {loading ? 'Добавление...' : 'Добавить'}
+              {loading ? t('common.saving') : t('common.add')}
             </button>
           </div>
         </form>

@@ -1,8 +1,9 @@
-import React, { type FC, useState } from 'react';
+import { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit2 } from 'lucide-react';
 
 interface ScheduleCardProps {
+    schedule?: string;
     workStart?: string;
     startMinute?: string;
     workEnd?: string;
@@ -11,6 +12,7 @@ interface ScheduleCardProps {
 }
 
 const ScheduleCard: FC<ScheduleCardProps> = ({
+    schedule,
     workStart = '08',
     startMinute = '00',
     workEnd = '16',
@@ -35,7 +37,7 @@ const ScheduleCard: FC<ScheduleCardProps> = ({
             <div className="space-y-8">
                 <div>
                     <div className="flex justify-between items-center mb-4">
-                        <span className="font-bold text-[#1E2532] text-sm">{t('doctor_profile.every_day')}</span>
+                        <span className="font-bold text-[#1E2532] text-sm">{schedule || t('doctor_profile.every_day')}</span>
                     </div>
                     <div className="flex gap-4 items-center">
                         <div className="flex-1 bg-[#F5F7FA] py-4 rounded-[20px] px-6 flex items-center justify-between border border-gray-100 transition-all hover:border-blue-200">

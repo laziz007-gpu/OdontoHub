@@ -25,23 +25,26 @@ export default function PatientsTable({ patients }: Props) {
   const handleDelete = async (e: React.MouseEvent, patientId: number, patientName: string) => {
     e.preventDefault()
     e.stopPropagation()
-    
-    if (window.confirm(`Вы уверены, что хотите удалить пациента "${patientName}"?`)) {
+
+    if (window.confirm(t('common.confirm_delete') + ` "${patientName}"?`)) {
       try {
         await deletePatient.mutateAsync(patientId)
       } catch (error) {
         console.error('Error deleting patient:', error)
-        alert('Ошибка при удалении пациента')
+        alert(t('doctor_profile.photo_save_error'))
       }
     }
   }
 
   const getStatusLabel = (status: string) => {
     switch (status.toUpperCase()) {
+      case 'TREATING':
       case 'ЛЕЧИТСЯ':
         return t('patients_list.statuses.treating');
+      case 'NEW':
       case 'НОВЫЙ':
         return t('patients_list.statuses.new');
+      case 'RECORDED':
       case 'ЗАПИСАН':
         return t('patients_list.statuses.recorded');
       default:
@@ -57,7 +60,7 @@ export default function PatientsTable({ patients }: Props) {
         <div>{t('patients_list.table.phone')}</div>
         <div>{t('patients_list.table.diagnosis')}</div>
         <div>{t('patients_list.table.status')}</div>
-        <div className="text-right">Действия</div>
+        <div className="text-right">{t('common.actions')}</div>
       </div>
 
       <div className="space-y-3 sm:space-y-2 mt-2">
@@ -102,7 +105,7 @@ export default function PatientsTable({ patients }: Props) {
             <div className="hidden sm:block text-gray-600">{p.phone}</div>
             <div className="hidden sm:block text-gray-600 italic">{p.diagnosis}</div>
 
-            <div className={`font-bold text-sm sm:text-base px-3 py-1 sm:p-0 rounded-full sm:rounded-none bg-opacity-10 sm:bg-transparent ${p.statusColor} ${p.status === 'ЛЕЧИТСЯ' ? 'bg-blue-100' : p.status === 'НОВЫЙ' ? 'bg-green-100' : 'bg-gray-100'}`}>
+            <div className={`font-bold text-sm sm:text-base px-3 py-1 sm:p-0 rounded-full sm:rounded-none bg-opacity-10 sm:bg-transparent ${p.statusColor} ${p.status === 'TREATING' || p.status === 'ЛЕЧИТСЯ' ? 'bg-blue-100' : p.status === 'NEW' || p.status === 'НОВЫЙ' ? 'bg-green-100' : 'bg-gray-100'}`}>
               {getStatusLabel(p.status)}
             </div>
 

@@ -38,7 +38,7 @@ const Tezroq: React.FC = () => {
         setIsNoteModalOpen(true);
         break;
       case 'message':
-        alert('Функция в разработке');
+        alert(t('dashboard.quick_actions.in_development'));
         break;
     }
   };
@@ -48,17 +48,17 @@ const Tezroq: React.FC = () => {
     const notesKey = `patient_notes_${patientId}`;
     const existingNotes = localStorage.getItem(notesKey);
     const notes = existingNotes ? JSON.parse(existingNotes) : [];
-    
+
     notes.push({
       id: Date.now(),
       text: note,
       date: new Date().toISOString(),
-      createdBy: 'Врач' // TODO: Get from current user
+      createdBy: t('auth.role_dentist') // Use localized role
     });
-    
+
     localStorage.setItem(notesKey, JSON.stringify(notes));
-    
-    alert('Заметка успешно добавлена');
+
+    alert(t('modals.note.add_success'));
     // Navigate to patient profile
     navigate(`${paths.patient}/${patientId}`);
   };
@@ -78,7 +78,7 @@ const Tezroq: React.FC = () => {
               <p className="font-semibold text-gray-900">{t(action.titleKey)}</p>
               {action.action === 'message' && (
                 <span className="absolute top-2 right-2 text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full font-medium">
-                  В разработке
+                  {t('dashboard.quick_actions.in_development')}
                 </span>
               )}
             </button>
@@ -87,15 +87,15 @@ const Tezroq: React.FC = () => {
       </div>
 
       {/* Modals */}
-      <AppointmentModal 
-        isOpen={isAppointmentModalOpen} 
+      <AppointmentModal
+        isOpen={isAppointmentModalOpen}
         onClose={() => setIsAppointmentModalOpen(false)}
         onSuccess={() => {
           setIsAppointmentModalOpen(false);
           navigate(paths.appointments);
         }}
       />
-      
+
       <AddPatientModal
         isOpen={isPatientModalOpen}
         onClose={() => setIsPatientModalOpen(false)}

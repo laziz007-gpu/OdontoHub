@@ -16,7 +16,7 @@ const ServicesPage: React.FC = () => {
     );
 
     const handleDelete = async (id: number) => {
-        if (window.confirm('Вы уверены, что хотите удалить эту услугу?')) {
+        if (window.confirm(t('common.confirm_delete'))) {
             try {
                 await deleteService.mutateAsync(id);
             } catch (error) {
@@ -30,10 +30,10 @@ const ServicesPage: React.FC = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl md:text-4xl font-black text-[#1a1f36] tracking-tight">
-                        Услуги и цены
+                        {t('doctor_profile.services_title')}
                     </h1>
                     <p className="text-gray-500 font-bold mt-2">
-                        Управление списком предоставляемых услуг
+                        {t('doctor_profile.services_subtitle')}
                     </p>
                 </div>
 
@@ -43,8 +43,8 @@ const ServicesPage: React.FC = () => {
                         className="h-12 md:h-14 px-6 md:px-8 bg-[#4f6bff] text-white font-bold rounded-[16px] shadow-lg shadow-[#4f6bff]/20 hover:bg-[#3d56d5] transition-all active:scale-95 flex items-center gap-2"
                     >
                         <Plus className="w-5 h-5 md:w-6 md:h-6" />
-                        <span className="hidden md:inline">Добавить услугу</span>
-                        <span className="md:hidden">Добавить</span>
+                        <span className="hidden md:inline">{t('doctor_profile.add')}</span>
+                        <span className="md:hidden">{t('doctor_profile.add')}</span>
                     </button>
                 </div>
             </div>
@@ -54,7 +54,7 @@ const ServicesPage: React.FC = () => {
                     <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input
                         type="text"
-                        placeholder="Поиск услуги..."
+                        placeholder={t('dashboard.search_placeholder')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full h-14 bg-[#f8f9fc] rounded-[20px] pl-14 pr-6 font-bold text-[#1a1f36] border-none outline-none focus:ring-2 focus:ring-[#4f6bff]/20 placeholder:text-gray-400/80 transition-all"
@@ -70,9 +70,9 @@ const ServicesPage: React.FC = () => {
                         <table className="w-full">
                             <thead>
                                 <tr className="text-left border-b border-gray-100">
-                                    <th className="pb-4 pl-4 font-black text-gray-400 text-sm uppercase tracking-wider">Название</th>
-                                    <th className="pb-4 font-black text-gray-400 text-sm uppercase tracking-wider">Цена</th>
-                                    <th className="pb-4 pr-4 font-black text-gray-400 text-sm uppercase tracking-wider text-right">Действия</th>
+                                    <th className="pb-4 pl-4 font-black text-gray-400 text-sm uppercase tracking-wider">{t('patient_profile.treatments_table.name')}</th>
+                                    <th className="pb-4 font-black text-gray-400 text-sm uppercase tracking-wider">{t('patient_appointment_detail.price')}</th>
+                                    <th className="pb-4 pr-4 font-black text-gray-400 text-sm uppercase tracking-wider text-right">{t('common.actions')}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
@@ -97,7 +97,7 @@ const ServicesPage: React.FC = () => {
                                 {filteredServices?.length === 0 && (
                                     <tr>
                                         <td colSpan={3} className="py-12 text-center text-gray-400 font-bold">
-                                            Ничего не найдено
+                                            {t('common.not_found')}
                                         </td>
                                     </tr>
                                 )}

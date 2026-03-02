@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getPatientAppointments, type Appointment } from '../../api/appointments';
 import AddAppointmentModal from './AddAppointmentModal';
+import { useTranslation } from 'react-i18next';
 
 interface AppointmentsSectionProps {
   patientId: number;
@@ -8,6 +9,7 @@ interface AppointmentsSectionProps {
 }
 
 const AppointmentsSection = ({ patientId, dentistId }: AppointmentsSectionProps) => {
+  const { t, i18n } = useTranslation();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +27,7 @@ const AppointmentsSection = ({ patientId, dentistId }: AppointmentsSectionProps)
       setError(null);
     } catch (err) {
       console.error('Error fetching appointments:', err);
-      setError('Не удалось загрузить приёмы');
+      setError(t('patient_detail.appointments.error_load'));
     } finally {
       setLoading(false);
     }
@@ -33,7 +35,8 @@ const AppointmentsSection = ({ patientId, dentistId }: AppointmentsSectionProps)
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU', {
+    const locale = i18n.language === 'ru' ? 'ru-RU' : i18n.language === 'uz' ? 'uz-UZ' : i18n.language === 'kz' ? 'kk-KZ' : 'en-US';
+    return date.toLocaleDateString(locale, {
       day: '2-digit',
       month: 'long',
       year: 'numeric',
@@ -44,11 +47,11 @@ const AppointmentsSection = ({ patientId, dentistId }: AppointmentsSectionProps)
 
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {
-      'pending': 'Ожидает',
-      'confirmed': 'Подтверждён',
-      'completed': 'Завершён',
-      'cancelled': 'Отменён',
-      'moved': 'Перенесён'
+      'pending': t('patient_detail.appointments.statuses.pending'),
+      'confirmed': t('patient_detail.appointments.statuses.confirmed'),
+      'completed': t('patient_detail.appointments.statuses.completed'),
+      'cancelled': t('patient_detail.appointments.statuses.cancelled'),
+      'moved': t('patient_detail.appointments.statuses.moved')
     };
     return labels[status] || status;
   };
@@ -67,12 +70,12 @@ const AppointmentsSection = ({ patientId, dentistId }: AppointmentsSectionProps)
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-800">История приёмов</h2>
-        <button 
+        <h2 className="text-xl font-bold text-gray-800">{t('patient_detail.appointments.title')}</h2>
+        <button
           onClick={() => setShowAddModal(true)}
           className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
         >
-          + Добавить приём
+          + {t('patient_detail.appointments.add_btn')}
         </button>
       </div>
 
@@ -91,7 +94,7 @@ const AppointmentsSection = ({ patientId, dentistId }: AppointmentsSectionProps)
           <svg className="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          <p className="text-gray-500">Нет записей о приёмах</p>
+          <p className="text-gray-500">{t('patient_detail.appointments.no_records')}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -99,7 +102,7 @@ const AppointmentsSection = ({ patientId, dentistId }: AppointmentsSectionProps)
             <div key={appointment.id} className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <div className="font-semibold text-gray-900">{appointment.service || 'Приём'}</div>
+                  <div className="font-semibold text-gray-900">{appointment.service || t('patient_detail.appointments.appointment')}</div>
                   <div className="text-sm text-gray-600 mt-1">{formatDate(appointment.start_time)}</div>
                   {appointment.notes && (
                     <div className="text-sm text-gray-500 mt-1">{appointment.notes}</div>

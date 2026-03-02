@@ -1,17 +1,79 @@
 {
+  "dd": "Sizning raqamli stomatologiyangiz",
+  "chooselang": "Interfeys tilini tanlang",
+  "next": "Davom etish",
   "sidebar": {
     "dashboard": "Boshqaruv paneli",
     "patients": "Bemorlar",
     "appointments": "Qabullar",
     "chats": "Chatlar",
     "focus_title": "Bugungi fokus",
-    "focus_appointments": "7 ta qabul",
-    "focus_consultations": "3 onlayn konsultatsiya",
-    "focus_patients": "2 yangi bemor",
+    "focus_appointment_single": "bugungi qabul",
+    "focus_appointments_plural": "bugungi qabullar",
+    "focus_new_patient_single": "bugungi yangi bemor",
+    "focus_new_patients_plural": "bugungi yangi bemorlar",
+    "focus_appointments": "qabullar",
+    "focus_consultations": "onlayn konsultatsiya",
+    "focus_patients": "yangi bemorlar",
     "analytics": "Analitika"
   },
+  "auth": {
+    "login_title": "Kirish",
+    "login_subtitle": "Telefon raqami orqali kiring",
+    "phone_label": "Telefon raqami",
+    "phone_placeholder": "+998 90 123 45 67",
+    "login_button": "Kirish",
+    "logging_in": "Kirish...",
+    "no_account": "Akkauntingiz yo'qmi?",
+    "register_link": "Ro'yxatdan o'tish",
+    "register_title": "Ro'yxatdan o'tish",
+    "register_subtitle": "Yangi akkaunt yarating",
+    "role_label": "Rolni tanlang",
+    "role_dentist": "Shifokor",
+    "role_patient": "Bemor",
+    "full_name_label": "To'liq ism",
+    "full_name_placeholder": "Ivan Ivanov",
+    "email_label": "Email",
+    "email_optional": "(ixtiyoriy)",
+    "have_account": "Akkauntingiz bormi?",
+    "login_link": "Kirish",
+    "register_button": "Ro'yxatdan o'tish",
+    "registering": "Ro'yxatdan o'tish...",
+    "error_user_not_found": "Akkaunt topilmadi",
+    "error_phone_registered": "Bu raqam allaqachon ro'yxatdan o'tgan",
+    "error_registration": "Ro'yxatdan o'tishda xatolik",
+    "error_phone_required": "Telefon raqamini kiriting",
+    "error_phone_format": "Raqam formati noto'g'ri",
+    "error_name_required": "To'liq ismingizni kiriting",
+    "error_name_min": "Kamida 2 ta belgi",
+    "error_role_required": "Rolni tanlang",
+    "role_welcome": "Xush kelibsiz!",
+    "role_subtitle_choose": "Tizimdagi rolingizni tanlang",
+    "role_dentist_label": "Men shifokorman",
+    "role_patient_label": "Men bemorman",
+    "footer_text": "OdontoHub — sizning zamonaviy stomatologiyangiz"
+  },
   "common": {
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "add": "Qo'shish",
+    "saving": "Saqlanmoqda...",
     "close": "Yopish",
+    "error": "Xatolik yuz berdi",
+    "delete": "O'chirish",
+    "confirm_delete": "Haqiqatan ham o'chirmoqchimisiz?",
+    "delete_account": "Hisobni o'chirish",
+    "delete_account_warning": "Bu amalni qaytarib bo'lmaydi. Barcha ma'lumotlaringiz butunlay o'chiriladi.",
+    "loading": "Yuklanmoqda...",
+    "photo": "Foto",
+    "actions": "Harakatlar",
+    "not_found": "Hech narsa topilmadi",
+    "user": "Foydalanuvchi",
+    "preview_initial": "P",
+    "session_expired": "Sessiya muddati tugadi, qayta tizimga kiring",
+    "paid": "To'langan",
+    "partial": "Qisman",
+    "unpaid": "To'lanmagan",
     "months": {
       "0": "Yanvar",
       "1": "Fevral",
@@ -57,14 +119,143 @@
       "4": "Payshanba",
       "5": "Juma",
       "6": "Shanba"
+    },
+    "patients": {
+      "add_patient": "Bemor qo'shish",
+      "full_name": "To'liq ism",
+      "enter_name": "Ismni kiriting",
+      "phone": "Telefon",
+      "age": "Yosh",
+      "birth_date": "Tug'ilgan sana",
+      "address": "Manzil",
+      "enter_address": "Manzilni kiriting",
+      "gender": {
+        "title": "Jins",
+        "male": "Erkak",
+        "female": "Ayol"
+      },
+      "cancel": "Bekor qilish",
+      "save": "Saqlash"
+    }
+  },
+  "modals": {
+    "appointment": {
+      "title": "Qabul qo'shish",
+      "start_time": "Boshlanish vaqti",
+      "end_time": "Tugash vaqti",
+      "service": "Xizmat",
+      "notes": "Eslatmalar",
+      "placeholder_service": "Masalan: Konsultatsiya",
+      "placeholder_notes": "Qo'shimcha ma'lumot...",
+      "error_time": "Boshlanish va tugash vaqtini ko'rsating",
+      "error_save": "Qabulni qo'shib bo'lmadi"
+    },
+    "prescription": {
+      "title": "Retsept qo'shish",
+      "edit_title": "Retseptni tahrirlash",
+      "medication": "Preparat nomi",
+      "dosage": "Dozalash",
+      "frequency": "Qabul qilish chastotasi",
+      "duration": "Davomiyligi",
+      "notes": "Eslatmalar",
+      "placeholder_medication": "Masalan: Amoksitsillin",
+      "placeholder_dosage": "Masalan: 500 mg",
+      "placeholder_frequency": "Masalan: Kuniga 3 mahal",
+      "placeholder_duration": "Masalan: 7 kun",
+      "placeholder_notes": "Qo'shimcha ko'rsatmalar...",
+      "error_fields": "Iltimos, barcha majburiy maydonlarni to'ldiring",
+      "error_save": "Retseptni qo'shib bo'lmadi",
+      "error_update": "Retseptni yangilab bo'lmadi"
+    },
+    "allergy": {
+      "title": "Allergiya qo'shish",
+      "edit_title": "Allergiyani tahrirlash",
+      "allergen": "Allergen",
+      "reaction": "Reaksiya turi",
+      "severity": {
+        "title": "Og'irlik darajasi",
+        "mild": "Yengil",
+        "moderate": "O'rtacha",
+        "severe": "Og'ir"
+      },
+      "notes": "Eslatmalar",
+      "placeholder_allergen": "Masalan: Penitsillin",
+      "placeholder_reaction": "Masalan: Toshma, shish",
+      "placeholder_notes": "Qo'shimcha ma'lumot...",
+      "error_fields": "Iltimos, barcha majburiy maydonlarni to'ldiring",
+      "error_save": "Allergiyani qo'shib bo'lmadi",
+      "error_update": "Allergiyani yangilab bo'lmadi"
+    },
+    "note": {
+      "title": "Yangi eslatma",
+      "patient": "Bemor",
+      "placeholder_patient": "Bemorni tanlang",
+      "not_found": "Bemor topilmadi",
+      "note_label": "Eslatma",
+      "placeholder_note": "Eslatmani kiriting",
+      "error_fields": "Iltimos, bemorni tanlang va eslatmani kiriting",
+      "error_save": "Eslatmani qo'shishda xatolik",
+      "no_phone": "Raqam yo'q"
+    },
+    "payment": {
+      "title": "To'lov qo'shish",
+      "amount": "Summa",
+      "date": "Sana",
+      "method": {
+        "title": "To'lov usuli",
+        "cash": "Naqd",
+        "card": "Karta",
+        "transfer": "O'tkazma"
+      },
+      "notes": "Eslatmalar",
+      "error_fields": "Summani ko'rsating",
+      "error_save": "To'lovni qo'shib bo'lmadi"
+    },
+    "photo": {
+      "title": "Rasm qo'shish",
+      "name": "Nomi",
+      "placeholder_name": "Masalan: 16-tish rentgeni",
+      "select_file": "Faylni tanlang",
+      "max_size": "Maksimal hajm: 5 MB. Formatlar: JPG, PNG, GIF",
+      "preview": "Oldindan ko'rish",
+      "category": {
+        "title": "Kategoriya",
+        "xray": "Rentgen",
+        "treatment": "Davolash",
+        "before": "Oldin",
+        "after": "Keyin",
+        "other": "Boshqa"
+      },
+      "description": "Tavsif",
+      "placeholder_description": "Qo'shimcha ma'lumot...",
+      "error_file": "Yuklash uchun faylni tanlang",
+      "error_file_type": "Iltimos, rasm tanlang",
+      "error_file_size": "Fayl hajmi 5 MB dan oshmasligi kerak",
+      "error_name": "Rasm nomini kiriting",
+      "error_save": "Rasmni qo'shib bo'lmadi",
+      "adding": "Qo'shilmoqda..."
     }
   },
   "appointments": {
-    "title": "Qabullar",
-    "today": "Bugun",
-    "calendar": "Kalendar",
+    "title": "Mening qabullarim",
+    "calendar": "Taqvim",
     "record_appointment": "Qabulga yozish",
-    "success_toast": "Qabul muvaffaqiyatli belgilandi",
+    "success_toast": "Qabul muvaffaqiyatli tayinlandi",
+    "status": {
+      "completed": "yakunlandi",
+      "cancelled": "bekor qilindi",
+      "pending": "navbatda",
+      "confirmed": "tasdiqlandi"
+    },
+    "details": {
+      "status": "Holat",
+      "when": "Qachon",
+      "duration": "Davomiyligi",
+      "prescriptions": "Tayinlovlar",
+      "empty": "Bo'sh",
+      "minutes": "daqiqa",
+      "success_update": "Profil muvaffaqiyatli yangilandi!"
+    },
     "month_view": {
       "month_appointments": "Oylik qabullar",
       "week": "Hafta",
@@ -105,6 +296,8 @@
     "date_placeholder": "Sanani kiriting",
     "time_label": "Qabul vaqti",
     "notes_placeholder": "Qabul bo'yicha izoh yoki eslatmalar yozing",
+    "record": "Qo'shish",
+    "cancel": "Bekor qilish",
     "services": {
       "implantation": "Implantatsiya",
       "consultation": "Konsultatsiya"
@@ -228,6 +421,110 @@
       "currency": "so'm"
     }
   },
+  "patient_detail": {
+    "info": {
+      "title": "Shaxsiy ma'lumotlar",
+      "extra": "Qo'shimcha ma'lumot",
+      "name": "F.I.SH.",
+      "phone": "Telefon",
+      "age": "Yosh",
+      "gender": "Jinsi",
+      "address": "Manzil",
+      "source": "Manba",
+      "not_specified": "Ko'rsatilmagan",
+      "years": "yosh",
+      "male": "Erkak",
+      "female": "Ayol",
+      "loading": "Yuklanmoqda...",
+      "not_found": "Bemor haqida ma'lumot topilmadi"
+    },
+    "appointments": {
+      "title": "Qabullar tarixi",
+      "add_btn": "Qabul qo'shish",
+      "error_load": "Qabullarni yuklab bo'lmadi",
+      "no_records": "Qabullar mavjud emas",
+      "appointment": "Qabul",
+      "statuses": {
+        "pending": "Kutilmoqda",
+        "confirmed": "Tasdiqlangan",
+        "completed": "Yakunlangan",
+        "cancelled": "Bekor qilingan",
+        "moved": "Ko'chirilgan"
+      }
+    },
+    "payments": {
+      "title": "To'lovlar",
+      "add_btn": "To'lov qo'shish",
+      "error_load": "To'lov ma'lumotlarini yuklab bo'lmadi",
+      "error_update": "To'lov holatini yangilab bo'lmadi",
+      "no_records": "To'lovlar mavjud emas",
+      "stats": {
+        "paid": "To'langan",
+        "debt": "Qarzdorlik",
+        "total": "Jami"
+      },
+      "statuses": {
+        "paid": "To'langan",
+        "partial": "Qisman",
+        "unpaid": "To'lanmagan"
+      },
+      "mark_paid": "To'langan deb belgilash",
+      "updating": "Yangilanmoqda...",
+      "error_invalid_amount": "To'g'ri summani kiriting",
+      "error_invalid_service": "Xizmat nomini kiriting",
+      "service_name": "Xizmat nomi",
+      "amount": "Summa",
+      "status_label": "Holati",
+      "placeholder_service": "Masalan: Kariesni davolash",
+      "placeholder_notes": "Qo'shimcha ma'lumot..."
+    },
+    "prescriptions": {
+      "title": "Retseptlar",
+      "add_btn": "Retsept qo'shish",
+      "error_load": "Retseptlarni yuklab bo'lmadi",
+      "error_delete": "Retseptni o'chirib bo'lmadi",
+      "no_records": "Retseptlar yo'q",
+      "confirm_delete": "Haqiqatan ham ushbu retseptni o'chirmoqchimisiz?",
+      "medication": "Preparat",
+      "dosage": "Dozalash",
+      "frequency": "Chastotasi",
+      "duration": "Davomiyligi",
+      "notes": "Eslatmalar",
+      "prescribed_at": "Tayinlangan",
+      "loading": "Yuklanmoqda..."
+    },
+    "allergies": {
+      "title": "Allergiyalar",
+      "add_btn": "Allergiya qo'shish",
+      "error_load": "Allergiyalarni yuklab bo'lmadi",
+      "error_delete": "Allergiyani o'chirib bo'lmadi",
+      "no_records": "Allergiyalar yo'q",
+      "confirm_delete": "Haqiqatan ham ushbu allergiyani o'chirmoqchimisiz?",
+      "reaction": "Reaksiya",
+      "notes": "Eslatmalar",
+      "documented_at": "Hujjatlashtirilgan",
+      "loading": "Yuklanmoqda...",
+      "severities": {
+        "mild": "Yengil",
+        "moderate": "O'rtacha",
+        "severe": "Og'ir"
+      }
+    },
+    "photos": {
+      "title": "Fotosuratlar va hujjatlar",
+      "upload_btn": "Yuklash",
+      "error_load": "Fotosuratlarni yuklab bo'lmadi",
+      "no_records": "Yuklangan fayllar yo'q",
+      "no_records_desc": "Rentgen, davolash fotosuratlari yoki boshqa hujjatlarni yuklang",
+      "view_btn": "Ko'rish",
+      "categories": {
+        "all": "Hammasi",
+        "xray": "Rentgen",
+        "treatment": "Davolash",
+        "other": "Boshqa"
+      }
+    }
+  },
   "patients_list": {
     "search_placeholder": "Bemor qidirish...",
     "add_patient": "Bemor qo'shish",
@@ -255,6 +552,8 @@
   "doctor_profile": {
     "save": "Saqlash",
     "edit": "Tahrirlash",
+    "services_title": "Xizmatlar va narxlar",
+    "services_subtitle": "Taqdim etilayotgan xizmatlar ro'yxatini boshqarish",
     "contacts": "Aloqa",
     "services": "Xizmatlar",
     "schedule": "Ish jadvali",
@@ -283,38 +582,22 @@
     "weekend": "Dam olish kunlari"
   },
   "dashboard": {
-    "search_placeholder": "Bemorlar, xizmatlarni qidirish...",
+    "search_placeholder": "Bemorlarni, xizmatlarni qidirish...",
     "consultation": "Konsultatsiya",
     "improve": "yaxshilash",
-    "notifications": {
-      "title": "Bildirishnomalar",
-      "new_count": "{{count}} ta yangi",
-      "show_all": "Barchasini ko'rsatish"
-    },
-    "stats": {
-      "consultations_today": "Bugungi konsultatsiyalar",
-      "appointments_month": "Oylik qabullar",
-      "new_patients_week": "Haftalik yangi bemorlar"
-    },
-    "new_patients": {
-      "title": "Yangi bemorlar",
-      "age_label": "yosh",
-      "comment": "Izoh:",
-      "status_label": "Holati:",
-      "accept": "Qabul qilish",
-      "quick_actions": "Tezkor harakatlar",
-      "today": "Bugun",
-      "no_comment": "Izohsiz",
-      "urgent": "Shoshilinch"
+    "quick_actions": {
+      "title": "Tezkor amallar",
+      "add_appointment": "Qabul qo'shish",
+      "new_note": "Yangi eslatma",
+      "message_patient": "Bemorga yozish",
+      "add_patient": "Bemor qo'shish",
+      "in_development": "Ishlab chiqilmoqda"
     },
     "appointments_card": {
       "title": "Qabullar",
-      "tabs": {
-        "day": "Kun",
-        "week": "Hafta",
-        "month": "Oy"
-      },
       "today": "Bugun",
+      "no_records": "Yozuvlar yo'q",
+      "no_records_date": "Tanlangan sana uchun yozuvlar yo'q",
       "months": {
         "0": "Yanvar",
         "1": "Fevral",
@@ -330,30 +613,44 @@
         "11": "Dekabr"
       },
       "weekdays": {
-        "0": "Yakshanba",
-        "1": "Dushanba",
-        "2": "Seshanba",
-        "3": "Chorshanba",
-        "4": "Payshanba",
-        "5": "Juma",
-        "6": "Shanba"
+        "0": "Yak",
+        "1": "Du",
+        "2": "Se",
+        "3": "Chor",
+        "4": "Pay",
+        "5": "Jum",
+        "6": "Shan"
       }
     },
-    "quick_actions": {
-      "title": "Tezkor harakatlar",
-      "add_appointment": "Qabul qo'shish",
-      "new_note": "Yangi eslatma",
-      "message_patient": "Bemorga yozish",
-      "add_patient": "Bemor qo'shish"
+    "notifications": {
+      "title": "Xabarnomalar",
+      "new_count": "{{count}} ta yangi",
+      "show_all": "Barchasini ko'rsatish",
+      "all": "Barchasi",
+      "unread": "O'qilmaganlar",
+      "updates": "Yangilanishlar",
+      "clear_all": "Barchasini tozalash",
+      "view_all": "Barcha xabarnomalarni ko'rish →",
+      "sample1": "Keyingi qabul 15 daqiqadan so'ng",
+      "sample_patient": "Bemor {{name}}"
+    },
+    "stats": {
+      "consultations_today": "Bugungi konsultatsiyalar",
+      "appointments_month": "Shu oydagi qabullar",
+      "new_patients_week": "Shu haftadagi yangi bemorlar"
     },
     "rating": {
-      "average": "Sizning o'rtacha bahoingiz",
+      "average": "Sizning o'rtacha bahoyingiz",
       "how_to_improve": "Reytingingizni qanday oshirish mumkin?",
       "desc": "Reyting sharhlar, faollik va xizmat ko'rsatish sifatiga qarab shakllanadi",
+      "recommendations": "Tavsiyalar",
       "tip1": "Chatlarda tez javob berishga harakat qiling",
       "tip2": "Yozuvlarni tezda tasdiqlang",
       "tip3": "Bemorlardan sharhlar oling",
       "tip4": "Qabullarni a'lo darajada yakunlang",
+      "your_rating_data": "May oyi ma'lumotlari:",
+      "completed_consultations": "Muvaffaqiyatli yakunlangan konsultatsiyalar:",
+      "check_status": "Holatni tekshirish",
       "request_review": "Sharh so'rash"
     },
     "qidiruv": {
@@ -399,6 +696,28 @@
         "subtitle": "Bir oydagi qabullar",
         "appointments_label": "qabullar"
       },
+      "add_patient_modal": {
+        "add_patient": "Bemor qo'shish",
+        "full_name": "Bemorning F.I.O.",
+        "phone": "Telefon raqami",
+        "address": "Yashash manzili",
+        "gender": {
+          "title": "Jinsi",
+          "male": "Erkak",
+          "female": "Ayol"
+        },
+        "age": "Yoshi",
+        "pinfl": "PINFL",
+        "passport": "Pasport seriyasi va raqami",
+        "cancel": "Bekor qilish",
+        "save": "Qo'shish",
+        "enter_name": "F.I.O.ni kiriting",
+        "enter_phone": "Telefon raqamini kiriting",
+        "enter_address": "Manzilni kiriting",
+        "enter_age": "Yoshini kiriting",
+        "enter_pinfl": "PINFLni kiriting",
+        "enter_passport": "Pasport ma'lumotlarini kiriting"
+      },
       "patients": {
         "title": "Bemorlar",
         "subtitle": "Bemorlarning jinsi (jami)",
@@ -417,11 +736,31 @@
         "new": "Yangilar"
       },
       "status": {
-        "title": "Holat",
         "completed": "YAKUNLANDI",
         "rescheduled": "KO'CHIRILDI",
         "cancelled": "BEKOR QILINDI"
       }
+    },
+    "specializations": {
+      "surgeon": "Xirurg",
+      "therapist": "Terapevt",
+      "orthodontist": "Ortodont",
+      "orthopedist": "Ortoped",
+      "periodontist": "Parodontolog",
+      "implantologist": "Implantolog"
+    },
+    "schedule_options": {
+      "every_day": "Har kuni",
+      "weekdays": "Ish kunlari",
+      "weekends": "Dam olish kunlari",
+      "mon_fri": "Dushanba - Juma",
+      "custom": "Shaxsiy grafik"
+    },
+    "map": {
+      "select_on_map": "Xaritada tanlang",
+      "enter_address": "Manzilni kiriting",
+      "confirm": "Tasdiqlash",
+      "coordinates": "Koordinatalar"
     },
     "filter": {
       "title": "Filtr",
@@ -497,6 +836,31 @@
       "time_hours": "soat",
       "time_minutes": "daqiqa",
       "time_seconds": "soniya"
+    },
+    "chat": {
+      "title": "Xabarlar",
+      "search": "Xabarlarni qidirish",
+      "no_chats": "Xabarlar yo'q",
+      "status": {
+        "recently": "Yaqinda onlayn edi"
+      },
+      "tabs": {
+        "media": "Media",
+        "files": "Fayllar",
+        "voice": "Ovozli",
+        "links": "Havolalar"
+      },
+      "actions": {
+        "messages": "Xabarlar",
+        "call": "Qo'ng'iroq",
+        "video": "Video",
+        "link": "Havola",
+        "qr_code": "QR-kod",
+        "delete_chat": "Chatni o'chirish",
+        "add_favorite": "Sevimlilarga qo'shish",
+        "notification": "Bildirishnoma",
+        "add_contact": "Kontaktlarga qo'shish"
+      }
     },
     "chats": {
       "title": "Xabarlar",
