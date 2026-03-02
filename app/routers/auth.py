@@ -143,5 +143,3 @@ def delete_account(user: User = Depends(get_current_user), db: Session = Depends
             detail=f"Cannot delete account: {str(e)}"
         )
 
-
->>>>>>> 78d240642567da5fd41e49a859ef08e5e7355c1b
