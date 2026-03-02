@@ -41,7 +41,13 @@ export default function Login() {
 
     login(cleanData, {
       onSuccess: () => {
-        navigate(paths.role, { replace: true })
+        // Redirect based on user role from localStorage
+        const role = localStorage.getItem('role')
+        if (role === 'dentist') {
+          navigate(paths.menu, { replace: true })
+        } else {
+          navigate(paths.patientHome, { replace: true })
+        }
       },
       onError: (error: any) => {
         console.error('Login error:', error)

@@ -34,7 +34,12 @@ export default function PrivateRoute({ requiredRole }: PrivateRouteProps) {
     // Role check logic
     useEffect(() => {
         if (requiredRole && userFromState && userFromState.role !== requiredRole) {
-            navigate('/role', { replace: true })
+            // Redirect to correct dashboard based on actual role
+            if (userFromState.role === 'dentist') {
+                navigate('/menu', { replace: true })
+            } else {
+                navigate('/home', { replace: true })
+            }
         }
     }, [requiredRole, userFromState, navigate])
 

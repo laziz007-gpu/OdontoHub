@@ -11,6 +11,9 @@ export const useRegister = () => {
       if (data?.access_token) {
         localStorage.setItem('access_token', data.access_token)
       }
+      if (data?.user?.role) {
+        localStorage.setItem('role', data.user.role)
+      }
     },
 
     onError: (error) => {
@@ -29,6 +32,9 @@ export const useLogin = () => {
     onSuccess: ({ data }) => {
       if (data?.access_token) {
         localStorage.setItem('access_token', data.access_token)
+      }
+      if (data?.user?.role) {
+        localStorage.setItem('role', data.user.role)
       }
     },
 
@@ -53,6 +59,7 @@ export const useDeleteAccount = () => {
     mutationFn: () => api.delete('/auth/me'),
     onSuccess: () => {
       localStorage.removeItem('access_token')
+      localStorage.removeItem('role')
     },
     onError: (error) => {
       console.error('Delete account error:', error)

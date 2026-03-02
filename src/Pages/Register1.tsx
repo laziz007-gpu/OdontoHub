@@ -46,8 +46,13 @@ export default function Register1() {
 
     registerUser(cleanData, {
       onSuccess: () => {
-        // Redirect to role page for all users
-        navigate(paths.role, { replace: true })
+        // Redirect based on user role from localStorage
+        const role = localStorage.getItem('role')
+        if (role === 'dentist') {
+          navigate(paths.menu, { replace: true })
+        } else {
+          navigate(paths.patientHome, { replace: true })
+        }
       },
     })
   }
