@@ -3,7 +3,6 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from app.core.database import engine, Base, get_db
-from app.models.dentist import DentistProfile
 from app.routers import auth, patients, dentists, services, appointments
 from app.routers import prescriptions, allergies, payments, photos
 import traceback
@@ -262,6 +261,8 @@ async def get_all_dentists(db: Session = Depends(get_db)):
     Get list of all dentists
     Returns all dentist profiles from database
     """
+    from app.models.dentist import DentistProfile
+    
     try:
         dentists = db.query(DentistProfile).all()
 
