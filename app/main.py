@@ -287,8 +287,8 @@ async def get_all_dentists(db: Session = Depends(get_db)):
                 "pinfl": dentist.pinfl,
                 "diploma_number": dentist.diploma_number,
                 "verification_status": dentist.verification_status,
-                "created_at": dentist.created_at.isoformat() if dentist.created_at else None,
-                "updated_at": dentist.updated_at.isoformat() if dentist.updated_at else None
+                "created_at": dentist.created_at.isoformat() if hasattr(dentist, 'created_at') and dentist.created_at else None,
+                "updated_at": dentist.updated_at.isoformat() if hasattr(dentist, 'updated_at') and dentist.updated_at else None
             }
             dentists_list.append(dentist_dict)
 
