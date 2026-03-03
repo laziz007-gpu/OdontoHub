@@ -1,7 +1,9 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from app.core.database import engine, Base
+from sqlalchemy.orm import Session
+from app.core.database import engine, Base, get_db
+from app.models.dentist import DentistProfile
 from app.routers import auth, patients, dentists, services, appointments
 from app.routers import prescriptions, allergies, payments, photos
 import traceback
@@ -252,3 +254,46 @@ def init_database():
             "status": "error",
             "message": f"Failed to create tables: {str(e)}"
         }
+
+
+@app.get("/dentists/list")
+async def get_all_dentists(db: Session = Depends(get_db)):
+    """
+    Get list of all dentists
+    Returns all dentist profiles from database
+    """
+    try:
+        dentists = db.query(DentistProfile).all()
+
+        dentists_list = []
+        for dentist in dentists:
+            dentist_dict = {
+                "id": dentist.id,
+                "user_id": dentist.user_id,
+                "full_name": dentist.full_name,
+                "phone": dentist.phone if hasattr(dentist, 'phone') else None,
+                "specialization": dentist.specialization,
+                "clinic": dentist.clinic,
+                "address": dentist.address,
+                "age": dentist.age,
+                "experience_years": dentist.experience_years,
+                "schedule": dentist.schedule,
+                "work_hours": dentist.work_hours,
+                "telegram": dentist.telegram,
+                "instagram": dentist.instagram,
+                "whatsapp": dentist.whatsapp,
+                "works_photos": dentist.works_photos,
+                "pinfl": dentist.pinfl,
+                "diploma_number": dentist.diploma_number,
+                "verification_status": dentist.verification_status,
+                "created_at": dentist.created_at.isoformat() if dentist.created_at else None,
+                "updated_at": dentist.updated_at.isoformat() if dentist.updated_at else None
+            }
+            dentists_list.append(dentist_dict)
+
+        return dentists_list
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching dentists: {str(e)}")
+
+
