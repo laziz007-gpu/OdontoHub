@@ -1,4 +1,7 @@
-
+import enum
+from sqlalchemy import String, ForeignKey, Enum
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from app.core.database import Base
 
 
 class VerificationStatus(str, enum.Enum):
