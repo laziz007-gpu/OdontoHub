@@ -298,3 +298,99 @@ async def get_all_dentists(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Error fetching dentists: {str(e)}")
 
 
+@app.delete("/dentists/{dentist_id}")
+async def delete_dentist(dentist_id: int, db: Session = Depends(get_db)):
+    """
+    Delete a dentist by ID
+    This will delete both the dentist profile and associated user account
+    """
+    from app.models.dentist import DentistProfile
+    from app.models.user import User
+    
+    try:
+        # Find the dentist profile
+        dentist_profile = db.query(DentistProfile).filter(DentistProfile.id == dentist_id).first()
+        
+        if not dentist_profile:
+            raise HTTPException(status_code=404, detail="Dentist not found")
+        
+        # Get the associated user
+        user = db.query(User).filter(User.id == dentist_profile.user_id).first()
+        
+        # Store dentist info for response
+        dentist_info = {
+            "id": dentist_profile.id,
+            "full_name": dentist_profile.full_name,
+            "user_id": dentist_profile.user_id
+        }
+        
+        # Delete the dentist profile first (due to foreign key constraints)
+        db.delete(dentist_profile)
+        
+        # Delete the associated user account if it exists
+        if user:
+            db.delete(user)
+        
+        # Commit the transaction
+        db.commit()
+        
+        return {
+            "success": True,
+            "message": f"Dentist '{dentist_info['full_name']}' deleted successfully",
+            "deleted_dentist": dentist_info
+        }
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        # Rollback in case of error
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error deleting dentist: {str(e)}")
+
+
+@app.put("/dentists/{dentist_id}/status")
+async def update_dentist_status(
+    dentist_id: int, 
+    status_data: dict,
+    db: Session = Depends(get_db)
+):
+    """
+    Update dentist verification status (block/unblock)
+    Body: {"verification_status": "approved" | "pending" | "rejected"}
+    """
+    from app.models.dentist import DentistProfile, VerificationStatus
+    
+    try:
+        # Find the dentist profile
+        dentist_profile = db.query(DentistProfile).filter(DentistProfile.id == dentist_id).first()
+        
+        if not dentist_profile:
+            raise HTTPException(status_code=404, detail="Dentist not found")
+        
+        # Validate status
+        new_status = status_data.get("verification_status")
+        if new_status not in ["approved", "pending", "rejected"]:
+            raise HTTPException(status_code=400, detail="Invalid verification status")
+        
+        # Update status
+        dentist_profile.verification_status = VerificationStatus(new_status)
+        db.commit()
+        db.refresh(dentist_profile)
+        
+        return {
+            "success": True,
+            "message": f"Dentist status updated to {new_status}",
+            "dentist": {
+                "id": dentist_profile.id,
+                "full_name": dentist_profile.full_name,
+                "verification_status": dentist_profile.verification_status.value
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error updating dentist status: {str(e)}")
+
