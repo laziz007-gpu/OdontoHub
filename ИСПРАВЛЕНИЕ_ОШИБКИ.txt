@@ -1,0 +1,63 @@
+═══════════════════════════════════════════════════════════
+  ИСПРАВЛЕНИЕ ОШИБКИ - ENDPOINTS В НЕПРАВИЛЬНОМ МЕСТЕ
+═══════════════════════════════════════════════════════════
+
+ПРОБЛЕМА:
+  Вы добавили endpoints в файл МОДЕЛИ (dentist.py)
+  Они должны быть в файле РОУТЕРА (dentists.py)
+
+═══════════════════════════════════════════════════════════
+
+ИСПРАВЛЕНИЕ:
+
+ШАГ 1: Очистить файл модели
+  Файл: Backend/app/models/dentist.py
+  
+  УДАЛИТЬ:
+    - Строку: from ..routers.auth import router
+    - Все функции с @router.get
+    - Все функции с @router.put
+  
+  ОСТАВИТЬ ТОЛЬКО:
+    - import строки (sqlalchemy, enum, base)
+    - class VerificationStatus
+    - class DentistProfile
+
+ШАГ 2: Добавить в правильное место
+  Файл: Backend/app/routers/dentists.py
+  
+  ДОБАВИТЬ В КОНЕЦ:
+    - Код из файла ИСПРАВЛЕННЫЙ_КОД.py
+    - После функции update_dentist_profile()
+
+ШАГ 3: Сохранить и задеплоить
+  cd "D:\OdontoHUB\WebApp\Backend-new fix\Backend"
+  git add .
+  git commit -m "Fix: Move endpoints to router"
+  git push origin master
+
+═══════════════════════════════════════════════════════════
+
+СТРУКТУРА:
+
+  Backend/app/models/dentist.py
+    ✓ class VerificationStatus
+    ✓ class DentistProfile
+    ✗ НЕТ @router функций!
+
+  Backend/app/routers/dentists.py
+    ✓ @router.get("/me")
+    ✓ @router.get("/me/stats")
+    ✓ @router.put("/me")
+    ✓ @router.get("/")           ← НОВЫЙ
+    ✓ @router.get("/{id}")       ← НОВЫЙ
+    ✓ @router.put("/{id}/...")   ← НОВЫЙ
+
+═══════════════════════════════════════════════════════════
+
+ФАЙЛЫ ДЛЯ ПОМОЩИ:
+
+  ✓ ИСПРАВЛЕННЫЙ_КОД.py - Правильный код
+  ✓ ПРАВИЛЬНАЯ_УСТАНОВКА.md - Подробная инструкция
+
+═══════════════════════════════════════════════════════════

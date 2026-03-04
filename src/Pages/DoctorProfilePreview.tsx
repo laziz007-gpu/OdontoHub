@@ -33,8 +33,14 @@ const DoctorProfilePreview = () => {
         const end = new Date(start.getTime() + 60 * 60 * 1000);
 
         try {
+            if (!patient?.id) {
+                console.error("Patient ID not available");
+                return;
+            }
+            
             await createAppointment.mutateAsync({
                 dentist_id: doctorData.id,
+                patient_id: patient.id,
                 start_time: start.toISOString(),
                 end_time: end.toISOString()
             });

@@ -1,0 +1,85 @@
+═══════════════════════════════════════════════════════════
+  АДМИН ПАНЕЛЬ - УПРАВЛЕНИЕ ВРАЧАМИ
+═══════════════════════════════════════════════════════════
+
+НОВЫЕ ENDPOINTS:
+
+1. GET /dentists
+   - Получить список всех врачей
+   - Параметры: skip, limit (пагинация)
+   - Возвращает: массив врачей + статистику
+
+2. GET /dentists/{id}
+   - Получить конкретного врача
+   - Параметры: id врача
+   - Возвращает: полную информацию о враче
+
+3. PUT /dentists/{id}/verification
+   - Изменить статус верификации
+   - Body: {"verification_status": "approved|rejected|pending"}
+   - Возвращает: обновленный статус
+
+═══════════════════════════════════════════════════════════
+
+БЫСТРАЯ УСТАНОВКА:
+
+Backend:
+  1. Открыть: Backend/app/routers/dentists.py
+  2. Добавить код из: admin_dentists_endpoint.py
+  3. git add . && git commit -m "Add admin endpoints"
+  4. git push origin master
+
+Frontend:
+  1. Добавить интерфейсы в: src/interfaces/index.ts
+  2. Создать файл: src/api/admin.ts
+  3. Создать компонент: src/Pages/AdminDentistsPanel.tsx
+  4. Добавить роут в: src/Routes/index.tsx
+
+═══════════════════════════════════════════════════════════
+
+ПРИМЕРЫ ИСПОЛЬЗОВАНИЯ:
+
+JavaScript/TypeScript:
+  import { getAllDentists } from '../api/admin';
+  
+  const data = await getAllDentists(0, 20);
+  console.log(data.dentists); // массив врачей
+  console.log(data.total); // всего врачей
+
+cURL:
+  curl https://odontohub.onrender.com/dentists
+  curl https://odontohub.onrender.com/dentists/1
+  curl -X PUT https://odontohub.onrender.com/dentists/1/verification \
+    -H "Content-Type: application/json" \
+    -d '{"verification_status": "approved"}'
+
+═══════════════════════════════════════════════════════════
+
+ДАННЫЕ О ВРАЧЕ:
+
+Каждый врач содержит:
+  ✓ Личные данные (ФИО, телефон, email)
+  ✓ Профессиональные данные (специализация, опыт, клиника)
+  ✓ Документы (ПИНФЛ, номер диплома)
+  ✓ Статус верификации (pending/approved/rejected)
+  ✓ Контакты (telegram, instagram, whatsapp)
+  ✓ Статистику (всего приемов, завершено, ожидает)
+
+═══════════════════════════════════════════════════════════
+
+ФАЙЛЫ:
+
+  ✓ admin_dentists_endpoint.py - Backend код
+  ✓ admin_dentists_frontend.ts - Frontend код
+  ✓ ADMIN_PANEL_SETUP_RU.md - Подробная инструкция
+
+═══════════════════════════════════════════════════════════
+
+ВАЖНО:
+
+⚠️ Endpoints НЕ защищены авторизацией!
+⚠️ Добавьте проверку роли Admin перед деплоем!
+
+См. раздел "Безопасность" в ADMIN_PANEL_SETUP_RU.md
+
+═══════════════════════════════════════════════════════════

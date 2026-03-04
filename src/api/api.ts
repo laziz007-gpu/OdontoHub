@@ -12,10 +12,10 @@ api.interceptors.request.use(
     if (accessToken && accessToken !== null) {
       config.headers['Authorization'] = `Bearer ${accessToken}`;
     }
-
+    
     // Bypass localtunnel warning page
     config.headers['Bypass-Tunnel-Reminder'] = 'true';
-
+    
     return config;
   },
 
@@ -27,18 +27,25 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response && error.response.status === 401) {
+      const accessToken = localStorage.getItem('access_token');
+      const isLocalMode = accessToken?.startsWith('local_token_');
       const isLoginPage = window.location.pathname === '/login';
       const isRegisterPage = window.location.pathname.includes('/register');
-
+      
+      // If local mode, don't redirect - just reject the error
+      if (isLocalMode) {
+        return Promise.reject(error);
+      }
+      
       // Если это страница логина или регистрации, просто возвращаем ошибку
       if (isLoginPage || isRegisterPage) {
         return Promise.reject(error);
       }
-
+      
       // Для остальных страниц - сессия истекла
       localStorage.removeItem('access_token');
       window.location.href = '/login';
-      return Promise.reject(new Error(api.defaults.headers.common['Accept-Language'] === 'ru' ? 'Сессия истекла, авторизуйтесь снова' : 'Session expired, please log in again'));
+      return Promise.reject(new Error('Сессия истекла, авторизуйтесь снова'));
     }
     return Promise.reject(error);
   }

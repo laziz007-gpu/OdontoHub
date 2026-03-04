@@ -4,6 +4,7 @@ import Logo from '../assets/img/icons/NotifLogo.svg';
 import { getNotifications, markAsRead } from '../api/notifications';
 import type { Notification } from '../types/notification';
 
+
 const Notifications = () => {
     const navigate = useNavigate();
     const [notifications, setNotifications] = useState<Notification[]>([]);

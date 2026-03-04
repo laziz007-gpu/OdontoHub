@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import DentistImg from "../assets/img/photos/Dentist.png";

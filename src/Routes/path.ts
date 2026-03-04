@@ -1,6 +1,5 @@
 export const paths = {
     welcome: '/',          // 👈 MUHIM
-    role: '/role',
     login: '/login',
     registrDoc: "/register_doc",
     registerPat: "/register_pat",

@@ -3,7 +3,6 @@ import { paths } from "./path";
 import Welcome from "../Pages/Welcome"
 import PublickRoute from "../HOC/PublickRoute";
 import PrivateRoute from "../HOC/PrivateRoute";
-import Role from "../Pages/Role";
 import Login from "../Pages/Login";
 import Register1 from "../Pages/Register1";
 
@@ -30,7 +29,6 @@ import PatientHistory from "../Pages/PatientHistory";
 import PatientDetailPage from "../Pages/PatientDetailPage";
 import Doctors from "../Pages/Doctors";
 import Specialties from "../Pages/Specialties";
-import Notifications from "../Pages/Notifications";
 import Booking from "../Pages/Booking";
 import CheckupBookingPreview from "../Pages/CheckupBookingPreview";
 import DoctorProfilePreview from "../Pages/DoctorProfilePreview";
@@ -58,17 +56,6 @@ export const router = createBrowserRouter([
             {
                 path: paths.registrDoc,
                 element: <Register1 />
-            },
-        ]
-    },
-
-    // ─── Protected: Role dispatcher ───
-    {
-        element: <PrivateRoute />,
-        children: [
-            {
-                path: paths.role,
-                element: <Role />
             },
         ]
     },
