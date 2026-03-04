@@ -6,6 +6,7 @@ from app.core.database import engine, Base, get_db
 from app.routers import auth, patients, dentists, services, appointments
 from app.routers import prescriptions, allergies, payments, photos
 import traceback
+import os
 
 # Temporarily disabled - uncomment to enable notifications:
 # from app.routers import notifications
@@ -89,6 +90,41 @@ def on_startup():
                     f"EXCEPTION WHEN duplicate_object THEN NULL; "
                     f"END $$;"
                 ))
+
+    # Migrate dentist profile fields if missing (before creating tables)
+    try:
+        from sqlalchemy import text, inspect
+        inspector = inspect(engine)
+        
+        # Check if dentist_profiles table exists first
+        if 'dentist_profiles' in inspector.get_table_names():
+            existing_columns = [col['name'] for col in inspector.get_columns('dentist_profiles')]
+            
+            fields_to_add = []
+            if 'age' not in existing_columns:
+                fields_to_add.append(('age', 'INTEGER'))
+            if 'experience_years' not in existing_columns:
+                fields_to_add.append(('experience_years', 'INTEGER'))
+            if 'works_photos' not in existing_columns:
+                fields_to_add.append(('works_photos', 'TEXT'))
+            if 'created_at' not in existing_columns:
+                fields_to_add.append(('created_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'))
+            if 'updated_at' not in existing_columns:
+                fields_to_add.append(('updated_at', 'TIMESTAMP'))
+            
+            if fields_to_add:
+                print(f"Adding missing dentist profile fields: {[f[0] for f in fields_to_add]}")
+                with engine.begin() as conn:
+                    for field_name, field_type in fields_to_add:
+                        conn.execute(text(
+                            f"ALTER TABLE dentist_profiles ADD COLUMN {field_name} {field_type}"
+                        ))
+                print("✓ Dentist profile fields migration completed")
+            else:
+                print("✓ All dentist profile fields already exist")
+    except Exception as e:
+        print(f"Warning: Could not migrate dentist fields: {e}")
+        # Don't fail startup if migration fails
 
     # Create all tables (checkfirst=True skips existing tables)
     Base.metadata.create_all(bind=engine, checkfirst=True)

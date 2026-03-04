@@ -16,7 +16,7 @@ def dentist_me(
         # Auto-create missing profile
         profile = DentistProfile(
             user_id=user.id, 
-            full_name=user.full_name or "Dr. " + (user.email or user.phone)
+            full_name="Dr. " + (user.email or user.phone)
         )
         db.add(profile)
         db.commit()
