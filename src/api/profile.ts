@@ -67,14 +67,15 @@ export const useAllPatients = () => {
 }
 
 export const useAllDentists = () => {
-    const accessToken = localStorage.getItem('access_token');
-    const isLocalMode = accessToken?.startsWith('local_token_');
-    
     return useQuery({
         queryKey: ['dentists'],
         queryFn: async () => {
-            // Local mode - return mock data
-            if (isLocalMode) {
+            try {
+                const response = await api.get<DentistProfile[]>('/dentists/');
+                return response.data;
+            } catch (error) {
+                console.error('Error fetching dentists from API, using fallback data:', error);
+                // Fallback data if API fails
                 return [
                     {
                         id: 1,
@@ -89,8 +90,8 @@ export const useAllDentists = () => {
                         clinic: "Стоматология №1",
                         schedule: "Пн-Пт: 9:00-18:00",
                         work_hours: "09:00-18:00",
-                        telegram: "@dentist1",
-                        instagram: "@dentist1",
+                        telegram: "@mahmud_dentist",
+                        instagram: "@mahmud_dentist",
                         whatsapp: "+998901234567"
                     },
                     {
@@ -106,8 +107,8 @@ export const useAllDentists = () => {
                         clinic: "Стоматология №2",
                         schedule: "Пн-Сб: 8:00-17:00",
                         work_hours: "08:00-17:00",
-                        telegram: "@dentist2",
-                        instagram: "@dentist2",
+                        telegram: "@aziza_dentist",
+                        instagram: "@aziza_dentist",
                         whatsapp: "+998901234568"
                     },
                     {
@@ -123,20 +124,11 @@ export const useAllDentists = () => {
                         clinic: "Стоматология №3",
                         schedule: "Вт-Сб: 10:00-19:00",
                         work_hours: "10:00-19:00",
-                        telegram: "@dentist3",
-                        instagram: "@dentist3",
+                        telegram: "@sherzod_dentist",
+                        instagram: "@sherzod_dentist",
                         whatsapp: "+998901234569"
                     }
                 ] as DentistProfile[];
-            }
-            
-            // API mode
-            try {
-                const response = await api.get<DentistProfile[]>('/dentists/');
-                return response.data;
-            } catch (error) {
-                console.error('Error fetching dentists:', error);
-                throw error;
             }
         },
         retry: 1,
