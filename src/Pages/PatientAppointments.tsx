@@ -42,7 +42,7 @@ const PatientAppointments = () => {
                 statusText: app.status === 'completed' ? t("patient.appointments.success_status") :
                     app.status === 'cancelled' ? t("patient.appointments.cancelled_status") :
                         app.status === 'moved' ? t("patient.appointments.rescheduled_status") : t("patient.appointments.success_status"),
-                comment: app.cancel_reason,
+                comment: app.notes || undefined,
                 commentTitle: t("patient.appointments.comment_label")
             };
         });

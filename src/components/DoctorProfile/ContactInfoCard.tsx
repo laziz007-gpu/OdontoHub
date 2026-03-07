@@ -22,6 +22,8 @@ interface ContactData {
     address: string;
     education: string;
     clinic: string;
+    age: string;
+    experience_years: string;
     specialization: string;
     telegram: string;
     instagram: string;

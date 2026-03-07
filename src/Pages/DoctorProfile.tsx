@@ -19,6 +19,8 @@ interface ProfileData {
   address: string;
   education: string;
   clinic: string;
+  age: string;
+  experience_years: string;
   specialization: string;
   telegram: string;
   instagram: string;
@@ -29,7 +31,6 @@ interface ProfileData {
   workEnd: string;
   endMinute: string;
   gender: string;
-  age: string;
   name: string;
 }
 
@@ -39,18 +40,19 @@ const DoctorProfile: FC = () => {
   const { data: dentistData } = useDentistProfile();
 
   const [profileData, setProfileData] = useState<ProfileData>({
-    phone: user?.phone || '+998 (93) 123 45 67',
-    email: user?.email || 'example@gmail.com',
-    address: 'ул. Амира Темура, 11кв, 20дом',
-    education: 'ТашПМИ (Факультет)',
-    clinic: 'OdontoHub',
+    phone: user?.phone || '',
+    email: user?.email || '',
+    address: '',
+    education: '',
+    clinic: '',
+    age: '',
+    experience_years: '',
     specialization: 'surgeon',
     gender: 'Мужчина',
-    age: '25 лет',
-    name: user?.full_name || 'Пулатов Махмуд',
-    telegram: '@stom',
-    instagram: 'stomatolog.uz',
-    whatsapp: user?.phone || '+998 90 123 45 67',
+    name: user?.full_name || '',
+    telegram: '',
+    instagram: '',
+    whatsapp: user?.phone || '',
     schedule: 'every_day',
     workStart: '08',
     startMinute: '00',
@@ -61,6 +63,8 @@ const DoctorProfile: FC = () => {
   // Обновляем данные из API
   useEffect(() => {
     if (dentistData) {
+      console.log('Dentist data from API:', dentistData); // Debug log
+      
       const workHours = dentistData.work_hours?.split('-') || ['08:00', '16:00'];
       const [startHour, startMinute] = workHours[0]?.split(':') || ['08', '00'];
       const [endHour, endMinute] = workHours[1]?.split(':') || ['16', '00'];
@@ -70,11 +74,14 @@ const DoctorProfile: FC = () => {
         name: dentistData.full_name || prev.name,
         phone: dentistData.phone || prev.phone,
         specialization: dentistData.specialization || prev.specialization,
-        address: dentistData.address || prev.address,
-        clinic: dentistData.clinic || prev.clinic,
+        address: dentistData.address || '',
+        clinic: dentistData.clinic || '',
+        age: dentistData.age ? `${dentistData.age}` : '',
+        experience_years: dentistData.experience_years ? `${dentistData.experience_years}` : '',
+        education: '', // Оставляем пустым, так как теперь используем отдельные поля
         schedule: dentistData.schedule || prev.schedule,
-        telegram: dentistData.telegram || prev.telegram,
-        instagram: dentistData.instagram || prev.instagram,
+        telegram: dentistData.telegram || '',
+        instagram: dentistData.instagram || '',
         whatsapp: dentistData.whatsapp || prev.whatsapp,
         workStart: startHour,
         startMinute: startMinute,
@@ -139,6 +146,7 @@ const DoctorProfile: FC = () => {
                 specialization={t(`common.specializations.${profileData.specialization}`)}
                 gender={profileData.gender}
                 age={profileData.age}
+                experience_years={profileData.experience_years}
                 avatar={avatarUrl}
                 onAvatarClick={triggerAvatarUpload}
               />

@@ -8,6 +8,7 @@ import AllergySection from '../components/Patients/AllergySection';
 import AppointmentsSection from '../components/Patients/AppointmentsSection';
 import PhotosSection from '../components/Patients/PhotosSection';
 import PaymentsSection from '../components/Patients/PaymentsSection';
+import { t } from 'i18next';
 
 type TabType = 'info' | 'appointments' | 'prescriptions' | 'allergies' | 'photos' | 'payments';
 

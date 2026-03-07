@@ -105,7 +105,7 @@ const Welcome = () => {
             {/* Кнопка "Далее" - появляется только после выбора языка */}
             {selectedLanguage && (
               <Link
-                to={paths.role}
+                to={paths.login}
                 className="block text-center w-full py-4 px-6 rounded-2xl text-xl font-bold transition-all duration-300 bg-white text-blue-600 shadow-xl hover:scale-[1.02] active:scale-95 animate-in fade-in slide-in-from-bottom-2"
               >
                 {t('next')}

@@ -24,6 +24,8 @@ export interface DentistProfile {
     phone?: string;
     address?: string;
     clinic?: string;
+    age?: number;
+    experience_years?: number;
     schedule?: string;
     work_hours?: string;
     telegram?: string;
@@ -125,6 +127,8 @@ export const useUpdateDentistProfile = () => {
             phone: string;
             address: string;
             clinic: string;
+            age: number;
+            experience_years: number;
             schedule: string;
             work_hours: string;
             telegram: string;

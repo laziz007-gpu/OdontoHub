@@ -1,13 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import Logo from '../assets/img/icons/NotifLogo.svg';
 import { getNotifications, markAsRead } from '../api/notifications';
-import { Notification } from '../types/notification';
+import type { Notification } from '../types/notification';
+
 
 const Notifications = () => {
     const navigate = useNavigate();
-    const { t } = useTranslation();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);

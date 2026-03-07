@@ -1,0 +1,56 @@
+═══════════════════════════════════════════════════════════
+  БЫСТРОЕ ИСПРАВЛЕНИЕ 503 SERVICE UNAVAILABLE
+═══════════════════════════════════════════════════════════
+
+ПРОБЛЕМА:
+  Сервер на Render не запускается (503 ошибка)
+  Падает из-за отсутствующих колонок в БД
+
+РЕШЕНИЕ:
+  Добавить миграцию в startup функцию
+
+═══════════════════════════════════════════════════════════
+
+ШАГ 1: Открыть файл
+  D:\OdontoHUB\WebApp\Backend-new fix\Backend\app\main.py
+
+ШАГ 2: Найти функцию on_startup() (строка ~50)
+  @app.on_event("startup")
+  def on_startup():
+
+ШАГ 3: Найти строку в конце функции
+  Base.metadata.create_all(bind=engine, checkfirst=True)
+
+ШАГ 4: ПЕРЕД этой строкой добавить код из файла
+  startup_migration_code.py
+
+ШАГ 5: Сохранить файл
+
+ШАГ 6: Выполнить команды
+  cd "D:\OdontoHUB\WebApp\Backend-new fix\Backend"
+  git add app/main.py
+  git commit -m "Add dentist fields migration to startup"
+  git push origin master
+
+ШАГ 7: Подождать 3-5 минут (деплой на Render)
+
+ШАГ 8: Проверить
+  https://odontohub.onrender.com/health
+
+═══════════════════════════════════════════════════════════
+
+АЛЬТЕРНАТИВА (если не работает):
+  1. Зайти в Render Dashboard
+  2. Найти базу данных odontohub-db
+  3. Открыть Shell/Connect
+  4. Выполнить SQL:
+     ALTER TABLE dentist_profiles ADD COLUMN IF NOT EXISTS age INTEGER;
+     ALTER TABLE dentist_profiles ADD COLUMN IF NOT EXISTS experience_years INTEGER;
+     ALTER TABLE dentist_profiles ADD COLUMN IF NOT EXISTS works_photos TEXT;
+  5. Перезапустить backend сервис
+
+═══════════════════════════════════════════════════════════
+
+ГОТОВО! ✅
+
+═══════════════════════════════════════════════════════════

@@ -1,5 +1,3 @@
-import Doshboard from "../Layouts/Doshboard";
-import MobileHeaderAndDrawer from "../Layouts/MobileHeaderAndDrawer";
 import AnalyticsHeader from '../components/Analytics/AnalyticsHeader';
 import StatCard from '../components/Analytics/StatCard';
 import AppointmentsChart from '../components/Analytics/AppointmentsChart';

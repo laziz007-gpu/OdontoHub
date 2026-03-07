@@ -23,6 +23,8 @@ export default function EditDoctorProfile() {
     phone: '',
     address: '',
     clinic: '',
+    age: '',
+    experience_years: '',
     schedule: 'every_day',
     workStartHour: '08',
     workStartMinute: '00',
@@ -45,6 +47,8 @@ export default function EditDoctorProfile() {
         phone: dentist.phone?.startsWith('+998') ? dentist.phone : '+998 ' + (dentist.phone || ''),
         address: dentist.address || '',
         clinic: dentist.clinic || '',
+        age: dentist.age?.toString() || '',
+        experience_years: dentist.experience_years?.toString() || '',
         schedule: dentist.schedule || 'every_day',
         workStartHour: startHour,
         workStartMinute: startMinute,
@@ -59,13 +63,35 @@ export default function EditDoctorProfile() {
 
   const [avatar, setAvatar] = useState<string>(DentistImg);
 
+  // Calculate profile completion percentage
+  const calculateCompletion = () => {
+    const fields = [
+      formData.specialization,
+      formData.phone,
+      formData.address,
+      formData.clinic,
+      formData.age,
+      formData.experience_years,
+      formData.telegram || formData.instagram || formData.whatsapp, // At least one social
+    ];
+    
+    const filledFields = fields.filter(field => field && field !== '').length;
+    return Math.round((filledFields / fields.length) * 100);
+  };
+
+  const completionPercentage = calculateCompletion();
+
   const specializations = [
+    { key: 'general', label: t('common.specializations.general') },
     { key: 'surgeon', label: t('common.specializations.surgeon') },
     { key: 'therapist', label: t('common.specializations.therapist') },
     { key: 'orthodontist', label: t('common.specializations.orthodontist') },
     { key: 'orthopedist', label: t('common.specializations.orthopedist') },
     { key: 'periodontist', label: t('common.specializations.periodontist') },
-    { key: 'implantologist', label: t('common.specializations.implantologist') }
+    { key: 'implantologist', label: t('common.specializations.implantologist') },
+    { key: 'hygienist', label: t('common.specializations.hygienist') },
+    { key: 'aesthetician', label: t('common.specializations.aesthetician') },
+    { key: 'pediatric', label: t('common.specializations.pediatric') }
   ];
 
   const scheduleOptions = [
@@ -101,6 +127,8 @@ export default function EditDoctorProfile() {
         phone: formData.phone,
         address: formData.address,
         clinic: formData.clinic,
+        age: formData.age ? parseInt(formData.age) : undefined,
+        experience_years: formData.experience_years ? parseInt(formData.experience_years) : undefined,
         schedule: formData.schedule,
         work_hours: `${formData.workStartHour}:${formData.workStartMinute}-${formData.workEndHour}:${formData.workEndMinute}`,
         telegram: formData.telegram,
@@ -137,6 +165,29 @@ export default function EditDoctorProfile() {
             <ArrowLeft className="w-6 h-6" />
           </button>
           <h1 className="text-3xl font-bold">{t('doctor_profile.edit')}</h1>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="mb-8 bg-white rounded-2xl p-6 shadow-sm">
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-lg font-semibold text-gray-700">Заполнение профиля</span>
+            <span className="text-2xl font-bold text-blue-600">{completionPercentage}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${completionPercentage}%` }}
+            >
+              {completionPercentage > 0 && (
+                <div className="h-full w-full bg-white/20 animate-pulse"></div>
+              )}
+            </div>
+          </div>
+          <p className="text-sm text-gray-500 mt-2">
+            {completionPercentage === 100 
+              ? '✓ Профиль заполнен полностью!' 
+              : `Заполните все поля для завершения профиля`}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -196,12 +247,41 @@ export default function EditDoctorProfile() {
 
             {/* Clinic */}
             <div>
+              <label className="block text-sm text-gray-600 mb-2">{t('doctor_profile.clinic')}</label>
               <input
                 type="text"
                 value={formData.clinic}
                 onChange={(e) => setFormData({ ...formData, clinic: e.target.value })}
                 className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold focus:outline-none focus:border-blue-400"
                 placeholder={t('doctor_profile.clinic')}
+              />
+            </div>
+
+            {/* Age */}
+            <div>
+              <label className="block text-sm text-gray-600 mb-2">Возраст</label>
+              <input
+                type="number"
+                value={formData.age}
+                onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold focus:outline-none focus:border-blue-400"
+                placeholder="Например: 35"
+                min="18"
+                max="100"
+              />
+            </div>
+
+            {/* Experience Years */}
+            <div>
+              <label className="block text-sm text-gray-600 mb-2">Стаж работы (лет)</label>
+              <input
+                type="number"
+                value={formData.experience_years}
+                onChange={(e) => setFormData({ ...formData, experience_years: e.target.value })}
+                className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold focus:outline-none focus:border-blue-400"
+                placeholder="Например: 10"
+                min="0"
+                max="80"
               />
             </div>
 

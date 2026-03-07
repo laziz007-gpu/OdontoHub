@@ -27,4 +27,11 @@ export interface LoginData {
 export interface TokenResponse {
     access_token: string;
     token_type: string;
+    user?: {
+        id: number;
+        phone: string;
+        email?: string;
+        full_name: string;
+        role: UserRole;
+    };
 }
