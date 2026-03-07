@@ -9,42 +9,30 @@ import type { Doctor } from '../../types/patient';
 import DoctorImg from "../../assets/img/photos/Dentist.png";
 
 const DoctorsList: React.FC = () => {
-    const accessToken = localStorage.getItem('access_token');
-    const isLocalMode = accessToken?.startsWith('local_token_');
     const { t } = useTranslation();
     
-    // Only fetch from API if not in local mode
-    const { data: dentists, isLoading } = useAllDentists();
+    // Fetch dentists from API
+    const { data: dentists, isLoading, isError } = useAllDentists();
     const [searchTerm, setSearchTerm] = useState("");
     const [location, setLocation] = useState("tashkent");
     const [district, setDistrict] = useState("yunusabad");
     const [rating, setRating] = useState("");
 
-    // Local mode: use hardcoded doctors
-    const localDoctors: Doctor[] = [
-        {
-            name: "Махмуд Пулатов",
-            direction: "Терапевт",
-            experience: "5 лет",
-            rating: "4.8",
-            image: DoctorImg,
-            specialty: "Терапевт"
-        }
-    ];
-
-    // Map backend dentists to frontend Doctor interface or use local doctors
-    const doctors: Doctor[] = isLocalMode 
-        ? localDoctors 
-        : (dentists?.map(d => ({
-            name: d.full_name,
-            direction: d.specialization || "Стоматолог",
-            experience: "3 года",
-            rating: "4.7",
-            image: DoctorImg,
-            specialty: d.specialization || "Общая стоматология"
-        })) || []);
-
     const navigate = useNavigate();
+
+    // Convert backend dentist data to Doctor type
+    const doctors: Doctor[] = dentists?.map(d => ({
+        name: d.full_name,
+        direction: d.specialization || "Стоматолог",
+        experience: "5 лет", // Can be calculated from backend if needed
+        rating: "4.8", // Can come from backend reviews if available
+        image: DoctorImg, // Can use d.photo_url if backend provides it
+        specialty: d.specialization || "Общая стоматология",
+        address: d.address || "Ташкент",
+        phone: d.phone,
+        clinic: d.clinic,
+        work_hours: d.work_hours
+    })) || [];
 
     const handleBook = (doctor: Doctor) => {
         // Check if local mode
@@ -92,7 +80,7 @@ const DoctorsList: React.FC = () => {
                 onRatingChange={setRating}
             />
 
-            {isLoading && !isLocalMode ? (
+            {isLoading ? (
                 <div className="flex-1 flex items-center justify-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
                 </div>

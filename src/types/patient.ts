@@ -18,6 +18,9 @@ export interface Doctor {
     image: string;
     specialty?: string;
     phone?: string;
+    address?: string;
+    clinic?: string;
+    work_hours?: string;
 }
 
 export type AppointmentStatus = 'upcoming' | 'past' | 'success' | 'cancelled' | 'rescheduled';

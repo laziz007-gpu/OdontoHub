@@ -8,8 +8,14 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem('access_token');
+    
+    // Don't send token for public endpoints
+    const publicEndpoints = ['/dentists/', '/dentists'];
+    const isPublicEndpoint = publicEndpoints.some(endpoint => 
+      config.url?.includes(endpoint)
+    );
 
-    if (accessToken && accessToken !== null) {
+    if (accessToken && accessToken !== null && !isPublicEndpoint) {
       config.headers['Authorization'] = `Bearer ${accessToken}`;
     }
     

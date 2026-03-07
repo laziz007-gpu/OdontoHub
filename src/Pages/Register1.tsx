@@ -20,80 +20,135 @@ export default function Register1() {
     formState: { errors },
   } = useForm<Omit<RegisterData, 'role'>>()
 
-  const onSubmit = (data: Omit<RegisterData, 'role'>) => {
+  const onSubmit = async (data: Omit<RegisterData, 'role'>) => {
     if (!selectedRole) return
 
     setIsLoading(true)
 
-    // Local registration - save to localStorage
-    const userData = {
-      full_name: data.full_name,
-      phone: data.phone.replace(/\s+/g, ''),
-      email: data.email || '',
-      role: selectedRole
-    }
+    try {
+      // Check if we should use API or local mode
+      const useAPI = import.meta.env.VITE_USE_API === 'true';
 
-    // Save user data to localStorage
-    localStorage.setItem('user_data', JSON.stringify(userData))
-    localStorage.setItem('access_token', 'local_token_' + Date.now())
+      if (useAPI) {
+        // API mode - register via backend
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            full_name: data.full_name,
+            phone: data.phone.replace(/\s+/g, ''),
+            email: data.email || '',
+            role: selectedRole
+          })
+        });
 
-    // Save to Redux store
-    dispatch(setUser(userData))
-
-    // Add demo appointments for patient
-    if (selectedRole === 'patient') {
-      const today = new Date();
-      const demoAppointments = [
-        // Past appointments
-        {
-          id: Date.now() - 3,
-          doctor_name: "Махмуд Пулатов",
-          service: "Осмотр",
-          date: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),
-          time: "10:00",
-          status: "past",
-          comment: "Прошёл успешно",
-          created_at: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-          id: Date.now() - 2,
-          doctor_name: "Махмуд Пулатов",
-          service: "Пломбирование",
-          date: new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),
-          time: "14:30",
-          status: "past",
-          comment: "Завершено",
-          created_at: new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-          id: Date.now() - 1,
-          doctor_name: "Махмуд Пулатов",
-          service: "Консультация",
-          date: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),
-          time: "11:00",
-          status: "past",
-          comment: "",
-          created_at: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString()
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.detail || 'Registration failed');
         }
-      ];
-      localStorage.setItem('appointments', JSON.stringify(demoAppointments));
-      
-      // Mark as first time user
-      localStorage.setItem('is_first_time', 'true');
-    }
 
-    // Simulate a small delay for better UX
-    setTimeout(() => {
-      setIsLoading(false)
-      
-      // Navigate based on role
-      if (selectedRole === 'patient') {
-        // First time users go to doctors page to select a doctor
-        navigate(paths.doctors, { replace: true })
+        const result = await response.json();
+        
+        // Save token and user data
+        localStorage.setItem('access_token', result.access_token);
+        
+        // Fetch user profile
+        const meResponse = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
+          headers: {
+            'Authorization': `Bearer ${result.access_token}`
+          }
+        });
+        
+        if (meResponse.ok) {
+          const userData = await meResponse.json();
+          localStorage.setItem('user_data', JSON.stringify(userData));
+          dispatch(setUser(userData));
+        }
+
+        setIsLoading(false);
+        
+        // Navigate based on role
+        if (selectedRole === 'patient') {
+          localStorage.setItem('is_first_time', 'true');
+          navigate(paths.doctors, { replace: true });
+        } else {
+          navigate(paths.menu, { replace: true });
+        }
+        
       } else {
-        navigate(paths.menu, { replace: true })
+        // Local mode - save to localStorage
+        const userData = {
+          full_name: data.full_name,
+          phone: data.phone.replace(/\s+/g, ''),
+          email: data.email || '',
+          role: selectedRole
+        }
+
+        // Save user data to localStorage
+        localStorage.setItem('user_data', JSON.stringify(userData))
+        localStorage.setItem('access_token', 'local_token_' + Date.now())
+
+        // Save to Redux store
+        dispatch(setUser(userData))
+
+        // Add demo appointments for patient
+        if (selectedRole === 'patient') {
+          const today = new Date();
+          const demoAppointments = [
+            // Past appointments
+            {
+              id: Date.now() - 3,
+              doctor_name: "Махмуд Пулатов",
+              service: "Осмотр",
+              date: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),
+              time: "10:00",
+              status: "past",
+              comment: "Прошёл успешно",
+              created_at: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
+            },
+            {
+              id: Date.now() - 2,
+              doctor_name: "Махмуд Пулатов",
+              service: "Пломбирование",
+              date: new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),
+              time: "14:30",
+              status: "past",
+              comment: "Завершено",
+              created_at: new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString()
+            },
+            {
+              id: Date.now() - 1,
+              doctor_name: "Махмуд Пулатов",
+              service: "Консультация",
+              date: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),
+              time: "11:00",
+              status: "past",
+              comment: "",
+              created_at: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString()
+            }
+          ];
+          localStorage.setItem('appointments', JSON.stringify(demoAppointments));
+          
+          // Mark as first time user
+          localStorage.setItem('is_first_time', 'true');
+        }
+
+        setIsLoading(false);
+        
+        // Navigate based on role
+        if (selectedRole === 'patient') {
+          navigate(paths.doctors, { replace: true });
+        } else {
+          navigate(paths.menu, { replace: true });
+        }
       }
-    }, 500)
+    } catch (error) {
+      setIsLoading(false);
+      console.error('Registration error:', error);
+      alert(error instanceof Error ? error.message : 'Ошибка регистрации');
+    }
   }
 
   return (

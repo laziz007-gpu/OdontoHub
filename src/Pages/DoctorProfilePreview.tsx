@@ -1,12 +1,30 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import DentistImg from "../assets/img/photos/Dentist.png";
 
 const DoctorProfilePreview = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    
+    // Get doctor data from navigation state
+    const doctorFromState = location.state?.doctor;
 
-    const doctorData = {
-        id: 1, // Placeholder dentist_id
+    const doctorData = doctorFromState ? {
+        id: 1,
+        name: doctorFromState.name,
+        phone: doctorFromState.phone || "+998 (90) 123 45 67",
+        gender: "Мужчина",
+        birthDate: "20.09.2000",
+        age: "26 лет",
+        email: "example@gmail.com",
+        address: doctorFromState.address || "ул. Амира Темура, 11кв, 20дом",
+        education: "ТашПМИ(Факультет)",
+        clinic: doctorFromState.clinic || "Не указано",
+        specialty: doctorFromState.specialty || doctorFromState.direction,
+        experience: doctorFromState.experience || "5 лет",
+        image: doctorFromState.image || DentistImg
+    } : {
+        id: 1,
         name: "Махмуд Пулатов",
         phone: "+998 (90) 123 45 67",
         gender: "Мужчина",
@@ -15,7 +33,10 @@ const DoctorProfilePreview = () => {
         email: "example@gmail.com",
         address: "ул. Амира Темура, 11кв, 20дом",
         education: "ТашПМИ(Факультет)",
-        clinic: "Не указано"
+        clinic: "Не указано",
+        specialty: "Ортодонтия",
+        experience: "5 лет",
+        image: DentistImg
     };
 
     const handleBook = async () => {
@@ -51,7 +72,7 @@ const DoctorProfilePreview = () => {
                 <div className="flex-1 px-4 space-y-4">
                     <div className="flex flex-col items-center">
                         <div className="w-[180px] h-[180px] md:w-[220px] md:h-[220px] rounded-full overflow-hidden border-8 border-white shadow-xl mb-4">
-                            <img src={DentistImg} alt="Doctor" className="w-full h-full object-cover" />
+                            <img src={doctorData.image} alt="Doctor" className="w-full h-full object-cover" />
                         </div>
 
                         <div className="w-full bg-white rounded-[24px] p-5 shadow-sm">
