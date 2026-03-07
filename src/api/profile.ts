@@ -74,8 +74,7 @@ export const useAllDentists = () => {
                 const response = await api.get<DentistProfile[]>('/dentists/');
                 return response.data;
             } catch (error) {
-                console.error('Error fetching dentists from API, using fallback data:', error);
-                // Fallback data if API fails
+                // Return fallback data if API fails
                 return [
                     {
                         id: 1,
@@ -131,7 +130,7 @@ export const useAllDentists = () => {
                 ] as DentistProfile[];
             }
         },
-        retry: 1,
+        retry: false,
         staleTime: 5 * 60 * 1000,
     });
 }
