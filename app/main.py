@@ -294,21 +294,28 @@ def init_database():
 @app.get("/dentists/list")
 async def get_all_dentists(db: Session = Depends(get_db)):
     """
-    Get list of all dentists
-    Returns all dentist profiles from database
+    Get list of all dentists with user information
+    Returns all dentist profiles from database with email and phone from user table
     """
     from app.models.dentist import DentistProfile
+    from app.models.user import User
+    from sqlalchemy.orm import joinedload
     
     try:
-        dentists = db.query(DentistProfile).all()
+        # Query dentists with their user information
+        dentists = db.query(DentistProfile).options(joinedload(DentistProfile.user)).all()
 
         dentists_list = []
         for dentist in dentists:
+            # Get user info
+            user = dentist.user
+            
             dentist_dict = {
                 "id": dentist.id,
                 "user_id": dentist.user_id,
                 "full_name": dentist.full_name,
-                "phone": dentist.phone if hasattr(dentist, 'phone') else None,
+                "phone": user.phone if user else None,
+                "email": user.email if user else None,
                 "specialization": dentist.specialization,
                 "clinic": dentist.clinic,
                 "address": dentist.address,
@@ -322,7 +329,7 @@ async def get_all_dentists(db: Session = Depends(get_db)):
                 "works_photos": dentist.works_photos,
                 "pinfl": dentist.pinfl,
                 "diploma_number": dentist.diploma_number,
-                "verification_status": dentist.verification_status,
+                "verification_status": dentist.verification_status.value,
                 "created_at": dentist.created_at.isoformat() if hasattr(dentist, 'created_at') and dentist.created_at else None,
                 "updated_at": dentist.updated_at.isoformat() if hasattr(dentist, 'updated_at') and dentist.updated_at else None
             }
