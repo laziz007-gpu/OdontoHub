@@ -74,58 +74,41 @@ export const useAllDentists = () => {
                 const response = await api.get<DentistProfile[]>('/dentists/');
                 return response.data;
             } catch (error) {
-                // Return fallback data if API fails
+                // Return real dentists from Render database as fallback
                 return [
                     {
-                        id: 1,
-                        user_id: 1,
+                        id: 4,
+                        user_id: 5,
                         full_name: "Махмуд Пулатов",
                         pinfl: null,
                         diploma_number: null,
                         verification_status: "approved" as const,
-                        specialization: "Ортодонтия",
+                        specialization: "Терапевт",
                         phone: "+998901234567",
                         address: "Ташкент, Юнусабад",
                         clinic: "Стоматология №1",
                         schedule: "Пн-Пт: 9:00-18:00",
                         work_hours: "09:00-18:00",
                         telegram: "@mahmud_dentist",
-                        instagram: "@mahmud_dentist",
-                        whatsapp: "+998901234567"
+                        instagram: null,
+                        whatsapp: null
                     },
                     {
-                        id: 2,
-                        user_id: 2,
-                        full_name: "Азиза Каримова",
+                        id: 6,
+                        user_id: 11,
+                        full_name: "Aziz Saydazxonov",
                         pinfl: null,
                         diploma_number: null,
                         verification_status: "approved" as const,
-                        specialization: "Терапевтическая стоматология",
-                        phone: "+998901234568",
-                        address: "Ташкент, Чиланзар",
-                        clinic: "Стоматология №2",
-                        schedule: "Пн-Сб: 8:00-17:00",
-                        work_hours: "08:00-17:00",
-                        telegram: "@aziza_dentist",
-                        instagram: "@aziza_dentist",
-                        whatsapp: "+998901234568"
-                    },
-                    {
-                        id: 3,
-                        user_id: 3,
-                        full_name: "Шерзод Усманов",
-                        pinfl: null,
-                        diploma_number: null,
-                        verification_status: "approved" as const,
-                        specialization: "Хирургическая стоматология",
-                        phone: "+998901234569",
-                        address: "Ташкент, Мирзо-Улугбек",
-                        clinic: "Стоматология №3",
-                        schedule: "Вт-Сб: 10:00-19:00",
-                        work_hours: "10:00-19:00",
-                        telegram: "@sherzod_dentist",
-                        instagram: "@sherzod_dentist",
-                        whatsapp: "+998901234569"
+                        specialization: "Hygienist",
+                        phone: "+998903219459",
+                        address: "Ташкент",
+                        clinic: "Ideal Dental",
+                        schedule: "Пн-Пт: 9:00-17:00",
+                        work_hours: "09:00-17:00",
+                        telegram: null,
+                        instagram: null,
+                        whatsapp: "+998903219459"
                     }
                 ] as DentistProfile[];
             }
