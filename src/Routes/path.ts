@@ -30,5 +30,6 @@ export const paths = {
     myDentist: '/my-dentist',
     patientChatProfile: '/patient/chats/:id/profile',
     treatments: '/treatments',
-    doctorServices: '/doctor-services'
+    doctorServices: '/doctor-services',
+    doctorCases: '/doctor-cases'
 } as const;

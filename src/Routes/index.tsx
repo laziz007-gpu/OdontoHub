@@ -35,6 +35,7 @@ import Booking from "../Pages/Booking";
 import CheckupBookingPreview from "../Pages/CheckupBookingPreview";
 import DoctorProfilePreview from "../Pages/DoctorProfilePreview";
 import DoctorServicesPage from "../Pages/DoctorServicesPage";
+import DoctorCasesPage from "../Pages/DoctorCasesPage";
 import ChatProfilePage from "../Pages/ChatProfilePage";
 import TreatmentsListPage from "../Pages/TreatmentsListPage";
 
@@ -201,6 +202,10 @@ export const router = createBrowserRouter([
                     {
                         path: paths.doctorServices,
                         element: <DoctorServicesPage />
+                    },
+                    {
+                        path: paths.doctorCases,
+                        element: <DoctorCasesPage />
                     },
                     {
                         path: paths.treatments,
