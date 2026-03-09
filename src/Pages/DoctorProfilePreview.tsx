@@ -94,7 +94,10 @@ const DoctorProfilePreview = () => {
                         </div>
                     </div>
 
-                    <button className="w-full bg-[#4E70FF] text-white py-5 px-8 rounded-[24px] flex items-center justify-between group active:scale-[0.98] transition-all shadow-lg shadow-blue-500/20">
+                    <button 
+                        onClick={() => navigate('/doctor-services')}
+                        className="w-full bg-[#4E70FF] text-white py-5 px-8 rounded-[24px] flex items-center justify-between group active:scale-[0.98] transition-all shadow-lg shadow-blue-500/20"
+                    >
                         <span className="text-xl font-black text-black">Услуги</span>
                         <div className="p-1 border-2 border-white rounded-lg bg-black">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

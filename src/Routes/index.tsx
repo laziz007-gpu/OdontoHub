@@ -34,6 +34,7 @@ import Notifications from "../Pages/Notifications";
 import Booking from "../Pages/Booking";
 import CheckupBookingPreview from "../Pages/CheckupBookingPreview";
 import DoctorProfilePreview from "../Pages/DoctorProfilePreview";
+import DoctorServicesPage from "../Pages/DoctorServicesPage";
 import ChatProfilePage from "../Pages/ChatProfilePage";
 import TreatmentsListPage from "../Pages/TreatmentsListPage";
 
@@ -196,6 +197,10 @@ export const router = createBrowserRouter([
                     {
                         path: paths.myDentist,
                         element: <DoctorProfilePreview />
+                    },
+                    {
+                        path: paths.doctorServices,
+                        element: <DoctorServicesPage />
                     },
                     {
                         path: paths.treatments,

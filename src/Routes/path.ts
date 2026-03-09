@@ -29,5 +29,6 @@ export const paths = {
     checkupPreview: '/booking/checkup-preview',
     myDentist: '/my-dentist',
     patientChatProfile: '/patient/chats/:id/profile',
-    treatments: '/treatments'
+    treatments: '/treatments',
+    doctorServices: '/doctor-services'
 } as const;
