@@ -6,6 +6,9 @@ import BookingCalendar from '../components/Booking/BookingCalendar';
 import TimePicker from '../components/Booking/TimePicker';
 import CustomDropdown from '../components/Booking/CustomDropdown';
 import CommentInput from '../components/Booking/CommentInput';
+import { useCreateAppointment } from '../api/appointments';
+import { useAllDentists } from '../api/profile';
+import { useServices } from '../api/services';
 
 
 const Booking = () => {
@@ -19,81 +22,100 @@ const Booking = () => {
     const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
     const [selectedTime, setSelectedTime] = useState("");
     const [comment, setComment] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const doctors = [
-        { value: "d1", label: "Махмуд Пулатов" }
-    ];
+    const { data: dentists = [] } = useAllDentists();
+    const { data: servicesData = [] } = useServices();
+    const createAppointment = useCreateAppointment();
 
-    const services = [
-        { value: "s1", label: "Осмотр" },
-        { value: "s2", label: "Имплантация" },
-        { value: "s3", label: "Пломбирование" },
-        { value: "s4", label: "Удаление" },
-        { value: "s5", label: "Очистка" },
-    ];
+    const doctors = dentists.map(d => ({
+        value: d.id.toString(),
+        label: d.full_name
+    }));
+
+    const services = servicesData.map(s => ({
+        value: s.name,
+        label: `${s.name} - ${s.price.toLocaleString()} ${s.currency}`
+    }));
 
     React.useEffect(() => {
-        if (preSelectedDoctor) {
+        if (preSelectedDoctor && doctors.length > 0) {
+            // Find doctor by name
             const match = doctors.find(d => d.label === preSelectedDoctor.name);
-            if (match) setSelectedDoctor(match.value);
+            if (match) {
+                setSelectedDoctor(match.value);
+            }
         }
-    }, [preSelectedDoctor]);
+    }, [preSelectedDoctor, doctors]);
 
 
-    const handleBooking = () => {
+    const handleBooking = async () => {
         if (!selectedDoctor || !selectedService || !selectedDate || !selectedTime) {
             alert(t("patient.alerts.fill_required_fields"));
             return;
         }
 
-        // Check if local mode
-        const accessToken = localStorage.getItem('access_token');
-        const isLocalMode = accessToken?.startsWith('local_token_');
+        if (isSubmitting) return;
+        setIsSubmitting(true);
 
-        if (isLocalMode) {
-            // Get doctor name
-            const doctorName = doctors.find(d => d.value === selectedDoctor)?.label || "Махмуд Пулатов";
-            const serviceName = services.find(s => s.value === selectedService)?.label || "Консультация";
+        try {
+            // Check if local mode
+            const accessToken = localStorage.getItem('access_token');
+            const isLocalMode = accessToken?.startsWith('local_token_');
 
-            // Create new appointment
-            const newAppointment = {
-                id: Date.now(),
-                doctor_name: doctorName,
+            if (isLocalMode) {
+                // Get doctor name
+                const doctorName = doctors.find(d => d.value === selectedDoctor)?.label || "Махмуд Пулатов";
+                const serviceName = selectedService;
+
+                // Create new appointment
+                const newAppointment = {
+                    id: Date.now(),
+                    doctor_name: doctorName,
+                    service: serviceName,
+                    date: selectedDate.toLocaleDateString('ru-RU'),
+                    time: selectedTime,
+                    status: "upcoming",
+                    comment: comment,
+                    created_at: new Date().toISOString()
+                };
+
+                // Get existing appointments
+                const existingAppointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+                existingAppointments.push(newAppointment);
+                localStorage.setItem('appointments', JSON.stringify(existingAppointments));
+
+                alert(t("patient.alerts.booking_success"));
+                navigate('/calendar');
+                return;
+            }
+
+            // API mode - create appointment with backend
+            const serviceName = selectedService;
+            const [hours, minutes] = selectedTime.split(':');
+            const startDateTime = new Date(selectedDate);
+            startDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+            
+            // End time is 1 hour after start
+            const endDateTime = new Date(startDateTime);
+            endDateTime.setHours(startDateTime.getHours() + 1);
+
+            await createAppointment.mutateAsync({
+                dentist_id: parseInt(selectedDoctor),
+                start_time: startDateTime.toISOString(),
+                end_time: endDateTime.toISOString(),
                 service: serviceName,
-                date: selectedDate.toLocaleDateString('ru-RU'),
-                time: selectedTime,
-                status: "upcoming",
-                comment: comment,
-                created_at: new Date().toISOString()
-            };
+                notes: comment || undefined
+            });
 
-            // Get existing appointments
-            const existingAppointments = JSON.parse(localStorage.getItem('appointments') || '[]');
-            existingAppointments.push(newAppointment);
-            localStorage.setItem('appointments', JSON.stringify(existingAppointments));
-
-            alert(t("patient.alerts.booking_success"));
-            navigate('/calendar'); // Navigate to appointments page
-            return;
+            alert("Запись успешно создана!");
+            navigate('/calendar');
+        } catch (error: any) {
+            console.error("Error creating appointment:", error);
+            alert(error.response?.data?.detail || "Ошибка при создании записи");
+        } finally {
+            setIsSubmitting(false);
         }
-
-        // API mode
-        const bookingData = {
-            doctor: selectedDoctor,
-            service: selectedService,
-            date: selectedDate,
-            time: selectedTime,
-            comment: comment
-        };
-
-        // Simulate server request
-        console.log("Отправка данных на сервер:", bookingData);
-
-        // Mock success after 1 second
-        setTimeout(() => {
-            alert(t("patient.alerts.booking_success"));
-            navigate('/'); // Navigate to home or dashboard
-        }, 1000);
     };
 
     return (
@@ -175,9 +197,10 @@ const Booking = () => {
             <div className="flex justify-center mt-8 lg:mt-12 pb-8">
                 <button
                     onClick={handleBooking}
-                    className='w-full max-w-md lg:max-w-xl h-14 lg:h-20 rounded-2xl lg:rounded-3xl bg-[#11D76A] font-black text-lg lg:text-2xl text-center text-white shadow-xl shadow-green-500/20 hover:brightness-105 hover:-translate-y-1 transition-all active:scale-95'
+                    disabled={isSubmitting}
+                    className='w-full max-w-md lg:max-w-xl h-14 lg:h-20 rounded-2xl lg:rounded-3xl bg-[#11D76A] font-black text-lg lg:text-2xl text-center text-white shadow-xl shadow-green-500/20 hover:brightness-105 hover:-translate-y-1 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed'
                 >
-                    Записаться
+                    {isSubmitting ? 'Отправка...' : 'Записаться'}
                 </button>
             </div>
         </div>

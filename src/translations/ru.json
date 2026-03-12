@@ -541,7 +541,8 @@
             "contact_btn": "Связаться",
             "reschedule_btn": "Перенести",
             "cancel_btn": "Отменить",
-            "view_doctor": "Перейти"
+            "view_doctor": "Перейти",
+            "cancel_confirm": "Подтвердите отмену приёма"
         },
         "appointments": {
             "title": "Приёмы",

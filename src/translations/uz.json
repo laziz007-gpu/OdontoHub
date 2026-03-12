@@ -537,7 +537,8 @@
       "contact_btn": "Bog'lanish",
       "reschedule_btn": "Ko'chirish",
       "cancel_btn": "Bekor qilish",
-      "view_doctor": "O'tish"
+      "view_doctor": "O'tish",
+      "cancel_confirm": "Qabulni bekor qilishni tasdiqlaysizmi?"
     },
     "appointments": {
       "title": "Qabullar",

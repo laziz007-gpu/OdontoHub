@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { usePatientAppointments } from '../../api/appointments';
+import { useMyAppointments } from '../../api/appointments';
 import { Loader2, Calendar, Clock, Activity } from 'lucide-react';
 
 interface AppointmentsViewProps {
@@ -9,7 +9,7 @@ interface AppointmentsViewProps {
 
 const AppointmentsView: React.FC<AppointmentsViewProps> = ({ patientId }) => {
     const { t } = useTranslation();
-    const { data: appointments, isLoading } = usePatientAppointments(patientId);
+    const { data: appointments, isLoading } = useMyAppointments();
 
     if (isLoading) {
         return (

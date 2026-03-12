@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Video } from "lucide-react";
 import DentistImg from "../assets/img/photos/Dentist.png";
 
 const DoctorProfilePreview = () => {
@@ -115,6 +115,23 @@ const DoctorProfilePreview = () => {
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M7 17L17 7M17 7H7M17 7V17" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
+                        </div>
+                    </button>
+
+                    <button 
+                        onClick={() => navigate('/video-call', { 
+                            state: { 
+                                participant: {
+                                    name: doctorData.name,
+                                    role: 'dentist'
+                                }
+                            } 
+                        })}
+                        className="w-full bg-[#10B981] text-white py-5 px-8 rounded-[24px] flex items-center justify-between group active:scale-[0.98] transition-all shadow-lg shadow-emerald-500/20"
+                    >
+                        <span className="text-xl font-black text-white">Онлайн консультация</span>
+                        <div className="p-2 bg-white rounded-lg">
+                            <Video size={24} className="text-[#10B981]" />
                         </div>
                     </button>
 

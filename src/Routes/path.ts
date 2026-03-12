@@ -31,5 +31,6 @@ export const paths = {
     patientChatProfile: '/patient/chats/:id/profile',
     treatments: '/treatments',
     doctorServices: '/doctor-services',
-    doctorCases: '/doctor-cases'
+    doctorCases: '/doctor-cases',
+    videoCall: '/video-call'
 } as const;

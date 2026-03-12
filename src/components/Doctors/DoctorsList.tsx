@@ -35,35 +35,7 @@ const DoctorsList: React.FC = () => {
     })) || [];
 
     const handleBook = (doctor: Doctor) => {
-        // Check if local mode
-        const accessToken = localStorage.getItem('access_token');
-        const isLocalMode = accessToken?.startsWith('local_token_');
-
-        if (isLocalMode) {
-            // Create appointment directly
-            const newAppointment = {
-                id: Date.now(),
-                doctor_name: doctor.name,
-                service: "Консультация",
-                date: new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),
-                time: "10:00",
-                status: "upcoming",
-                comment: "",
-                created_at: new Date().toISOString()
-            };
-
-            // Get existing appointments
-            const existingAppointments = JSON.parse(localStorage.getItem('appointments') || '[]');
-            existingAppointments.push(newAppointment);
-            localStorage.setItem('appointments', JSON.stringify(existingAppointments));
-
-            // Show success message and navigate
-            alert(t("patient.alerts.appointment_created"));
-            navigate('/calendar');
-            return;
-        }
-
-        // API mode - navigate to booking page
+        // Always navigate to booking page to select date/time
         navigate(paths.booking, { state: { doctor } });
     };
 
