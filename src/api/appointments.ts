@@ -9,6 +9,7 @@ export interface Appointment {
     end_time: string;
     status: "pending" | "confirmed" | "moved" | "cancelled" | "completed";
     service?: string | null;
+    price?: number | null;
     notes?: string | null;
     cancel_reason?: string | null;
     dentist_name?: string;
@@ -20,6 +21,7 @@ export interface AppointmentCreate {
     start_time: string;
     end_time: string;
     service?: string;
+    price?: number;
     notes?: string;
 }
 
@@ -102,4 +104,16 @@ export const useRescheduleAppointment = () => {
 export const getPatientAppointments = async (patientId: number): Promise<Appointment[]> => {
     const response = await api.get<Appointment[]>(`/appointments/patient/${patientId}`);
     return response.data;
+};
+
+// Get single appointment by ID
+export const useAppointment = (id: number) => {
+    return useQuery({
+        queryKey: ['appointment', id],
+        queryFn: async () => {
+            const response = await api.get<Appointment>(`/appointments/${id}`);
+            return response.data;
+        },
+        enabled: !!id,
+    });
 };

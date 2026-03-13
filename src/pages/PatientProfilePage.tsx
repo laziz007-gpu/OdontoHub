@@ -9,12 +9,17 @@ import { ArrowLeft, Bell, Globe, Shield, HelpCircle, Headphones, Info, ChevronRi
 import DentistImg from "../assets/img/photos/Dentist.png";
 import type { Language, MenuItem, SupportItem } from "../types/patient";
 import EditProfileModal from "../components/Shared/EditProfileModal";
+import { usePatientProfile, useUpdatePatient } from "../api/profile";
 
 const PatientProfilePage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { t, i18n } = useTranslation();
     const user = useSelector((state: RootState) => state.user.user);
+    
+    // Fetch patient profile from backend
+    const { data: patientProfile, isLoading } = usePatientProfile();
+    const updatePatient = useUpdatePatient();
 
     const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -32,27 +37,50 @@ const PatientProfilePage = () => {
     });
 
     useEffect(() => {
-        // Load from localStorage
-        const storedUserData = localStorage.getItem('user_data');
-        if (storedUserData) {
-            const parsedData = JSON.parse(storedUserData);
-            setUserData(prev => ({
-                ...prev,
-                name: parsedData.full_name || prev.name,
-                phone: parsedData.phone || prev.phone
-            }));
-        }
+        // Check if local mode
+        const accessToken = localStorage.getItem('access_token');
+        const isLocalMode = accessToken?.startsWith('local_token_');
 
-        // Load profile data from localStorage
-        const profileData = localStorage.getItem('patient_profile');
-        if (profileData) {
-            const parsed = JSON.parse(profileData);
-            setUserData(prev => ({
-                ...prev,
-                ...parsed
-            }));
+        if (isLocalMode) {
+            // Load from localStorage for local mode
+            const storedUserData = localStorage.getItem('user_data');
+            if (storedUserData) {
+                const parsedData = JSON.parse(storedUserData);
+                setUserData(prev => ({
+                    ...prev,
+                    name: parsedData.full_name || prev.name,
+                    phone: parsedData.phone || prev.phone
+                }));
+            }
+
+            const profileData = localStorage.getItem('patient_profile');
+            if (profileData) {
+                const parsed = JSON.parse(profileData);
+                setUserData(prev => ({
+                    ...prev,
+                    ...parsed
+                }));
+            }
+        } else if (patientProfile) {
+            // Load from backend API
+            const birthDate = patientProfile.birth_date ? new Date(patientProfile.birth_date) : null;
+            const birthYear = birthDate ? birthDate.getFullYear().toString() : "2000";
+            const age = birthDate ? new Date().getFullYear() - birthDate.getFullYear() : 26;
+            
+            setUserData({
+                name: patientProfile.full_name || user?.full_name || "Пациент",
+                phone: patientProfile.phone || user?.phone || "+998 (90) 123 45 67",
+                gender: patientProfile.gender === "male" ? "Мужчина" : patientProfile.gender === "female" ? "Женщина" : "Мужчина",
+                birthYear: birthYear,
+                age: `${age} лет`,
+                region: "Ташкент",
+                city: "Ташкент",
+                district: "Юнусабад",
+                address: patientProfile.address || "г. Ташкент, Юнусабад",
+                avatar: DentistImg
+            });
         }
-    }, [user]);
+    }, [user, patientProfile]);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -69,14 +97,46 @@ const PatientProfilePage = () => {
         setIsLanguageModalOpen(false);
     };
 
-    const handleSaveProfile = (newData: any) => {
+    const handleSaveProfile = async (newData: any) => {
         const updatedData = { ...userData, ...newData };
         setUserData(updatedData);
         
-        // Save to localStorage
-        localStorage.setItem('patient_profile', JSON.stringify(updatedData));
+        // Check if local mode
+        const accessToken = localStorage.getItem('access_token');
+        const isLocalMode = accessToken?.startsWith('local_token_');
         
-        setIsEditModalOpen(false);
+        if (isLocalMode) {
+            // Save to localStorage for local mode
+            localStorage.setItem('patient_profile', JSON.stringify(updatedData));
+            setIsEditModalOpen(false);
+        } else {
+            // Save to backend API
+            try {
+                if (patientProfile?.id) {
+                    // Convert gender to backend format
+                    const gender = newData.gender === "Мужчина" ? "male" : 
+                                  newData.gender === "Женщина" ? "female" : null;
+                    
+                    // Convert birth year to birth_date
+                    const birth_date = newData.birthYear ? `${newData.birthYear}-01-01` : null;
+                    
+                    await updatePatient.mutateAsync({
+                        id: patientProfile.id,
+                        full_name: newData.name,
+                        phone: newData.phone,
+                        gender: gender,
+                        birth_date: birth_date,
+                        address: newData.address
+                    });
+                    
+                    alert("Профиль успешно обновлен!");
+                }
+                setIsEditModalOpen(false);
+            } catch (error: any) {
+                console.error("Error updating profile:", error);
+                alert(error.response?.data?.detail || "Ошибка при обновлении профиля");
+            }
+        }
     };
 
     const handleLogout = () => {
@@ -119,6 +179,11 @@ const PatientProfilePage = () => {
 
     return (
         <div className="min-h-screen bg-[#F5F7FF] pb-32">
+            {isLoading && (
+                <div className="fixed inset-0 bg-white/80 flex items-center justify-center z-50">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+                </div>
+            )}
             {/* Centered Container */}
             {/* Centered Container */}
             {/* Centered Main Content Area */}

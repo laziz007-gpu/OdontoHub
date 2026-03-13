@@ -21,6 +21,7 @@ export interface Doctor {
     address?: string;
     clinic?: string;
     work_hours?: string;
+    works_photos?: string; // JSON string of case photos
 }
 
 export type AppointmentStatus = 'upcoming' | 'past' | 'success' | 'cancelled' | 'rescheduled';

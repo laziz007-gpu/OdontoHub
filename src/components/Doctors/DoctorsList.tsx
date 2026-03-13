@@ -31,7 +31,8 @@ const DoctorsList: React.FC = () => {
         address: d.address || "Ташкент",
         phone: d.phone,
         clinic: d.clinic,
-        work_hours: d.work_hours
+        work_hours: d.work_hours,
+        works_photos: d.works_photos // Add works_photos for cases
     })) || [];
 
     const handleBook = (doctor: Doctor) => {

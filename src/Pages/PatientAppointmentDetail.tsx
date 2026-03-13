@@ -7,17 +7,32 @@ import AppointmentDetailsCard from "../components/PatientAppointmentDetail/Appoi
 import PriceCard from "../components/PatientAppointmentDetail/PriceCard";
 import ReviewButton from "../components/PatientAppointmentDetail/ReviewButton";
 import ActionButtons from "../components/PatientAppointmentDetail/ActionButtons";
+import { useAppointment } from "../api/appointments";
 import type { AppointmentDetail } from "../types/patient";
 
 const PatientAppointmentDetail = () => {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
+    
+    // Fetch appointment from backend
+    const { data: appointmentData, isLoading } = useAppointment(parseInt(id || '0'));
 
-    // Mock data based on screenshot
-    // Mock data based on ID - assuming generic "1" or "3" is upcoming wisdom tooth
-    const isUpcoming = id !== '101' && id !== '102' && id !== '103'; // Assuming 100+ are past
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+            </div>
+        );
+    }
 
-    const appointment: AppointmentDetail = isUpcoming ? {
+    // Check if local mode
+    const accessToken = localStorage.getItem('access_token');
+    const isLocalMode = accessToken?.startsWith('local_token_');
+
+    // Mock data for local mode or fallback
+    const isUpcoming = id !== '101' && id !== '102' && id !== '103';
+
+    const mockAppointment: AppointmentDetail = isUpcoming ? {
         title: "Удаление зуба мудрости",
         date: "30 сентябрь",
         time: "16:00",
@@ -59,6 +74,72 @@ const PatientAppointmentDetail = () => {
         price: "20.000сум"
     };
 
+    // Use real data if available
+    let appointment: AppointmentDetail;
+    
+    if (isLocalMode) {
+        // Load from localStorage
+        const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+        const localAppointment = appointments.find((a: any) => a.id.toString() === id);
+        
+        if (localAppointment) {
+            appointment = {
+                title: localAppointment.service || "Консультация",
+                date: localAppointment.date,
+                time: localAppointment.time,
+                doctor: {
+                    name: localAppointment.doctor_name || "Доктор",
+                    direction: "Стоматология",
+                    experience: "5 лет",
+                    rating: "4.7",
+                    image: DentistImg,
+                    phone: "+998901234567"
+                },
+                details: {
+                    status: localAppointment.status === "upcoming" ? "запланирован" : "завершён",
+                    date: localAppointment.date,
+                    duration: "40 минут",
+                    tip: localAppointment.comment || "Нет подсказок",
+                    notes: localAppointment.comment || "Нету заметок"
+                },
+                price: localAppointment.price ? `${localAppointment.price.toLocaleString('ru-RU')} UZS` : "Не указано"
+            };
+        } else {
+            appointment = mockAppointment;
+        }
+    } else if (!appointmentData) {
+        appointment = mockAppointment;
+    } else {
+        // Convert backend data to AppointmentDetail format
+        const startDate = new Date(appointmentData.start_time);
+        const endDate = new Date(appointmentData.end_time);
+        const duration = Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60));
+        
+        appointment = {
+            title: appointmentData.service || "Консультация",
+            date: startDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }),
+            time: startDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+            doctor: {
+                name: appointmentData.dentist_name || "Доктор",
+                direction: "Стоматология",
+                experience: "5 лет",
+                rating: "4.7",
+                image: DentistImg,
+                phone: "+998901234567"
+            },
+            details: {
+                status: appointmentData.status === "pending" ? "запланирован" : 
+                        appointmentData.status === "completed" ? "завершён" :
+                        appointmentData.status === "cancelled" ? "отменён" : "запланирован",
+                date: startDate.toLocaleDateString('ru-RU'),
+                duration: `${duration} минут`,
+                tip: appointmentData.notes || "Нет подсказок",
+                notes: appointmentData.notes || "Нету заметок"
+            },
+            price: appointmentData.price ? `${appointmentData.price.toLocaleString('ru-RU')} UZS` : "Не указано"
+        };
+    }
+
     return (
         <div className="min-h-screen bg-[#F5F7FA] p-4 md:p-8 max-w-5xl mx-auto w-full flex flex-col font-sans">
             {/* Header */}
@@ -80,8 +161,13 @@ const PatientAppointmentDetail = () => {
                     </div>
                 </div>
                 <div className="hidden md:block">
-                    <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${isUpcoming ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'}`}>
-                        {isUpcoming ? 'Предстоит' : 'Завершено'}
+                    <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${
+                        (appointmentData?.status === "pending" || appointmentData?.status === "confirmed" || isLocalMode) ? 
+                        'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'
+                    }`}>
+                        {(appointmentData?.status === "pending" || appointmentData?.status === "confirmed" || isLocalMode) ? 
+                            'Предстоит' : 'Завершено'
+                        }
                     </span>
                 </div>
             </div>
@@ -105,7 +191,10 @@ const PatientAppointmentDetail = () => {
                             <PriceCard price={appointment.price} />
                         </div>
                         <div>
-                            {isUpcoming ? <ActionButtons phone={appointment.doctor.phone} /> : <ReviewButton />}
+                            {(appointmentData?.status === "pending" || appointmentData?.status === "confirmed" || isLocalMode) ? 
+                                <ActionButtons phone={appointment.doctor.phone} /> : 
+                                <ReviewButton />
+                            }
                         </div>
                     </div>
                 </div>

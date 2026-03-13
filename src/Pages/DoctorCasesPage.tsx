@@ -6,36 +6,7 @@ const DoctorCasesPage = () => {
     const navigate = useNavigate();
     
     // Demo images - in real app, these would come from API
-    const [cases] = useState([
-        {
-            id: 1,
-            title: "Отбеливание зубов",
-            beforeImage: "https://via.placeholder.com/400x300/4E70FF/FFFFFF?text=До",
-            afterImage: "https://via.placeholder.com/400x300/11D76A/FFFFFF?text=После",
-            description: "Профессиональное отбеливание"
-        },
-        {
-            id: 2,
-            title: "Установка виниров",
-            beforeImage: "https://via.placeholder.com/400x300/4E70FF/FFFFFF?text=До",
-            afterImage: "https://via.placeholder.com/400x300/11D76A/FFFFFF?text=После",
-            description: "Керамические виниры"
-        },
-        {
-            id: 3,
-            title: "Исправление прикуса",
-            beforeImage: "https://via.placeholder.com/400x300/4E70FF/FFFFFF?text=До",
-            afterImage: "https://via.placeholder.com/400x300/11D76A/FFFFFF?text=После",
-            description: "Ортодонтическое лечение"
-        },
-        {
-            id: 4,
-            title: "Имплантация",
-            beforeImage: "https://via.placeholder.com/400x300/4E70FF/FFFFFF?text=До",
-            afterImage: "https://via.placeholder.com/400x300/11D76A/FFFFFF?text=После",
-            description: "Установка импланта"
-        }
-    ]);
+    const [cases] = useState([]);
 
     return (
         <div className="min-h-screen bg-[#F5F7FF] pb-10">

@@ -67,12 +67,17 @@ const Booking = () => {
                 // Get doctor name
                 const doctorName = doctors.find(d => d.value === selectedDoctor)?.label || "Махмуд Пулатов";
                 const serviceName = selectedService;
+                
+                // Find service price
+                const selectedServiceData = servicesData.find(s => s.name === selectedService);
+                const servicePrice = selectedServiceData?.price || 0;
 
                 // Create new appointment
                 const newAppointment = {
                     id: Date.now(),
                     doctor_name: doctorName,
                     service: serviceName,
+                    price: servicePrice,
                     date: selectedDate.toLocaleDateString('ru-RU'),
                     time: selectedTime,
                     status: "upcoming",
@@ -92,6 +97,11 @@ const Booking = () => {
 
             // API mode - create appointment with backend
             const serviceName = selectedService;
+            
+            // Find service price
+            const selectedServiceData = servicesData.find(s => s.name === selectedService);
+            const servicePrice = selectedServiceData?.price || 0;
+            
             const [hours, minutes] = selectedTime.split(':');
             const startDateTime = new Date(selectedDate);
             startDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
@@ -105,6 +115,7 @@ const Booking = () => {
                 start_time: startDateTime.toISOString(),
                 end_time: endDateTime.toISOString(),
                 service: serviceName,
+                price: servicePrice,
                 notes: comment || undefined
             });
 

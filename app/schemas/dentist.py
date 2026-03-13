@@ -24,6 +24,7 @@ class DentistProfileSchema(BaseModel):
     telegram: Optional[str] = None
     instagram: Optional[str] = None
     whatsapp: Optional[str] = None
+    works_photos: Optional[str] = None  # JSON string of case photos
 
     class Config:
         from_attributes = True
