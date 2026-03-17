@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { X, Loader2, Search } from 'lucide-react';
 import { useAllPatients } from '../../api/profile';
+import { toast } from '../Shared/Toast';
 
 interface AddNoteModalProps {
     isOpen: boolean;
@@ -46,7 +47,7 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, onSuccess 
         e.preventDefault();
         
         if (!selectedPatientId || !note.trim()) {
-            alert('Пожалуйста, выберите пациента и введите заметку');
+            toast.warning('Пожалуйста, выберите пациента и введите заметку');
             return;
         }
 
@@ -62,7 +63,7 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, onSuccess 
             onClose();
         } catch (error) {
             console.error("Failed to add note", error);
-            alert("Ошибка при добавлении заметки");
+            toast.error("Ошибка при добавлении заметки");
         } finally {
             setIsSubmitting(false);
         }

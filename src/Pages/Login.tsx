@@ -6,6 +6,7 @@ import { setUser } from '../store/slices/userSlice'
 import type { LoginData } from '../interfaces'
 import logo from '../assets/img/icons/Logo.svg'
 import { paths } from '../Routes/path'
+import { toast } from '../components/Shared/Toast'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -45,7 +46,7 @@ export default function Login() {
     }
 
     // If no user found in localStorage, show error
-    alert(t("patient.alerts.user_not_found"));
+    toast.error(t("patient.alerts.user_not_found"));
   }
 
   return (

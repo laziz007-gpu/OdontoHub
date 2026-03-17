@@ -7,6 +7,7 @@ import type { RegisterData, UserRole } from '../interfaces'
 import { Stethoscope, User } from 'lucide-react'
 import logo from '../assets/img/icons/Logo.svg'
 import { paths } from '../Routes/path'
+import { toast } from '../components/Shared/Toast'
 
 export default function Register1() {
   const navigate = useNavigate()
@@ -147,7 +148,7 @@ export default function Register1() {
     } catch (error) {
       setIsLoading(false);
       console.error('Registration error:', error);
-      alert(error instanceof Error ? error.message : 'Ошибка регистрации');
+      toast.error(error instanceof Error ? error.message : 'Ошибка регистрации');
     }
   }
 

@@ -523,7 +523,9 @@
             "logout": "Выйти из аккаунта",
             "language": "Язык",
             "notification": "Уведомление",
-            "select_language": "Выберите язык"
+            "select_language": "Выберите язык",
+        "settings": "Настройки",
+        "support": "Поддержка"
         },
         "appointment_detail": {
             "title": "Детали приёма",

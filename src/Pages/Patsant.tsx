@@ -5,6 +5,7 @@ import Rasm from "../assets/img/photos/Subtract.png"
 import { type Patient } from '../data/patients'
 import { useTranslation } from 'react-i18next'
 import { useAllPatients, useCreatePatient } from '../api/profile'
+import { toast } from '../components/Shared/Toast'
 
 interface Filters {
   status: string;
@@ -68,11 +69,11 @@ const Patsant: FC = () => {
         phone: data.phone,
         source: data.diagnosis // Using diagnosis as source for now
       });
-      alert(t('patients_list.new_patient_added'))
+      toast.success(t('patients_list.new_patient_added'))
     } catch (error: any) {
       console.error("Failed to add patient", error);
       const errorMessage = error.response?.data?.detail || "Failed to add patient";
-      alert(errorMessage);
+      toast.error(errorMessage);
     }
   }
 

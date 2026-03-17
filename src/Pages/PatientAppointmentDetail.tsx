@@ -181,14 +181,14 @@ const PatientAppointmentDetail = () => {
                 {/* Two Column Layout for Details and Price/Actions */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                     {/* Left: Details */}
-                    <div className="bg-white rounded-[2rem] lg:rounded-[2.5rem] p-2 shadow-sm border border-gray-50">
+                    <div>
                         <AppointmentDetailsCard details={appointment.details} />
                     </div>
 
                     {/* Right: Price & Actions Stacked Vertically */}
                     <div className="space-y-6 flex flex-col">
                         <div className="bg-white rounded-[2rem] lg:rounded-[2.5rem] p-1 shadow-sm border border-gray-50 overflow-hidden">
-                            <PriceCard price={appointment.price} />
+                            <PriceCard price={appointment.price} service={appointment.title} />
                         </div>
                         <div>
                             {(appointmentData?.status === "pending" || appointmentData?.status === "confirmed" || isLocalMode) ? 

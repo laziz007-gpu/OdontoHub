@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import api from "../api/api";
@@ -12,27 +12,26 @@ interface Service {
 
 const DoctorServicesPage = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const dentist_id = location.state?.dentist_id;
     const [services, setServices] = useState<Service[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchServices();
-    }, []);
+    }, [dentist_id]);
 
     const fetchServices = async () => {
         try {
-            const response = await api.get<Service[]>('/services/');
+            const url = dentist_id ? `/services/?dentist_id=${dentist_id}` : '/services/';
+            const response = await api.get<Service[]>(url);
             setServices(response.data);
         } catch (error) {
             console.error('Error fetching services:', error);
-            // Fallback data
             setServices([
                 { id: 1, name: "Консультация", price: 50000, currency: "UZS" },
                 { id: 2, name: "Лечение кариеса", price: 150000, currency: "UZS" },
                 { id: 3, name: "Чистка зубов", price: 100000, currency: "UZS" },
-                { id: 4, name: "Отбеливание", price: 300000, currency: "UZS" },
-                { id: 5, name: "Гигиена полости рта", price: 80000, currency: "UZS" },
-                { id: 6, name: "Удаление зубного камня", price: 120000, currency: "UZS" },
             ]);
         } finally {
             setLoading(false);

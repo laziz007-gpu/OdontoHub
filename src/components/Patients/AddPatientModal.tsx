@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { useCreatePatient } from '../../api/profile';
+import { toast } from '../Shared/Toast';
 
 interface AddPatientModalProps {
     isOpen: boolean;
@@ -23,7 +24,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSu
         e.preventDefault();
         
         if (!formData.full_name.trim() || !formData.phone.trim()) {
-            alert('Пожалуйста, заполните обязательные поля');
+            toast.warning('Пожалуйста, заполните обязательные поля');
             return;
         }
 
@@ -56,9 +57,9 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSu
             
             // Check if it's an authentication error
             if (error.response?.status === 401) {
-                alert('Ошибка авторизации. Пожалуйста, войдите в систему снова.');
+                toast.error('Ошибка авторизации. Пожалуйста, войдите в систему снова.');
             } else {
-                alert(errorMessage);
+                toast.error(errorMessage);
             }
         }
     };

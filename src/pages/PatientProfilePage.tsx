@@ -10,6 +10,7 @@ import DentistImg from "../assets/img/photos/Dentist.png";
 import type { Language, MenuItem, SupportItem } from "../types/patient";
 import EditProfileModal from "../components/Shared/EditProfileModal";
 import { usePatientProfile, useUpdatePatient } from "../api/profile";
+import { toast } from "../components/Shared/Toast";
 
 const PatientProfilePage = () => {
     const navigate = useNavigate();
@@ -129,12 +130,12 @@ const PatientProfilePage = () => {
                         address: newData.address
                     });
                     
-                    alert("Профиль успешно обновлен!");
+                    toast.success("Профиль успешно обновлен!");
                 }
                 setIsEditModalOpen(false);
             } catch (error: any) {
                 console.error("Error updating profile:", error);
-                alert(error.response?.data?.detail || "Ошибка при обновлении профиля");
+                toast.error(error.response?.data?.detail || "Ошибка при обновлении профиля");
             }
         }
     };

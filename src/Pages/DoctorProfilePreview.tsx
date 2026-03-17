@@ -95,7 +95,9 @@ const DoctorProfilePreview = () => {
                     </div>
 
                     <button 
-                        onClick={() => navigate('/doctor-services')}
+                        onClick={() => navigate('/doctor-services', { 
+                            state: { dentist_id: doctorFromState?.id } 
+                        })}
                         className="w-full bg-[#4E70FF] text-white py-5 px-8 rounded-[24px] flex items-center justify-between group active:scale-[0.98] transition-all shadow-lg shadow-blue-500/20"
                     >
                         <span className="text-xl font-black text-black">Услуги</span>

@@ -9,6 +9,7 @@ import CommentInput from '../components/Booking/CommentInput';
 import { useCreateAppointment } from '../api/appointments';
 import { useAllDentists } from '../api/profile';
 import { useServices } from '../api/services';
+import { toast } from '../components/Shared/Toast';
 
 
 const Booking = () => {
@@ -51,7 +52,7 @@ const Booking = () => {
 
     const handleBooking = async () => {
         if (!selectedDoctor || !selectedService || !selectedDate || !selectedTime) {
-            alert(t("patient.alerts.fill_required_fields"));
+            toast.warning(t("patient.alerts.fill_required_fields"));
             return;
         }
 
@@ -90,7 +91,7 @@ const Booking = () => {
                 existingAppointments.push(newAppointment);
                 localStorage.setItem('appointments', JSON.stringify(existingAppointments));
 
-                alert(t("patient.alerts.booking_success"));
+                toast.success(t("patient.alerts.booking_success"));
                 navigate('/calendar');
                 return;
             }
@@ -119,11 +120,11 @@ const Booking = () => {
                 notes: comment || undefined
             });
 
-            alert("Запись успешно создана!");
+            toast.success("Запись успешно создана!");
             navigate('/calendar');
         } catch (error: any) {
             console.error("Error creating appointment:", error);
-            alert(error.response?.data?.detail || "Ошибка при создании записи");
+            toast.error(error.response?.data?.detail || "Ошибка при создании записи");
         } finally {
             setIsSubmitting(false);
         }

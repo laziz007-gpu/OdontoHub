@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import { useDentistProfile, useDeletePatient } from '../api/profile';
+import { toast } from '../components/Shared/Toast';
 import PatientInfoSection from '../components/Patients/PatientInfoSection';
 import PrescriptionSection from '../components/Patients/PrescriptionSection';
 import AllergySection from '../components/Patients/AllergySection';
@@ -25,11 +26,11 @@ const PatientDetailPage = () => {
     if (window.confirm('Вы уверены, что хотите удалить этого пациента? Все данные будут удалены безвозвратно.')) {
       try {
         await deletePatient.mutateAsync(patientId);
-        alert('Пациент успешно удалён');
+        toast.success('Пациент успешно удалён');
         navigate('/patients');
       } catch (error) {
         console.error('Error deleting patient:', error);
-        alert('Ошибка при удалении пациента');
+        toast.error('Ошибка при удалении пациента');
       }
     }
   };

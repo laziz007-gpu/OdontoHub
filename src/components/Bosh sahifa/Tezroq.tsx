@@ -5,6 +5,7 @@ import { paths } from '../../Routes/path';
 import AppointmentModal from '../Appointments/AppointmentModal';
 import AddPatientModal from '../Patients/AddPatientModal';
 import AddNoteModal from '../Patients/AddNoteModal';
+import { toast } from '../Shared/Toast';
 
 // Action turi
 type Action = {
@@ -38,7 +39,7 @@ const Tezroq: React.FC = () => {
         setIsNoteModalOpen(true);
         break;
       case 'message':
-        alert('Функция в разработке');
+        toast.info(t('patient.alerts.function_in_development'));
         break;
     }
   };
@@ -58,7 +59,7 @@ const Tezroq: React.FC = () => {
     
     localStorage.setItem(notesKey, JSON.stringify(notes));
     
-    alert('Заметка успешно добавлена');
+    toast.success('Заметка успешно добавлена');
     // Navigate to patient profile
     navigate(`${paths.patient}/${patientId}`);
   };

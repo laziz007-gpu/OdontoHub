@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { User, Trash2 } from 'lucide-react'
 import { useDeletePatient } from '../../api/profile'
+import { toast } from '../Shared/Toast'
 
 interface Patient {
   id: number
@@ -31,7 +32,7 @@ export default function PatientsTable({ patients }: Props) {
         await deletePatient.mutateAsync(patientId)
       } catch (error) {
         console.error('Error deleting patient:', error)
-        alert('Ошибка при удалении пациента')
+        toast.error('Ошибка при удалении пациента')
       }
     }
   }

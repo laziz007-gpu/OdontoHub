@@ -3,6 +3,7 @@ import { Allergy, AllergySeverity } from '../../types/allergy';
 import { getAllergies, deleteAllergy } from '../../api/allergies';
 import AddAllergyModal from './AddAllergyModal';
 import EditAllergyModal from './EditAllergyModal';
+import { toast } from '../Shared/Toast';
 
 interface AllergySectionProps {
   patientId: number;
@@ -43,7 +44,7 @@ const AllergySection = ({ patientId }: AllergySectionProps) => {
       setAllergies(prev => prev.filter(a => a.id !== allergyId));
     } catch (err) {
       console.error('Error deleting allergy:', err);
-      alert('Не удалось удалить аллергию');
+      toast.error('Не удалось удалить аллергию');
     }
   };
 

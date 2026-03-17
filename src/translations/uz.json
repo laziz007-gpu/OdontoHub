@@ -519,8 +519,10 @@
       "logout": "Hisobdan chiqish",
       "language": "Til",
       "notification": "Bildirishnoma",
-      "select_language": "Tilni tanlang"
-    },
+      "select_language": "Tilni tanlang",
+      "settings": "Sozlamalar",
+      "support": "Yordam"
+      },
     "appointment_detail": {
       "title": "Qabul tafsilotlari",
       "doctor": "Shifokor",

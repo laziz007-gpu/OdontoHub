@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUnreadCount, getNotifications, markAsRead } from '../../api/notifications';
-import { Notification } from '../../types/notification';
+import type { Notification } from '../../types/notification';
 
 const NotificationBadge = () => {
     const navigate = useNavigate();
@@ -96,23 +96,23 @@ const NotificationBadge = () => {
     };
 
     const formatNotificationMessage = (notification: Notification): string => {
-        const { notification_type, notification_data } = notification;
+        const { notification_type, metadata } = notification;
         
         switch (notification_type) {
             case 'appointment_reminder':
                 return 'Следующий приём через 15 минут';
             case 'appointment_rescheduled':
-                return `Перенес приём на ${notification_data?.new_time || ''}`;
+                return `Перенес приём на ${metadata?.new_date || ''}`;
             case 'appointment_cancelled':
                 return `Отменил приём`;
             case 'analytics_check':
                 return 'Напоминание: ежемесячная оплата';
             case 'rating_decreased':
-                return `Рейтинг понизился до ${notification_data?.new_rating || ''}`;
+                return `Рейтинг понизился до ${metadata?.rating || ''}`;
             case 'rating_increased':
-                return `Рейтинг повысился до ${notification_data?.new_rating || ''}`;
+                return `Рейтинг повысился до ${metadata?.rating || ''}`;
             case 'appointment_rated':
-                return `Поставил вам ${notification_data?.rating || 5} ★★★★★`;
+                return `Поставил вам ${metadata?.stars || 5} ★★★★★`;
             case 'review_left':
                 return 'Оставил подробный отзыв';
             case 'payment_reminder':

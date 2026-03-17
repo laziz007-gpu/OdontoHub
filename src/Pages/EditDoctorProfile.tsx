@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, MapPin, ChevronDown, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useDentistProfile, useUpdateDentistProfile } from '../api/profile';
+import { toast } from '../components/Shared/Toast';
 import DentistImg from '../assets/img/photos/Dentist.png';
 
 export default function EditDoctorProfile() {
@@ -115,7 +116,7 @@ export default function EditDoctorProfile() {
       }, 2000);
     } catch (error) {
       console.error('Failed to update profile:', error);
-      alert('Ошибка при сохранении профиля');
+      toast.error('Ошибка при сохранении профиля');
     }
   };
 
