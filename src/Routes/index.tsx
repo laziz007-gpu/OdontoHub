@@ -14,6 +14,7 @@ import DoctorProfile from "../Pages/DoctorProfile";
 import EditDoctorProfile from "../Pages/EditDoctorProfile";
 import Settings from "../Pages/Settings";
 import Appointments from "../Pages/Appointments";
+import ActiveAppointment from "../Pages/ActiveAppointment";
 import Analitic from "../Pages/Analitic";
 import Finance from "../Pages/Finance";
 import Chats from "../Pages/Chats";
@@ -98,6 +99,10 @@ export const router = createBrowserRouter([
                     {
                         path: paths.appointments,
                         element: <Appointments />
+                    },
+                    {
+                        path: paths.activeAppointment,
+                        element: <ActiveAppointment />
                     },
                     {
                         path: paths.analytics,

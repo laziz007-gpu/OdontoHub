@@ -12,7 +12,20 @@ export interface Appointment {
   notes: string | null;
   dentist_name?: string;
   patient_name?: string;
+  rating?: number;
+  review?: string;
 }
+
+export const useAppointment = (id: number) => {
+  return useQuery({
+    queryKey: ['appointment', id],
+    queryFn: async () => {
+      const response = await api.get<Appointment>(`/appointments/${id}`);
+      return response.data;
+    },
+    enabled: !!id,
+  });
+};
 
 export const useMyAppointments = () => {
   const accessToken = localStorage.getItem('access_token');
@@ -33,7 +46,7 @@ export const useCreateAppointment = () => {
       dentist_id: number;
       patient_id: number;
       start_time: string;
-      end_time: string;
+      end_time?: string;
       service?: string;
       notes?: string;
     }) => {
@@ -55,7 +68,7 @@ export const createAppointment = async (data: {
   dentist_id: number;
   patient_id: number;
   start_time: string;
-  end_time: string;
+  end_time?: string;
   service?: string;
   notes?: string;
 }): Promise<Appointment> => {
@@ -116,6 +129,40 @@ export const useRescheduleAppointment = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myAppointments'] });
       queryClient.invalidateQueries({ queryKey: ['patientAppointments'] });
+    }
+  });
+};
+
+export const useStartAppointment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (appointmentId: number) => {
+      const response = await api.patch<Appointment>(`/appointments/${appointmentId}`, {
+        status: 'in_progress'
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myAppointments'] });
+      queryClient.invalidateQueries({ queryKey: ['patientAppointments'] });
+      queryClient.invalidateQueries({ queryKey: ['timelineAppointments'] });
+    }
+  });
+};
+
+export const useFinishAppointment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (appointmentId: number) => {
+      const response = await api.patch<Appointment>(`/appointments/${appointmentId}`, {
+        status: 'completed'
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myAppointments'] });
+      queryClient.invalidateQueries({ queryKey: ['patientAppointments'] });
+      queryClient.invalidateQueries({ queryKey: ['timelineAppointments'] });
     }
   });
 };

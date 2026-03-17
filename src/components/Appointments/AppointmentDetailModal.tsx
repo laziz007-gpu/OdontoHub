@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Loader2 } from 'lucide-react';
 import { type AppointmentStatus } from './AppointmentCard';
-import { useCancelAppointment, useRescheduleAppointment } from '../../api/appointments';
+import { useCancelAppointment, useRescheduleAppointment, useStartAppointment } from '../../api/appointments';
 import RescheduleModal from './RescheduleModal';
+import { useNavigate } from 'react-router-dom';
 
 interface AppointmentDetailModalProps {
     isOpen: boolean;
@@ -20,12 +22,29 @@ interface AppointmentDetailModalProps {
 }
 
 const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen, onClose, appointment, onSuccess }) => {
+    // Triggers HMR for missing export
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
     const cancelMutation = useCancelAppointment();
     const rescheduleMutation = useRescheduleAppointment();
+    const startMutation = useStartAppointment();
 
     if (!isOpen || !appointment) return null;
+
+    const handleStart = async () => {
+        if (!appointment) return;
+
+        try {
+            if (appointment.status !== 'in_progress') {
+                await startMutation.mutateAsync(appointment.id);
+            }
+            onClose();
+            navigate(`/appointments/active/${appointment.id}`);
+        } catch (error) {
+            onSuccess?.('Ошибка при начале приёма', 'error');
+        }
+    };
 
     const handleCancel = async () => {
         if (confirm('Вы уверены что хотите отменить этот приём?')) {
@@ -42,7 +61,7 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
     const handleReschedule = async (startTime: string, endTime: string) => {
         try {
             await rescheduleMutation.mutateAsync({
-                id: appointment.id,
+                appointmentId: appointment.id,
                 start_time: startTime,
                 end_time: endTime
             });
@@ -122,28 +141,44 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
                 </div>
 
                 {/* Close Button */}
-                <div className="flex gap-3 mt-8">
+                <div className="flex flex-wrap gap-3 mt-8">
                     <button
                         onClick={onClose}
-                        className="flex-1 py-5 bg-gray-100 text-gray-600 text-xl font-black rounded-[20px] hover:bg-gray-200 transition-all active:scale-[0.98]"
+                        className="flex-1 min-w-[100px] py-4 bg-gray-100 text-gray-600 text-base md:text-lg font-black rounded-[20px] hover:bg-gray-200 transition-all active:scale-[0.98]"
                     >
-                        {t('common.close')}
+                        {t('common.close', 'Закрыть')}
                     </button>
-                    {appointment.status !== 'cancelled' && appointment.status !== 'completed' && (
+                    {appointment.status !== 'cancelled' && appointment.status !== 'completed' && appointment.status !== 'in_progress' && (
                         <>
                             <button
+                                onClick={handleStart}
+                                disabled={startMutation.isPending}
+                                className="flex-1 min-w-[140px] py-4 bg-[#4f6bff] text-white text-base md:text-lg font-black rounded-[20px] shadow-lg shadow-[#4f6bff]/30 hover:bg-[#3d56d5] transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+                            >
+                                {startMutation.isPending && <Loader2 className="w-5 h-5 animate-spin" />}
+                                Начать
+                            </button>
+                            <button
                                 onClick={() => setIsRescheduleOpen(true)}
-                                className="flex-1 py-5 bg-[#feb019] text-white text-xl font-black rounded-[20px] shadow-lg shadow-[#feb019]/30 hover:bg-[#e09d15] transition-all active:scale-[0.98]"
+                                className="flex-1 min-w-[100px] py-4 bg-[#feb019] text-white text-base md:text-lg font-black rounded-[20px] shadow-lg shadow-[#feb019]/30 hover:bg-[#e09d15] transition-all active:scale-[0.98]"
                             >
                                 Перенести
                             </button>
                             <button
                                 onClick={handleCancel}
-                                className="flex-1 py-5 bg-[#ff4560] text-white text-xl font-black rounded-[20px] shadow-lg shadow-[#ff4560]/30 hover:bg-[#e03d54] transition-all active:scale-[0.98]"
+                                className="flex-1 min-w-[100px] py-4 bg-[#ff4560] text-white text-base md:text-lg font-black rounded-[20px] shadow-lg shadow-[#ff4560]/30 hover:bg-[#e03d54] transition-all active:scale-[0.98]"
                             >
                                 Отменить
                             </button>
                         </>
+                    )}
+                    {appointment.status === 'in_progress' && (
+                        <button
+                            onClick={handleStart}
+                            className="flex-[2] py-4 bg-[#4f6bff] text-white text-base md:text-lg font-black rounded-[20px] shadow-lg shadow-[#4f6bff]/30 hover:bg-[#3d56d5] transition-all active:scale-[0.98]"
+                        >
+                            Продолжить приём
+                        </button>
                     )}
                 </div>
             </div>

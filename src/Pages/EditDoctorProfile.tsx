@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, MapPin, ChevronDown, X } from 'lucide-react';
+import { FileText, ArrowLeft, MapPin, ChevronDown, X, Upload, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useDentistProfile, useUpdateDentistProfile } from '../api/profile';
+import { useDentistProfile, useUpdateDentistProfile, useUploadDiploma } from '../api/profile';
 import { useTranslation } from 'react-i18next';
 import DentistImg from '../assets/img/photos/Dentist.png';
 import { useQueryClient } from '@tanstack/react-query';
@@ -12,7 +12,9 @@ export default function EditDoctorProfile() {
   const navigate = useNavigate();
   const { data: dentist } = useDentistProfile();
   const updateProfile = useUpdateDentistProfile();
+  const uploadDiploma = useUploadDiploma();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const diplomaInputRef = useRef<HTMLInputElement>(null);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [mapAddress, setMapAddress] = useState('');
   const [coordinates] = useState({ lat: 41.2995, lng: 69.2401 }); // Tashkent default
@@ -74,7 +76,7 @@ export default function EditDoctorProfile() {
       formData.experience_years,
       formData.telegram || formData.instagram || formData.whatsapp, // At least one social
     ];
-    
+
     const filledFields = fields.filter(field => field && field !== '').length;
     return Math.round((filledFields / fields.length) * 100);
   };
@@ -107,6 +109,20 @@ export default function EditDoctorProfile() {
     if (file) {
       const url = URL.createObjectURL(file);
       setAvatar(url);
+    }
+  };
+
+  const handleDiplomaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        await uploadDiploma.mutateAsync(file);
+        setShowSuccessNotification(true);
+        setTimeout(() => setShowSuccessNotification(false), 3000);
+      } catch (error) {
+        console.error('Failed to upload diploma:', error);
+        alert(t('common.error'));
+      }
     }
   };
 
@@ -174,7 +190,7 @@ export default function EditDoctorProfile() {
             <span className="text-2xl font-bold text-blue-600">{completionPercentage}%</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-            <div 
+            <div
               className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500 ease-out"
               style={{ width: `${completionPercentage}%` }}
             >
@@ -184,8 +200,8 @@ export default function EditDoctorProfile() {
             </div>
           </div>
           <p className="text-sm text-gray-500 mt-2">
-            {completionPercentage === 100 
-              ? '✓ Профиль заполнен полностью!' 
+            {completionPercentage === 100
+              ? '✓ Профиль заполнен полностью!'
               : `Заполните все поля для завершения профиля`}
           </p>
         </div>
@@ -441,6 +457,69 @@ export default function EditDoctorProfile() {
                 className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold focus:outline-none focus:border-blue-400"
                 placeholder="+998 90 123 45 67"
               />
+            </div>
+
+            {/* Diploma Section */}
+            <div className="p-6 bg-white rounded-3xl shadow-sm border-2 border-blue-50">
+              <div className="flex items-center gap-3 mb-4">
+                <FileText className="w-6 h-6 text-blue-600" />
+                <h3 className="text-xl font-bold">Диплом и сертификаты</h3>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-sm text-gray-600">
+                  Загрузите ваш диплом для подтверждения квалификации. Проверка занимает до 6 часов.
+                </p>
+
+                {dentist?.diploma_photo_url && (
+                  <div className="relative w-full aspect-video rounded-2xl overflow-hidden border-2 border-gray-100 bg-gray-50 flex items-center justify-center">
+                    <img
+                      src={dentist.diploma_photo_url.startsWith('/') ? `${import.meta.env.VITE_API_URL}${dentist.diploma_photo_url}` : dentist.diploma_photo_url}
+                      alt="Diploma"
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                  <div className="flex items-center gap-3">
+                    {dentist?.verification_status === 'approved' ? (
+                      <CheckCircle className="w-6 h-6 text-green-500" />
+                    ) : dentist?.verification_status === 'rejected' ? (
+                      <AlertCircle className="w-6 h-6 text-red-500" />
+                    ) : (
+                      <Clock className="w-6 h-6 text-yellow-500" />
+                    )}
+                    <div>
+                      <p className="font-bold text-gray-800">
+                        {dentist?.verification_status === 'approved' ? 'Подтверждено' :
+                          dentist?.verification_status === 'rejected' ? 'Не подтверждено' : 'На проверке'}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {dentist?.verification_status === 'approved' ? 'Ваш профиль верифицирован' :
+                          dentist?.verification_status === 'rejected' ? 'Загрузите документ повторно' : 'Ожидайте завершения проверки'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <input
+                    type="file"
+                    ref={diplomaInputRef}
+                    onChange={handleDiplomaUpload}
+                    className="hidden"
+                    accept="image/*,.pdf"
+                  />
+
+                  <button
+                    onClick={() => diplomaInputRef.current?.click()}
+                    disabled={uploadDiploma.isPending}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  >
+                    <Upload className="w-4 h-4" />
+                    {uploadDiploma.isPending ? 'Загрузка...' : 'Загрузить'}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

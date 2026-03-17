@@ -11,7 +11,10 @@ import ServicesSection from '../components/DoctorProfile/ServicesSection';
 import WorksSection from '../components/DoctorProfile/WorksSection';
 import ScheduleCard from '../components/DoctorProfile/ScheduleCard';
 import SocialNetworksCard from '../components/DoctorProfile/SocialNetworksCard';
+import DaysOffModal from '../components/DoctorProfile/DaysOffModal';
 import { useDentistProfile } from '../api/profile';
+import { useCreateBulkDaysOff } from '../api/daysOff';
+import Toast from '../components/Toast';
 
 interface ProfileData {
   phone: string;
@@ -38,6 +41,10 @@ const DoctorProfile: FC = () => {
   const { t } = useTranslation();
   const user = useSelector((state: RootState) => state.user.user);
   const { data: dentistData } = useDentistProfile();
+  const createBulkDaysOff = useCreateBulkDaysOff();
+
+  const [isDaysOffModalOpen, setIsDaysOffModalOpen] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const [profileData, setProfileData] = useState<ProfileData>({
     phone: user?.phone || '',
@@ -64,7 +71,7 @@ const DoctorProfile: FC = () => {
   useEffect(() => {
     if (dentistData) {
       console.log('Dentist data from API:', dentistData); // Debug log
-      
+
       const workHours = dentistData.work_hours?.split('-') || ['08:00', '16:00'];
       const [startHour, startMinute] = workHours[0]?.split(':') || ['08', '00'];
       const [endHour, endMinute] = workHours[1]?.split(':') || ['16', '00'];
@@ -122,6 +129,34 @@ const DoctorProfile: FC = () => {
     fileInputRef.current?.click();
   };
 
+  const handleAddDayOff = () => {
+    setIsDaysOffModalOpen(true);
+  };
+
+  const handleSaveDayOff = async (data: { dates: string[]; reason?: string }) => {
+    try {
+      await createBulkDaysOff.mutateAsync(data);
+      const daysCount = data.dates.length;
+      const message = daysCount === 1
+        ? t('doctor_profile.day_off_added', 'Dam olish kuni qo\'shildi!')
+        : t('doctor_profile.days_off_added', `${daysCount} ta dam olish kuni qo'shildi!`);
+
+      setToast({
+        message,
+        type: 'success'
+      });
+
+      // Закрываем модал
+      setIsDaysOffModalOpen(false);
+    } catch (error) {
+      console.error('Error adding days off:', error);
+      setToast({
+        message: t('doctor_profile.day_off_error', 'Dam olish kunini qo\'shishda xatolik'),
+        type: 'error'
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F3F6FB]">
       <div className="max-w-[1440px] mx-auto px-6 py-6">
@@ -147,7 +182,9 @@ const DoctorProfile: FC = () => {
                 gender={profileData.gender}
                 age={profileData.age}
                 experience_years={profileData.experience_years}
+                phone={profileData.phone}
                 avatar={avatarUrl}
+                verification_status={dentistData?.verification_status}
                 onAvatarClick={triggerAvatarUpload}
               />
             </div>
@@ -179,6 +216,7 @@ const DoctorProfile: FC = () => {
               workEnd={profileData.workEnd}
               endMinute={profileData.endMinute}
               onSave={handleUpdateProfile}
+              onAddDayOff={handleAddDayOff}
             />
             <SocialNetworksCard
               telegram={profileData.telegram}
@@ -189,6 +227,23 @@ const DoctorProfile: FC = () => {
 
         </div>
       </div>
+
+      {/* Days Off Modal */}
+      <DaysOffModal
+        isOpen={isDaysOffModalOpen}
+        onClose={() => setIsDaysOffModalOpen(false)}
+        onSave={handleSaveDayOff}
+      />
+
+      {/* Toast */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          isVisible={!!toast}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

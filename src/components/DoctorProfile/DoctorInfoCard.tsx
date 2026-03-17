@@ -8,11 +8,14 @@ interface DoctorInfoCardProps {
     age: string;
     experience_years: string;
     specialization: string;
+    phone?: string;
     avatar?: string;
+    verification_status?: "pending" | "approved" | "rejected";
     onAvatarClick?: () => void;
 }
 
-const DoctorInfoCard: FC<DoctorInfoCardProps> = ({ name, gender, age, experience_years, specialization, avatar, onAvatarClick }) => {
+
+const DoctorInfoCard: FC<DoctorInfoCardProps> = ({ name, gender, age, experience_years, specialization, phone, avatar, verification_status, onAvatarClick }) => {
     const { t } = useTranslation();
     return (
         <div className="w-full h-[185px] bg-[#5B7FFF] rounded-[24px] p-6 text-white flex items-center gap-5 shadow-sm">
@@ -29,9 +32,13 @@ const DoctorInfoCard: FC<DoctorInfoCardProps> = ({ name, gender, age, experience
                 <h2 className="text-xl font-bold mb-3 tracking-tight">{name}</h2>
                 <div className="space-y-0.5 text-[13px] text-blue-50">
                     <p>{t('patient_profile.gender')}: <span className="text-white font-medium">{gender}</span></p>
+                    {phone && <p>Телефон: <span className="text-white font-medium">{phone}</span></p>}
                     {age && <p>Возраст: <span className="text-white font-medium">{age} лет</span></p>}
                     {experience_years && <p>Стаж: <span className="text-white font-medium">{experience_years} лет</span></p>}
                     <p>{t('doctor_profile.services')}: <span className="text-white font-medium">{specialization}</span></p>
+                    <p>Статус: <span className={`font-bold ${verification_status === 'approved' ? 'text-green-300' : verification_status === 'rejected' ? 'text-red-300' : 'text-yellow-200'}`}>
+                        {verification_status === 'approved' ? '✅ Диплом подтвержден' : verification_status === 'rejected' ? '❌ Диплом не принят' : '⏳ Проверка диплома'}
+                    </span></p>
                 </div>
             </div>
         </div>

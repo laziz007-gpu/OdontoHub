@@ -32,6 +32,7 @@ export interface DentistProfile {
     instagram?: string;
     whatsapp?: string;
     works_photos?: string;  // JSON string of photo URLs
+    diploma_photo_url?: string;
 }
 
 export const usePatientProfile = () => {
@@ -116,6 +117,25 @@ export const useDeletePatient = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['patients'] });
         }
+    });
+};
+
+export const useUploadDiploma = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (file: File) => {
+            const formData = new FormData();
+            formData.append('file', file);
+            const response = await api.post<{ url: string; message: string }>('/dentists/me/diploma', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            return response.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['dentistProfile'] });
+        },
     });
 };
 

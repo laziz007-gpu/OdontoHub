@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { paths } from '../../Routes/path';
 import { useTranslation } from 'react-i18next';
+import { getNotifications } from '../../api/notifications';
 import type { RootState } from '../../store/store';
 
 import NotificationIcon from '../../assets/img/icons/Notification.svg';
@@ -40,8 +41,35 @@ const Hero: React.FC<HeroProps> = ({ onSearch }) => {
     }
   };
 
-  // Notifications will be loaded from API in future
-  const notifications: Notification[] = [];
+  const [notifications, setNotifications] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const data = await getNotifications();
+        setNotifications(data.slice(0, 5));
+      } catch (err) {
+        console.error('Error fetching notifications:', err);
+      }
+    };
+    fetchNotifications();
+  }, []);
+
+  const formatNotificationMessage = (notif: any): string => {
+    const { notification_type, metadata_json, message } = notif;
+    switch (notification_type) {
+      case 'appointment_reminder': return 'Следующий приём через 30 минут';
+      case 'appointment_rescheduled': return `${metadata_json?.patient_name || ''} перенёс приём на ${metadata_json?.new_date || ''}`;
+      case 'appointment_cancelled': return `${metadata_json?.patient_name || ''} отменил приём${metadata_json?.reason ? `, причина: ${metadata_json?.reason}` : ''}`;
+      case 'analytics_check': return 'Проверьте свои результаты работ в разделе аналитика';
+      case 'rating_decreased': return `Рейтинг понизился до ${metadata_json?.new_rating || ''}`;
+      case 'rating_increased': return `Рейтинг повысился до ${metadata_json?.new_rating || ''}`;
+      case 'appointment_rated': return `${metadata_json?.patient_name || ''} оценил приём ${metadata_json?.rating || 5}✨`;
+      case 'review_left': return `${metadata_json?.patient_name || ''} оставил отзыв: ${metadata_json?.review || ''}`;
+      case 'payment_reminder': return 'Напоминание об оплате (3 дня до окончания)';
+      default: return message;
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -127,7 +155,7 @@ const Hero: React.FC<HeroProps> = ({ onSearch }) => {
                               <span className="text-[10px] font-medium text-gray-400 shrink-0">{n.time}</span>
                             </div>
                             <p className="text-sm text-gray-600 line-clamp-2 leading-tight">
-                              {n.message}
+                              {formatNotificationMessage(n)}
                             </p>
                           </div>
                         </div>

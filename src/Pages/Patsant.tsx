@@ -39,7 +39,12 @@ const Patsant: FC = () => {
   const patients = useMemo(() => {
     if (!apiPatients || !Array.isArray(apiPatients)) return [];
     return apiPatients.map((p: any) => {
-      const status = p.status || 'NEW';
+      let status = 'NEW';
+      if (p.status === 'НОВЫЙ') status = 'NEW';
+      else if (p.status === 'ЛЕЧИТСЯ') status = 'TREATING';
+      else if (p.status === 'ЗАПИСАН') status = 'RECORDED';
+      else if (p.status) status = p.status;
+
       let statusColor = 'text-green-600';
 
       if (status === 'TREATING') {

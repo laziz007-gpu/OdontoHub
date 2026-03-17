@@ -185,7 +185,8 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSu
                                         type="date"
                                         value={formData.birth_date}
                                         onChange={(e) => setFormData({ ...formData, birth_date: e.target.value })}
-                                        className="w-full h-12 bg-gray-50 border-2 border-transparent rounded-2xl px-4 text-base font-semibold focus:bg-white focus:border-blue-400 focus:outline-none transition-all"
+                                        onClick={(e) => ('showPicker' in HTMLInputElement.prototype) && e.currentTarget.showPicker()}
+                                        className="w-full h-12 bg-gray-50 border-2 border-transparent rounded-2xl px-4 text-base font-semibold focus:bg-white focus:border-blue-400 focus:outline-none transition-all cursor-pointer"
                                     />
                                 </div>
 

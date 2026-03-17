@@ -1,6 +1,8 @@
 import { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Edit2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, Calendar } from 'lucide-react';
+import { useDaysOff, useDeleteDayOff } from '../../api/daysOff';
+import { useCurrentUser } from '../../api/auth';
 
 interface ScheduleCardProps {
     schedule?: string;
@@ -9,6 +11,7 @@ interface ScheduleCardProps {
     workEnd?: string;
     endMinute?: string;
     onSave?: (newData: any) => void;
+    onAddDayOff?: () => void;
 }
 
 const ScheduleCard: FC<ScheduleCardProps> = ({
@@ -17,12 +20,51 @@ const ScheduleCard: FC<ScheduleCardProps> = ({
     startMinute = '00',
     workEnd = '16',
     endMinute = '00',
-    onSave
+    onSave,
+    onAddDayOff
 }) => {
     const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
     const minutes = ['00', '15', '30', '45'];
+
+    // Получаем информацию о текущем пользователе
+    const { data: currentUser, isLoading: userLoading, error: userError } = useCurrentUser();
+
+    // Получаем выходные дни (ближайшие 30 дней)
+    const today = new Date();
+    const futureDate = new Date();
+    futureDate.setDate(today.getDate() + 30);
+    
+    const { data: daysOff = [], refetch, isLoading, error } = useDaysOff(
+        today.toISOString().split('T')[0],
+        futureDate.toISOString().split('T')[0]
+    );
+    
+    // Отладочная информация
+    console.log('=== SCHEDULE CARD DEBUG ===');
+    console.log('Current user:', currentUser);
+    console.log('User loading:', userLoading);
+    console.log('User error:', userError);
+    console.log('Days off data:', daysOff);
+    console.log('Days off loading:', isLoading);
+    console.log('Days off error:', error);
+    console.log('API URL being called:', `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/days-off/`);
+    console.log('Date range:', { startDate: today.toISOString().split('T')[0], endDate: futureDate.toISOString().split('T')[0] });
+    console.log('Access token:', localStorage.getItem('access_token') ? 'Present' : 'Missing');
+    console.log('User role:', localStorage.getItem('role'));
+    console.log('=== END DEBUG ===');
+    
+    const deleteDayOff = useDeleteDayOff();
+
+    const handleDeleteDayOff = async (dayOffId: number) => {
+        try {
+            await deleteDayOff.mutateAsync(dayOffId);
+            refetch();
+        } catch (error) {
+            console.error('Error deleting day off:', error);
+        }
+    };
 
     const handleSave = (field: string, value: string) => {
         if (onSave) {
@@ -122,10 +164,84 @@ const ScheduleCard: FC<ScheduleCardProps> = ({
 
                 <div>
                     <span className="font-bold text-[#1E2532] text-sm mb-4 block">{t('doctor_profile.weekend')}</span>
-                    <button className="w-full bg-[#5B7FFF] text-white py-4 rounded-[22px] font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-100 hover:bg-blue-600 transition-all">
+                    <button 
+                        onClick={onAddDayOff}
+                        className="w-full bg-[#5B7FFF] text-white py-4 rounded-[22px] font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-100 hover:bg-blue-600 transition-all"
+                    >
                         <Plus className="w-4 h-4" strokeWidth={3} /> {t('doctor_profile.add')}
                     </button>
                 </div>
+
+                {/* Days Off List */}
+                {isLoading && (
+                    <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <span className="text-blue-600 text-sm">
+                            {t('common.loading', 'Yuklanmoqda...')}
+                        </span>
+                    </div>
+                )}
+
+                {error && (
+                    <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <span className="text-red-600 text-sm font-bold">
+                            {t('common.error', 'Xatolik:')} 
+                        </span>
+                        <div className="text-red-600 text-xs mt-1">
+                            {error.message || 'API xatoligi'}
+                        </div>
+                    </div>
+                )}
+
+                {!isLoading && !error && daysOff.length === 0 && (
+                    <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                        <span className="text-gray-600 text-sm">
+                            {t('doctor_profile.no_days_off', 'Dam olish kunlari yo\'q')}
+                        </span>
+                    </div>
+                )}
+
+                {daysOff.length > 0 && (
+                    <div className="mt-6">
+                        <span className="font-bold text-[#1E2532] text-sm mb-4 block">
+                            {t('doctor_profile.upcoming_days_off', 'Yaqinlashayotgan dam olish kunlari')}
+                        </span>
+                        <div className="space-y-3 max-h-48 overflow-y-auto">
+                            {daysOff.map((dayOff) => (
+                                <div
+                                    key={dayOff.id}
+                                    className="bg-[#F5F8FF] border border-blue-100 rounded-[16px] p-4 flex items-center justify-between hover:bg-blue-50 transition-colors"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                            <Calendar className="w-5 h-5 text-blue-600" />
+                                        </div>
+                                        <div>
+                                            <div className="font-bold text-[#1E2532] text-sm">
+                                                {new Date(dayOff.date).toLocaleDateString('uz-UZ', {
+                                                    day: '2-digit',
+                                                    month: '2-digit',
+                                                    year: 'numeric'
+                                                })}
+                                            </div>
+                                            {dayOff.reason && (
+                                                <div className="text-gray-600 text-xs mt-1">
+                                                    {dayOff.reason}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => handleDeleteDayOff(dayOff.id)}
+                                        className="w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center hover:bg-red-200 transition-colors"
+                                        title={t('common.delete', 'O\'chirish')}
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

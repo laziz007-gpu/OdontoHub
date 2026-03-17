@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Storage</title>
+</head>
+<body>
+    <h1>Clear Browser Storage</h1>
+    <button onclick="clearStorage()">Clear All Storage</button>
+    <div id="result"></div>
+
+    <script>
+        function clearStorage() {
+            // Clear localStorage
+            localStorage.clear();
+            
+            // Clear sessionStorage
+            sessionStorage.clear();
+            
+            // Show what was cleared
+            document.getElementById('result').innerHTML = `
+                <h2>Cleared:</h2>
+                <p>✅ localStorage cleared</p>
+                <p>✅ sessionStorage cleared</p>
+                <p>Now you can go back to your app and it should start fresh.</p>
+            `;
+        }
+
+        // Show current storage content
+        window.onload = function() {
+            console.log('Current localStorage:', localStorage);
+            console.log('Current sessionStorage:', sessionStorage);
+        }
+    </script>
+</body>
+</html>

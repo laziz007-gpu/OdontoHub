@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FaArrowLeft } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { updateAppointment } from '../api/appointments';
 import DentistImg from "../assets/img/photos/Dentist.png";
 import DoctorInfoCard from "../components/PatientAppointmentDetail/DoctorInfoCard";
 import AppointmentDetailsCard from "../components/PatientAppointmentDetail/AppointmentDetailsCard";
@@ -9,6 +10,7 @@ import ReviewModal from "../components/PatientAppointmentDetail/ReviewModal";
 
 const CheckupBookingPreview = () => {
     const navigate = useNavigate();
+    const { id } = useParams<{ id: string }>();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const appointment = {
@@ -32,10 +34,17 @@ const CheckupBookingPreview = () => {
         price: "20.000сум"
     };
 
-    const handleReviewSubmit = (rating: number, comment: string) => {
-        console.log("Review Submitted:", { rating, comment });
-        // Here you would typically send data to API
-        setIsModalOpen(false);
+    const handleReviewSubmit = async (rating: number, comment: string) => {
+        if (!id) return;
+        try {
+            await updateAppointment(parseInt(id), { rating, review: comment });
+            console.log("Review Submitted successfully");
+            setIsModalOpen(false);
+            // Optionally show success message or navigate
+        } catch (err) {
+            console.error("Error submitting review:", err);
+            // Optionally show error message
+        }
     };
 
     return (

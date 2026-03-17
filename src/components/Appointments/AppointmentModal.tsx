@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { ChevronDown, X, Loader2, Search, Plus, Phone } from 'lucide-react';
+import { ChevronDown, X, Loader2, Search, Plus, Phone, Check, Clock, Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAllPatients, useDentistProfile, useCreatePatient } from '../../api/profile';
 import { useCreateAppointment } from '../../api/appointments';
@@ -17,9 +17,11 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
     const [selectedPatientId, setSelectedPatientId] = useState<number | ''>('');
     const [searchTerm, setSearchTerm] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isServiceOpen, setIsServiceOpen] = useState(false);
     const [showQuickAdd, setShowQuickAdd] = useState(false);
     const [newPatientPhone, setNewPatientPhone] = useState('');
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const serviceRef = useRef<HTMLDivElement>(null);
 
     const [selectedDay, setSelectedDay] = useState(new Date().getDate());
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
@@ -62,11 +64,14 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
         return patient?.full_name || '';
     }, [selectedPatientId, patients]);
 
-    // Close dropdown on click outside
+    // Close dropdowns on click outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setIsDropdownOpen(false);
+            }
+            if (serviceRef.current && !serviceRef.current.contains(event.target as Node)) {
+                setIsServiceOpen(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -105,14 +110,18 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
         }
 
         const start = new Date(selectedYear, selectedMonth, selectedDay, parseInt(hour), parseInt(minute));
-        const end = new Date(start.getTime() + 60 * 60 * 1000); // Default 1 hour duration
+
+        // Format explicitly to local ISO without shifting to UTC
+        const formatLocalISO = (d: Date) => {
+            const pad = (n: number) => n.toString().padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
+        };
 
         try {
             await createAppointment.mutateAsync({
                 patient_id: selectedPatientId as number,
                 dentist_id: dentist.id,
-                start_time: start.toISOString(),
-                end_time: end.toISOString(),
+                start_time: formatLocalISO(start),
                 notes: notes,
                 service: selectedService
             });
@@ -130,51 +139,54 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
     return (
         <div
             onClick={onClose}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 cursor-pointer"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-md animate-in fade-in duration-300 cursor-pointer"
         >
             <div
                 onClick={(e) => e.stopPropagation()}
-                className="bg-white w-full max-w-2xl rounded-[32px] p-6 md:p-8 relative shadow-2xl animate-in zoom-in-95 duration-200 cursor-default overflow-visible"
+                className="bg-white w-full max-w-2xl rounded-[40px] p-10 md:p-12 relative shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-white/40 transform animate-in zoom-in-95 duration-300 cursor-default overflow-visible"
             >
                 <div
                     onClick={onClose}
-                    className="absolute top-4 right-4 md:top-6 md:right-6 cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors group"
+                    className="absolute top-6 right-6 cursor-pointer w-12 h-12 flex items-center justify-center bg-gray-50 hover:bg-gray-100 rounded-2xl transition-all duration-300 group"
                 >
-                    <X className="w-5 h-5 md:w-6 md:h-6 text-gray-400 group-hover:text-[#1a1f36] transition-colors" />
+                    <X className="w-6 h-6 text-gray-400 group-hover:text-[#1a1f36] group-hover:rotate-90 transition-all duration-300" />
                 </div>
 
-                <h2 className="text-2xl md:text-3xl font-black text-center text-[#1a1f36] mb-6 md:mb-8 tracking-tight">
+                <h2 className="text-3xl md:text-4xl font-black text-center text-[#1a1f36] mb-10 tracking-tight">
                     {t('modal.title')}
                 </h2>
 
-                <div className="space-y-4 md:space-y-5">
-                    {/* Row 1: Searchable Patient Selection */}
-                    <div className="grid grid-cols-1 gap-4 md:gap-5 relative" ref={dropdownRef}>
-                        <div className="relative">
-                            <input
-                                type="text"
-                                placeholder={t('modal.name_placeholder') || 'Выберите пациента'}
-                                value={isDropdownOpen ? searchTerm : selectedPatientName || searchTerm}
-                                onChange={(e) => {
-                                    setSearchTerm(e.target.value);
-                                    setIsDropdownOpen(true);
-                                    if (!e.target.value) {
-                                        setSelectedPatientId('');
-                                        setShowQuickAdd(false);
-                                    }
-                                }}
-                                onFocus={() => setIsDropdownOpen(true)}
-                                className="w-full h-12 md:h-14 bg-[#efefef] rounded-[16px] px-5 text-base md:text-lg font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none"
-                            />
-                            {isLoadingPatients ? (
-                                <Loader2 className="absolute right-6 top-1/2 -translate-y-1/2 w-6 h-6 text-[#1a1f36] animate-spin opacity-40" />
-                            ) : (
-                                <Search className="absolute right-6 top-1/2 -translate-y-1/2 w-6 h-6 text-[#1a1f36] pointer-events-none opacity-40" />
-                            )}
+                <div className="space-y-6">
+                    {/* Searchable Patient Selection */}
+                    <div className="relative" ref={dropdownRef}>
+                        <div className="group">
+                            <label className="block text-[11px] font-black text-[#1a1f36] mb-2 ml-4 uppercase tracking-widest opacity-40">Пациент</label>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    placeholder={t('modal.name_placeholder') || 'Выберите пациента'}
+                                    value={isDropdownOpen ? searchTerm : selectedPatientName || searchTerm}
+                                    onChange={(e) => {
+                                        setSearchTerm(e.target.value);
+                                        setIsDropdownOpen(true);
+                                        if (!e.target.value) {
+                                            setSelectedPatientId('');
+                                            setShowQuickAdd(false);
+                                        }
+                                    }}
+                                    onFocus={() => setIsDropdownOpen(true)}
+                                    className="w-full h-[68px] bg-[#f8f9fc] rounded-[24px] px-8 text-xl font-bold text-[#1a1f36] border-2 border-transparent focus:bg-white focus:border-[#4f6bff] focus:shadow-[0_0_0_8px_rgba(79,107,255,0.05)] transition-all outline-none pr-16"
+                                />
+                                {isLoadingPatients ? (
+                                    <Loader2 className="absolute right-6 top-1/2 -translate-y-1/2 w-6 h-6 text-[#4f6bff] animate-spin" />
+                                ) : (
+                                    <Search className="absolute right-6 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400 opacity-40 group-focus-within:text-[#4f6bff] group-focus-within:opacity-100 transition-all" />
+                                )}
+                            </div>
                         </div>
 
                         {isDropdownOpen && !showQuickAdd && (
-                            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-[24px] shadow-2xl border border-gray-100 z-[60] max-h-60 overflow-y-auto overflow-x-hidden animate-in slide-in-from-top-2 duration-200">
+                            <div className="absolute top-[calc(100%+10px)] left-0 right-0 bg-white rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 z-[60] max-h-72 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-300 custom-scrollbar">
                                 {filteredPatients.length > 0 ? (
                                     filteredPatients.map((p: any) => (
                                         <div
@@ -184,15 +196,18 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
                                                 setSearchTerm('');
                                                 setIsDropdownOpen(false);
                                             }}
-                                            className="px-6 py-4 hover:bg-[#4f6bff]/10 cursor-pointer transition-colors flex items-center gap-3"
+                                            className="px-8 py-5 hover:bg-[#4f6bff]/5 cursor-pointer transition-colors flex items-center justify-between group"
                                         >
-                                            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center font-bold text-[#1a1f36]">
-                                                {p.full_name?.charAt(0)}
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 bg-[#4f6bff]/10 rounded-2xl flex items-center justify-center font-black text-[#4f6bff]">
+                                                    {p.full_name?.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <p className="font-bold text-[#1a1f36] text-lg group-hover:text-[#4f6bff] transition-colors">{p.full_name}</p>
+                                                    <p className="text-xs font-bold text-gray-400 tracking-wide">{p.phone || 'Нет номера'}</p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className="font-bold text-[#1a1f36]">{p.full_name}</p>
-                                                <p className="text-xs text-gray-400">{p.phone || 'Нет номера'}</p>
-                                            </div>
+                                            {selectedPatientId === p.id && <Check className="text-[#4f6bff]" size={20} />}
                                         </div>
                                     ))
                                 ) : (
@@ -203,127 +218,118 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
                                         {searchTerm.length > 2 && (
                                             <button
                                                 onClick={() => setShowQuickAdd(true)}
-                                                className="w-full mt-2 py-4 bg-[#4f6bff]/10 text-[#4f6bff] rounded-[18px] font-bold flex items-center justify-center gap-2 hover:bg-[#4f6bff]/20 transition-colors"
+                                                className="w-full mt-2 py-5 bg-[#4f6bff]/5 text-[#4f6bff] rounded-[20px] font-black text-sm flex items-center justify-center gap-2 hover:bg-[#4f6bff]/10 transition-all active:scale-95"
                                             >
-                                                <Plus size={20} />
-                                                Добавить "{searchTerm}" как нового пациента
+                                                <Plus size={18} />
+                                                Создать "{searchTerm}"
                                             </button>
                                         )}
                                     </div>
                                 )}
                             </div>
                         )}
+                    </div>
 
-                        {showQuickAdd && (
-                            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-[24px] shadow-2xl border border-gray-100 z-[60] p-6 animate-in slide-in-from-top-2 duration-200">
-                                <h3 className="font-bold text-[#1a1f36] mb-4 flex items-center gap-2">
-                                    <Plus size={18} /> Быстрое добавление пациента
-                                </h3>
-                                <div className="space-y-4">
-                                    <div className="relative">
-                                        <input
-                                            type="tel"
-                                            placeholder="Номер телефона"
-                                            value={newPatientPhone}
-                                            onChange={(e) => setNewPatientPhone(e.target.value)}
-                                            className="w-full h-14 bg-[#efefef] rounded-[15px] px-10 text-lg font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none"
-                                        />
-                                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    </div>
-                                    <div className="flex gap-3">
-                                        <button
-                                            onClick={() => setShowQuickAdd(false)}
-                                            className="flex-1 py-3 bg-gray-100 text-gray-500 font-bold rounded-[15px] hover:bg-gray-200 transition-colors"
-                                        >
-                                            Отмена
-                                        </button>
-                                        <button
-                                            onClick={handleQuickAdd}
-                                            disabled={!newPatientPhone || createPatient.isPending}
-                                            className="flex-[2] py-3 bg-[#4f6bff] text-white font-bold rounded-[15px] hover:bg-[#3d56d5] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                                        >
-                                            {createPatient.isPending && <Loader2 size={18} className="animate-spin" />}
-                                            Создать и выбрать
-                                        </button>
-                                    </div>
-                                </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Premium Service Selector */}
+                        <div className="relative" ref={serviceRef}>
+                            <label className="block text-[11px] font-black text-[#1a1f36] mb-2 ml-4 uppercase tracking-widest opacity-40">Услуга</label>
+                            <div
+                                onClick={() => setIsServiceOpen(!isServiceOpen)}
+                                className={`w-full h-[68px] flex items-center justify-between px-8 bg-[#f8f9fc] border-2 rounded-[24px] cursor-pointer transition-all hover:bg-white ${isServiceOpen ? 'border-[#4f6bff] bg-white shadow-[0_0_0_8px_rgba(79,107,255,0.05)]' : 'border-transparent'
+                                    }`}
+                            >
+                                <span className={`text-lg font-bold truncate ${selectedService ? 'text-[#1a1f36]' : 'text-gray-400'}`}>
+                                    {selectedService || 'Выберите услугу'}
+                                </span>
+                                <ChevronDown className={`w-6 h-6 text-gray-400 transition-transform duration-300 ${isServiceOpen ? 'rotate-180 text-[#4f6bff]' : ''}`} />
                             </div>
-                        )}
+
+                            {isServiceOpen && (
+                                <div className="absolute top-[calc(100%+10px)] left-0 right-0 bg-white rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 z-[60] py-3 animate-in fade-in slide-in-from-top-2 duration-300 max-h-60 overflow-y-auto custom-scrollbar">
+                                    {services?.map((s: any) => (
+                                        <div
+                                            key={s.id}
+                                            onClick={() => {
+                                                setSelectedService(s.name);
+                                                setIsServiceOpen(false);
+                                            }}
+                                            className="px-8 py-4 hover:bg-[#4f6bff]/5 cursor-pointer flex items-center justify-between group"
+                                        >
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-[#1a1f36] group-hover:text-[#4f6bff] transition-colors">{s.name}</span>
+                                                <span className="text-xs font-bold text-gray-400">{s.price} {s.currency || 'UZS'}</span>
+                                            </div>
+                                            {selectedService === s.name && <Check className="text-[#4f6bff]" size={18} />}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Visit Type Selector */}
+                        <div className="group">
+                            <label className="block text-[11px] font-black text-[#1a1f36] mb-2 ml-4 uppercase tracking-widest opacity-40">Тип визита</label>
+                            <div className="relative">
+                                <select
+                                    value={visitType}
+                                    onChange={(e) => setVisitType(e.target.value as 'primary' | 'repeat')}
+                                    className="w-full h-[68px] bg-[#f8f9fc] rounded-[24px] px-8 text-lg font-bold text-[#1a1f36] border-2 border-transparent cursor-pointer hover:bg-white focus:border-[#4f6bff] transition-all outline-none appearance-none"
+                                >
+                                    <option value="primary">{t('modal.patient_statuses.primary')}</option>
+                                    <option value="repeat">{t('modal.patient_statuses.recurring')}</option>
+                                </select>
+                                <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400 pointer-events-none opacity-40" />
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-                        <div className="relative">
-                            <select
-                                value={selectedService}
-                                onChange={(e) => setSelectedService(e.target.value)}
-                                className="w-full h-12 md:h-14 bg-[#efefef] rounded-[16px] px-5 text-base md:text-lg font-bold text-[#1a1f36] border-none appearance-none cursor-pointer focus:ring-2 focus:ring-[#4f6bff]/20 outline-none"
-                            >
-                                {services?.map((s: any) => (
-                                    <option key={s.id} value={s.name}>
-                                        {s.name} - {s.price} {s.currency || 'UZS'}
-                                    </option>
-                                ))}
-                                {!services || services.length === 0 && (
-                                    <option value="" disabled>Нет доступных услуг</option>
-                                )}
-                            </select>
-                            <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a1f36] pointer-events-none opacity-40" />
-                        </div>
-                        <div className="relative">
-                            <select
-                                value={visitType}
-                                onChange={(e) => setVisitType(e.target.value as 'primary' | 'repeat')}
-                                className="w-full h-12 md:h-14 bg-[#efefef] rounded-[16px] px-5 text-base md:text-lg font-bold text-[#1a1f36] border-none appearance-none cursor-pointer focus:ring-2 focus:ring-[#4f6bff]/20 outline-none"
-                            >
-                                <option value="primary">{t('modal.patient_statuses.primary')}</option>
-                                <option value="repeat">{t('modal.patient_statuses.recurring')}</option>
-                            </select>
-                            <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1a1f36] pointer-events-none opacity-40" />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-[1.5fr,1fr] gap-4 md:gap-5 items-end">
-                        <div className="flex flex-col gap-2">
-                            <label className="text-left text-sm font-bold text-gray-500 ml-2">{t('modal.date_placeholder')}</label>
-                            <div className="flex gap-2 h-12 md:h-14">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
+                        {/* Date Selection */}
+                        <div className="space-y-4">
+                            <label className="block text-[11px] font-black text-[#1a1f36] ml-4 uppercase tracking-widest opacity-40 flex items-center gap-2">
+                                <Calendar size={14} className="opacity-60" /> {t('modal.date_placeholder')}
+                            </label>
+                            <div className="flex gap-2">
                                 <div className="relative flex-1">
                                     <select
                                         value={selectedDay}
                                         onChange={(e) => setSelectedDay(parseInt(e.target.value))}
-                                        className="w-full h-full bg-[#efefef] rounded-[16px] px-3 pr-8 text-base md:text-lg font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none appearance-none cursor-pointer"
+                                        className="w-full h-14 bg-[#f8f9fc] rounded-2xl px-4 text-lg font-black text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/10 outline-none appearance-none cursor-pointer"
                                     >
                                         {days.map(d => <option key={d} value={d}>{d}</option>)}
                                     </select>
-                                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5f6377] pointer-events-none" />
+                                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                                 </div>
-
                                 <div className="relative flex-[2]">
                                     <select
                                         value={selectedMonth}
                                         onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                                        className="w-full h-full bg-[#efefef] rounded-[16px] px-3 pr-8 text-base md:text-lg font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none appearance-none cursor-pointer"
+                                        className="w-full h-14 bg-[#f8f9fc] rounded-2xl px-4 text-lg font-black text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/10 outline-none appearance-none cursor-pointer"
                                     >
                                         {months.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
                                     </select>
-                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5f6377] pointer-events-none" />
+                                    <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                                 </div>
-
                                 <div className="relative flex-1">
                                     <select
                                         value={selectedYear}
                                         onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                                        className="w-full h-full bg-[#efefef] rounded-[16px] px-3 pr-8 text-base md:text-lg font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none appearance-none cursor-pointer"
+                                        className="w-full h-14 bg-[#f8f9fc] rounded-2xl px-4 text-lg font-black text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/10 outline-none appearance-none cursor-pointer"
                                     >
                                         {years.map(y => <option key={y} value={y}>{y}</option>)}
                                     </select>
-                                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5f6377] pointer-events-none" />
+                                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-2">
-                            <label className="text-right text-sm font-bold text-gray-500 mr-2">{t('modal.time_label')}</label>
-                            <div className="flex items-center gap-2 bg-[#efefef] rounded-[16px] p-2 h-12 md:h-14 px-4 justify-center">
+                        {/* Time Selection */}
+                        <div className="space-y-4">
+                            <label className="block text-[11px] font-black text-[#1a1f36] ml-4 uppercase tracking-widest opacity-40 flex items-center gap-2">
+                                <Clock size={14} className="opacity-60" /> {t('modal.time_label')}
+                            </label>
+                            <div className="flex items-center gap-3 bg-[#f8f9fc] rounded-[24px] h-[68px] px-8 justify-center border-2 border-transparent focus-within:bg-white focus-within:border-[#4f6bff] transition-all">
                                 <input
                                     type="text"
                                     value={hour}
@@ -337,9 +343,9 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
                                         if (val.length === 1) setHour('0' + val);
                                         if (val === '') setHour('00');
                                     }}
-                                    className="w-12 md:w-16 bg-transparent text-center text-2xl md:text-3xl font-black text-[#1a1f36] outline-none border-none p-0 focus:ring-0"
+                                    className="w-14 bg-transparent text-center text-3xl font-black text-[#1a1f36] outline-none border-none p-0 focus:ring-0"
                                 />
-                                <div className="h-6 md:h-8 w-[2px] bg-gray-300 mx-1 md:mx-2"></div>
+                                <div className="text-2xl font-black text-gray-300 group-focus-within:text-[#4f6bff]/30 mx-1">:</div>
                                 <input
                                     type="text"
                                     value={minute}
@@ -353,26 +359,33 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
                                         if (val.length === 1) setMinute('0' + val);
                                         if (val === '') setMinute('00');
                                     }}
-                                    className="w-12 md:w-16 bg-transparent text-center text-2xl md:text-3xl font-black text-[#1a1f36] outline-none border-none p-0 focus:ring-0"
+                                    className="w-14 bg-transparent text-center text-3xl font-black text-[#1a1f36] outline-none border-none p-0 focus:ring-0"
                                 />
                             </div>
                         </div>
                     </div>
 
-                    <textarea
-                        placeholder={t('modal.notes_placeholder')}
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        className="w-full h-24 md:h-32 bg-[#efefef] rounded-[16px] p-4 md:p-5 text-base md:text-lg font-bold text-[#1a1f36] placeholder:text-gray-500 border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none resize-none"
-                    ></textarea>
+                    <div className="pt-4 border-t-2 border-gray-50">
+                        <label className="block text-[11px] font-black text-[#1a1f36] mb-2 ml-4 uppercase tracking-widest opacity-40">Заметки</label>
+                        <textarea
+                            placeholder={t('modal.notes_placeholder')}
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            className="w-full h-32 bg-[#f8f9fc] rounded-[28px] p-6 text-lg font-bold text-[#1a1f36] placeholder:text-gray-300 border-2 border-transparent focus:bg-white focus:border-[#4f6bff] transition-all outline-none resize-none"
+                        ></textarea>
+                    </div>
 
                     <button
                         onClick={handleSave}
                         disabled={!selectedPatientId || createAppointment.isPending}
-                        className="w-full py-4 md:py-5 bg-[#00e396] text-white text-lg md:text-xl font-black rounded-[20px] shadow-lg shadow-[#00e396]/20 hover:bg-[#00d08a] transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                        className="w-full h-20 bg-[#00e396] text-white text-xl font-black rounded-[28px] shadow-[0_15px_30px_rgba(0,227,150,0.3)] hover:shadow-[0_20px_40px_rgba(0,227,150,0.4)] hover:-translate-y-1 transition-all active:scale-[0.98] disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-4"
                     >
-                        {createAppointment.isPending && <Loader2 className="animate-spin" />}
-                        {t('modal.record')}
+                        {createAppointment.isPending ? (
+                            <Loader2 className="animate-spin w-8 h-8" />
+                        ) : (
+                            <Plus size={28} />
+                        )}
+                        <span>{t('modal.record')}</span>
                     </button>
                 </div>
             </div>
@@ -381,3 +394,4 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
 };
 
 export default AppointmentModal;
+

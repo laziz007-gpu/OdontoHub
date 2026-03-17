@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUnreadCount, getNotifications, markAsRead } from '../../api/notifications';
-import { Notification } from '../../types/notification';
+import type { Notification } from '../../types/notification';
 
 const NotificationBadge = () => {
     const navigate = useNavigate();
@@ -13,10 +13,10 @@ const NotificationBadge = () => {
 
     useEffect(() => {
         fetchUnreadCount();
-        
+
         // Poll for updates every 30 seconds
         const interval = setInterval(fetchUnreadCount, 30000);
-        
+
         return () => clearInterval(interval);
     }, []);
 
@@ -95,28 +95,29 @@ const NotificationBadge = () => {
         }
     };
 
-    const formatNotificationMessage = (notification: Notification): string => {
-        const { notification_type, notification_data } = notification;
-        
+    const formatNotificationMessage = (notification: any): string => {
+        const { notification_type, metadata_json } = notification;
+
         switch (notification_type) {
             case 'appointment_reminder':
-                return 'Следующий приём через 15 минут';
+                return 'Следующий приём через 30 минут';
             case 'appointment_rescheduled':
-                return `Перенес приём на ${notification_data?.new_time || ''}`;
+                return `${metadata_json?.patient_name || ''} перенёс приём на ${metadata_json?.new_date || ''}`;
             case 'appointment_cancelled':
-                return `Отменил приём`;
+                const reason = metadata_json?.reason;
+                return `${metadata_json?.patient_name || ''} отменил приём${reason ? `, причина: ${reason}` : ''}`;
             case 'analytics_check':
-                return 'Напоминание: ежемесячная оплата';
+                return 'Проверьте свои результаты работ в разделе аналитика';
             case 'rating_decreased':
-                return `Рейтинг понизился до ${notification_data?.new_rating || ''}`;
+                return `Рейтинг понизился до ${metadata_json?.new_rating || ''}`;
             case 'rating_increased':
-                return `Рейтинг повысился до ${notification_data?.new_rating || ''}`;
+                return `Рейтинг повысился до ${metadata_json?.new_rating || ''}`;
             case 'appointment_rated':
-                return `Поставил вам ${notification_data?.rating || 5} ★★★★★`;
+                return `${metadata_json?.patient_name || ''} оценил приём ${metadata_json?.rating || 5}✨`;
             case 'review_left':
-                return 'Оставил подробный отзыв';
+                return `${metadata_json?.patient_name || ''} оставил отзыв: ${metadata_json?.review || ''}`;
             case 'payment_reminder':
-                return 'Ждёт вашего ответа уже 4+ часа';
+                return 'Напоминание об оплате (3 дня до окончания)';
             default:
                 return notification.message;
         }
