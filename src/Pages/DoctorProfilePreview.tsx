@@ -1,19 +1,31 @@
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ArrowLeft, Video } from "lucide-react";
 import DentistImg from "../assets/img/photos/Dentist.png";
-import { useCreateAppointment } from "../api/appointments";
-import { usePatientProfile } from "../api/profile";
-import { useState } from "react";
 
 const DoctorProfilePreview = () => {
     const navigate = useNavigate();
-    const [isBooked, setIsBooked] = useState(false);
-    const createAppointment = useCreateAppointment();
-    const { data: patient } = usePatientProfile();
+    const location = useLocation();
+    
+    // Get doctor data from navigation state
+    const doctorFromState = location.state?.doctor;
 
-    const doctorData = {
-        id: 1, // Placeholder dentist_id
-        name: "Откир Комилов",
+    const doctorData = doctorFromState ? {
+        id: 1,
+        name: doctorFromState.name,
+        phone: doctorFromState.phone || "+998 (90) 123 45 67",
+        gender: "Мужчина",
+        birthDate: "20.09.2000",
+        age: "26 лет",
+        email: "example@gmail.com",
+        address: doctorFromState.address || "ул. Амира Темура, 11кв, 20дом",
+        education: "ТашПМИ(Факультет)",
+        clinic: doctorFromState.clinic || "Не указано",
+        specialty: doctorFromState.specialty || doctorFromState.direction,
+        experience: doctorFromState.experience || "5 лет",
+        image: doctorFromState.image || DentistImg
+    } : {
+        id: 1,
+        name: "Махмуд Пулатов",
         phone: "+998 (90) 123 45 67",
         gender: "Мужчина",
         birthDate: "20.09.2000",
@@ -21,10 +33,14 @@ const DoctorProfilePreview = () => {
         email: "example@gmail.com",
         address: "ул. Амира Темура, 11кв, 20дом",
         education: "ТашПМИ(Факультет)",
-        clinic: "Не указано"
+        clinic: "Не указано",
+        specialty: "Ортодонтия",
+        experience: "5 лет",
+        image: DentistImg
     };
 
     const handleBook = async () => {
+<<<<<<< HEAD
         if (!patient) return;
 
         const start = new Date();
@@ -49,6 +65,20 @@ const DoctorProfilePreview = () => {
         } catch (error) {
             console.error("Booking failed", error);
         }
+=======
+        // Navigate to booking page with doctor data
+        navigate('/booking', { 
+            state: { 
+                doctor: {
+                    name: doctorData.name,
+                    value: "d1", // Махмуд Пулатов
+                    phone: doctorData.phone,
+                    specialty: "Стоматолог",
+                    image: DentistImg
+                }
+            } 
+        });
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
     };
 
     return (
@@ -69,7 +99,7 @@ const DoctorProfilePreview = () => {
                 <div className="flex-1 px-4 space-y-4">
                     <div className="flex flex-col items-center">
                         <div className="w-[180px] h-[180px] md:w-[220px] md:h-[220px] rounded-full overflow-hidden border-8 border-white shadow-xl mb-4">
-                            <img src={DentistImg} alt="Doctor" className="w-full h-full object-cover" />
+                            <img src={doctorData.image} alt="Doctor" className="w-full h-full object-cover" />
                         </div>
 
                         <div className="w-full bg-white rounded-[24px] p-5 shadow-sm">
@@ -91,7 +121,12 @@ const DoctorProfilePreview = () => {
                         </div>
                     </div>
 
-                    <button className="w-full bg-[#4E70FF] text-white py-5 px-8 rounded-[24px] flex items-center justify-between group active:scale-[0.98] transition-all shadow-lg shadow-blue-500/20">
+                    <button 
+                        onClick={() => navigate('/doctor-services', { 
+                            state: { dentist_id: doctorFromState?.id } 
+                        })}
+                        className="w-full bg-[#4E70FF] text-white py-5 px-8 rounded-[24px] flex items-center justify-between group active:scale-[0.98] transition-all shadow-lg shadow-blue-500/20"
+                    >
                         <span className="text-xl font-black text-black">Услуги</span>
                         <div className="p-1 border-2 border-white rounded-lg bg-black">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -100,12 +135,32 @@ const DoctorProfilePreview = () => {
                         </div>
                     </button>
 
-                    <button className="w-full bg-[#FFBC00] text-white py-5 px-8 rounded-[24px] flex items-center justify-between group active:scale-[0.98] transition-all shadow-lg shadow-amber-500/20">
+                    <button 
+                        onClick={() => navigate('/doctor-cases')}
+                        className="w-full bg-[#FFBC00] text-white py-5 px-8 rounded-[24px] flex items-center justify-between group active:scale-[0.98] transition-all shadow-lg shadow-amber-500/20"
+                    >
                         <span className="text-xl font-black text-black">Кейсы</span>
                         <div className="p-1 border-2 border-white rounded-lg bg-black">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M7 17L17 7M17 7H7M17 7V17" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
+                        </div>
+                    </button>
+
+                    <button 
+                        onClick={() => navigate('/video-call', { 
+                            state: { 
+                                participant: {
+                                    name: doctorData.name,
+                                    role: 'dentist'
+                                }
+                            } 
+                        })}
+                        className="w-full bg-[#10B981] text-white py-5 px-8 rounded-[24px] flex items-center justify-between group active:scale-[0.98] transition-all shadow-lg shadow-emerald-500/20"
+                    >
+                        <span className="text-xl font-black text-white">Онлайн консультация</span>
+                        <div className="p-2 bg-white rounded-lg">
+                            <Video size={24} className="text-[#10B981]" />
                         </div>
                     </button>
 
@@ -135,19 +190,9 @@ const DoctorProfilePreview = () => {
                     <div className="pt-6 pb-12">
                         <button
                             onClick={handleBook}
-                            disabled={createAppointment.isPending || isBooked}
-                            className={`w-full py-6 rounded-[24px] text-xl font-black transition-all active:scale-[0.98] shadow-lg flex items-center justify-center gap-3 ${isBooked
-                                    ? "bg-white text-[#11D76A] border-2 border-[#11D76A]"
-                                    : "bg-[#11D76A] text-white hover:shadow-emerald-500/40 shadow-emerald-500/30"
-                                }`}
+                            className="w-full py-6 rounded-[24px] text-xl font-black transition-all active:scale-[0.98] shadow-lg flex items-center justify-center gap-3 bg-[#11D76A] text-white hover:shadow-emerald-500/40 shadow-emerald-500/30"
                         >
-                            {createAppointment.isPending && <Loader2 className="animate-spin" />}
-                            {isBooked ? (
-                                <>
-                                    <CheckCircle2 size={24} />
-                                    Готово!
-                                </>
-                            ) : "Записаться"}
+                            Записаться
                         </button>
                     </div>
                 </div>

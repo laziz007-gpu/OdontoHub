@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import { useDentistProfile, useDeletePatient } from '../api/profile';
+import { toast } from '../components/Shared/Toast';
 import PatientInfoSection from '../components/Patients/PatientInfoSection';
 import PrescriptionSection from '../components/Patients/PrescriptionSection';
 import AllergySection from '../components/Patients/AllergySection';
@@ -26,11 +27,19 @@ const PatientDetailPage = () => {
     if (window.confirm(t('common.confirm_delete'))) {
       try {
         await deletePatient.mutateAsync(patientId);
+<<<<<<< HEAD
         alert(t('patients_list.new_patient_added')); // I should probably have a better key for deletion success
         navigate('/patients');
       } catch (error) {
         console.error('Error deleting patient:', error);
         alert(t('doctor_profile.photo_save_error')); // And here
+=======
+        toast.success('Пациент успешно удалён');
+        navigate('/patients');
+      } catch (error) {
+        console.error('Error deleting patient:', error);
+        toast.error('Ошибка при удалении пациента');
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
       }
     }
   };

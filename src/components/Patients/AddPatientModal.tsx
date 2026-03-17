@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Camera, X, Loader2, Check } from 'lucide-react';
 import DentistImg from "../../assets/img/photos/Dentist.png";
 import { useCreatePatient } from '../../api/profile';
+import { toast } from '../Shared/Toast';
 
 interface AddPatientModalProps {
     isOpen: boolean;
@@ -38,7 +39,11 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSu
         e.preventDefault();
 
         if (!formData.full_name.trim() || !formData.phone.trim()) {
+<<<<<<< HEAD
             alert(t('common.error'));
+=======
+            toast.warning('Пожалуйста, заполните обязательные поля');
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
             return;
         }
 
@@ -67,8 +72,19 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSu
             }
         } catch (error: any) {
             console.error("Failed to create patient", error);
+<<<<<<< HEAD
             const errorMessage = error.response?.data?.detail || t('common.error');
             alert(errorMessage);
+=======
+            const errorMessage = error.response?.data?.detail || "Ошибка при создании пациента";
+            
+            // Check if it's an authentication error
+            if (error.response?.status === 401) {
+                toast.error('Ошибка авторизации. Пожалуйста, войдите в систему снова.');
+            } else {
+                toast.error(errorMessage);
+            }
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
         }
     };
 

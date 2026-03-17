@@ -7,6 +7,7 @@ class AppointmentBase(BaseModel):
     start_time: datetime
     end_time: datetime
     service: str | None = None
+    price: int | None = None
 
 class AppointmentCreate(AppointmentBase):
     patient_id: int | None = None
@@ -28,6 +29,7 @@ class AppointmentSchema(AppointmentBase):
     status: AppointmentStatus
     cancel_reason: str | None = None
     notes: str | None = None
+    price: int | None = None
 
     class Config:
         from_attributes = True

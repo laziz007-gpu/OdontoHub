@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { store } from './store/store'
 import { router } from "./Routes";
+import { ToastContainer } from "./components/Shared/Toast";
 import "./index.css"
 import '../src/i18n.js'
 
@@ -14,6 +15,7 @@ createRoot(document.getElementById('root')!).render(
   <Provider store={store}>
     <QueryClientProvider client={client}>
       <RouterProvider router={router} />
+      <ToastContainer />
     </QueryClientProvider>
   </Provider>
 )

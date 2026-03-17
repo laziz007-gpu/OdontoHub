@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAllPatients, useDentistProfile, useCreatePatient } from '../../api/profile';
 import { useCreateAppointment } from '../../api/appointments';
 import { useServices } from '../../api/services';
+import { toast } from '../Shared/Toast';
 
 interface AppointmentModalProps {
     isOpen: boolean;
@@ -99,7 +100,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
         } catch (error: any) {
             console.error("Failed to create patient", error);
             const errorMessage = error.response?.data?.detail || "Failed to create patient";
-            alert(errorMessage);
+            toast.error(errorMessage);
         }
     };
 
@@ -130,11 +131,9 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
         } catch (error: any) {
             console.error("Failed to create appointment", error);
             const errorMessage = error.response?.data?.detail || t('common.error_occurred') || "Ошибка при создании записи";
-            alert(errorMessage);
+            toast.error(errorMessage);
         }
     };
-
-    if (!isOpen) return null;
 
     return (
         <div

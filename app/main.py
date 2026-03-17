@@ -15,18 +15,12 @@ app = FastAPI(title="OdontoHub API", version="1.0.0")
 # CORS configuration - MUST be added before routes
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "https://odontohubapp.netlify.app",
-        "https://odontohub.netlify.app",
-        "https://odontohub-app.netlify.app",
-        "https://statuesque-bonbon-133025.netlify.app",
-    ],
+    allow_origins=["*"],  # Development: Allow all origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],
+    max_age=3600,
 )
 
 ALLOWED_ORIGINS = [

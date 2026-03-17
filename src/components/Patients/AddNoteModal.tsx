@@ -2,6 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { X, Loader2, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAllPatients } from '../../api/profile';
+import { toast } from '../Shared/Toast';
 
 interface AddNoteModalProps {
     isOpen: boolean;
@@ -49,7 +50,11 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, onSuccess,
         e.preventDefault();
 
         if (!selectedPatientId || !note.trim()) {
+<<<<<<< HEAD
             alert(t('modals.note.error_fields'));
+=======
+            toast.warning('Пожалуйста, выберите пациента и введите заметку');
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
             return;
         }
 
@@ -65,7 +70,11 @@ const AddNoteModal: React.FC<AddNoteModalProps> = ({ isOpen, onClose, onSuccess,
             onClose();
         } catch (error) {
             console.error("Failed to add note", error);
+<<<<<<< HEAD
             alert(t('modals.note.error_save'));
+=======
+            toast.error("Ошибка при добавлении заметки");
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
         } finally {
             setIsSubmitting(false);
         }

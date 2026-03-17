@@ -1,13 +1,15 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class ServiceBase(BaseModel):
     name: str
     price: float
+    dentist_id: Optional[int] = None
 
 class ServiceCreate(ServiceBase):
     pass
 
-class ServiceUpdate(ServiceBase):
+class ServiceUpdate(BaseModel):
     name: str | None = None
     price: float | None = None
 

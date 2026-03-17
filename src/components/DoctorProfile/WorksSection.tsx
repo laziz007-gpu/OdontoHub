@@ -2,6 +2,7 @@ import { type FC, useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, ImageIcon, X } from 'lucide-react';
 import { useDentistProfile, useUpdateDentistProfile } from '../../api/profile';
+import { toast } from '../Shared/Toast';
 
 const MAX_PHOTOS = 20;
 
@@ -33,7 +34,7 @@ const WorksSection: FC = () => {
 
         const remainingSlots = MAX_PHOTOS - workPhotos.length;
         if (remainingSlots <= 0) {
-            alert(t('doctor_profile.max_photos_reached'));
+            toast.warning(t('doctor_profile.max_photos_reached'));
             return;
         }
 
@@ -64,7 +65,7 @@ const WorksSection: FC = () => {
             setTimeout(() => setShowSuccessNotification(false), 2000);
         } catch (error) {
             console.error('Failed to save photos:', error);
-            alert(t('doctor_profile.photo_save_error'));
+            toast.error(t('doctor_profile.photo_save_error'));
         }
 
         e.target.value = '';

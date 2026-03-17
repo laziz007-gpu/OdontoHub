@@ -95,25 +95,43 @@ const NotificationBadge = () => {
         }
     };
 
+<<<<<<< HEAD
     const formatNotificationMessage = (notification: any): string => {
         const { notification_type, metadata_json } = notification;
 
+=======
+    const formatNotificationMessage = (notification: Notification): string => {
+        const { notification_type, metadata } = notification;
+        
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
         switch (notification_type) {
             case 'appointment_reminder':
                 return 'Следующий приём через 30 минут';
             case 'appointment_rescheduled':
+<<<<<<< HEAD
                 return `${metadata_json?.patient_name || ''} перенёс приём на ${metadata_json?.new_date || ''}`;
+=======
+                return `Перенес приём на ${metadata?.new_date || ''}`;
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
             case 'appointment_cancelled':
                 const reason = metadata_json?.reason;
                 return `${metadata_json?.patient_name || ''} отменил приём${reason ? `, причина: ${reason}` : ''}`;
             case 'analytics_check':
                 return 'Проверьте свои результаты работ в разделе аналитика';
             case 'rating_decreased':
+<<<<<<< HEAD
                 return `Рейтинг понизился до ${metadata_json?.new_rating || ''}`;
             case 'rating_increased':
                 return `Рейтинг повысился до ${metadata_json?.new_rating || ''}`;
             case 'appointment_rated':
                 return `${metadata_json?.patient_name || ''} оценил приём ${metadata_json?.rating || 5}✨`;
+=======
+                return `Рейтинг понизился до ${metadata?.rating || ''}`;
+            case 'rating_increased':
+                return `Рейтинг повысился до ${metadata?.rating || ''}`;
+            case 'appointment_rated':
+                return `Поставил вам ${metadata?.stars || 5} ★★★★★`;
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
             case 'review_left':
                 return `${metadata_json?.patient_name || ''} оставил отзыв: ${metadata_json?.review || ''}`;
             case 'payment_reminder':

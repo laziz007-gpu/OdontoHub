@@ -22,32 +22,10 @@ const AppointmentDetailsCard: React.FC<AppointmentDetailsCardProps> = ({ details
                     <span className="text-[#1D1D2B] font-bold text-sm sm:text-base lg:text-2xl">Когда:</span>
                     <span className="text-[#1D1D2B] font-medium text-sm sm:text-base lg:text-2xl">{details.date}</span>
                 </div>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 lg:gap-3">
-                    <span className="text-[#1D1D2B] font-bold text-sm sm:text-base lg:text-2xl">
-                        {details.duration.includes('минут') ? 'Длительность:' : 'Примерная длительность:'}
-                    </span>
-                    <span className="text-[#1D1D2B] font-medium text-sm sm:text-base lg:text-2xl">{details.duration}</span>
-                </div>
-
-                {details.tip && (
-                    <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-2 lg:gap-3">
-                        <span className="text-[#1D1D2B] font-bold text-sm sm:text-base lg:text-2xl shrink-0">Подсказка:</span>
-                        <span className="text-[#1D1D2B] font-medium text-sm sm:text-base lg:text-2xl">{details.tip}</span>
-                    </div>
-                )}
-
                 {details.notes && (
                     <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-2 lg:gap-3">
                         <span className="text-[#1D1D2B] font-bold text-sm sm:text-base lg:text-2xl shrink-0">Заметки:</span>
                         <span className="text-[#1D1D2B] font-medium text-sm sm:text-base lg:text-2xl">{details.notes}</span>
-                    </div>
-                )}
-
-                {/* Fallback for old "Назначения" if needed, or remove if not used */}
-                {!details.tip && !details.notes && (
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 lg:gap-3">
-                        <span className="text-[#1D1D2B] font-bold text-sm sm:text-base lg:text-2xl">Назначения:</span>
-                        <span className="text-[#1D1D2B] font-medium text-sm sm:text-base lg:text-2xl">Пусто</span>
                     </div>
                 )}
             </div>

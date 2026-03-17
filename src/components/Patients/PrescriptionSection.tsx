@@ -3,6 +3,7 @@ import { Prescription } from '../../types/prescription';
 import { getPrescriptions, deletePrescription } from '../../api/prescriptions';
 import AddPrescriptionModal from './AddPrescriptionModal';
 import EditPrescriptionModal from './EditPrescriptionModal';
+import { toast } from '../Shared/Toast';
 
 interface PrescriptionSectionProps {
   patientId: number;
@@ -43,7 +44,7 @@ const PrescriptionSection = ({ patientId }: PrescriptionSectionProps) => {
       setPrescriptions(prev => prev.filter(p => p.id !== prescriptionId));
     } catch (err) {
       console.error('Error deleting prescription:', err);
-      alert('Не удалось удалить рецепт');
+      toast.error('Не удалось удалить рецепт');
     }
   };
 

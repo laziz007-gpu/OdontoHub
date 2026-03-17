@@ -30,5 +30,11 @@ export const paths = {
     myDentist: '/my-dentist',
     patientChatProfile: '/patient/chats/:id/profile',
     treatments: '/treatments',
+<<<<<<< HEAD
     activeAppointment: '/appointments/active/:id'
+=======
+    doctorServices: '/doctor-services',
+    doctorCases: '/doctor-cases',
+    videoCall: '/video-call'
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
 } as const;

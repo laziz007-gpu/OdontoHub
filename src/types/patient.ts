@@ -17,6 +17,11 @@ export interface Doctor {
     rating?: string | number;
     image: string;
     specialty?: string;
+    phone?: string;
+    address?: string;
+    clinic?: string;
+    work_hours?: string;
+    works_photos?: string; // JSON string of case photos
 }
 
 export type AppointmentStatus = 'upcoming' | 'past' | 'success' | 'cancelled' | 'rescheduled';

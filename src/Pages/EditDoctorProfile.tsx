@@ -1,8 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { FileText, ArrowLeft, MapPin, ChevronDown, X, Upload, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
 import { useDentistProfile, useUpdateDentistProfile, useUploadDiploma } from '../api/profile';
 import { useTranslation } from 'react-i18next';
+=======
+import { useDentistProfile, useUpdateDentistProfile } from '../api/profile';
+import { toast } from '../components/Shared/Toast';
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
 import DentistImg from '../assets/img/photos/Dentist.png';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -165,7 +170,11 @@ export default function EditDoctorProfile() {
       }, 2000);
     } catch (error) {
       console.error('Failed to update profile:', error);
+<<<<<<< HEAD
       alert(t('common.error'));
+=======
+      toast.error('Ошибка при сохранении профиля');
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
     }
   };
 

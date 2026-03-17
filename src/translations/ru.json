@@ -838,6 +838,8 @@
             "profile": "Профиль"
         },
         "home": {
+            "greeting": "Привет, {{name}}",
+            "greeting_subtitle": "Время позаботиться о своем здоровье",
             "search": "Поиск...",
             "upcoming": "Ближайшие приёмы",
             "services": "Наши услуги",
@@ -847,6 +849,7 @@
             "services_surgery": "Хирургия",
             "action_book": "Запись к стоматологу",
             "action_doctors": "Врачи",
+            "action_my_dentist": "Мой стоматолог",
             "action_chat": "Чат",
             "action_notifications": "Уведомление",
             "more_details": "Подробнее",
@@ -900,7 +903,9 @@
             "logout": "Выйти из аккаунта",
             "language": "Язык",
             "notification": "Уведомление",
-            "select_language": "Выберите язык"
+            "select_language": "Выберите язык",
+        "settings": "Настройки",
+        "support": "Поддержка"
         },
         "appointment_detail": {
             "title": "Детали приёма",
@@ -918,7 +923,8 @@
             "contact_btn": "Связаться",
             "reschedule_btn": "Перенести",
             "cancel_btn": "Отменить",
-            "view_doctor": "Перейти"
+            "view_doctor": "Перейти",
+            "cancel_confirm": "Подтвердите отмену приёма"
         },
         "appointments": {
             "title": "Приёмы",
@@ -934,6 +940,23 @@
             "type_extraction": "Удаление зуба мудрости",
             "type_examination": "Осмотр",
             "specialty_general": "Общий-профильный стоматолог"
+        },
+        "alerts": {
+            "appointment_cancelled": "Приём отменён",
+            "select_new_date": "Пожалуйста, выберите новую дату",
+            "appointment_rescheduled": "Приём перенесён",
+            "appointment_created": "Запись успешно создана!",
+            "fill_required_fields": "Пожалуйста, заполните все обязательные поля!",
+            "booking_success": "Заявка успешно отправлена!",
+            "user_not_found": "Пользователь не найден. Пожалуйста, зарегистрируйтесь.",
+            "patient_deleted": "Пациент успешно удалён",
+            "patient_delete_error": "Ошибка при удалении пациента",
+            "profile_save_error": "Ошибка при сохранении профиля",
+            "prescription_delete_error": "Не удалось удалить рецепт",
+            "allergy_delete_error": "Не удалось удалить аллергию",
+            "auth_error": "Ошибка авторизации. Пожалуйста, войдите в систему снова.",
+            "note_add_error": "Ошибка при добавлении заметки",
+            "function_in_development": "Функция в разработке"
         }
     }
 }

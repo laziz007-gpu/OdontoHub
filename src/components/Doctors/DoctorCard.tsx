@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Doctor } from '../../types/patient';
 import { FaMapMarkerAlt } from "react-icons/fa";
 
@@ -8,8 +9,22 @@ interface DoctorCardProps {
 }
 
 const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onBook }) => {
+    const navigate = useNavigate();
+
+    const handleCardClick = (e: React.MouseEvent) => {
+        // Don't navigate if clicking the button
+        if ((e.target as HTMLElement).closest('button')) {
+            return;
+        }
+        // Navigate to doctor profile with doctor data
+        navigate('/my-dentist', { state: { doctor } });
+    };
+
     return (
-        <div className="bg-[#4D71F8] rounded-[24px] sm:rounded-[32px] lg:rounded-[40px] p-3 sm:p-4 lg:p-6 flex gap-3 sm:gap-4 lg:gap-6 relative overflow-hidden shadow-lg shadow-blue-500/20 hover:shadow-xl transition-shadow">
+        <div 
+            onClick={handleCardClick}
+            className="bg-[#4D71F8] rounded-[24px] sm:rounded-[32px] lg:rounded-[40px] p-3 sm:p-4 lg:p-6 flex gap-3 sm:gap-4 lg:gap-6 relative overflow-hidden shadow-lg shadow-blue-500/20 hover:shadow-xl transition-shadow cursor-pointer"
+        >
             {/* Image Container */}
             <div className="bg-white rounded-[18px] sm:rounded-[24px] lg:rounded-[32px] w-[90px] h-[90px] sm:w-[110px] sm:h-[110px] lg:w-[150px] lg:h-[150px] shrink-0 overflow-hidden flex items-center justify-center">
                 <img
@@ -30,12 +45,17 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onBook }) => {
                         <div className="bg-[#FF3B30] w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center shrink-0">
                             <FaMapMarkerAlt className="text-white text-[8px] sm:text-[10px] lg:text-xs" />
                         </div>
-                        <span className="text-white text-xs sm:text-sm lg:text-lg font-bold truncate">Юнусабад</span>
+                        <span className="text-white text-xs sm:text-sm lg:text-lg font-bold truncate">
+                            {doctor.address || "Юнусабад"}
+                        </span>
                     </div>
                 </div>
 
                 <button
-                    onClick={() => onBook(doctor)}
+                    onClick={(e) => {
+                        e.stopPropagation(); // Prevent card click
+                        onBook(doctor);
+                    }}
                     className="bg-[#11D76A] hover:bg-[#0fc460] text-white font-bold py-1.5 sm:py-2 lg:py-3 px-4 sm:px-6 lg:px-10 rounded-full text-[10px] sm:text-xs lg:text-base self-start transition-all shadow-sm hover:shadow-md active:scale-95"
                 >
                     Записаться

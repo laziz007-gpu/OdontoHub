@@ -1,9 +1,12 @@
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
-import { useLogin } from '../api/auth'
+import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import { setUser } from '../store/slices/userSlice'
 import type { LoginData } from '../interfaces'
 import logo from '../assets/img/icons/Logo.svg'
 import { paths } from '../Routes/path'
+<<<<<<< HEAD
 import { useTranslation } from 'react-i18next'
 import { useEffect } from 'react'
 
@@ -11,6 +14,14 @@ export default function Login() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { mutate: login, isPending, error } = useLogin()
+=======
+import { toast } from '../components/Shared/Toast'
+
+export default function Login() {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { t } = useTranslation()
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
 
   const {
     register,
@@ -34,11 +45,32 @@ export default function Login() {
   }, [phoneValue, setValue])
 
   const onSubmit = (data: LoginData) => {
-    // Чистим телефон от пробелов перед отправкой
-    const cleanData = {
-      phone: data.phone.replace(/\s+/g, ''),
+    // Local login - check localStorage
+    const cleanPhone = data.phone.replace(/\s+/g, '');
+    const userData = localStorage.getItem('user_data');
+
+    if (userData) {
+      const user = JSON.parse(userData);
+      
+      // Check if phone matches
+      if (user.phone === cleanPhone) {
+        // Set token
+        localStorage.setItem('access_token', 'local_token_' + Date.now());
+        
+        // Save to Redux store
+        dispatch(setUser(user));
+        
+        // Navigate based on role
+        if (user.role === 'patient') {
+          navigate(paths.patientHome, { replace: true });
+        } else {
+          navigate(paths.menu, { replace: true });
+        }
+        return;
+      }
     }
 
+<<<<<<< HEAD
     login(cleanData, {
       onSuccess: () => {
         // Redirect based on user role from localStorage
@@ -53,6 +85,10 @@ export default function Login() {
         console.error('Login error:', error)
       }
     })
+=======
+    // If no user found in localStorage, show error
+    toast.error(t("patient.alerts.user_not_found"));
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
   }
 
   return (
@@ -104,6 +140,7 @@ export default function Login() {
             )}
           </div>
 
+<<<<<<< HEAD
           {/* Error from server */}
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3">
@@ -119,12 +156,14 @@ export default function Login() {
             </div>
           )}
 
+=======
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
           {/* Submit */}
           <button
             type="submit"
-            disabled={isPending}
-            className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-semibold text-lg hover:bg-blue-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-semibold text-lg hover:bg-blue-700 active:scale-[0.98] transition-all"
           >
+<<<<<<< HEAD
             {isPending ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
@@ -133,6 +172,9 @@ export default function Login() {
             ) : (
               t('auth.login_button')
             )}
+=======
+            Войти
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
           </button>
         </form>
 

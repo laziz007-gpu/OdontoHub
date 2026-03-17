@@ -59,6 +59,7 @@ class Appointment(Base):
 
     cancel_reason: Mapped[str | None] = mapped_column(nullable=True)
     service: Mapped[str | None] = mapped_column(nullable=True)
+    price: Mapped[int | None] = mapped_column(nullable=True)  # Service price
     notes: Mapped[str | None] = mapped_column(nullable=True)
 
     __table_args__ = (

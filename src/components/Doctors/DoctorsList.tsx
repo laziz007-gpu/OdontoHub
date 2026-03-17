@@ -1,49 +1,42 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { paths } from '../../Routes/path';
 import DoctorCard from './DoctorCard';
 import DoctorFilters from './DoctorFilters';
+import { useAllDentists } from '../../api/profile';
 import type { Doctor } from '../../types/patient';
 import DoctorImg from "../../assets/img/photos/Dentist.png";
 
 const DoctorsList: React.FC = () => {
+    const { t } = useTranslation();
+    
+    // Fetch dentists from API
+    const { data: dentists, isLoading, isError } = useAllDentists();
     const [searchTerm, setSearchTerm] = useState("");
     const [location, setLocation] = useState("tashkent");
     const [district, setDistrict] = useState("yunusabad");
     const [rating, setRating] = useState("");
 
-    // Mock data based on screenshot
-    const doctors: Doctor[] = [
-        {
-            name: "Махмуд Пулатов",
-            direction: "Ортодонтия",
-            experience: "3 года",
-            rating: "4.7",
-            image: DoctorImg,
-            specialty: "Ортодонтия"
-        },
-        {
-            name: "Махмуд Пулатов",
-            direction: "Ортодонтия",
-            experience: "3 года",
-            rating: "4.7",
-            image: DoctorImg, // Using same image for demo
-            specialty: "Ортодонтия"
-        },
-        {
-            name: "Махмуд Пулатов",
-            direction: "Ортодонтия",
-            experience: "3 года",
-            rating: "4.7",
-            image: DoctorImg,
-            specialty: "Ортодонтия"
-        }
-    ];
-
     const navigate = useNavigate();
 
+    // Convert backend dentist data to Doctor type
+    const doctors: Doctor[] = dentists?.map(d => ({
+        name: d.full_name,
+        direction: d.specialization || "Стоматолог",
+        experience: "5 лет", // Can be calculated from backend if needed
+        rating: "4.8", // Can come from backend reviews if available
+        image: DoctorImg, // Can use d.photo_url if backend provides it
+        specialty: d.specialization || "Общая стоматология",
+        address: d.address || "Ташкент",
+        phone: d.phone,
+        clinic: d.clinic,
+        work_hours: d.work_hours,
+        works_photos: d.works_photos // Add works_photos for cases
+    })) || [];
+
     const handleBook = (doctor: Doctor) => {
-        // In a real app, we'd pass the doctor ID or object via state
+        // Always navigate to booking page to select date/time
         navigate(paths.booking, { state: { doctor } });
     };
 
@@ -60,11 +53,22 @@ const DoctorsList: React.FC = () => {
                 onRatingChange={setRating}
             />
 
-            <div className="flex-1 overflow-y-auto space-y-4 pb-24 no-scrollbar">
-                {doctors.map((doctor, index) => (
-                    <DoctorCard key={index} doctor={doctor} onBook={handleBook} />
-                ))}
-            </div>
+            {isLoading ? (
+                <div className="flex-1 flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+                </div>
+            ) : (
+                <div className="flex-1 overflow-y-auto space-y-4 pb-24 no-scrollbar">
+                    {doctors.map((doctor, index) => (
+                        <DoctorCard key={index} doctor={doctor} onBook={handleBook} />
+                    ))}
+                    {doctors.length === 0 && (
+                        <div className="text-center py-12">
+                            <p className="text-gray-500 text-lg">Врачи не найдены</p>
+                        </div>
+                    )}
+                </div>
+            )}
 
             <div className="fixed bottom-4 sm:bottom-6 left-0 right-0 flex justify-center z-10 px-4">
                 <button

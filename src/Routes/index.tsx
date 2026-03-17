@@ -33,6 +33,9 @@ import Specialties from "../Pages/Specialties";
 import Booking from "../Pages/Booking";
 import CheckupBookingPreview from "../Pages/CheckupBookingPreview";
 import DoctorProfilePreview from "../Pages/DoctorProfilePreview";
+import DoctorServicesPage from "../Pages/DoctorServicesPage";
+import DoctorCasesPage from "../Pages/DoctorCasesPage";
+import VideoCallPage from "../Pages/VideoCallPage";
 import ChatProfilePage from "../Pages/ChatProfilePage";
 import TreatmentsListPage from "../Pages/TreatmentsListPage";
 
@@ -188,6 +191,18 @@ export const router = createBrowserRouter([
                     {
                         path: paths.myDentist,
                         element: <DoctorProfilePreview />
+                    },
+                    {
+                        path: paths.doctorServices,
+                        element: <DoctorServicesPage />
+                    },
+                    {
+                        path: paths.doctorCases,
+                        element: <DoctorCasesPage />
+                    },
+                    {
+                        path: paths.videoCall,
+                        element: <VideoCallPage />
                     },
                     {
                         path: paths.treatments,

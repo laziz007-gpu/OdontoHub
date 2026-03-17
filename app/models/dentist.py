@@ -39,7 +39,10 @@ class DentistProfile(Base):
     instagram: Mapped[str | None] = mapped_column(String, nullable=True)
     whatsapp: Mapped[str | None] = mapped_column(String, nullable=True)
     works_photos: Mapped[str | None] = mapped_column(String, nullable=True)  # JSON string of photo URLs
+<<<<<<< HEAD
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime | None] = mapped_column(nullable=True, onupdate=func.now())
+=======
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
 
     user = relationship("User", back_populates="dentist_profile")

@@ -46,10 +46,12 @@ export const useLogin = () => {
 
 export const useCurrentUser = () => {
   const accessToken = localStorage.getItem('access_token')
+  const isLocalMode = accessToken?.startsWith('local_token_')
+  
   return useQuery({
     queryKey: ['currentUser'],
     queryFn: () => api.get('/auth/me'),
-    enabled: !!accessToken,
+    enabled: !!accessToken && !isLocalMode, // Disable if local mode
     select: (response) => response.data,
   })
 }

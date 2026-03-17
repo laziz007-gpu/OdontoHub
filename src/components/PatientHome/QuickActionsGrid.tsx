@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import ScrollUp from "../../assets/img/icons/Scroll Up.svg";
 import Doctor from "../../assets/img/icons/healthicons_doctor-male.svg";
 import Consultation from "../../assets/img/icons/Consultation.svg";
@@ -7,12 +8,13 @@ import { paths } from "../../Routes/path";
 import type { QuickAction } from "../../types/patient";
 
 const QuickActionsGrid = () => {
+    const { t } = useTranslation();
     const quickActions: QuickAction[] = [
-        { label: "Запись к стоматологу", icon: ScrollUp, color: "bg-blue-600 text-white", path: paths.booking },
-        { label: "Врачи", icon: Doctor, color: "bg-white text-blue-600", path: paths.doctors },
-        { label: "Мой стоматолог", icon: Consultation, color: "bg-emerald-400 text-white", path: paths.myDentist },
+        { label: t("patient.home.action_book"), icon: ScrollUp, color: "bg-blue-600 text-white", path: paths.booking },
+        { label: t("patient.home.action_doctors"), icon: Doctor, color: "bg-white text-blue-600", path: paths.doctors },
+        { label: t("patient.home.action_my_dentist"), icon: Consultation, color: "bg-emerald-400 text-white", path: paths.myDentist },
         // Temporarily disabled - uncomment to enable notifications:
-        // { label: "Уведомление", icon: Notification2, color: "bg-amber-400 text-white", path: paths.notifications },
+        // { label: t("patient.home.action_notifications"), icon: Notification2, color: "bg-amber-400 text-white", path: paths.notifications },
     ];
 
     return (

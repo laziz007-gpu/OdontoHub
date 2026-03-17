@@ -1,18 +1,28 @@
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
-import { useRegister } from '../api/auth'
+import { useDispatch } from 'react-redux'
+import { setUser } from '../store/slices/userSlice'
 import type { RegisterData, UserRole } from '../interfaces'
 import { Stethoscope, User } from 'lucide-react'
 import logo from '../assets/img/icons/Logo.svg'
 import { paths } from '../Routes/path'
+<<<<<<< HEAD
 import { useTranslation } from 'react-i18next'
 
 export default function Register1() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { mutate: registerUser, isPending, error } = useRegister()
+=======
+import { toast } from '../components/Shared/Toast'
+
+export default function Register1() {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const {
     register,
@@ -34,16 +44,12 @@ export default function Register1() {
     }
   }, [phoneValue, setValue])
 
-  const onSubmit = (data: Omit<RegisterData, 'role'>) => {
+  const onSubmit = async (data: Omit<RegisterData, 'role'>) => {
     if (!selectedRole) return
 
-    // Strip spaces from phone number: "+998 90 123 45 67" -> "+998901234567"
-    const cleanData = {
-      ...data,
-      phone: data.phone.replace(/\s+/g, ''),
-      role: selectedRole
-    }
+    setIsLoading(true)
 
+<<<<<<< HEAD
     registerUser(cleanData, {
       onSuccess: () => {
         // Redirect based on user role from localStorage
@@ -55,6 +61,132 @@ export default function Register1() {
         }
       },
     })
+=======
+    try {
+      // Check if we should use API or local mode
+      const useAPI = import.meta.env.VITE_USE_API === 'true';
+
+      if (useAPI) {
+        // API mode - register via backend
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            full_name: data.full_name,
+            phone: data.phone.replace(/\s+/g, ''),
+            email: data.email || '',
+            role: selectedRole
+          })
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.detail || 'Registration failed');
+        }
+
+        const result = await response.json();
+        
+        // Save token and user data
+        localStorage.setItem('access_token', result.access_token);
+        
+        // Fetch user profile
+        const meResponse = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
+          headers: {
+            'Authorization': `Bearer ${result.access_token}`
+          }
+        });
+        
+        if (meResponse.ok) {
+          const userData = await meResponse.json();
+          localStorage.setItem('user_data', JSON.stringify(userData));
+          dispatch(setUser(userData));
+        }
+
+        setIsLoading(false);
+        
+        // Navigate based on role
+        if (selectedRole === 'patient') {
+          localStorage.setItem('is_first_time', 'true');
+          navigate(paths.doctors, { replace: true });
+        } else {
+          navigate(paths.menu, { replace: true });
+        }
+        
+      } else {
+        // Local mode - save to localStorage
+        const userData = {
+          full_name: data.full_name,
+          phone: data.phone.replace(/\s+/g, ''),
+          email: data.email || '',
+          role: selectedRole
+        }
+
+        // Save user data to localStorage
+        localStorage.setItem('user_data', JSON.stringify(userData))
+        localStorage.setItem('access_token', 'local_token_' + Date.now())
+
+        // Save to Redux store
+        dispatch(setUser(userData))
+
+        // Add demo appointments for patient
+        if (selectedRole === 'patient') {
+          const today = new Date();
+          const demoAppointments = [
+            // Past appointments
+            {
+              id: Date.now() - 3,
+              doctor_name: "Махмуд Пулатов",
+              service: "Осмотр",
+              date: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),
+              time: "10:00",
+              status: "past",
+              comment: "Прошёл успешно",
+              created_at: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
+            },
+            {
+              id: Date.now() - 2,
+              doctor_name: "Махмуд Пулатов",
+              service: "Пломбирование",
+              date: new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),
+              time: "14:30",
+              status: "past",
+              comment: "Завершено",
+              created_at: new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString()
+            },
+            {
+              id: Date.now() - 1,
+              doctor_name: "Махмуд Пулатов",
+              service: "Консультация",
+              date: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),
+              time: "11:00",
+              status: "past",
+              comment: "",
+              created_at: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString()
+            }
+          ];
+          localStorage.setItem('appointments', JSON.stringify(demoAppointments));
+          
+          // Mark as first time user
+          localStorage.setItem('is_first_time', 'true');
+        }
+
+        setIsLoading(false);
+        
+        // Navigate based on role
+        if (selectedRole === 'patient') {
+          navigate(paths.doctors, { replace: true });
+        } else {
+          navigate(paths.menu, { replace: true });
+        }
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.error('Registration error:', error);
+      toast.error(error instanceof Error ? error.message : 'Ошибка регистрации');
+    }
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
   }
 
   return (
@@ -170,6 +302,7 @@ export default function Register1() {
             />
           </div>
 
+<<<<<<< HEAD
           {/* Error from server */}
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3">
@@ -191,13 +324,15 @@ export default function Register1() {
             </div>
           )}
 
+=======
+>>>>>>> 5a553df4cba3528c9d0f8757cfab166f5ee26e83
           {/* Submit */}
           <button
             type="submit"
-            disabled={isPending || !selectedRole}
+            disabled={isLoading || !selectedRole}
             className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-semibold text-lg hover:bg-blue-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isPending ? (
+            {isLoading ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
                 {t('auth.registering')}

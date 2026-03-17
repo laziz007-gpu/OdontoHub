@@ -2,14 +2,23 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
-  withCredentials: true,
+  withCredentials: false, // Disable credentials for CORS
+  headers: {
+    'Content-Type': 'application/json',
+  }
 })
 
 api.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem('access_token');
+    
+    // Don't send token for public endpoints
+    const publicEndpoints = ['/dentists/', '/dentists'];
+    const isPublicEndpoint = publicEndpoints.some(endpoint => 
+      config.url?.includes(endpoint)
+    );
 
-    if (accessToken && accessToken !== null) {
+    if (accessToken && accessToken !== null && !isPublicEndpoint) {
       config.headers['Authorization'] = `Bearer ${accessToken}`;
     }
     

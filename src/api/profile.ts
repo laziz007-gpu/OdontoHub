@@ -69,6 +69,58 @@ export const useAllPatients = () => {
     });
 }
 
+export const useAllDentists = () => {
+    return useQuery({
+        queryKey: ['dentists'],
+        queryFn: async () => {
+            try {
+                const response = await api.get<DentistProfile[]>('/dentists/');
+                return response.data;
+            } catch (error) {
+                // Return real dentists from Render database as fallback
+                return [
+                    {
+                        id: 4,
+                        user_id: 5,
+                        full_name: "Махмуд Пулатов",
+                        pinfl: null,
+                        diploma_number: null,
+                        verification_status: "approved" as const,
+                        specialization: "Терапевт",
+                        phone: "+998901234567",
+                        address: "Ташкент, Юнусабад",
+                        clinic: "Стоматология №1",
+                        schedule: "Пн-Пт: 9:00-18:00",
+                        work_hours: "09:00-18:00",
+                        telegram: "@mahmud_dentist",
+                        instagram: null,
+                        whatsapp: null
+                    },
+                    {
+                        id: 6,
+                        user_id: 11,
+                        full_name: "Aziz Saydazxonov",
+                        pinfl: null,
+                        diploma_number: null,
+                        verification_status: "approved" as const,
+                        specialization: "Hygienist",
+                        phone: "+998903219459",
+                        address: "Ташкент",
+                        clinic: "Ideal Dental",
+                        schedule: "Пн-Пт: 9:00-17:00",
+                        work_hours: "09:00-17:00",
+                        telegram: null,
+                        instagram: null,
+                        whatsapp: "+998903219459"
+                    }
+                ] as DentistProfile[];
+            }
+        },
+        retry: false,
+        staleTime: 5 * 60 * 1000,
+    });
+}
+
 export const usePatient = (id: number) => {
     return useQuery({
         queryKey: ['patient', id],

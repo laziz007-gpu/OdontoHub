@@ -1,8 +1,23 @@
 import { ArrowUpRight, Users, Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useMyAppointments } from "../../api/appointments";
 
 const UpcomingAppointment = () => {
     const { t } = useTranslation();
+    const { data: appointments, isLoading } = useMyAppointments();
+
+    if (isLoading) {
+        return (
+            <div className="animate-pulse space-y-4">
+                <div className="h-8 w-48 bg-gray-200 rounded-lg" />
+                <div className="h-48 bg-gray-100 rounded-4xl" />
+            </div>
+        );
+    }
+
+    if (!appointments || appointments.length === 0) return null;
+
+    const upcoming = appointments[0]; // Get the first upcoming appointment
 
     return (
         <div className="space-y-4">
@@ -25,16 +40,16 @@ const UpcomingAppointment = () => {
                         />
                     </div>
                     <div className="flex-1 space-y-2 lg:space-y-4">
-                        <h3 className="text-xl lg:text-4xl font-black">Удаление зуба мудрости</h3>
+                        <h3 className="text-xl lg:text-4xl font-black">{upcoming.service || t("patient.appointments.type_extraction")}</h3>
                         <div className="flex items-center gap-2 opacity-90 text-sm lg:text-xl">
                             <Users size={20} className="lg:size-6" />
-                            <span className="font-bold">Махмуд Пулатов</span>
+                            <span className="font-bold">{upcoming.dentist_name || "Махмуд Пулатов"}</span>
                         </div>
-                        <p className="text-xs lg:text-base opacity-75 font-bold tracking-wide uppercase">Общий-профильный стоматолог</p>
+                        <p className="text-xs lg:text-base opacity-75 font-bold tracking-wide uppercase">{t("patient.appointments.specialty_general")}</p>
                     </div>
                     <div className="hidden md:block">
                         <button className="bg-white text-blue-600 px-8 py-4 rounded-2xl lg:rounded-3xl font-black text-sm lg:text-lg hover:bg-blue-50 transition-all active:scale-95">
-                            Подробнее
+                            {t("patient.home.more_details")}
                         </button>
                     </div>
                 </div>
@@ -42,12 +57,14 @@ const UpcomingAppointment = () => {
                 <div className="bg-white/15 backdrop-blur-xl rounded-2xl lg:rounded-3xl py-4 px-6 lg:px-10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs lg:text-lg font-black border border-white/10 relative z-10">
                     <div className="flex items-center gap-3">
                         <Calendar size={16} className="lg:size-6" />
-                        <span>27 июнь 2025год</span>
+                        <span>{new Date(upcoming.start_time).toLocaleDateString()}</span>
                     </div>
                     <div className="w-px h-6 bg-white/20 hidden sm:block"></div>
                     <div className="flex items-center gap-3">
-                        <span className="opacity-80">До prityoma:</span>
-                        <span className="font-mono text-sm lg:text-xl tracking-wider">20 kun 15:47:38</span>
+                        <span className="opacity-80">{t("patient.home.until_appointment")}</span>
+                        <span className="font-mono text-sm lg:text-xl tracking-wider">
+                            {upcoming.start_time.split('T')[1].substring(0, 5)}
+                        </span>
                     </div>
                 </div>
             </div>

@@ -9,12 +9,18 @@ import { ArrowLeft, Bell, Globe, Shield, HelpCircle, Headphones, Info, ChevronRi
 import DentistImg from "../assets/img/photos/Dentist.png";
 import type { Language, MenuItem, SupportItem } from "../types/patient";
 import EditProfileModal from "../components/Shared/EditProfileModal";
+import { usePatientProfile, useUpdatePatient } from "../api/profile";
+import { toast } from "../components/Shared/Toast";
 
 const PatientProfilePage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { t, i18n } = useTranslation();
     const user = useSelector((state: RootState) => state.user.user);
+    
+    // Fetch patient profile from backend
+    const { data: patientProfile, isLoading } = usePatientProfile();
+    const updatePatient = useUpdatePatient();
 
     const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -22,20 +28,60 @@ const PatientProfilePage = () => {
         name: user?.full_name || "Дункан Факовский",
         phone: user?.phone || "+998 (90) 123 45 67",
         gender: "Мужчина",
+        birthYear: "2000",
         age: "26 лет",
-        address: "г. Ташкент",
+        region: "Ташкент",
+        city: "Ташкент",
+        district: "Юнусабад",
+        address: "г. Ташкент, Юнусабад",
         avatar: DentistImg
     });
 
     useEffect(() => {
-        if (user) {
-            setUserData(prev => ({
-                ...prev,
-                name: user.full_name || prev.name,
-                phone: user.phone || prev.phone
-            }));
+        // Check if local mode
+        const accessToken = localStorage.getItem('access_token');
+        const isLocalMode = accessToken?.startsWith('local_token_');
+
+        if (isLocalMode) {
+            // Load from localStorage for local mode
+            const storedUserData = localStorage.getItem('user_data');
+            if (storedUserData) {
+                const parsedData = JSON.parse(storedUserData);
+                setUserData(prev => ({
+                    ...prev,
+                    name: parsedData.full_name || prev.name,
+                    phone: parsedData.phone || prev.phone
+                }));
+            }
+
+            const profileData = localStorage.getItem('patient_profile');
+            if (profileData) {
+                const parsed = JSON.parse(profileData);
+                setUserData(prev => ({
+                    ...prev,
+                    ...parsed
+                }));
+            }
+        } else if (patientProfile) {
+            // Load from backend API
+            const birthDate = patientProfile.birth_date ? new Date(patientProfile.birth_date) : null;
+            const birthYear = birthDate ? birthDate.getFullYear().toString() : "2000";
+            const age = birthDate ? new Date().getFullYear() - birthDate.getFullYear() : 26;
+            
+            setUserData({
+                name: patientProfile.full_name || user?.full_name || "Пациент",
+                phone: patientProfile.phone || user?.phone || "+998 (90) 123 45 67",
+                gender: patientProfile.gender === "male" ? "Мужчина" : patientProfile.gender === "female" ? "Женщина" : "Мужчина",
+                birthYear: birthYear,
+                age: `${age} лет`,
+                region: "Ташкент",
+                city: "Ташкент",
+                district: "Юнусабад",
+                address: patientProfile.address || "г. Ташкент, Юнусабад",
+                avatar: DentistImg
+            });
         }
-    }, [user]);
+    }, [user, patientProfile]);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -52,9 +98,46 @@ const PatientProfilePage = () => {
         setIsLanguageModalOpen(false);
     };
 
-    const handleSaveProfile = (newData: any) => {
-        setUserData(prev => ({ ...prev, ...newData }));
-        setIsEditModalOpen(false);
+    const handleSaveProfile = async (newData: any) => {
+        const updatedData = { ...userData, ...newData };
+        setUserData(updatedData);
+        
+        // Check if local mode
+        const accessToken = localStorage.getItem('access_token');
+        const isLocalMode = accessToken?.startsWith('local_token_');
+        
+        if (isLocalMode) {
+            // Save to localStorage for local mode
+            localStorage.setItem('patient_profile', JSON.stringify(updatedData));
+            setIsEditModalOpen(false);
+        } else {
+            // Save to backend API
+            try {
+                if (patientProfile?.id) {
+                    // Convert gender to backend format
+                    const gender = newData.gender === "Мужчина" ? "male" : 
+                                  newData.gender === "Женщина" ? "female" : null;
+                    
+                    // Convert birth year to birth_date
+                    const birth_date = newData.birthYear ? `${newData.birthYear}-01-01` : null;
+                    
+                    await updatePatient.mutateAsync({
+                        id: patientProfile.id,
+                        full_name: newData.name,
+                        phone: newData.phone,
+                        gender: gender,
+                        birth_date: birth_date,
+                        address: newData.address
+                    });
+                    
+                    toast.success("Профиль успешно обновлен!");
+                }
+                setIsEditModalOpen(false);
+            } catch (error: any) {
+                console.error("Error updating profile:", error);
+                toast.error(error.response?.data?.detail || "Ошибка при обновлении профиля");
+            }
+        }
     };
 
     const handleLogout = () => {
@@ -97,6 +180,11 @@ const PatientProfilePage = () => {
 
     return (
         <div className="min-h-screen bg-[#F5F7FF] pb-32">
+            {isLoading && (
+                <div className="fixed inset-0 bg-white/80 flex items-center justify-center z-50">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+                </div>
+            )}
             {/* Centered Container */}
             {/* Centered Container */}
             {/* Centered Main Content Area */}
@@ -144,14 +232,21 @@ const PatientProfilePage = () => {
                             <h2 className="text-2xl font-black text-[#1D1D2B]">{userData.name}</h2>
                             <p className="text-gray-400 font-bold mt-1">{userData.phone}</p>
 
-                            <div className="w-full mt-8 pt-8 border-t border-gray-50 grid grid-cols-2 gap-4">
-                                <div className="text-left">
-                                    <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest">{t("patient.profile.gender")}</p>
-                                    <p className="text-sm font-bold text-[#1D1D2B] mt-1">{userData.gender === "Мужчина" ? t("patient.profile.male") : t("patient.profile.female")}</p>
+                            <div className="w-full mt-8 pt-8 border-t border-gray-50 space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="text-left">
+                                        <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest">{t("patient.profile.gender")}</p>
+                                        <p className="text-sm font-bold text-[#1D1D2B] mt-1">{userData.gender === "Мужчина" ? t("patient.profile.male") : t("patient.profile.female")}</p>
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest">Год рождения</p>
+                                        <p className="text-sm font-bold text-[#1D1D2B] mt-1">{userData.birthYear}</p>
+                                    </div>
                                 </div>
-                                <div className="text-left">
-                                    <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest">{t("patient.profile.birth_date")}</p>
-                                    <p className="text-sm font-bold text-[#1D1D2B] mt-1">{userData.age}</p>
+                                <div className="text-left pt-2">
+                                    <p className="text-[10px] font-black uppercase text-gray-300 tracking-widest">Местоположение</p>
+                                    <p className="text-sm font-bold text-[#1D1D2B] mt-1">{userData.region}, {userData.city}</p>
+                                    <p className="text-xs font-semibold text-gray-500 mt-0.5">{userData.district}</p>
                                 </div>
                             </div>
                         </div>

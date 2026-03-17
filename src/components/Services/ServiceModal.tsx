@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { useCreateService, useUpdateService } from '../../api/services';
+import { toast } from '../../components/Shared/Toast';
 
 interface ServiceModalProps {
     isOpen: boolean;
@@ -47,7 +48,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({ isOpen, onClose, initialSer
             setName('');
             setPrice('');
         } catch (error: any) {
-            alert(error.response?.data?.detail || "Failed to save service");
+            toast.error(error.response?.data?.detail || "Failed to save service");
         }
     };
 
