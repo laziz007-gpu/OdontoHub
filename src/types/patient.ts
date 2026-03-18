@@ -11,6 +11,7 @@ export interface QuickAction {
 }
 
 export interface Doctor {
+    id?: number;
     name: string;
     direction?: string;
     experience?: string;
@@ -21,7 +22,10 @@ export interface Doctor {
     address?: string;
     clinic?: string;
     work_hours?: string;
-    works_photos?: string; // JSON string of case photos
+    works_photos?: string;
+    telegram?: string;
+    instagram?: string;
+    whatsapp?: string;
 }
 
 export type AppointmentStatus = 'upcoming' | 'past' | 'success' | 'cancelled' | 'rescheduled';

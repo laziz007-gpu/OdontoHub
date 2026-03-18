@@ -22,17 +22,21 @@ const DoctorsList: React.FC = () => {
 
     // Convert backend dentist data to Doctor type
     const doctors: Doctor[] = dentists?.map(d => ({
+        id: d.id,
         name: d.full_name,
         direction: d.specialization || "Стоматолог",
-        experience: "5 лет", // Can be calculated from backend if needed
-        rating: "4.8", // Can come from backend reviews if available
-        image: DoctorImg, // Can use d.photo_url if backend provides it
+        experience: "5 лет",
+        rating: "4.8",
+        image: DoctorImg,
         specialty: d.specialization || "Общая стоматология",
         address: d.address || "Ташкент",
         phone: d.phone,
         clinic: d.clinic,
         work_hours: d.work_hours,
-        works_photos: d.works_photos // Add works_photos for cases
+        works_photos: d.works_photos,
+        telegram: d.telegram,
+        instagram: d.instagram,
+        whatsapp: d.whatsapp,
     })) || [];
 
     const handleBook = (doctor: Doctor) => {

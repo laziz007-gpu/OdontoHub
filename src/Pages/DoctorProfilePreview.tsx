@@ -10,19 +10,23 @@ const DoctorProfilePreview = () => {
     const doctorFromState = location.state?.doctor;
 
     const doctorData = doctorFromState ? {
-        id: 1,
+        id: doctorFromState.id,
         name: doctorFromState.name,
         phone: doctorFromState.phone || "+998 (90) 123 45 67",
         gender: "Мужчина",
         birthDate: "20.09.2000",
         age: "26 лет",
-        email: "example@gmail.com",
+        email: doctorFromState.email || "example@gmail.com",
         address: doctorFromState.address || "ул. Амира Темура, 11кв, 20дом",
         education: "ТашПМИ(Факультет)",
         clinic: doctorFromState.clinic || "Не указано",
-        specialty: doctorFromState.specialty || doctorFromState.direction,
+        specialty: doctorFromState.specialty || doctorFromState.direction || "Стоматолог",
         experience: doctorFromState.experience || "5 лет",
-        image: doctorFromState.image || DentistImg
+        image: doctorFromState.image || DentistImg,
+        telegram: doctorFromState.telegram,
+        instagram: doctorFromState.instagram,
+        whatsapp: doctorFromState.whatsapp,
+        work_hours: doctorFromState.work_hours,
     } : {
         id: 1,
         name: "Махмуд Пулатов",
@@ -40,15 +44,15 @@ const DoctorProfilePreview = () => {
     };
 
     const handleBook = async () => {
-        // Navigate to booking page with doctor data
         navigate('/booking', { 
             state: { 
                 doctor: {
+                    id: doctorData.id,
                     name: doctorData.name,
-                    value: "d1", // Махмуд Пулатов
+                    value: doctorData.id?.toString(),
                     phone: doctorData.phone,
-                    specialty: "Стоматолог",
-                    image: DentistImg
+                    specialty: doctorData.specialty,
+                    image: doctorData.image
                 }
             } 
         });
@@ -139,25 +143,41 @@ const DoctorProfilePreview = () => {
 
                     <div className="bg-white rounded-[24px] p-8 shadow-sm space-y-5">
                         <div className="flex items-start gap-4">
-                            <span className="text-[11px] font-bold text-gray-400 whitespace-nowrap pt-1">Тел.номер</span>
-                            <span className="text-[13px] font-bold text-[#1D1D2B] leading-tight">{doctorData.phone}</span>
+                            <span className="text-[11px] font-bold text-gray-400 whitespace-nowrap pt-1 min-w-[70px]">Тел.номер</span>
+                            <span className="text-[13px] font-bold text-[#1D1D2B] leading-tight">{doctorData.phone || "Не указано"}</span>
                         </div>
                         <div className="flex items-start gap-4">
-                            <span className="text-[11px] font-bold text-gray-400 whitespace-nowrap pt-1">Email</span>
-                            <span className="text-[13px] font-bold text-[#1D1D2B] leading-tight">{doctorData.email}</span>
+                            <span className="text-[11px] font-bold text-gray-400 whitespace-nowrap pt-1 min-w-[70px]">Адрес</span>
+                            <span className="text-[13px] font-bold text-[#1D1D2B] leading-tight">{doctorData.address || "Не указано"}</span>
                         </div>
                         <div className="flex items-start gap-4">
-                            <span className="text-[11px] font-bold text-gray-400 whitespace-nowrap pt-1 text-right min-w-[50px]">Адрес</span>
-                            <span className="text-[13px] font-bold text-[#1D1D2B] leading-tight">{doctorData.address}</span>
+                            <span className="text-[11px] font-bold text-gray-400 whitespace-nowrap pt-1 min-w-[70px]">Клиника</span>
+                            <span className="text-[13px] font-bold text-[#1D1D2B] leading-tight">{doctorData.clinic || "Не указано"}</span>
                         </div>
-                        <div className="flex items-start gap-4">
-                            <span className="text-[11px] font-bold text-gray-400 whitespace-nowrap pt-1">Образование</span>
-                            <span className="text-[13px] font-bold text-[#1D1D2B] leading-tight">{doctorData.education}</span>
-                        </div>
-                        <div className="flex items-start gap-4">
-                            <span className="text-[11px] font-bold text-gray-400 whitespace-nowrap pt-1 text-right min-w-[50px]">Клиника</span>
-                            <span className="text-[13px] font-bold text-[#1D1D2B] leading-tight">{doctorData.clinic}</span>
-                        </div>
+                        {doctorData.work_hours && (
+                            <div className="flex items-start gap-4">
+                                <span className="text-[11px] font-bold text-gray-400 whitespace-nowrap pt-1 min-w-[70px]">Часы работы</span>
+                                <span className="text-[13px] font-bold text-[#1D1D2B] leading-tight">{doctorData.work_hours}</span>
+                            </div>
+                        )}
+                        {doctorData.telegram && (
+                            <div className="flex items-start gap-4">
+                                <span className="text-[11px] font-bold text-gray-400 whitespace-nowrap pt-1 min-w-[70px]">Telegram</span>
+                                <span className="text-[13px] font-bold text-[#4361EE] leading-tight">{doctorData.telegram}</span>
+                            </div>
+                        )}
+                        {doctorData.whatsapp && (
+                            <div className="flex items-start gap-4">
+                                <span className="text-[11px] font-bold text-gray-400 whitespace-nowrap pt-1 min-w-[70px]">WhatsApp</span>
+                                <span className="text-[13px] font-bold text-[#1D1D2B] leading-tight">{doctorData.whatsapp}</span>
+                            </div>
+                        )}
+                        {doctorData.instagram && (
+                            <div className="flex items-start gap-4">
+                                <span className="text-[11px] font-bold text-gray-400 whitespace-nowrap pt-1 min-w-[70px]">Instagram</span>
+                                <span className="text-[13px] font-bold text-[#1D1D2B] leading-tight">{doctorData.instagram}</span>
+                            </div>
+                        )}
                     </div>
 
                     <div className="pt-6 pb-12">
