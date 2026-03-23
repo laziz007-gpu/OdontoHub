@@ -76,6 +76,7 @@ const Booking = () => {
                 // Create new appointment
                 const newAppointment = {
                     id: Date.now(),
+                    doctor_id: parseInt(selectedDoctor),
                     doctor_name: doctorName,
                     service: serviceName,
                     price: servicePrice,

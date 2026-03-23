@@ -51,7 +51,7 @@ def get_current_user(
             settings.SECRET_KEY,
             algorithms=[settings.ALGORITHM],
         )
-        user_id = payload.get("sub")
+        user_id = payload.get("sub") or payload.get("user_id")
         if user_id is None:
             raise HTTPException(status_code=401, detail="Invalid token")
 

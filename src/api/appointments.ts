@@ -41,9 +41,47 @@ export const useCreateAppointment = () => {
 
 export const useMyAppointments = () => {
     const accessToken = localStorage.getItem('access_token');
+    const isLocalMode = accessToken?.startsWith('local_token_');
+    const useApi = import.meta.env.VITE_USE_API !== 'false';
+
     return useQuery({
         queryKey: ['myAppointments'],
-        queryFn: async () => {
+        queryFn: async (): Promise<Appointment[]> => {
+            // Local mode — read from localStorage
+            if (isLocalMode || !useApi) {
+                const raw = JSON.parse(localStorage.getItem('appointments') || '[]');
+                const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+                const role = userData.role;
+
+                // Convert local appointment format to Appointment interface
+                return raw.map((a: any) => {
+                    // Parse date+time into ISO string
+                    let start_time = a.start_time || a.created_at || new Date().toISOString();
+                    if (a.date && a.time) {
+                        // date is like "24.03.2026", time is "10:00"
+                        const parts = a.date.split('.');
+                        if (parts.length === 3) {
+                            start_time = `${parts[2]}-${parts[1]}-${parts[0]}T${a.time}:00`;
+                        }
+                    }
+                    const end_time = a.end_time || new Date(new Date(start_time).getTime() + 60 * 60 * 1000).toISOString();
+
+                    return {
+                        id: a.id,
+                        dentist_id: a.doctor_id || 2,
+                        patient_id: a.patient_id || 1,
+                        start_time,
+                        end_time,
+                        status: (a.status === 'upcoming' ? 'pending' : a.status === 'past' ? 'completed' : a.status) as Appointment['status'],
+                        service: a.service || null,
+                        price: a.price || null,
+                        notes: a.comment || null,
+                        dentist_name: a.doctor_name || 'Доктор',
+                        patient_name: a.patient_name || userData.full_name || 'Пациент',
+                    };
+                });
+            }
+
             const response = await api.get<Appointment[]>('/appointments/me');
             return response.data;
         },

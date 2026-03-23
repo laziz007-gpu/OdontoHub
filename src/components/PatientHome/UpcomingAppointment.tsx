@@ -1,9 +1,12 @@
 import { ArrowUpRight, Users, Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useMyAppointments } from "../../api/appointments";
+import DentistImg from "../../assets/img/photos/Dentist.png";
 
 const UpcomingAppointment = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const { data: appointments, isLoading } = useMyAppointments();
 
     if (isLoading) {
@@ -17,13 +20,22 @@ const UpcomingAppointment = () => {
 
     if (!appointments || appointments.length === 0) return null;
 
-    const upcoming = appointments[0]; // Get the first upcoming appointment
+    // Only show upcoming (pending/confirmed) appointments — if none, show nothing
+    const upcoming = appointments.find(a => a.status === 'pending' || a.status === 'confirmed');
+    if (!upcoming) return null;
+
+    const startTime = new Date(upcoming.start_time);
+    const timeStr = `${startTime.getHours().toString().padStart(2,'0')}:${startTime.getMinutes().toString().padStart(2,'0')}`;
+    const dateStr = startTime.toLocaleDateString('ru-RU');
 
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center">
                 <h2 className="text-xl md:text-3xl font-extrabold text-gray-900 tracking-tight">{t("patient.home.upcoming")}</h2>
-                <button className="text-blue-600 font-bold text-sm md:text-lg flex items-center gap-1 hover:gap-2 transition-all">
+                <button
+                    onClick={() => navigate('/calendar')}
+                    className="text-blue-600 font-bold text-sm md:text-lg flex items-center gap-1 hover:gap-2 transition-all"
+                >
                     {t("analytics.filter.all")}
                     <ArrowUpRight size={20} />
                 </button>
@@ -34,7 +46,7 @@ const UpcomingAppointment = () => {
                 <div className="flex flex-col md:flex-row md:items-center gap-6 lg:gap-10 relative z-10">
                     <div className="w-20 h-20 lg:w-32 lg:h-32 rounded-2xl md:rounded-4xl overflow-hidden bg-white/20 ring-4 ring-white/10 shrink-0">
                         <img
-                            src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop"
+                            src={DentistImg}
                             alt="Doctor"
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         />
@@ -48,7 +60,10 @@ const UpcomingAppointment = () => {
                         <p className="text-xs lg:text-base opacity-75 font-bold tracking-wide uppercase">{t("patient.appointments.specialty_general")}</p>
                     </div>
                     <div className="hidden md:block">
-                        <button className="bg-white text-blue-600 px-8 py-4 rounded-2xl lg:rounded-3xl font-black text-sm lg:text-lg hover:bg-blue-50 transition-all active:scale-95">
+                        <button
+                            onClick={() => navigate(`/appointment/${upcoming.id}`)}
+                            className="bg-white text-blue-600 px-8 py-4 rounded-2xl lg:rounded-3xl font-black text-sm lg:text-lg hover:bg-blue-50 transition-all active:scale-95"
+                        >
                             {t("patient.home.more_details")}
                         </button>
                     </div>
@@ -57,15 +72,23 @@ const UpcomingAppointment = () => {
                 <div className="bg-white/15 backdrop-blur-xl rounded-2xl lg:rounded-3xl py-4 px-6 lg:px-10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs lg:text-lg font-black border border-white/10 relative z-10">
                     <div className="flex items-center gap-3">
                         <Calendar size={16} className="lg:size-6" />
-                        <span>{new Date(upcoming.start_time).toLocaleDateString()}</span>
+                        <span>{dateStr}</span>
                     </div>
                     <div className="w-px h-6 bg-white/20 hidden sm:block"></div>
                     <div className="flex items-center gap-3">
                         <span className="opacity-80">{t("patient.home.until_appointment")}</span>
-                        <span className="font-mono text-sm lg:text-xl tracking-wider">
-                            {upcoming.start_time.split('T')[1].substring(0, 5)}
-                        </span>
+                        <span className="font-mono text-sm lg:text-xl tracking-wider">{timeStr}</span>
                     </div>
+                </div>
+
+                {/* Mobile подробнее button */}
+                <div className="md:hidden relative z-10">
+                    <button
+                        onClick={() => navigate(`/appointment/${upcoming.id}`)}
+                        className="w-full bg-white text-blue-600 py-3 rounded-2xl font-black text-sm active:scale-95"
+                    >
+                        {t("patient.home.more_details")}
+                    </button>
                 </div>
             </div>
         </div>

@@ -45,7 +45,8 @@ class Appointment(Base):
         PgEnum(
             AppointmentStatus,
             name="appointment_status",
-            create_type=True
+            create_type=False,
+            values_callable=lambda x: [e.value for e in x]
         ),
         default=AppointmentStatus.PENDING,
         nullable=False

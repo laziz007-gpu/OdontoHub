@@ -40,11 +40,21 @@ const Appointments: React.FC = () => {
     const appointmentsData = useMemo(() => {
         if (!apiAppointments || !Array.isArray(apiAppointments)) return [];
         
+        // For local mode, filter by dentist_id if user is a dentist
+        const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+        const accessToken = localStorage.getItem('access_token');
+        const isLocalMode = accessToken?.startsWith('local_token_');
+        
         // Format selected date for comparison (YYYY-MM-DD)
         const selectedDateStr = `${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${selectedDate.getDate().toString().padStart(2, '0')}`;
         
         return apiAppointments
             .filter(app => {
+                // In local mode as dentist, filter by dentist_id
+                if (isLocalMode && userData.role === 'dentist') {
+                    const dentistId = userData.dentist_id || 2; // default to id 2 (Махмуд Пулатов)
+                    if (app.dentist_id !== dentistId) return false;
+                }
                 // Filter by selected date
                 const appointmentDate = new Date(app.start_time);
                 const appointmentDateStr = `${appointmentDate.getFullYear()}-${(appointmentDate.getMonth() + 1).toString().padStart(2, '0')}-${appointmentDate.getDate().toString().padStart(2, '0')}`;

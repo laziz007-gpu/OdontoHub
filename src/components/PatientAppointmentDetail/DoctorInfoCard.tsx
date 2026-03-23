@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaArrowRight } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
 import type { Doctor } from "../../types/patient";
 
 interface DoctorInfoCardProps {
@@ -7,6 +8,12 @@ interface DoctorInfoCardProps {
 }
 
 const DoctorInfoCard: React.FC<DoctorInfoCardProps> = ({ doctor }) => {
+    const navigate = useNavigate();
+
+    const handleNavigate = () => {
+        navigate('/my-dentist', { state: { doctor } });
+    };
+
     return (
         <div className="bg-[#4D71F8] rounded-[1.5rem] sm:rounded-[2rem] lg:rounded-[3rem] p-4 sm:p-6 lg:p-10 text-white flex gap-4 sm:gap-6 lg:gap-10 items-center shadow-lg relative overflow-hidden">
             {/* Image */}
@@ -27,7 +34,10 @@ const DoctorInfoCard: React.FC<DoctorInfoCardProps> = ({ doctor }) => {
                     <p>Оценка: {doctor.rating}</p>
                 </div>
 
-                <button className="mt-3 sm:mt-5 lg:mt-8 bg-white text-black text-xs sm:text-sm lg:text-xl font-bold py-2 sm:py-3 lg:py-4 px-4 sm:px-6 lg:px-10 rounded-full flex items-center gap-2 lg:gap-3 hover:bg-gray-100 transition-colors active:scale-95">
+                <button
+                    onClick={handleNavigate}
+                    className="mt-3 sm:mt-5 lg:mt-8 bg-white text-black text-xs sm:text-sm lg:text-xl font-bold py-2 sm:py-3 lg:py-4 px-4 sm:px-6 lg:px-10 rounded-full flex items-center gap-2 lg:gap-3 hover:bg-gray-100 transition-colors active:scale-95"
+                >
                     Перейти <FaArrowRight size={10} className="sm:size-[12px] lg:size-[18px]" />
                 </button>
             </div>

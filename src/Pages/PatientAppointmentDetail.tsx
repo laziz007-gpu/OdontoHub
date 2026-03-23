@@ -8,6 +8,7 @@ import PriceCard from "../components/PatientAppointmentDetail/PriceCard";
 import ReviewButton from "../components/PatientAppointmentDetail/ReviewButton";
 import ActionButtons from "../components/PatientAppointmentDetail/ActionButtons";
 import { useAppointment } from "../api/appointments";
+import { useAllDentists } from "../api/profile";
 import type { AppointmentDetail } from "../types/patient";
 
 const PatientAppointmentDetail = () => {
@@ -16,6 +17,7 @@ const PatientAppointmentDetail = () => {
     
     // Fetch appointment from backend
     const { data: appointmentData, isLoading } = useAppointment(parseInt(id || '0'));
+    const { data: allDentists = [] } = useAllDentists();
 
     if (isLoading) {
         return (
@@ -83,17 +85,27 @@ const PatientAppointmentDetail = () => {
         const localAppointment = appointments.find((a: any) => a.id.toString() === id);
         
         if (localAppointment) {
+            // Find full doctor data from allDentists list
+            const dentist = allDentists.find(d => d.id === localAppointment.doctor_id);
+
             appointment = {
                 title: localAppointment.service || "Консультация",
                 date: localAppointment.date,
                 time: localAppointment.time,
                 doctor: {
-                    name: localAppointment.doctor_name || "Доктор",
-                    direction: "Стоматология",
+                    id: localAppointment.doctor_id,
+                    name: dentist?.full_name || localAppointment.doctor_name || "Доктор",
+                    direction: dentist?.specialization || "Стоматология",
                     experience: "5 лет",
                     rating: "4.7",
                     image: DentistImg,
-                    phone: "+998901234567"
+                    phone: dentist?.phone || "+998901234567",
+                    clinic: dentist?.clinic,
+                    address: dentist?.address,
+                    telegram: dentist?.telegram,
+                    instagram: dentist?.instagram,
+                    whatsapp: dentist?.whatsapp,
+                    work_hours: dentist?.work_hours,
                 },
                 details: {
                     status: localAppointment.status === "upcoming" ? "запланирован" : "завершён",
@@ -192,7 +204,7 @@ const PatientAppointmentDetail = () => {
                         </div>
                         <div>
                             {(appointmentData?.status === "pending" || appointmentData?.status === "confirmed" || isLocalMode) ? 
-                                <ActionButtons phone={appointment.doctor.phone} /> : 
+                                <ActionButtons phone={appointment.doctor.phone} doctorName={appointment.doctor.name} /> : 
                                 <ReviewButton />
                             }
                         </div>

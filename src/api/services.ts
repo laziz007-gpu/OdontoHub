@@ -8,12 +8,38 @@ export interface Service {
     currency: string;
 }
 
-export const useServices = () => {
+const FALLBACK_SERVICES: Service[] = [
+    { id: 1, name: "Консультация", price: 50000, currency: "UZS" },
+    { id: 2, name: "Чистка зубов", price: 150000, currency: "UZS" },
+    { id: 3, name: "Лечение кариеса", price: 200000, currency: "UZS" },
+    { id: 4, name: "Удаление зуба", price: 120000, currency: "UZS" },
+    { id: 5, name: "Установка коронки", price: 800000, currency: "UZS" },
+    { id: 6, name: "Отбеливание зубов", price: 350000, currency: "UZS" },
+    { id: 7, name: "Имплантация", price: 2500000, currency: "UZS" },
+    { id: 8, name: "Брекеты", price: 3000000, currency: "UZS" },
+    { id: 9, name: "Рентген", price: 80000, currency: "UZS" },
+    { id: 10, name: "Протезирование", price: 1500000, currency: "UZS" },
+];
+
+export const useServices = (dentistId?: number) => {
+    const useApi = import.meta.env.VITE_USE_API !== 'false';
     return useQuery({
-        queryKey: ['services'],
+        queryKey: ['services', dentistId],
         queryFn: async () => {
-            const response = await api.get<Service[]>('/services/');
-            return response.data;
+            if (!useApi) return FALLBACK_SERVICES;
+            try {
+                const params = dentistId ? `?dentist_id=${dentistId}` : '';
+                const response = await api.get<Service[]>(`/services/${params}`);
+                // Dedupe by name on client side as extra safety
+                const seen = new Set<string>();
+                return response.data.filter(s => {
+                    if (seen.has(s.name)) return false;
+                    seen.add(s.name);
+                    return true;
+                });
+            } catch {
+                return FALLBACK_SERVICES;
+            }
         }
     });
 };

@@ -45,7 +45,7 @@ const DoctorsList: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col">
             <DoctorFilters
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
@@ -58,11 +58,11 @@ const DoctorsList: React.FC = () => {
             />
 
             {isLoading ? (
-                <div className="flex-1 flex items-center justify-center">
+                <div className="flex items-center justify-center py-20">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
                 </div>
             ) : (
-                <div className="flex-1 overflow-y-auto space-y-4 pb-24 no-scrollbar">
+                <div className="space-y-3 pb-32">
                     {doctors.map((doctor, index) => (
                         <DoctorCard key={index} doctor={doctor} onBook={handleBook} />
                     ))}
@@ -74,10 +74,10 @@ const DoctorsList: React.FC = () => {
                 </div>
             )}
 
-            <div className="fixed bottom-4 sm:bottom-6 left-0 right-0 flex justify-center z-10 px-4">
+            <div className="fixed bottom-24 sm:bottom-6 left-0 right-0 flex justify-center z-10 px-4 pointer-events-none">
                 <button
                     onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=стоматология+${district}+${location}`, '_blank')}
-                    className="bg-[#11D76A] text-white font-bold text-base sm:text-lg md:text-xl py-3 sm:py-4 px-8 sm:px-12 md:px-16 rounded-full shadow-[0_4px_20px_rgba(17,215,106,0.3)] hover:bg-[#0fc460] transition-all w-max active:scale-95 hover:shadow-[0_6px_24px_rgba(17,215,106,0.4)]"
+                    className="pointer-events-auto bg-[#11D76A] text-white font-bold text-sm sm:text-base py-2.5 sm:py-3 px-8 sm:px-10 rounded-full shadow-[0_4px_20px_rgba(17,215,106,0.3)] hover:bg-[#0fc460] transition-all active:scale-95"
                 >
                     На карте
                 </button>

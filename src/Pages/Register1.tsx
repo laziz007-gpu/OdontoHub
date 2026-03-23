@@ -84,7 +84,9 @@ export default function Register1() {
           full_name: data.full_name,
           phone: data.phone.replace(/\s+/g, ''),
           email: data.email || '',
-          role: selectedRole
+          role: selectedRole,
+          // For dentist local mode, assign dentist_id based on name match or default to 2
+          ...(selectedRole === 'dentist' && { dentist_id: 2 })
         }
 
         // Save user data to localStorage
@@ -101,6 +103,7 @@ export default function Register1() {
             // Past appointments
             {
               id: Date.now() - 3,
+              doctor_id: 2,
               doctor_name: "Махмуд Пулатов",
               service: "Осмотр",
               date: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),
@@ -111,6 +114,7 @@ export default function Register1() {
             },
             {
               id: Date.now() - 2,
+              doctor_id: 2,
               doctor_name: "Махмуд Пулатов",
               service: "Пломбирование",
               date: new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),
@@ -121,6 +125,7 @@ export default function Register1() {
             },
             {
               id: Date.now() - 1,
+              doctor_id: 2,
               doctor_name: "Махмуд Пулатов",
               service: "Консультация",
               date: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toLocaleDateString('ru-RU'),

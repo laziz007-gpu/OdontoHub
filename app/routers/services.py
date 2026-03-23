@@ -13,8 +13,24 @@ def read_services(dentist_id: int | None = None, skip: int = 0, limit: int = 100
     query = db.query(Service)
     if dentist_id:
         query = query.filter(Service.dentist_id == dentist_id)
-    services = query.offset(skip).limit(limit).all()
-    return services
+        services = query.offset(skip).limit(limit).all()
+        return services
+    else:
+        # No dentist_id filter — return unique service names (first occurrence of each name)
+        from sqlalchemy import func
+        subq = (
+            db.query(func.min(Service.id).label("min_id"))
+            .group_by(Service.name)
+            .subquery()
+        )
+        services = (
+            db.query(Service)
+            .filter(Service.id.in_(subq))
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+        return services
 
 @router.post("/", response_model=ServiceSchema)
 def create_service(service: ServiceCreate, db: Session = Depends(get_db)):

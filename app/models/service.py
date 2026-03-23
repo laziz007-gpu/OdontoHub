@@ -8,6 +8,6 @@ class Service(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     dentist_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("dentist_profiles.id"), nullable=True, index=True)
-    name: Mapped[str] = mapped_column(String, index=True)
+    name: Mapped[str] = mapped_column(String)
     price: Mapped[float] = mapped_column(Float)
     currency: Mapped[str] = mapped_column(String, default="UZS")

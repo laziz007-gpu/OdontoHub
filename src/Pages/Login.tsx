@@ -19,23 +19,56 @@ export default function Login() {
     formState: { errors },
   } = useForm<LoginData>()
 
-  const onSubmit = (data: LoginData) => {
-    // Local login - check localStorage
+  const onSubmit = async (data: LoginData) => {
     const cleanPhone = data.phone.replace(/\s+/g, '');
-    const userData = localStorage.getItem('user_data');
+    const useAPI = import.meta.env.VITE_USE_API === 'true';
 
+    if (useAPI) {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: cleanPhone })
+        });
+
+        if (!response.ok) {
+          const err = await response.json();
+          toast.error(err.detail || t("patient.alerts.user_not_found"));
+          return;
+        }
+
+        const result = await response.json();
+        localStorage.setItem('access_token', result.access_token);
+
+        // Fetch user profile
+        const meResponse = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+          headers: { 'Authorization': `Bearer ${result.access_token}` }
+        });
+
+        if (meResponse.ok) {
+          const userData = await meResponse.json();
+          localStorage.setItem('user_data', JSON.stringify(userData));
+          dispatch(setUser(userData));
+
+          if (userData.role === 'patient') {
+            navigate(paths.patientHome, { replace: true });
+          } else {
+            navigate(paths.menu, { replace: true });
+          }
+        }
+      } catch {
+        toast.error('Ошибка подключения к серверу');
+      }
+      return;
+    }
+
+    // Local mode
+    const userData = localStorage.getItem('user_data');
     if (userData) {
       const user = JSON.parse(userData);
-      
-      // Check if phone matches
       if (user.phone === cleanPhone) {
-        // Set token
         localStorage.setItem('access_token', 'local_token_' + Date.now());
-        
-        // Save to Redux store
         dispatch(setUser(user));
-        
-        // Navigate based on role
         if (user.role === 'patient') {
           navigate(paths.patientHome, { replace: true });
         } else {
@@ -45,7 +78,6 @@ export default function Login() {
       }
     }
 
-    // If no user found in localStorage, show error
     toast.error(t("patient.alerts.user_not_found"));
   }
 

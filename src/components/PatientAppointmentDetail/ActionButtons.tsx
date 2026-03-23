@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "../../components/Shared/Toast";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Video } from "lucide-react";
 
-const ActionButtons = ({ phone }: { phone?: string }) => {
+const ActionButtons = ({ phone, doctorName }: { phone?: string; doctorName?: string }) => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
@@ -64,6 +64,19 @@ const ActionButtons = ({ phone }: { phone?: string }) => {
     return (
         <>
             <div className="flex flex-col gap-3 sm:gap-4 lg:gap-5">
+                {/* Online consultation button */}
+                <button
+                    onClick={() => navigate('/video-call', {
+                        state: {
+                            participant: { name: doctorName || "Доктор", role: "dentist" },
+                            appointmentId: id
+                        }
+                    })}
+                    className="w-full bg-[#4E70FF] text-white py-3 sm:py-4 lg:py-5 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] text-sm sm:text-base lg:text-2xl font-bold shadow-lg shadow-blue-500/20 hover:bg-[#3d5ce0] transition-all active:scale-95 flex items-center justify-center gap-2"
+                >
+                    <Video size={20} />
+                    Онлайн консультация
+                </button>
                 <div className="flex gap-3 sm:gap-4 lg:gap-5">
                     <button
                         onClick={() => setShowContactModal(true)}

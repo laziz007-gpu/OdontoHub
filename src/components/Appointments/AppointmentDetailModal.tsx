@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { Video } from 'lucide-react';
 import { type AppointmentStatus } from './AppointmentCard';
 import { useCancelAppointment, useRescheduleAppointment } from '../../api/appointments';
 import RescheduleModal from './RescheduleModal';
@@ -21,6 +23,7 @@ interface AppointmentDetailModalProps {
 
 const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen, onClose, appointment, onSuccess }) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
     const cancelMutation = useCancelAppointment();
     const rescheduleMutation = useRescheduleAppointment();
@@ -122,29 +125,49 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
                 </div>
 
                 {/* Close Button */}
-                <div className="flex gap-3 mt-8">
-                    <button
-                        onClick={onClose}
-                        className="flex-1 py-5 bg-gray-100 text-gray-600 text-xl font-black rounded-[20px] hover:bg-gray-200 transition-all active:scale-[0.98]"
-                    >
-                        {t('common.close')}
-                    </button>
+                <div className="flex flex-col gap-3 mt-8">
+                    {/* Online consultation button */}
                     {appointment.status !== 'cancelled' && appointment.status !== 'completed' && (
-                        <>
-                            <button
-                                onClick={() => setIsRescheduleOpen(true)}
-                                className="flex-1 py-5 bg-[#feb019] text-white text-xl font-black rounded-[20px] shadow-lg shadow-[#feb019]/30 hover:bg-[#e09d15] transition-all active:scale-[0.98]"
-                            >
-                                Перенести
-                            </button>
-                            <button
-                                onClick={handleCancel}
-                                className="flex-1 py-5 bg-[#ff4560] text-white text-xl font-black rounded-[20px] shadow-lg shadow-[#ff4560]/30 hover:bg-[#e03d54] transition-all active:scale-[0.98]"
-                            >
-                                Отменить
-                            </button>
-                        </>
+                        <button
+                            onClick={() => {
+                                onClose();
+                                navigate('/video-call', {
+                                    state: {
+                                        participant: { name: appointment.patientName, role: 'patient' },
+                                        appointmentId: appointment.id
+                                    }
+                                });
+                            }}
+                            className="w-full py-5 bg-[#4E70FF] text-white text-xl font-black rounded-[20px] shadow-lg shadow-blue-500/30 hover:bg-[#3d5ce0] transition-all active:scale-[0.98] flex items-center justify-center gap-3"
+                        >
+                            <Video size={22} />
+                            Онлайн консультация
+                        </button>
                     )}
+                    <div className="flex gap-3">
+                        <button
+                            onClick={onClose}
+                            className="flex-1 py-5 bg-gray-100 text-gray-600 text-xl font-black rounded-[20px] hover:bg-gray-200 transition-all active:scale-[0.98]"
+                        >
+                            {t('common.close')}
+                        </button>
+                        {appointment.status !== 'cancelled' && appointment.status !== 'completed' && (
+                            <>
+                                <button
+                                    onClick={() => setIsRescheduleOpen(true)}
+                                    className="flex-1 py-5 bg-[#feb019] text-white text-xl font-black rounded-[20px] shadow-lg shadow-[#feb019]/30 hover:bg-[#e09d15] transition-all active:scale-[0.98]"
+                                >
+                                    Перенести
+                                </button>
+                                <button
+                                    onClick={handleCancel}
+                                    className="flex-1 py-5 bg-[#ff4560] text-white text-xl font-black rounded-[20px] shadow-lg shadow-[#ff4560]/30 hover:bg-[#e03d54] transition-all active:scale-[0.98]"
+                                >
+                                    Отменить
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
 
