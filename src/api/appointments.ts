@@ -18,6 +18,7 @@ export interface Appointment {
 
 export interface AppointmentCreate {
     dentist_id: number;
+    patient_id?: number;
     start_time: string;
     end_time: string;
     service?: string;
@@ -40,18 +41,17 @@ export const useCreateAppointment = () => {
 };
 
 export const useMyAppointments = () => {
-    const accessToken = localStorage.getItem('access_token');
-    const isLocalMode = accessToken?.startsWith('local_token_');
     const useApi = import.meta.env.VITE_USE_API !== 'false';
 
     return useQuery({
         queryKey: ['myAppointments'],
         queryFn: async (): Promise<Appointment[]> => {
+            const accessToken = localStorage.getItem('access_token');
+            const isLocalMode = accessToken?.startsWith('local_token_');
             // Local mode — read from localStorage
             if (isLocalMode || !useApi) {
                 const raw = JSON.parse(localStorage.getItem('appointments') || '[]');
                 const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
-                const role = userData.role;
 
                 // Convert local appointment format to Appointment interface
                 return raw.map((a: any) => {
@@ -85,7 +85,10 @@ export const useMyAppointments = () => {
             const response = await api.get<Appointment[]>('/appointments/me');
             return response.data;
         },
-        enabled: !!accessToken,
+        enabled: !!localStorage.getItem('access_token'),
+        staleTime: 0,
+        refetchOnMount: 'always',
+        refetchOnWindowFocus: true,
     });
 };
 

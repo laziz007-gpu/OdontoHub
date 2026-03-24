@@ -13,8 +13,8 @@ app = FastAPI(title="OdontoHub API", version="1.0.0")
 # CORS configuration - MUST be added before routes
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Development: Allow all origins
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],

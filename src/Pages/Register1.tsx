@@ -32,7 +32,7 @@ export default function Register1() {
 
       if (useAPI) {
         // API mode - register via backend
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/register`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ export default function Register1() {
         localStorage.setItem('access_token', result.access_token);
         
         // Fetch user profile
-        const meResponse = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
+        const meResponse = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
           headers: {
             'Authorization': `Bearer ${result.access_token}`
           }
@@ -66,6 +66,15 @@ export default function Register1() {
           const userData = await meResponse.json();
           localStorage.setItem('user_data', JSON.stringify(userData));
           dispatch(setUser(userData));
+        } else {
+          // fallback: build user data from what we know
+          const fallbackUser = {
+            full_name: data.full_name,
+            phone: data.phone.replace(/\s+/g, ''),
+            role: selectedRole,
+          };
+          localStorage.setItem('user_data', JSON.stringify(fallbackUser));
+          dispatch(setUser(fallbackUser));
         }
 
         setIsLoading(false);

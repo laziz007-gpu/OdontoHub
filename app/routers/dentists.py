@@ -15,20 +15,31 @@ def dentist_me(
     db: Session = Depends(get_db)
 ):
     if not user.dentist_profile:
-        # Auto-create missing profile
         profile = DentistProfile(
-            user_id=user.id, 
+            user_id=user.id,
             full_name="Dr. " + (user.email or user.phone)
         )
         db.add(profile)
         db.commit()
         db.refresh(user)
 
+    p = user.dentist_profile
     return {
-        "id": user.dentist_profile.id,
+        "id": p.id,
+        "user_id": p.user_id,
         "role": user.role,
-        "full_name": user.dentist_profile.full_name,
-        "message": "Hello dentist"
+        "full_name": p.full_name,
+        "verification_status": p.verification_status,
+        "specialization": p.specialization,
+        "phone": user.phone,
+        "address": p.address,
+        "clinic": p.clinic,
+        "work_hours": p.work_hours,
+        "schedule": p.schedule,
+        "telegram": p.telegram,
+        "instagram": p.instagram,
+        "whatsapp": p.whatsapp,
+        "works_photos": p.works_photos,
     }
 
 
@@ -36,8 +47,10 @@ def dentist_me(
 def list_dentists(
     db: Session = Depends(get_db)
 ):
-    """List all dentists (publicly accessible for patients)"""
-    return db.query(DentistProfile).all()
+    """List only approved dentists (publicly accessible for patients)"""
+    return db.query(DentistProfile).filter(
+        DentistProfile.verification_status == "approved"
+    ).all()
 
 
 @router.get("/me/stats")

@@ -19,9 +19,12 @@ def create_appointment(
         # Determine patient_id
         patient_id = None
         if current_user.role == UserRole.PATIENT:
-            if not current_user.patient_profile:
+            # Load patient profile fresh from DB
+            from app.models.patient import PatientProfile
+            patient_profile = db.query(PatientProfile).filter(PatientProfile.user_id == current_user.id).first()
+            if not patient_profile:
                 raise HTTPException(status_code=400, detail="Patient profile not found")
-            patient_id = current_user.patient_profile.id
+            patient_id = patient_profile.id
         elif current_user.role == UserRole.DENTIST:
             if not appointment.patient_id:
                 raise HTTPException(status_code=400, detail="patient_id is required for dentists")

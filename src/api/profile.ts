@@ -45,14 +45,15 @@ export const usePatientProfile = () => {
 }
 
 export const useDentistProfile = () => {
-    const accessToken = localStorage.getItem('access_token')
     return useQuery({
         queryKey: ['dentistProfile'],
         queryFn: async () => {
             const response = await api.get<DentistProfile>('/dentists/me');
             return response.data;
         },
-        enabled: !!accessToken,
+        enabled: !!localStorage.getItem('access_token'),
+        staleTime: 0,
+        refetchOnMount: 'always',
     })
 }
 
@@ -151,6 +152,23 @@ const FALLBACK_DENTISTS: DentistProfile[] = [
         telegram: "@bobur_dental",
         instagram: "@bobur_implants",
         whatsapp: "+998901234571",
+    },
+    {
+        id: 8,
+        user_id: 15,
+        full_name: "Suhrob",
+        pinfl: null,
+        diploma_number: null,
+        verification_status: "approved",
+        specialization: "therapist",
+        phone: "+998901234572",
+        address: "Ташкент, Юнусабад",
+        clinic: "Suhrob Dental",
+        schedule: "weekdays",
+        work_hours: "09:00-18:00",
+        telegram: null,
+        instagram: null,
+        whatsapp: "+998901234572",
     },
 ];
 

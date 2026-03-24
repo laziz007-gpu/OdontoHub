@@ -6,59 +6,65 @@ import { useTranslation } from "react-i18next";
 import { useMyAppointments } from "../../api/appointments";
 import { useNavigate } from "react-router-dom";
 
-type Appointment = { id: number; name: string; time: string };
-
 const Section: FC = () => {
   const { t } = useTranslation();
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const navigate = useNavigate();
 
   const { data: apiAppointments, isLoading } = useMyAppointments();
 
+  // Compute effective date: user-selected OR nearest upcoming OR today
+  const effectiveDate = useMemo(() => {
+    if (currentDate) return currentDate;
+    if (!apiAppointments || apiAppointments.length === 0) return new Date();
+    const today = new Date(); today.setHours(0,0,0,0);
+    const upcoming = apiAppointments
+      .map(a => new Date(a.start_time))
+      .filter(d => { const x = new Date(d); x.setHours(0,0,0,0); return x >= today; })
+      .sort((a, b) => a.getTime() - b.getTime());
+    return upcoming.length > 0 ? upcoming[0] : new Date();
+  }, [currentDate, apiAppointments]);
+
   const appointments = useMemo(() => {
     if (!apiAppointments || !Array.isArray(apiAppointments)) return [];
-    
-    // Format selected date for comparison (YYYY-MM-DD)
-    const selectedDateStr = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
-    
+
+    const selectedDateStr = `${effectiveDate.getFullYear()}-${(effectiveDate.getMonth() + 1).toString().padStart(2, '0')}-${effectiveDate.getDate().toString().padStart(2, '0')}`;
+
     return apiAppointments
       .filter(app => {
-        // Filter by selected date
-        const appointmentDate = new Date(app.start_time);
-        const appointmentDateStr = `${appointmentDate.getFullYear()}-${(appointmentDate.getMonth() + 1).toString().padStart(2, '0')}-${appointmentDate.getDate().toString().padStart(2, '0')}`;
-        return appointmentDateStr === selectedDateStr;
+        const d = new Date(app.start_time);
+        const dStr = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+        return dStr === selectedDateStr;
       })
       .map(app => {
-        const startDate = new Date(app.start_time);
-        const endDate = new Date(app.end_time);
-        const startTime = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
-        const endTime = `${endDate.getHours().toString().padStart(2, '0')}:${endDate.getMinutes().toString().padStart(2, '0')}`;
-
+        const start = new Date(app.start_time);
+        const end = new Date(app.end_time);
+        const startTime = `${start.getHours().toString().padStart(2, '0')}:${start.getMinutes().toString().padStart(2, '0')}`;
+        const endTime = `${end.getHours().toString().padStart(2, '0')}:${end.getMinutes().toString().padStart(2, '0')}`;
         return {
           id: app.id,
           name: app.patient_name || 'Пациент',
           time: `${startTime}-${endTime}`
         };
       });
-  }, [apiAppointments, currentDate]);
+  }, [apiAppointments, effectiveDate]);
 
   const goToPreviousDay = () => {
-    const newDate = new Date(currentDate);
-    newDate.setDate(newDate.getDate() - 1);
-    setCurrentDate(newDate);
+    const d = new Date(effectiveDate);
+    d.setDate(d.getDate() - 1);
+    setCurrentDate(d);
   };
 
   const goToNextDay = () => {
-    const newDate = new Date(currentDate);
-    newDate.setDate(newDate.getDate() + 1);
-    setCurrentDate(newDate);
+    const d = new Date(effectiveDate);
+    d.setDate(d.getDate() + 1);
+    setCurrentDate(d);
   };
 
   const formatDate = (date: Date) => {
     const dayName = t(`dashboard.appointments_card.weekdays.${date.getDay()}`);
     const day = date.getDate();
     const month = t(`dashboard.appointments_card.months.${date.getMonth()}`);
-
     return `${month} ${day}, ${dayName}`;
   };
 
@@ -68,22 +74,14 @@ const Section: FC = () => {
 
       {/* Date Navigation */}
       <div className="flex items-center justify-between">
-        <button
-          onClick={goToPreviousDay}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
+        <button onClick={goToPreviousDay} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
           <ChevronLeft className="w-5 h-5 text-gray-400" />
         </button>
-
         <div className="text-center">
           <p className="text-xs text-gray-500 font-medium mb-0.5">{t('dashboard.appointments_card.today')}</p>
-          <p className="text-sm font-bold text-gray-900">{formatDate(currentDate)}</p>
+          <p className="text-sm font-bold text-gray-900">{formatDate(effectiveDate)}</p>
         </div>
-
-        <button
-          onClick={goToNextDay}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
+        <button onClick={goToNextDay} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
           <ChevronRight className="w-5 h-5 text-gray-400" />
         </button>
       </div>
@@ -108,19 +106,12 @@ const Section: FC = () => {
                   {apt.name.charAt(0)}
                 </div>
                 <div>
-                  <p className="font-semibold text-sm text-gray-900">
-                    {apt.name}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    {apt.time}
-                  </p>
+                  <p className="font-semibold text-sm text-gray-900">{apt.name}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{apt.time}</p>
                 </div>
               </div>
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate('/appointments');
-                }}
+              <button
+                onClick={(e) => { e.stopPropagation(); navigate('/appointments'); }}
                 className="p-1 hover:bg-gray-200 rounded-lg transition-colors"
               >
                 <MoreVertical className="w-5 h-5 text-gray-600" />
@@ -136,6 +127,6 @@ const Section: FC = () => {
       )}
     </div>
   );
-}
+};
 
 export default Section;

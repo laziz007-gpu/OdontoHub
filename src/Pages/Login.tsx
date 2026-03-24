@@ -55,6 +55,9 @@ export default function Login() {
           } else {
             navigate(paths.menu, { replace: true });
           }
+        } else {
+          toast.error('Не удалось получить данные пользователя');
+          localStorage.removeItem('access_token');
         }
       } catch {
         toast.error('Ошибка подключения к серверу');

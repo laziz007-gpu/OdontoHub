@@ -57,6 +57,15 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
         );
     }, [patients, searchTerm]);
 
+    // Auto-select if only one match
+    useEffect(() => {
+        if (filteredPatients.length === 1 && searchTerm && !selectedPatientId) {
+            setSelectedPatientId(filteredPatients[0].id);
+            setSearchTerm('');
+            setIsDropdownOpen(false);
+        }
+    }, [filteredPatients, searchTerm, selectedPatientId]);
+
     const selectedPatientName = useMemo(() => {
         if (!selectedPatientId || !patients || !Array.isArray(patients)) return '';
         const patient = patients.find((p: any) => p.id === selectedPatientId);
@@ -100,18 +109,32 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
     };
 
     const handleSave = async () => {
-        if (!selectedPatientId || !dentist || !dentist.id) {
-            console.error("Cannot save appointment: Missing data", { selectedPatientId, dentistId: dentist?.id });
+        if (!selectedPatientId) {
+            toast.error('Пациентни танланг');
+            return;
+        }
+
+        // Get dentist_id: from profile query OR from user_data saved at login
+        let dentistId = dentist?.id;
+        if (!dentistId) {
+            try {
+                const u = JSON.parse(localStorage.getItem('user_data') || '{}');
+                dentistId = u.dentist_id; // set by /auth/me
+            } catch { /* ignore */ }
+        }
+
+        if (!dentistId) {
+            toast.error('Доктор маълумоти топилмади. Қайта киринг.');
             return;
         }
 
         const start = new Date(selectedYear, selectedMonth, selectedDay, parseInt(hour), parseInt(minute));
-        const end = new Date(start.getTime() + 60 * 60 * 1000); // Default 1 hour duration
+        const end = new Date(start.getTime() + 60 * 60 * 1000);
 
         try {
             await createAppointment.mutateAsync({
                 patient_id: selectedPatientId as number,
-                dentist_id: dentist.id,
+                dentist_id: dentistId,
                 start_time: start.toISOString(),
                 end_time: end.toISOString(),
                 notes: notes,
@@ -125,6 +148,8 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, in
             toast.error(errorMessage);
         }
     };
+
+    if (!isOpen) return null;
 
     return (
         <div

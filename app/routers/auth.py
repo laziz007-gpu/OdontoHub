@@ -96,16 +96,23 @@ def login(data: LoginSchema, db: Session = Depends(get_db)):
 @router.get("/me")
 def get_me(user: User = Depends(get_current_user)):
     full_name = "User"
+    dentist_id = None
+    patient_id = None
+    
     if user.role.value == UserRole.PATIENT.value and user.patient_profile:
         full_name = user.patient_profile.full_name
+        patient_id = user.patient_profile.id
     elif user.role.value == UserRole.DENTIST.value and user.dentist_profile:
         full_name = user.dentist_profile.full_name
+        dentist_id = user.dentist_profile.id
 
     return {
         "id": user.id,
         "phone": user.phone,
         "role": user.role.value,
         "email": user.email,
-        "full_name": full_name
+        "full_name": full_name,
+        "dentist_id": dentist_id,
+        "patient_id": patient_id,
     }
 
