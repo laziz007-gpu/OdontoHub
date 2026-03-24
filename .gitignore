@@ -67,3 +67,5 @@ Thumbs.db
 # Migration scripts (temporary)
 migrate_pinfl.py
 check_db.py
+__pycache__/
+*.pyc
