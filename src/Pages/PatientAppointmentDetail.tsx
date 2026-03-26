@@ -1,4 +1,3 @@
-import React from 'react';
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import DentistImg from "../assets/img/photos/Dentist.png";
@@ -14,8 +13,7 @@ import type { AppointmentDetail } from "../types/patient";
 const PatientAppointmentDetail = () => {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
-    
-    // Fetch appointment from backend
+
     const { data: appointmentData, isLoading } = useAppointment(parseInt(id || '0'));
     const { data: allDentists = [] } = useAllDentists();
 
@@ -27,74 +25,25 @@ const PatientAppointmentDetail = () => {
         );
     }
 
-    // Check if local mode
     const accessToken = localStorage.getItem('access_token');
     const isLocalMode = accessToken?.startsWith('local_token_');
 
-    // Mock data for local mode or fallback
-    const isUpcoming = id !== '101' && id !== '102' && id !== '103';
-
-    const mockAppointment: AppointmentDetail = isUpcoming ? {
-        title: "Удаление зуба мудрости",
-        date: "30 сентябрь",
-        time: "16:00",
-        doctor: {
-            name: "Махмуд Пулатов",
-            direction: "Ортодонтия",
-            experience: "3 года",
-            rating: "4.7",
-            image: DentistImg,
-            phone: "+998901234567"
-        },
-        details: {
-            status: "запланирован",
-            date: "25.10.2025",
-            duration: "40 минут",
-            tip: "Принести снимки рентгена",
-            notes: "Нету заметок"
-        },
-        price: "500.000сум"
-    } : {
-        title: "Осмотр",
-        date: "25 сентябрь",
-        time: "16:00",
-        doctor: {
-            name: "Махмуд Пулатов",
-            direction: "Ортодонтия",
-            experience: "3 года",
-            rating: "4.7",
-            image: DentistImg,
-            phone: "+998901234567"
-        },
-        details: {
-            status: "завершён",
-            date: "25.10.2025",
-            duration: "20 минут",
-            tip: "Пусто",
-            notes: ""
-        },
-        price: "20.000сум"
-    };
-
-    // Use real data if available
     let appointment: AppointmentDetail;
-    
-    if (isLocalMode) {
-        // Load from localStorage
-        const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
-        const localAppointment = appointments.find((a: any) => a.id.toString() === id);
-        
-        if (localAppointment) {
-            // Find full doctor data from allDentists list
-            const dentist = allDentists.find(d => d.id === localAppointment.doctor_id);
+    let isActive = false;
 
+    if (isLocalMode) {
+        const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+        const local = appointments.find((a: any) => a.id.toString() === id);
+        if (local) {
+            const dentist = allDentists.find(d => d.id === local.doctor_id);
+            isActive = local.status === 'upcoming';
             appointment = {
-                title: localAppointment.service || "Консультация",
-                date: localAppointment.date,
-                time: localAppointment.time,
+                title: local.service || "Консультация",
+                date: local.date,
+                time: local.time,
                 doctor: {
-                    id: localAppointment.doctor_id,
-                    name: dentist?.full_name || localAppointment.doctor_name || "Доктор",
+                    id: local.doctor_id,
+                    name: dentist?.full_name || local.doctor_name || "Доктор",
                     direction: dentist?.specialization || "Стоматология",
                     experience: "5 лет",
                     rating: "4.7",
@@ -108,25 +57,28 @@ const PatientAppointmentDetail = () => {
                     work_hours: dentist?.work_hours,
                 },
                 details: {
-                    status: localAppointment.status === "upcoming" ? "запланирован" : "завершён",
-                    date: localAppointment.date,
+                    status: local.status === "upcoming" ? "запланирован" : "завершён",
+                    date: local.date,
                     duration: "40 минут",
-                    tip: localAppointment.comment || "Нет подсказок",
-                    notes: localAppointment.comment || "Нету заметок"
+                    tip: local.comment || "Нет подсказок",
+                    notes: local.comment || "Нету заметок"
                 },
-                price: localAppointment.price ? `${localAppointment.price.toLocaleString('ru-RU')} UZS` : "Не указано"
+                price: local.price ? `${local.price.toLocaleString('ru-RU')} UZS` : "Не указано"
             };
         } else {
-            appointment = mockAppointment;
+            isActive = false;
+            appointment = {
+                title: "Консультация", date: "", time: "",
+                doctor: { name: "Доктор", direction: "Стоматология", experience: "5 лет", rating: "4.7", image: DentistImg, phone: "" },
+                details: { status: "завершён", date: "", duration: "", tip: "", notes: "" },
+                price: "Не указано"
+            };
         }
-    } else if (!appointmentData) {
-        appointment = mockAppointment;
-    } else {
-        // Convert backend data to AppointmentDetail format
+    } else if (appointmentData) {
         const startDate = new Date(appointmentData.start_time);
         const endDate = new Date(appointmentData.end_time);
         const duration = Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60));
-        
+        isActive = appointmentData.status === "pending" || appointmentData.status === "confirmed";
         appointment = {
             title: appointmentData.service || "Консультация",
             date: startDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }),
@@ -140,9 +92,9 @@ const PatientAppointmentDetail = () => {
                 phone: "+998901234567"
             },
             details: {
-                status: appointmentData.status === "pending" ? "запланирован" : 
-                        appointmentData.status === "completed" ? "завершён" :
-                        appointmentData.status === "cancelled" ? "отменён" : "запланирован",
+                status: appointmentData.status === "pending" ? "запланирован" :
+                    appointmentData.status === "completed" ? "завершён" :
+                    appointmentData.status === "cancelled" ? "отменён" : "запланирован",
                 date: startDate.toLocaleDateString('ru-RU'),
                 duration: `${duration} минут`,
                 tip: appointmentData.notes || "Нет подсказок",
@@ -150,10 +102,18 @@ const PatientAppointmentDetail = () => {
             },
             price: appointmentData.price ? `${appointmentData.price.toLocaleString('ru-RU')} UZS` : "Не указано"
         };
+    } else {
+        isActive = false;
+        appointment = {
+            title: "Консультация", date: "", time: "",
+            doctor: { name: "Доктор", direction: "Стоматология", experience: "5 лет", rating: "4.7", image: DentistImg, phone: "" },
+            details: { status: "завершён", date: "", duration: "", tip: "", notes: "" },
+            price: "Не указано"
+        };
     }
 
     return (
-        <div className="min-h-screen bg-[#F5F7FA] p-4 md:p-8 max-w-5xl mx-auto w-full flex flex-col font-sans">
+        <div className="min-h-screen bg-[#F5F7FA] p-4 md:p-8 max-w-5xl mx-auto w-full flex flex-col font-sans pb-20">
             {/* Header */}
             <div className="flex items-center justify-between mb-8 md:mb-12">
                 <div className="flex items-center gap-6">
@@ -174,38 +134,30 @@ const PatientAppointmentDetail = () => {
                 </div>
                 <div className="hidden md:block">
                     <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${
-                        (appointmentData?.status === "pending" || appointmentData?.status === "confirmed" || isLocalMode) ? 
-                        'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'
+                        isActive ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'
                     }`}>
-                        {(appointmentData?.status === "pending" || appointmentData?.status === "confirmed" || isLocalMode) ? 
-                            'Предстоит' : 'Завершено'
-                        }
+                        {isActive ? 'Предстоит' : appointment.details.status}
                     </span>
                 </div>
             </div>
 
             <div className="flex flex-col space-y-6 lg:space-y-8">
-                {/* Doctor Info Card - Full Width, Larger on Desktop */}
                 <div className="transition-transform hover:scale-[1.01]">
                     <DoctorInfoCard doctor={appointment.doctor} />
                 </div>
 
-                {/* Two Column Layout for Details and Price/Actions */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-                    {/* Left: Details */}
                     <div>
                         <AppointmentDetailsCard details={appointment.details} />
                     </div>
-
-                    {/* Right: Price & Actions Stacked Vertically */}
                     <div className="space-y-6 flex flex-col">
                         <div className="bg-white rounded-[2rem] lg:rounded-[2.5rem] p-1 shadow-sm border border-gray-50 overflow-hidden">
                             <PriceCard price={appointment.price} service={appointment.title} />
                         </div>
                         <div>
-                            {(appointmentData?.status === "pending" || appointmentData?.status === "confirmed" || isLocalMode) ? 
-                                <ActionButtons phone={appointment.doctor.phone} doctorName={appointment.doctor.name} /> : 
-                                <ReviewButton />
+                            {isActive
+                                ? <ActionButtons phone={appointment.doctor.phone} doctorName={appointment.doctor.name} />
+                                : <ReviewButton />
                             }
                         </div>
                     </div>
@@ -216,4 +168,3 @@ const PatientAppointmentDetail = () => {
 };
 
 export default PatientAppointmentDetail;
-

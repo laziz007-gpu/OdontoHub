@@ -60,13 +60,12 @@ const PatientAppointments = () => {
             const endDate = new Date(app.end_time);
             const now = new Date();
 
-            const isPast = endDate < now;
+            const isPast = endDate < now || app.status === 'completed' || app.status === 'cancelled';
 
-            // Basic mapping
             return {
                 id: app.id,
-                title: t("patient.appointments.default_title") || "Приём у врача",
-                doctor: app.dentist_name || "Махмуд Пулатов",
+                title: app.service || "Приём у врача",
+                doctor: app.dentist_name || "Доктор",
                 specialty: "Стоматолог",
                 date: startDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
                 time: `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}-${endDate.getHours().toString().padStart(2, '0')}:${endDate.getMinutes().toString().padStart(2, '0')}`,
@@ -74,10 +73,11 @@ const PatientAppointments = () => {
                 type: isPast ? 'past' : 'upcoming',
                 status: app.status === 'completed' ? 'success' :
                     app.status === 'cancelled' ? 'cancelled' :
-                        app.status === 'moved' ? 'rescheduled' : 'success',
+                    app.status === 'moved' ? 'rescheduled' : 'success',
                 statusText: app.status === 'completed' ? t("patient.appointments.success_status") :
-                    app.status === 'cancelled' ? t("patient.appointments.cancelled_status") :
-                        app.status === 'moved' ? t("patient.appointments.rescheduled_status") : t("patient.appointments.success_status"),
+                    app.status === 'cancelled' ? (t("patient.appointments.cancelled_status") || 'Отменён') :
+                    app.status === 'moved' ? (t("patient.appointments.rescheduled_status") || 'Перенесён') :
+                    t("patient.appointments.success_status"),
                 comment: app.cancel_reason,
                 commentTitle: t("patient.appointments.comment_label")
             };

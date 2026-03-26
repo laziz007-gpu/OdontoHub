@@ -93,7 +93,10 @@ const ActionButtons = ({ phone, doctorName }: { phone?: string; doctorName?: str
                 </div>
                 <button
                     onClick={() => setShowCancelModal(true)}
-                    className="w-full bg-[#EA4335] text-white py-3 sm:py-4 lg:py-5 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] text-sm sm:text-base lg:text-2xl font-bold shadow-lg shadow-red-500/20 hover:bg-[#d63b2f] transition-all active:scale-95"
+                    className="w-full text-white py-3 sm:py-4 lg:py-5 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] text-sm sm:text-base lg:text-2xl font-bold transition-all active:scale-95"
+                    style={{ backgroundColor: '#EA4335', boxShadow: '0 4px 15px rgba(234,67,53,0.3)' }}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#c0392b')}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#EA4335')}
                 >
                     Отменить
                 </button>
