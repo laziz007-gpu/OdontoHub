@@ -1,0 +1,89 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { paths } from '../../Routes/path';
+import DoctorCard from './DoctorCard';
+import DoctorFilters from './DoctorFilters';
+import { useAllDentists } from '../../api/profile';
+import type { Doctor } from '../../types/patient';
+import DoctorImg from "../../assets/img/photos/Dentist.png";
+
+const DoctorsList: React.FC = () => {
+    const { t } = useTranslation();
+    
+    // Fetch dentists from API
+    const { data: dentists, isLoading, isError } = useAllDentists();
+    const [searchTerm, setSearchTerm] = useState("");
+    const [location, setLocation] = useState("tashkent");
+    const [district, setDistrict] = useState("yunusabad");
+    const [rating, setRating] = useState("");
+
+    const navigate = useNavigate();
+
+    // Convert backend dentist data to Doctor type
+    const doctors: Doctor[] = dentists?.map(d => ({
+        id: d.id,
+        name: d.full_name,
+        direction: d.specialization || "Стоматолог",
+        experience: "5 лет",
+        rating: "4.8",
+        image: DoctorImg,
+        specialty: d.specialization || "Общая стоматология",
+        address: d.address || "Ташкент",
+        phone: d.phone,
+        clinic: d.clinic,
+        work_hours: d.work_hours,
+        works_photos: d.works_photos,
+        telegram: d.telegram,
+        instagram: d.instagram,
+        whatsapp: d.whatsapp,
+    })) || [];
+
+    const handleBook = (doctor: Doctor) => {
+        // Always navigate to booking page to select date/time
+        navigate(paths.booking, { state: { doctor } });
+    };
+
+    return (
+        <div className="flex flex-col">
+            <DoctorFilters
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                location={location}
+                onLocationChange={setLocation}
+                district={district}
+                onDistrictChange={setDistrict}
+                rating={rating}
+                onRatingChange={setRating}
+            />
+
+            {isLoading ? (
+                <div className="flex items-center justify-center py-20">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+                </div>
+            ) : (
+                <div className="space-y-3 pb-32">
+                    {doctors.map((doctor, index) => (
+                        <DoctorCard key={index} doctor={doctor} onBook={handleBook} />
+                    ))}
+                    {doctors.length === 0 && (
+                        <div className="text-center py-12">
+                            <p className="text-gray-500 text-lg">Врачи не найдены</p>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            <div className="fixed bottom-24 sm:bottom-6 left-0 right-0 flex justify-center z-10 px-4 pointer-events-none">
+                <button
+                    onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=стоматология+${district}+${location}`, '_blank')}
+                    className="pointer-events-auto bg-[#11D76A] text-white font-bold text-sm sm:text-base py-2.5 sm:py-3 px-8 sm:px-10 rounded-full shadow-[0_4px_20px_rgba(17,215,106,0.3)] hover:bg-[#0fc460] transition-all active:scale-95"
+                >
+                    На карте
+                </button>
+            </div>
+        </div>
+    );
+};
+
+export default DoctorsList;
