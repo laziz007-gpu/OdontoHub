@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUnreadCount, getNotifications, markAsRead } from '../../api/notifications';
+import { isAuthenticated } from '../../utils/auth';
 import type { Notification } from '../../types/notification';
 
 const NotificationBadge = () => {
@@ -12,12 +13,15 @@ const NotificationBadge = () => {
     const modalRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        fetchUnreadCount();
-        
-        // Poll for updates every 30 seconds
-        const interval = setInterval(fetchUnreadCount, 30000);
-        
-        return () => clearInterval(interval);
+        // Only fetch notifications if user is authenticated
+        if (isAuthenticated()) {
+            fetchUnreadCount();
+            
+            // Poll for updates every 30 seconds
+            const interval = setInterval(fetchUnreadCount, 30000);
+            
+            return () => clearInterval(interval);
+        }
     }, []);
 
     useEffect(() => {
@@ -37,21 +41,35 @@ const NotificationBadge = () => {
     }, [isOpen]);
 
     const fetchUnreadCount = async () => {
+        // Only fetch if authenticated
+        if (!isAuthenticated()) {
+            setUnreadCount(0);
+            return;
+        }
+        
         try {
             const count = await getUnreadCount();
             setUnreadCount(count);
         } catch (err) {
             console.error('Error fetching unread count:', err);
+            setUnreadCount(0);
         }
     };
 
     const fetchNotifications = async () => {
+        // Only fetch if authenticated
+        if (!isAuthenticated()) {
+            setNotifications([]);
+            return;
+        }
+        
         try {
             setLoading(true);
             const data = await getNotifications();
             setNotifications(data.slice(0, 6)); // Показываем только первые 6
         } catch (err) {
             console.error('Error fetching notifications:', err);
+            setNotifications([]);
         } finally {
             setLoading(false);
         }

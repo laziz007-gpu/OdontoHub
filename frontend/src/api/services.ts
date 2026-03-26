@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "./api";
+import { isAuthenticated, isDentist } from '../utils/auth';
 
 export interface Service {
     id: number;
@@ -40,7 +41,9 @@ export const useServices = (dentistId?: number) => {
             } catch {
                 return FALLBACK_SERVICES;
             }
-        }
+        },
+        // Only enable if authenticated (services are available to all users, but API calls need auth)
+        enabled: isAuthenticated(),
     });
 };
 
@@ -53,7 +56,9 @@ export const useCreateService = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['services'] });
-        }
+        },
+        // Only allow dentists to create services
+        mutationKey: ['createService'],
     });
 };
 

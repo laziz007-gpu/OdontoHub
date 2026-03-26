@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import engine, Base
 from app.routers import auth, patients, dentists, services, appointments
-from app.routers import prescriptions, allergies, payments, photos
+from app.routers import prescriptions, allergies, payments, photos, chat
 
 # Temporarily disabled - uncomment to enable notifications:
 # from app.routers import notifications
@@ -34,6 +34,7 @@ def on_startup():
     from app.models.allergy import Allergy
     from app.models.payment import Payment
     from app.models.photo import PatientPhoto
+    from app.models.message import Message
     
     # Create all tables
     Base.metadata.create_all(bind=engine)
@@ -44,6 +45,7 @@ app.include_router(patients.router, tags=["Patients"])
 app.include_router(dentists.router, tags=["Dentists"])
 app.include_router(services.router, tags=["Services"])
 app.include_router(appointments.router, tags=["Appointments"])
+app.include_router(chat.router, prefix="/api", tags=["Chat"])
 # Temporarily disabled - uncomment to enable notifications:
 # app.include_router(notifications.router, prefix="/api", tags=["Notifications"])
 app.include_router(prescriptions.router, prefix="/api", tags=["Prescriptions"])
@@ -79,6 +81,7 @@ def init_database():
         from app.models.allergy import Allergy
         from app.models.payment import Payment
         from app.models.photo import PatientPhoto
+        from app.models.message import Message
         
         # Create all tables
         Base.metadata.create_all(bind=engine)
@@ -95,7 +98,8 @@ def init_database():
                 "prescriptions",
                 "allergies",
                 "payments",
-                "patient_photos"
+                "patient_photos",
+                "messages"
             ]
         }
     except Exception as e:
