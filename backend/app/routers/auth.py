@@ -93,6 +93,17 @@ def login(data: LoginSchema, db: Session = Depends(get_db)):
 
 
 
+@router.delete("/delete-account")
+def delete_account(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        db.delete(user)
+        db.commit()
+        return {"message": "Account deleted successfully"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/me")
 def get_me(user: User = Depends(get_current_user)):
     full_name = "User"
