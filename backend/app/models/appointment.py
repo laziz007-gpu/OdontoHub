@@ -45,8 +45,8 @@ class Appointment(Base):
         PgEnum(
             AppointmentStatus,
             name="appointment_status",
-            create_type=False,
-            values_callable=lambda x: [e.value for e in x]
+            values_callable=lambda x: [e.value for e in x],
+            create_type=False
         ),
         default=AppointmentStatus.PENDING,
         nullable=False
@@ -59,7 +59,6 @@ class Appointment(Base):
 
     cancel_reason: Mapped[str | None] = mapped_column(nullable=True)
     service: Mapped[str | None] = mapped_column(nullable=True)
-    price: Mapped[int | None] = mapped_column(nullable=True)  # Service price
     notes: Mapped[str | None] = mapped_column(nullable=True)
 
     __table_args__ = (

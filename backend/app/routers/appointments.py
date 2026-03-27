@@ -19,12 +19,9 @@ def create_appointment(
         # Determine patient_id
         patient_id = None
         if current_user.role == UserRole.PATIENT:
-            # Load patient profile fresh from DB
-            from app.models.patient import PatientProfile
-            patient_profile = db.query(PatientProfile).filter(PatientProfile.user_id == current_user.id).first()
-            if not patient_profile:
+            if not current_user.patient_profile:
                 raise HTTPException(status_code=400, detail="Patient profile not found")
-            patient_id = patient_profile.id
+            patient_id = current_user.patient_profile.id
         elif current_user.role == UserRole.DENTIST:
             if not appointment.patient_id:
                 raise HTTPException(status_code=400, detail="patient_id is required for dentists")
@@ -139,34 +136,4 @@ def update_appointment(
         
     db.commit()
     db.refresh(db_appointment)
-    return db_appointment
-
-@router.get("/{appointment_id}", response_model=AppointmentSchema)
-def get_appointment(
-    appointment_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    db_appointment = db.query(Appointment).filter(Appointment.id == appointment_id).first()
-    if not db_appointment:
-        raise HTTPException(status_code=404, detail="Appointment not found")
-    
-    # Permission check
-    if current_user.role == UserRole.PATIENT:
-        if db_appointment.patient_id != current_user.patient_profile.id:
-            raise HTTPException(status_code=403, detail="Not authorized to view this appointment")
-    else:
-        if db_appointment.dentist_id != current_user.dentist_profile.id:
-            raise HTTPException(status_code=403, detail="Not authorized to view this appointment")
-    
-    # Populate names
-    from app.models.dentist import DentistProfile
-    from app.models.patient import PatientProfile
-    
-    dentist = db.query(DentistProfile).filter(DentistProfile.id == db_appointment.dentist_id).first()
-    db_appointment.dentist_name = dentist.full_name if dentist else "Unknown Dentist"
-    
-    patient = db.query(PatientProfile).filter(PatientProfile.id == db_appointment.patient_id).first()
-    db_appointment.patient_name = patient.full_name if patient else "Unknown Patient"
-    
     return db_appointment

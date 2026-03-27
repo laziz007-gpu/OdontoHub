@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "./api"
+import { isAuthenticated } from "../utils/auth"
 
 export interface Appointment {
     id: number;
@@ -85,7 +86,7 @@ export const useMyAppointments = () => {
             const response = await api.get<Appointment[]>('/appointments/me');
             return response.data;
         },
-        enabled: !!localStorage.getItem('access_token'),
+        enabled: !!localStorage.getItem('access_token') && isAuthenticated(),
         staleTime: 0,
         refetchOnMount: 'always',
         refetchOnWindowFocus: true,

@@ -5,9 +5,35 @@ from app.core.database import get_db
 from app.core.security import require_role
 from app.models.user import User, UserRole
 from app.models.dentist import DentistProfile
-from app.schemas.dentist import DentistProfileSchema
 
 router = APIRouter(prefix="/dentists", tags=["Dentists"])
+
+@router.get("/")
+def get_all_dentists(db: Session = Depends(get_db)):
+    """Get all approved dentists (public endpoint)"""
+    dentists = db.query(DentistProfile).filter(
+        DentistProfile.verification_status == "approved"
+    ).all()
+    
+    result = []
+    for dentist in dentists:
+        result.append({
+            "id": dentist.id,
+            "user_id": dentist.user_id,
+            "full_name": dentist.full_name,
+            "specialization": dentist.specialization,
+            "phone": dentist.phone,
+            "address": dentist.address,
+            "clinic": dentist.clinic,
+            "schedule": dentist.schedule,
+            "work_hours": dentist.work_hours,
+            "telegram": dentist.telegram,
+            "instagram": dentist.instagram,
+            "whatsapp": dentist.whatsapp,
+            "verification_status": dentist.verification_status.value if hasattr(dentist.verification_status, 'value') else dentist.verification_status
+        })
+    
+    return result
 
 @router.get("/me")
 def dentist_me(
@@ -15,42 +41,37 @@ def dentist_me(
     db: Session = Depends(get_db)
 ):
     if not user.dentist_profile:
+        # Auto-create missing profile
         profile = DentistProfile(
-            user_id=user.id,
+            user_id=user.id, 
             full_name="Dr. " + (user.email or user.phone)
         )
         db.add(profile)
         db.commit()
         db.refresh(user)
 
-    p = user.dentist_profile
+    profile = user.dentist_profile
+    
     return {
-        "id": p.id,
-        "user_id": p.user_id,
-        "role": user.role,
-        "full_name": p.full_name,
-        "verification_status": p.verification_status,
-        "specialization": p.specialization,
-        "phone": user.phone,
-        "address": p.address,
-        "clinic": p.clinic,
-        "work_hours": p.work_hours,
-        "schedule": p.schedule,
-        "telegram": p.telegram,
-        "instagram": p.instagram,
-        "whatsapp": p.whatsapp,
-        "works_photos": p.works_photos,
+        "id": profile.id,
+        "user_id": profile.user_id,
+        "full_name": profile.full_name,
+        "pinfl": profile.pinfl,
+        "diploma_number": profile.diploma_number,
+        "verification_status": profile.verification_status,
+        "specialization": profile.specialization,
+        "phone": profile.phone or user.phone,
+        "address": profile.address,
+        "clinic": profile.clinic,
+        "age": profile.age,
+        "experience_years": profile.experience_years,
+        "schedule": profile.schedule,
+        "work_hours": profile.work_hours,
+        "telegram": profile.telegram,
+        "instagram": profile.instagram,
+        "whatsapp": profile.whatsapp,
+        "works_photos": profile.works_photos
     }
-
-
-@router.get("/", response_model=List[DentistProfileSchema])
-def list_dentists(
-    db: Session = Depends(get_db)
-):
-    """List only approved dentists (publicly accessible for patients)"""
-    return db.query(DentistProfile).filter(
-        DentistProfile.verification_status == "approved"
-    ).all()
 
 
 @router.get("/me/stats")

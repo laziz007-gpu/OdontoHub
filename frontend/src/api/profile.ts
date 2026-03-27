@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "./api"
+import { isPatient, isDentist, isAuthenticated } from "../utils/auth"
 
 export interface Patient {
     id: number;
@@ -40,7 +41,7 @@ export const usePatientProfile = () => {
             const response = await api.get<Patient>('/patients/me');
             return response.data;
         },
-        enabled: !!accessToken,
+        enabled: !!accessToken && isAuthenticated() && isPatient(),
     })
 }
 
@@ -51,7 +52,7 @@ export const useDentistProfile = () => {
             const response = await api.get<DentistProfile>('/dentists/me');
             return response.data;
         },
-        enabled: !!localStorage.getItem('access_token'),
+        enabled: !!localStorage.getItem('access_token') && isAuthenticated() && isDentist(),
         staleTime: 0,
         refetchOnMount: 'always',
     })
@@ -63,7 +64,8 @@ export const useAllPatients = () => {
         queryFn: async () => {
             const response = await api.get<Patient[]>('/patients/');
             return response.data;
-        }
+        },
+        enabled: isAuthenticated() && isDentist(),
     });
 }
 
@@ -286,6 +288,6 @@ export const useDentistStats = () => {
             const response = await api.get<DentistStats>('/dentists/me/stats');
             return response.data;
         },
-        enabled: !!accessToken,
+        enabled: !!accessToken && isAuthenticated() && isDentist(),
     })
 };
