@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.core.database import engine, Base, get_db
 from app.routers import auth, patients, dentists, services, appointments
 from app.routers import prescriptions, allergies, payments, photos, chat
-from app.routers import reviews
+from app.routers import reviews, notifications
 import traceback
 import os
 # Temporarily disabled - uncomment to enable notifications:
@@ -140,8 +140,7 @@ app.include_router(dentists.router, tags=["Dentists"])
 app.include_router(services.router, tags=["Services"])
 app.include_router(appointments.router, tags=["Appointments"])
 app.include_router(chat.router, prefix="/api", tags=["Chat"])
-# Temporarily disabled - uncomment to enable notifications:
-# app.include_router(notifications.router, prefix="/api", tags=["Notifications"])
+app.include_router(notifications.router, tags=["Notifications"])  # Включили уведомления
 app.include_router(prescriptions.router, prefix="/api", tags=["Prescriptions"])
 app.include_router(allergies.router, prefix="/api", tags=["Allergies"])
 app.include_router(payments.router, prefix="/api", tags=["Payments"])

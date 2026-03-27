@@ -41,7 +41,7 @@ def register(data: RegisterSchema, db: Session = Depends(get_db)):
         profile = DentistProfile(
             user_id=user.id,
             full_name=data.full_name,
-            verification_status=VerificationStatus.APPROVED  # Автоматически одобряем
+            verification_status=VerificationStatus.PENDING  # Изменено: теперь pending по умолчанию
         )
         db.add(profile)
 

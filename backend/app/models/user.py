@@ -23,3 +23,4 @@ class User(Base):
 
     patient_profile = relationship("PatientProfile", back_populates="user", uselist=False)
     dentist_profile = relationship("DentistProfile", back_populates="user", uselist=False)
+    notifications = relationship("Notification", back_populates="user")

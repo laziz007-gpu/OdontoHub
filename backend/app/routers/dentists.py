@@ -11,7 +11,11 @@ router = APIRouter(prefix="/dentists", tags=["Dentists"])
 @router.get("/")
 def get_all_dentists(db: Session = Depends(get_db)):
     """Get all approved dentists (public endpoint)"""
-    dentists = db.query(DentistProfile).filter(
+    from sqlalchemy.orm import joinedload
+    
+    dentists = db.query(DentistProfile).options(
+        joinedload(DentistProfile.user)
+    ).filter(
         DentistProfile.verification_status == "approved"
     ).all()
     
@@ -22,7 +26,8 @@ def get_all_dentists(db: Session = Depends(get_db)):
             "user_id": dentist.user_id,
             "full_name": dentist.full_name,
             "specialization": dentist.specialization,
-            "phone": dentist.phone,
+            "phone": dentist.user.phone if dentist.user else None,  # Исправлено
+            "email": dentist.user.email if dentist.user else None,  # Добавлено
             "address": dentist.address,
             "clinic": dentist.clinic,
             "schedule": dentist.schedule,
@@ -30,6 +35,8 @@ def get_all_dentists(db: Session = Depends(get_db)):
             "telegram": dentist.telegram,
             "instagram": dentist.instagram,
             "whatsapp": dentist.whatsapp,
+            "rating": dentist.rating,  # Добавлено
+            "review_count": dentist.review_count,  # Добавлено
             "verification_status": dentist.verification_status.value if hasattr(dentist.verification_status, 'value') else dentist.verification_status
         })
     
@@ -41,14 +48,12 @@ def dentist_me(
     db: Session = Depends(get_db)
 ):
     if not user.dentist_profile:
-        # Auto-create missing profile
-        profile = DentistProfile(
-            user_id=user.id, 
-            full_name="Dr. " + (user.email or user.phone)
+        # Не создаем автоматически профиль с мок данными
+        from fastapi import HTTPException
+        raise HTTPException(
+            status_code=404, 
+            detail="Dentist profile not found. Please complete your registration."
         )
-        db.add(profile)
-        db.commit()
-        db.refresh(user)
 
     profile = user.dentist_profile
     
@@ -58,9 +63,10 @@ def dentist_me(
         "full_name": profile.full_name,
         "pinfl": profile.pinfl,
         "diploma_number": profile.diploma_number,
-        "verification_status": profile.verification_status,
+        "verification_status": profile.verification_status.value if hasattr(profile.verification_status, 'value') else profile.verification_status,
         "specialization": profile.specialization,
-        "phone": profile.phone or user.phone,
+        "phone": user.phone,  # Берем из user, а не из profile
+        "email": user.email,  # Добавляем email
         "address": profile.address,
         "clinic": profile.clinic,
         "age": profile.age,
@@ -70,7 +76,9 @@ def dentist_me(
         "telegram": profile.telegram,
         "instagram": profile.instagram,
         "whatsapp": profile.whatsapp,
-        "works_photos": profile.works_photos
+        "works_photos": profile.works_photos,
+        "rating": profile.rating,  # Добавляем рейтинг
+        "review_count": profile.review_count  # Добавляем количество отзывов
     }
 
 
@@ -168,21 +176,137 @@ def update_dentist_profile(
     user: User = Depends(require_role(UserRole.DENTIST)),
     db: Session = Depends(get_db)
 ):
-    """Update dentist profile"""
+    """Update dentist profile - doctors fill their own data"""
     if not user.dentist_profile:
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Profile not found")
     
-    # Update profile fields
+    profile = user.dentist_profile
+    
+    # Список разрешенных полей для обновления
+    allowed_fields = [
+        'full_name', 'specialization', 'clinic', 'address', 'age', 
+        'experience_years', 'schedule', 'work_hours', 'telegram', 
+        'instagram', 'whatsapp', 'works_photos', 'pinfl', 'diploma_number'
+    ]
+    
+    # Обновляем только разрешенные поля
+    updated_fields = []
     for key, value in profile_data.items():
-        if hasattr(user.dentist_profile, key):
-            setattr(user.dentist_profile, key, value)
+        if key in allowed_fields and hasattr(profile, key):
+            setattr(profile, key, value)
+            updated_fields.append(key)
+    
+    # Если заполнены основные поля, можно рассмотреть для одобрения
+    required_fields = ['specialization', 'clinic', 'pinfl', 'diploma_number']
+    has_required = all(getattr(profile, field) for field in required_fields)
+    
+    if has_required and profile.verification_status.value == 'pending':
+        # Можно добавить логику автоматического одобрения или уведомления админа
+        pass
     
     db.commit()
-    db.refresh(user.dentist_profile)
+    db.refresh(profile)
     
     return {
-        "id": user.dentist_profile.id,
-        "full_name": user.dentist_profile.full_name,
-        "message": "Profile updated successfully"
+        "id": profile.id,
+        "full_name": profile.full_name,
+        "verification_status": profile.verification_status.value,
+        "updated_fields": updated_fields,
+        "message": "Profile updated successfully",
+        "ready_for_approval": has_required
+    }
+
+@router.get("/pending")
+def get_pending_dentists(db: Session = Depends(get_db)):
+    """Get all pending dentists for admin approval"""
+    from sqlalchemy.orm import joinedload
+    
+    dentists = db.query(DentistProfile).options(
+        joinedload(DentistProfile.user)
+    ).filter(
+        DentistProfile.verification_status == "pending"
+    ).all()
+    
+    result = []
+    for dentist in dentists:
+        # Проверяем, заполнены ли основные поля
+        required_fields = ['specialization', 'clinic', 'pinfl', 'diploma_number']
+        has_required = all(getattr(dentist, field) for field in required_fields)
+        
+        result.append({
+            "id": dentist.id,
+            "user_id": dentist.user_id,
+            "full_name": dentist.full_name,
+            "phone": dentist.user.phone if dentist.user else None,
+            "email": dentist.user.email if dentist.user else None,
+            "specialization": dentist.specialization,
+            "clinic": dentist.clinic,
+            "address": dentist.address,
+            "pinfl": dentist.pinfl,
+            "diploma_number": dentist.diploma_number,
+            "age": dentist.age,
+            "experience_years": dentist.experience_years,
+            "created_at": dentist.created_at.isoformat() if dentist.created_at else None,
+            "ready_for_approval": has_required,
+            "verification_status": dentist.verification_status.value
+        })
+    
+    return result
+
+@router.put("/{dentist_id}/approve")
+def approve_dentist(dentist_id: int, db: Session = Depends(get_db)):
+    """Approve a pending dentist (admin only)"""
+    from app.models.dentist import VerificationStatus
+    
+    dentist = db.query(DentistProfile).filter(DentistProfile.id == dentist_id).first()
+    
+    if not dentist:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Dentist not found")
+    
+    if dentist.verification_status != VerificationStatus.PENDING:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=400, detail="Dentist is not pending approval")
+    
+    # Проверяем, заполнены ли обязательные поля
+    required_fields = ['specialization', 'clinic', 'pinfl', 'diploma_number']
+    missing_fields = [field for field in required_fields if not getattr(dentist, field)]
+    
+    if missing_fields:
+        from fastapi import HTTPException
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Missing required fields: {', '.join(missing_fields)}"
+        )
+    
+    dentist.verification_status = VerificationStatus.APPROVED
+    db.commit()
+    
+    return {
+        "id": dentist.id,
+        "full_name": dentist.full_name,
+        "verification_status": "approved",
+        "message": "Dentist approved successfully"
+    }
+
+@router.put("/{dentist_id}/reject")
+def reject_dentist(dentist_id: int, db: Session = Depends(get_db)):
+    """Reject a pending dentist (admin only)"""
+    from app.models.dentist import VerificationStatus
+    
+    dentist = db.query(DentistProfile).filter(DentistProfile.id == dentist_id).first()
+    
+    if not dentist:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Dentist not found")
+    
+    dentist.verification_status = VerificationStatus.REJECTED
+    db.commit()
+    
+    return {
+        "id": dentist.id,
+        "full_name": dentist.full_name,
+        "verification_status": "rejected",
+        "message": "Dentist rejected"
     }
