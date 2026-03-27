@@ -132,7 +132,13 @@ const Booking = () => {
             navigate('/calendar');
         } catch (error: any) {
             console.error("Error creating appointment:", error);
-            toast.error(error.response?.data?.detail || "Ошибка при создании записи");
+            const status = error.response?.status;
+            const detail = error.response?.data?.detail;
+            if (status === 409) {
+                toast.error(detail || "Bu vaqtda shifokor band. Boshqa vaqt tanlang.");
+            } else {
+                toast.error(detail || "Ошибка при создании записи");
+            }
         } finally {
             setIsSubmitting(false);
         }

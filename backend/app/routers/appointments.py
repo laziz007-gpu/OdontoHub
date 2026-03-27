@@ -52,11 +52,16 @@ def create_appointment(
         db.commit()
         db.refresh(db_appointment)
         return db_appointment
+    except HTTPException:
+        raise
     except Exception as e:
+        db.rollback()
+        err = str(e)
+        if "uq_dentist_start_time" in err or "UniqueViolation" in err:
+            raise HTTPException(status_code=409, detail="Bu vaqtda shifokor band. Boshqa vaqt tanlang.")
         import traceback
-        error_msg = f"Error creating appointment: {str(e)}\n{traceback.format_exc()}"
-        print(error_msg)
-        raise HTTPException(status_code=500, detail=error_msg)
+        print(f"Error creating appointment: {err}\n{traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=err)
 
 @router.get("/me", response_model=List[AppointmentSchema])
 def get_my_appointments(
