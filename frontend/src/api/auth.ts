@@ -1,15 +1,27 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import type { RegisterData, LoginData, TokenResponse } from "../interfaces"
 import api from "./api"
+import { setToken, setUser } from "../utils/auth"
 
 export const useRegister = () => {
   return useMutation({
     mutationFn: (data: RegisterData) =>
       api.post<TokenResponse>('/auth/register', data),
 
-    onSuccess: ({ data }) => {
+    onSuccess: async ({ data }) => {
       if (data?.access_token) {
+        setToken(data.access_token)
         localStorage.setItem('access_token', data.access_token)
+        
+        // Получаем данные пользователя после успешной регистрации
+        try {
+          const userResponse = await api.get('/auth/me')
+          if (userResponse.data) {
+            setUser(userResponse.data)
+          }
+        } catch (error) {
+          console.error('Failed to fetch user data:', error)
+        }
       }
     },
 
@@ -26,9 +38,20 @@ export const useLogin = () => {
       return api.post<TokenResponse>('/auth/login', data)
     },
 
-    onSuccess: ({ data }) => {
+    onSuccess: async ({ data }) => {
       if (data?.access_token) {
+        setToken(data.access_token)
         localStorage.setItem('access_token', data.access_token)
+        
+        // Получаем данные пользователя после успешного логина
+        try {
+          const userResponse = await api.get('/auth/me')
+          if (userResponse.data) {
+            setUser(userResponse.data)
+          }
+        } catch (error) {
+          console.error('Failed to fetch user data:', error)
+        }
       }
     },
 

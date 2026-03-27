@@ -52,7 +52,23 @@ def register(data: RegisterSchema, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=TokenSchema)
 def login(data: LoginSchema, db: Session = Depends(get_db)):
+    # Отладочная информация
+    print(f"🔍 LOGIN DEBUG: Received phone: '{data.phone}'")
+    print(f"🔍 LOGIN DEBUG: Phone type: {type(data.phone)}")
+    print(f"🔍 LOGIN DEBUG: Phone length: {len(data.phone) if data.phone else 0}")
+    
     user = db.query(User).filter(User.phone == data.phone).first()
+    print(f"🔍 LOGIN DEBUG: User found: {user is not None}")
+    
+    if user:
+        print(f"🔍 LOGIN DEBUG: User ID: {user.id}, Role: {user.role.value}")
+    else:
+        print(f"🔍 LOGIN DEBUG: No user found for phone: '{data.phone}'")
+        # Показываем первых 5 пользователей для сравнения
+        all_users = db.query(User).limit(5).all()
+        print(f"🔍 LOGIN DEBUG: First 5 users in DB:")
+        for u in all_users:
+            print(f"   - ID: {u.id}, Phone: '{u.phone}', Role: {u.role.value}")
 
     if not user:
         raise HTTPException(
