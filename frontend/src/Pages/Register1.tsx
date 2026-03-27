@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux'
 import { setUser } from '../store/slices/userSlice'
 import type { RegisterData, UserRole } from '../interfaces'
 import { Stethoscope, User } from 'lucide-react'
+import api from '../api/api'
 import logo from '../assets/img/icons/Logo.svg'
 import { paths } from '../Routes/path'
 import { toast } from '../components/Shared/Toast'
@@ -31,43 +32,23 @@ export default function Register1() {
       const useAPI = import.meta.env.VITE_USE_API === 'true';
 
       if (useAPI) {
-        // API mode - register via backend
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            full_name: data.full_name,
-            phone: data.phone.replace(/\s+/g, ''),
-            email: data.email || '',
-            role: selectedRole
-          })
+        const result = await api.post('/auth/register', {
+          full_name: data.full_name,
+          phone: data.phone.replace(/\s+/g, ''),
+          email: data.email || '',
+          role: selectedRole
         });
 
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.detail || 'Registration failed');
-        }
+        localStorage.setItem('access_token', result.data.access_token);
 
-        const result = await response.json();
-        
-        // Save token and user data
-        localStorage.setItem('access_token', result.access_token);
-        
-        // Fetch user profile
-        const meResponse = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-          headers: {
-            'Authorization': `Bearer ${result.access_token}`
-          }
-        });
-        
-        if (meResponse.ok) {
-          const userData = await meResponse.json();
+        try {
+          const meResponse = await api.get('/auth/me', {
+            headers: { 'Authorization': `Bearer ${result.data.access_token}` }
+          });
+          const userData = meResponse.data;
           localStorage.setItem('user_data', JSON.stringify(userData));
           dispatch(setUser(userData));
-        } else {
-          // fallback: build user data from what we know
+        } catch {
           const fallbackUser = {
             full_name: data.full_name,
             phone: data.phone.replace(/\s+/g, ''),

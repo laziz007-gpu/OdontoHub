@@ -278,6 +278,8 @@ export interface DentistStats {
     appointments_today: number;
     appointments_this_month: number;
     new_patients_this_week: number;
+    average_rating: number;
+    total_reviews: number;
 }
 
 export const useDentistStats = () => {

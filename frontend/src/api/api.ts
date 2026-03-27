@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
-  withCredentials: false, // Disable credentials for CORS
+  baseURL: import.meta.env.DEV ? '' : (import.meta.env.VITE_API_URL || 'http://localhost:8000'),
+  withCredentials: false,
   headers: {
     'Content-Type': 'application/json',
   }
@@ -11,28 +11,29 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem('access_token');
-    
-    // Don't send token for public dentist list endpoint only
     const isPublicEndpoint = config.url === '/dentists/' || config.url === '/dentists';
 
-    if (accessToken && accessToken !== null && !isPublicEndpoint) {
+    if (accessToken && !isPublicEndpoint) {
       config.headers['Authorization'] = `Bearer ${accessToken}`;
     }
-    
-    // Bypass localtunnel warning page
+
     config.headers['Bypass-Tunnel-Reminder'] = 'true';
-    
     return config;
   },
-
   (error) => Promise.reject(error),
-
 )
 
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    // Don't auto-redirect on 401 — let components handle it
+    if (error.response?.status === 401) {
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/login' && currentPath !== '/register' && currentPath !== '/') {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('user_data');
+        window.location.href = '/login';
+      }
+    }
     return Promise.reject(error);
   }
 );

@@ -60,16 +60,9 @@ const Booking = () => {
         setIsSubmitting(true);
 
         try {
-            const accessToken = localStorage.getItem('access_token');
+            const accessToken = sessionStorage.getItem('access_token') || localStorage.getItem('access_token');
             const isLocalMode = accessToken?.startsWith('local_token_');
-            const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
-
-            // Dentist cannot book via patient booking page
-            if (!isLocalMode && userData.role === 'dentist') {
-                toast.error('Доктор сифатида бу саҳифадан ёзилиб бўлмайди');
-                setIsSubmitting(false);
-                return;
-            }
+            const userData = JSON.parse(sessionStorage.getItem('user_data') || localStorage.getItem('user_data') || '{}');
 
             if (isLocalMode) {
                 // Get doctor name
@@ -121,6 +114,7 @@ const Booking = () => {
 
             await createAppointment.mutateAsync({
                 dentist_id: parseInt(selectedDoctor),
+                patient_id: userData.patient_id || undefined,
                 start_time: startDateTime.toISOString(),
                 end_time: endDateTime.toISOString(),
                 service: serviceName,

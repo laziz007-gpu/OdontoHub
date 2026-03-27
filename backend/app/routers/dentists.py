@@ -99,9 +99,9 @@ def get_dentist_stats(
             "new_patients_this_week": 0
         }
     
-    # Считаем только пациентов добавленных врачом (с source)
-    total_patients = db.query(func.count(PatientProfile.id)).filter(
-        PatientProfile.source.isnot(None)
+    # Unique patients for this dentist
+    total_patients = db.query(func.count(distinct(Appointment.patient_id))).filter(
+        Appointment.dentist_id == dentist_id
     ).scalar() or 0
     
     # Считаем все записи
@@ -138,12 +138,17 @@ def get_dentist_stats(
         Appointment.start_time >= month_start
     ).scalar() or 0
     
-    # Новые пациенты за неделю (только добавленные врачом)
-    new_patients_this_week = db.query(func.count(PatientProfile.id)).filter(
-        PatientProfile.source.isnot(None),
-        PatientProfile.created_at >= week_ago
+    # New patients this week for this dentist
+    new_patients_this_week = db.query(func.count(distinct(Appointment.patient_id))).filter(
+        Appointment.dentist_id == dentist_id,
+        Appointment.start_time >= week_ago
     ).scalar() or 0
-    
+
+    # Reviews
+    from app.models.review import Review
+    avg_rating = db.query(func.avg(Review.rating)).filter(Review.dentist_id == dentist_id).scalar()
+    total_reviews = db.query(func.count(Review.id)).filter(Review.dentist_id == dentist_id).scalar() or 0
+
     return {
         "total_patients": total_patients,
         "total_appointments": total_appointments,
@@ -151,7 +156,9 @@ def get_dentist_stats(
         "pending_appointments": pending_appointments,
         "appointments_today": appointments_today,
         "appointments_this_month": appointments_this_month,
-        "new_patients_this_week": new_patients_this_week
+        "new_patients_this_week": new_patients_this_week,
+        "average_rating": round(float(avg_rating), 1) if avg_rating else 0,
+        "total_reviews": total_reviews,
     }
 
 

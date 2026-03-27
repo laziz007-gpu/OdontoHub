@@ -47,26 +47,22 @@ export const useMyAppointments = () => {
     return useQuery({
         queryKey: ['myAppointments'],
         queryFn: async (): Promise<Appointment[]> => {
-            const accessToken = localStorage.getItem('access_token');
+            const accessToken = sessionStorage.getItem('access_token') || localStorage.getItem('access_token');
             const isLocalMode = accessToken?.startsWith('local_token_');
-            // Local mode — read from localStorage
+
             if (isLocalMode || !useApi) {
                 const raw = JSON.parse(localStorage.getItem('appointments') || '[]');
-                const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+                const userData = JSON.parse(sessionStorage.getItem('user_data') || localStorage.getItem('user_data') || '{}');
 
-                // Convert local appointment format to Appointment interface
                 return raw.map((a: any) => {
-                    // Parse date+time into ISO string
                     let start_time = a.start_time || a.created_at || new Date().toISOString();
                     if (a.date && a.time) {
-                        // date is like "24.03.2026", time is "10:00"
                         const parts = a.date.split('.');
                         if (parts.length === 3) {
                             start_time = `${parts[2]}-${parts[1]}-${parts[0]}T${a.time}:00`;
                         }
                     }
                     const end_time = a.end_time || new Date(new Date(start_time).getTime() + 60 * 60 * 1000).toISOString();
-
                     return {
                         id: a.id,
                         dentist_id: a.doctor_id || 2,
@@ -83,10 +79,15 @@ export const useMyAppointments = () => {
                 });
             }
 
-            const response = await api.get<Appointment[]>('/appointments/me');
-            return response.data;
+            try {
+                const response = await api.get<Appointment[]>('/appointments/me');
+                return response.data;
+            } catch (err: any) {
+                if (err.response?.status === 401) return [];
+                throw err;
+            }
         },
-        enabled: !!localStorage.getItem('access_token') && isAuthenticated(),
+        enabled: !!(sessionStorage.getItem('access_token') || localStorage.getItem('access_token')),
         staleTime: 0,
         refetchOnMount: 'always',
         refetchOnWindowFocus: true,

@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.core.database import engine, Base, get_db
 from app.routers import auth, patients, dentists, services, appointments
 from app.routers import prescriptions, allergies, payments, photos, chat
+from app.routers import reviews
 import traceback
 import os
 # Temporarily disabled - uncomment to enable notifications:
@@ -18,20 +19,22 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
+        "http://localhost:5174",
         "http://localhost:3000",
         "https://odontohubapp.netlify.app",
         "https://odontohub.netlify.app",
         "https://odontohub-app.netlify.app",
         "https://statuesque-bonbon-133025.netlify.app",
     ],
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["*"],
 )
 
 ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://localhost:5174",
     "http://localhost:3000",
     "https://odontohubapp.netlify.app",
     "https://odontohub.netlify.app",
@@ -72,6 +75,7 @@ def on_startup():
     from app.models.payment import Payment
     from app.models.photo import PatientPhoto
     from app.models.message import Message
+    from app.models.review import Review
 
     db_url = str(engine.url)
     if "postgresql" in db_url or "postgres" in db_url:
@@ -142,6 +146,7 @@ app.include_router(prescriptions.router, prefix="/api", tags=["Prescriptions"])
 app.include_router(allergies.router, prefix="/api", tags=["Allergies"])
 app.include_router(payments.router, prefix="/api", tags=["Payments"])
 app.include_router(photos.router, prefix="/api", tags=["Photos"])
+app.include_router(reviews.router, tags=["Reviews"])
 
 
 @app.get("/")

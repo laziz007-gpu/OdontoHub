@@ -22,7 +22,7 @@ const ActionButtons = ({ phone, doctorName }: { phone?: string; doctorName?: str
         }
     };
 
-    const confirmCancel = () => {
+    const confirmCancel = async () => {
         const accessToken = localStorage.getItem('access_token');
         const isLocalMode = accessToken?.startsWith('local_token_');
 
@@ -30,6 +30,15 @@ const ActionButtons = ({ phone, doctorName }: { phone?: string; doctorName?: str
             const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
             const updated = appointments.filter((app: any) => app.id.toString() !== id);
             localStorage.setItem('appointments', JSON.stringify(updated));
+        } else {
+            try {
+                const { default: api } = await import('../../api/api');
+                await api.patch(`/appointments/${id}`, { status: 'cancelled' });
+            } catch (e) {
+                toast.error('Отменить не удалось');
+                setShowCancelModal(false);
+                return;
+            }
         }
 
         toast.success(t("patient.alerts.appointment_cancelled"));
@@ -93,10 +102,7 @@ const ActionButtons = ({ phone, doctorName }: { phone?: string; doctorName?: str
                 </div>
                 <button
                     onClick={() => setShowCancelModal(true)}
-                    className="w-full text-white py-3 sm:py-4 lg:py-5 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] text-sm sm:text-base lg:text-2xl font-bold transition-all active:scale-95"
-                    style={{ backgroundColor: '#EA4335', boxShadow: '0 4px 15px rgba(234,67,53,0.3)' }}
-                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#c0392b')}
-                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#EA4335')}
+                    className="w-full bg-[#EA4335] hover:bg-[#c0392b] text-white py-3 sm:py-4 lg:py-5 rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] text-sm sm:text-base lg:text-2xl font-bold transition-all active:scale-95 shadow-lg shadow-red-500/30"
                 >
                     Отменить
                 </button>

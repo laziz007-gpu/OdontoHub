@@ -1,73 +1,50 @@
+import { useState, useMemo } from 'react';
 import { useDentistStats } from '../api/profile';
 import { useMyAppointments } from '../api/appointments';
 import AnalyticsHeader from '../components/Analytics/AnalyticsHeader';
-import { useTranslation } from 'react-i18next';
-import { Users, CalendarCheck, CalendarClock, TrendingUp, CheckCircle, XCircle, Clock, CalendarDays } from 'lucide-react';
+import { Users, CalendarCheck, CalendarClock, TrendingUp, CheckCircle, Clock, CalendarDays } from 'lucide-react';
+
+type Period = 'week' | 'month';
 
 const Analitic = () => {
-    const { t } = useTranslation();
     const { data: stats, isLoading } = useDentistStats();
-    const { data: appointments = [] } = useMyAppointments();
+    const { data: allAppointments = [] } = useMyAppointments();
+    const [period, setPeriod] = useState<Period>('month');
 
-    // Count by status from real appointments
-    const completed = appointments.filter(a => a.status === 'completed').length;
-    const cancelled = appointments.filter(a => a.status === 'cancelled').length;
-    const pending = appointments.filter(a => a.status === 'pending' || a.status === 'confirmed').length;
+    const filtered = useMemo(() => {
+        const now = new Date();
+        const cutoff = period === 'week'
+            ? new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+            : new Date(now.getFullYear(), now.getMonth(), 1);
+        return allAppointments.filter(a => new Date(a.start_time) >= cutoff);
+    }, [allAppointments, period]);
 
-    // Monthly chart — count appointments per month from real data
+    const completed = filtered.filter(a => a.status === 'completed').length;
+    const cancelled = filtered.filter(a => a.status === 'cancelled').length;
+    const moved = filtered.filter(a => a.status === 'moved').length;
+    const pending = filtered.filter(a => a.status === 'pending' || a.status === 'confirmed').length;
+    const total = filtered.length;
+
+    // Monthly chart
     const monthlyCounts = Array(12).fill(0);
-    appointments.forEach(a => {
+    allAppointments.forEach(a => {
         const m = new Date(a.start_time).getMonth();
         monthlyCounts[m]++;
     });
     const maxMonthly = Math.max(...monthlyCounts, 1);
 
     const statCards = [
-        {
-            label: 'Jami qabullar',
-            value: isLoading ? '...' : stats?.total_appointments ?? 0,
-            icon: CalendarCheck,
-            color: 'bg-[#5377f7]',
-            text: 'text-white',
-        },
-        {
-            label: 'Bugungi qabullar',
-            value: isLoading ? '...' : stats?.appointments_today ?? 0,
-            icon: CalendarDays,
-            color: 'bg-[#00d68f]',
-            text: 'text-white',
-        },
-        {
-            label: 'Bu oyda',
-            value: isLoading ? '...' : stats?.appointments_this_month ?? 0,
-            icon: CalendarClock,
-            color: 'bg-[#f2c94c]',
-            text: 'text-[#1e2235]',
-        },
-        {
-            label: 'Kutilayotgan',
-            value: isLoading ? '...' : stats?.pending_appointments ?? 0,
-            icon: Clock,
-            color: 'bg-white border border-gray-100',
-            text: 'text-[#1e2235]',
-        },
-        {
-            label: 'Tugallangan',
-            value: isLoading ? '...' : stats?.completed_appointments ?? 0,
-            icon: CheckCircle,
-            color: 'bg-white border border-gray-100',
-            text: 'text-[#1e2235]',
-        },
-        {
-            label: 'Jami bemorlar',
-            value: isLoading ? '...' : stats?.total_patients ?? 0,
-            icon: Users,
-            color: 'bg-[#1e2235]',
-            text: 'text-white',
-        },
+        { label: 'Jami qabullar', value: isLoading ? '...' : stats?.total_appointments ?? 0, icon: CalendarCheck, color: 'bg-[#5377f7]', text: 'text-white' },
+        { label: 'Bugungi qabullar', value: isLoading ? '...' : stats?.appointments_today ?? 0, icon: CalendarDays, color: 'bg-[#00d68f]', text: 'text-white' },
+        { label: 'Bu oyda', value: isLoading ? '...' : stats?.appointments_this_month ?? 0, icon: CalendarClock, color: 'bg-[#f2c94c]', text: 'text-[#1e2235]' },
+        { label: 'Kutilayotgan', value: isLoading ? '...' : stats?.pending_appointments ?? 0, icon: Clock, color: 'bg-white border border-gray-100', text: 'text-[#1e2235]' },
+        { label: 'Tugallangan', value: isLoading ? '...' : stats?.completed_appointments ?? 0, icon: CheckCircle, color: 'bg-white border border-gray-100', text: 'text-[#1e2235]' },
+        { label: 'Jami bemorlar', value: isLoading ? '...' : stats?.total_patients ?? 0, icon: Users, color: 'bg-[#1e2235]', text: 'text-white' },
     ];
 
     const months = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyn', 'Iyl', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'];
+
+    const pct = (n: number) => total > 0 ? Math.round((n / total) * 100) : 0;
 
     return (
         <div className="flex-1 bg-[#f5f7fb] min-h-screen overflow-y-auto">
@@ -88,6 +65,22 @@ const Analitic = () => {
                             </div>
                         );
                     })}
+                </div>
+
+                {/* Period Filter */}
+                <div className="flex gap-3 mb-6">
+                    <button
+                        onClick={() => setPeriod('week')}
+                        className={`px-6 py-2.5 rounded-2xl font-bold text-sm transition-all ${period === 'week' ? 'bg-[#5377f7] text-white shadow-lg shadow-blue-500/20' : 'bg-white text-gray-500 hover:bg-gray-50'}`}
+                    >
+                        1 hafta
+                    </button>
+                    <button
+                        onClick={() => setPeriod('month')}
+                        className={`px-6 py-2.5 rounded-2xl font-bold text-sm transition-all ${period === 'month' ? 'bg-[#5377f7] text-white shadow-lg shadow-blue-500/20' : 'bg-white text-gray-500 hover:bg-gray-50'}`}
+                    >
+                        1 oy
+                    </button>
                 </div>
 
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-6">
@@ -118,67 +111,44 @@ const Analitic = () => {
 
                     {/* Status Breakdown */}
                     <div className="bg-white rounded-[32px] p-8 shadow-sm flex flex-col">
-                        <h3 className="text-[#1e2235] font-black text-2xl mb-6">Holat bo'yicha</h3>
+                        <h3 className="text-[#1e2235] font-black text-2xl mb-2">Holat bo'yicha</h3>
+                        <p className="text-xs text-gray-400 font-bold mb-6">{period === 'week' ? 'So\'nggi 7 kun' : 'Bu oy'} — {total} ta qabul</p>
                         <div className="space-y-4 flex-1 flex flex-col justify-center">
-                            <div className="space-y-2">
-                                <div className="flex justify-between text-sm font-bold">
-                                    <span className="text-gray-500">Tugallangan</span>
-                                    <span className="text-[#1cdb6f]">{completed}</span>
+                            {[
+                                { label: 'Tugallangan', value: completed, pct: pct(completed), color: '#1cdb6f' },
+                                { label: 'Kutilayotgan', value: pending, pct: pct(pending), color: '#5377f7' },
+                                { label: 'Ko\'chirilgan', value: moved, pct: pct(moved), color: '#f2c94c' },
+                                { label: 'Bekor qilingan', value: cancelled, pct: pct(cancelled), color: '#ef4444' },
+                            ].map((item) => (
+                                <div key={item.label} className="space-y-1.5">
+                                    <div className="flex justify-between text-sm font-bold">
+                                        <span className="text-gray-500">{item.label}</span>
+                                        <span style={{ color: item.color }}>{item.value} ({item.pct}%)</span>
+                                    </div>
+                                    <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                                        <div className="h-full rounded-full transition-all" style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
+                                    </div>
                                 </div>
-                                <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full bg-[#1cdb6f] rounded-full transition-all"
-                                        style={{ width: `${stats?.total_appointments ? (completed / stats.total_appointments) * 100 : 0}%` }}
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <div className="flex justify-between text-sm font-bold">
-                                    <span className="text-gray-500">Kutilayotgan</span>
-                                    <span className="text-[#5377f7]">{pending}</span>
-                                </div>
-                                <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full bg-[#5377f7] rounded-full transition-all"
-                                        style={{ width: `${stats?.total_appointments ? (pending / stats.total_appointments) * 100 : 0}%` }}
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <div className="flex justify-between text-sm font-bold">
-                                    <span className="text-gray-500">Bekor qilingan</span>
-                                    <span className="text-red-500">{cancelled}</span>
-                                </div>
-                                <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full bg-red-400 rounded-full transition-all"
-                                        style={{ width: `${stats?.total_appointments ? (cancelled / stats.total_appointments) * 100 : 0}%` }}
-                                    />
-                                </div>
-                            </div>
+                            ))}
                         </div>
-
-                        {/* Summary ring */}
-                        <div className="mt-6 pt-6 border-t border-gray-100 flex items-center justify-between">
-                            <div className="text-center">
-                                <div className="text-2xl font-black text-[#1cdb6f]">{completed}</div>
-                                <div className="text-xs text-gray-400 font-bold">Tugallangan</div>
-                            </div>
-                            <div className="text-center">
-                                <div className="text-2xl font-black text-[#5377f7]">{pending}</div>
-                                <div className="text-xs text-gray-400 font-bold">Kutilmoqda</div>
-                            </div>
-                            <div className="text-center">
-                                <div className="text-2xl font-black text-red-400">{cancelled}</div>
-                                <div className="text-xs text-gray-400 font-bold">Bekor</div>
-                            </div>
+                        <div className="mt-6 pt-6 border-t border-gray-100 grid grid-cols-2 gap-3">
+                            {[
+                                { label: 'Tugallangan', value: completed, color: 'text-[#1cdb6f]' },
+                                { label: 'Kutilmoqda', value: pending, color: 'text-[#5377f7]' },
+                                { label: "Ko'chirilgan", value: moved, color: 'text-[#f2c94c]' },
+                                { label: 'Bekor', value: cancelled, color: 'text-red-400' },
+                            ].map(item => (
+                                <div key={item.label} className="text-center">
+                                    <div className={`text-2xl font-black ${item.color}`}>{item.value}</div>
+                                    <div className="text-xs text-gray-400 font-bold">{item.label}</div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
 
                 {/* Bottom row */}
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {/* This week new patients */}
                     <div className="bg-[#4156d9] rounded-[32px] p-8 text-white shadow-sm flex flex-col justify-between">
                         <div className="flex items-center justify-between mb-4">
                             <span className="font-bold text-lg opacity-80">Bu hafta yangi bemorlar</span>
@@ -188,7 +158,6 @@ const Analitic = () => {
                         <div className="text-sm opacity-60 mt-2">so'nggi 7 kun ichida</div>
                     </div>
 
-                    {/* Today summary */}
                     <div className="bg-white rounded-[32px] p-8 shadow-sm flex flex-col justify-between">
                         <h3 className="text-[#1e2235] font-black text-xl mb-4">Bugun</h3>
                         <div className="space-y-3">
@@ -203,7 +172,6 @@ const Analitic = () => {
                         </div>
                     </div>
 
-                    {/* Total overview */}
                     <div className="bg-[#1e2235] rounded-[32px] p-8 text-white shadow-sm flex flex-col justify-between">
                         <div className="flex items-center justify-between mb-4">
                             <span className="font-bold text-lg opacity-80">Umumiy ko'rsatkichlar</span>

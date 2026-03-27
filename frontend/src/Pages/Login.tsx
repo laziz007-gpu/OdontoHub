@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { setUser } from '../store/slices/userSlice'
 import type { LoginData } from '../interfaces'
+import api from '../api/api'
 import logo from '../assets/img/icons/Logo.svg'
 import { paths } from '../Routes/path'
 import { toast } from '../components/Shared/Toast'
@@ -25,42 +26,29 @@ export default function Login() {
 
     if (useAPI) {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: cleanPhone })
+        const result = await api.post('/auth/login', { phone: cleanPhone });
+        const { access_token } = result.data;
+        localStorage.setItem('access_token', access_token);
+
+        const meResponse = await api.get('/auth/me', {
+          headers: { 'Authorization': `Bearer ${access_token}` }
         });
+        const userData = meResponse.data;
+        localStorage.setItem('user_data', JSON.stringify(userData));
+        dispatch(setUser(userData));
 
-        if (!response.ok) {
-          const err = await response.json();
-          toast.error(err.detail || t("patient.alerts.user_not_found"));
-          return;
-        }
-
-        const result = await response.json();
-        localStorage.setItem('access_token', result.access_token);
-
-        // Fetch user profile
-        const meResponse = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-          headers: { 'Authorization': `Bearer ${result.access_token}` }
-        });
-
-        if (meResponse.ok) {
-          const userData = await meResponse.json();
-          localStorage.setItem('user_data', JSON.stringify(userData));
-          dispatch(setUser(userData));
-
-          if (userData.role === 'patient') {
-            navigate(paths.patientHome, { replace: true });
-          } else {
-            navigate(paths.menu, { replace: true });
-          }
+        if (userData.role === 'patient') {
+          navigate(paths.patientHome, { replace: true });
         } else {
-          toast.error('Не удалось получить данные пользователя');
-          localStorage.removeItem('access_token');
+          navigate(paths.menu, { replace: true });
         }
-      } catch {
-        toast.error('Ошибка подключения к серверу');
+      } catch (err: any) {
+        const detail = err.response?.data?.detail;
+        if (detail) {
+          toast.error(detail);
+        } else {
+          toast.error('Ошибка подключения к серверу');
+        }
       }
       return;
     }

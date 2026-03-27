@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_BASE_URL': JSON.stringify(env.VITE_BASE_URL || '/')
     },
     server: {
+      port: 5173,
       proxy: {
         '/auth': {
           target: env.VITE_API_URL || 'http://localhost:8000',
@@ -33,6 +34,10 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
         },
         '/appointments': {
+          target: env.VITE_API_URL || 'http://localhost:8000',
+          changeOrigin: true,
+        },
+        '/api': {
           target: env.VITE_API_URL || 'http://localhost:8000',
           changeOrigin: true,
         },

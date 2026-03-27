@@ -15,6 +15,8 @@ export const PrivacySettings: React.FC = () => {
     const handleLogout = () => {
         localStorage.removeItem('access_token');
         localStorage.removeItem('user_data');
+        sessionStorage.removeItem('access_token');
+        sessionStorage.removeItem('user_data');
         dispatch(clearUser());
         navigate(paths.login, { replace: true });
     };
