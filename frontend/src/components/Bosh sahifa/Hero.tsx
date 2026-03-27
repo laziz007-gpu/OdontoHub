@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { paths } from '../../Routes/path';
 import { useTranslation } from 'react-i18next';
 import type { RootState } from '../../store/store';
+import { getUnreadCount, getNotifications, markAsRead } from '../../api/notifications';
+import type { Notification as NotifType } from '../../api/notifications';
 
 import NotificationIcon from '../../assets/img/icons/Notification.svg';
 import SettingsIcon from '../../assets/img/icons/Settings.svg';
@@ -24,41 +26,72 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onSearch }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user.user);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [unread, setUnread] = useState(0);
+  const [notifList, setNotifList] = useState<NotifType[]>([]);
+  const [notifLoading, setNotifLoading] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
 
-  const settingsRef = useRef<HTMLDivElement>(null);
+  const typeLabels: Record<string, string> = {
+    appointment_confirmed: 'Qabul tasdiqlandi',
+    appointment_cancelled: 'Bekor qilindi',
+    appointment_reminder: 'Eslatma',
+    review_received: 'Yangi baho',
+    system_message: 'Tizim',
+  };
+
+  const formatTime = (d: string) => {
+    const diff = Date.now() - new Date(d).getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return 'Hozir';
+    if (m < 60) return `${m} daqiqa oldin`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h} soat oldin`;
+    return `${Math.floor(h / 24)} kun oldin`;
+  };
+
+  const handleNotifClick = async (n: NotifType) => {
+    if (!n.is_read) {
+      await markAsRead(n.id).catch(() => {});
+      setNotifList(prev => prev.map(x => x.id === n.id ? { ...x, is_read: true } : x));
+      setUnread(prev => Math.max(0, prev - 1));
+    }
+  };
+
+  useEffect(() => {
+    const handleOutside = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setIsNotifOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, []);
+
+  useEffect(() => {
+    if (isNotifOpen) {
+      setNotifLoading(true);
+      getNotifications().then(data => { setNotifList(data.slice(0, 10)); setNotifLoading(false); }).catch(() => setNotifLoading(false));
+    }
+  }, [isNotifOpen]);
+
   const ratingModalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    getUnreadCount().then(setUnread).catch(() => {});
+    const interval = setInterval(() => getUnreadCount().then(setUnread).catch(() => {}), 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchValue(value);
-    if (onSearch) {
-      onSearch(value);
-    }
+    if (onSearch) onSearch(value);
   };
-
-  // Notifications will be loaded from API in future
-  const notifications: Notification[] = [];
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
-        setIsSettingsOpen(false);
-      }
-      if (ratingModalRef.current && !ratingModalRef.current.contains(e.target as Node)) {
-        setIsRatingModalOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const getInitial = (name: string) =>
-    name.startsWith('Odonto') ? 'O' : name.charAt(0);
 
   return (
     <>
@@ -94,47 +127,60 @@ const Hero: React.FC<HeroProps> = ({ onSearch }) => {
               </button>
 
               {/* Notifications */}
-              <div className="relative" ref={settingsRef}>
+              <div className="relative" ref={notifRef}>
                 <button
-                  onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                  className={`w-11 h-11 rounded-xl border transition-all flex items-center justify-center ${isSettingsOpen ? "bg-gray-100 border-gray-300 shadow-inner" : "hover:bg-gray-50 bg-white"
-                    }`}
+                  onClick={() => setIsNotifOpen(!isNotifOpen)}
+                  className="w-11 h-11 rounded-xl border transition-all flex items-center justify-center hover:bg-gray-50 bg-white relative"
                 >
                   <img src={NotificationIcon} className="w-6 h-6" />
+                  {unread > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center">
+                      {unread > 9 ? '9+' : unread}
+                    </span>
+                  )}
                 </button>
 
-                {isSettingsOpen && (
-                  <div className="absolute right-0 mt-3 w-[400px] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="px-6 py-4 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
-                      <h3 className="font-bold text-gray-900">{t('dashboard.notifications.title')}</h3>
-                      <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-semibold">
-                        {t('dashboard.notifications.new_count', { count: notifications.length })}
-                      </span>
+                {isNotifOpen && (
+                  <div className="absolute right-0 mt-3 w-[380px] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-gray-100 overflow-hidden z-50">
+                    <div className="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+                      <h3 className="font-bold text-gray-900">Bildirishnomalar</h3>
+                      {unread > 0 && (
+                        <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-semibold">
+                          {unread} yangi
+                        </span>
+                      )}
                     </div>
-                    <div className="max-h-[480px] overflow-y-auto custom-scrollbar">
-                      {notifications.map((n, i) => (
+                    <div className="max-h-[360px] overflow-y-auto">
+                      {notifLoading ? (
+                        <div className="py-8 text-center text-gray-400 text-sm">Yuklanmoqda...</div>
+                      ) : notifList.length === 0 ? (
+                        <div className="py-8 text-center text-gray-400 text-sm">Bildirishnomalar yo'q</div>
+                      ) : notifList.map((n) => (
                         <div
-                          key={i}
-                          className={`px-6 py-4 flex gap-4 hover:bg-gray-50 transition-colors cursor-pointer ${i !== notifications.length - 1 ? "border-b border-gray-50" : ""
-                            }`}
+                          key={n.id}
+                          onClick={() => handleNotifClick(n)}
+                          className={`px-5 py-3.5 flex gap-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-colors ${!n.is_read ? 'bg-blue-50/50' : ''}`}
                         >
-                          <div className="shrink-0 w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-lg shadow-blue-200">
-                            {getInitial(n.from)}
+                          <div className="w-9 h-9 rounded-full bg-[#5377f7] flex items-center justify-center shrink-0">
+                            <img src={NotificationIcon} className="w-4 h-4 brightness-0 invert" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex justify-between items-baseline mb-0.5">
-                              <span className="font-bold text-sm text-gray-900 truncate">{n.from}</span>
-                              <span className="text-[10px] font-medium text-gray-400 shrink-0">{n.time}</span>
+                            <div className="flex justify-between items-baseline">
+                              <span className="text-xs font-bold text-[#5377f7] uppercase">{typeLabels[n.type] || n.type}</span>
+                              <span className="text-[10px] text-gray-400">{formatTime(n.created_at)}</span>
                             </div>
-                            <p className="text-sm text-gray-600 line-clamp-2 leading-tight">
-                              {n.message}
-                            </p>
+                            <p className="text-sm font-bold text-gray-900">{n.title}</p>
+                            <p className="text-xs text-gray-500 line-clamp-1">{n.message}</p>
                           </div>
+                          {!n.is_read && <div className="w-2 h-2 bg-blue-500 rounded-full shrink-0 mt-1" />}
                         </div>
                       ))}
                     </div>
-                    <button className="w-full py-3 text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-colors border-t border-gray-100">
-                      {t('dashboard.notifications.show_all')}
+                    <button
+                      onClick={() => { navigate(paths.notifications); setIsNotifOpen(false); }}
+                      className="w-full py-3 text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-colors border-t border-gray-100"
+                    >
+                      Hammasini ko'rish
                     </button>
                   </div>
                 )}

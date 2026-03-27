@@ -95,7 +95,9 @@ export default function Sidebar() {
                 : "text-gray-800 hover:bg-gray-50 active:bg-gray-100"
                 }`}
             >
-              <Icon size={22} strokeWidth={isActive ? 2.5 : 2} className="shrink-0" />
+              <div className="relative shrink-0">
+                <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+              </div>
               <span className="text-[15px]">{item.label}</span>
             </Link>
           );

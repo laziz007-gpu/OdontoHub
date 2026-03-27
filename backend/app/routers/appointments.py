@@ -49,6 +49,35 @@ def create_appointment(
         db.add(db_appointment)
         db.commit()
         db.refresh(db_appointment)
+
+        # Notification yuborish - doktorga
+        try:
+            from app.models.notification import Notification, NotificationType
+            from app.models.patient import PatientProfile
+            import json
+
+            patient = db.query(PatientProfile).filter(PatientProfile.id == patient_id).first()
+            patient_name = patient.full_name if patient else "Bemor"
+
+            # Doktor user_id ni top
+            dentist_user_id = dentist.user_id
+
+            notif = Notification(
+                user_id=dentist_user_id,
+                type=NotificationType.APPOINTMENT_CONFIRMED,
+                title="Yangi qabul yozildi",
+                message=f"{patient_name} sizga {appointment.service or 'qabul'} uchun yozildi.",
+                data=json.dumps({
+                    "appointment_id": db_appointment.id,
+                    "patient_name": patient_name,
+                    "service": appointment.service,
+                })
+            )
+            db.add(notif)
+            db.commit()
+        except Exception as notif_err:
+            print(f"Notification error (non-critical): {notif_err}")
+
         return db_appointment
     except HTTPException:
         raise

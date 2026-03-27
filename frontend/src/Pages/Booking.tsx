@@ -60,55 +60,17 @@ const Booking = () => {
         setIsSubmitting(true);
 
         try {
-            const accessToken = sessionStorage.getItem('access_token') || localStorage.getItem('access_token');
-            const isLocalMode = accessToken?.startsWith('local_token_');
-            const userData = JSON.parse(sessionStorage.getItem('user_data') || localStorage.getItem('user_data') || '{}');
-
-            if (isLocalMode) {
-                // Get doctor name
-                const doctorName = doctors.find(d => d.value === selectedDoctor)?.label || "Махмуд Пулатов";
-                const serviceName = selectedService;
-                
-                // Find service price
-                const selectedServiceData = servicesData.find(s => s.name === selectedService);
-                const servicePrice = selectedServiceData?.price || 0;
-
-                // Create new appointment
-                const newAppointment = {
-                    id: Date.now(),
-                    doctor_id: parseInt(selectedDoctor),
-                    doctor_name: doctorName,
-                    service: serviceName,
-                    price: servicePrice,
-                    date: selectedDate.toLocaleDateString('ru-RU'),
-                    time: selectedTime,
-                    status: "upcoming",
-                    comment: comment,
-                    created_at: new Date().toISOString()
-                };
-
-                // Get existing appointments
-                const existingAppointments = JSON.parse(localStorage.getItem('appointments') || '[]');
-                existingAppointments.push(newAppointment);
-                localStorage.setItem('appointments', JSON.stringify(existingAppointments));
-
-                toast.success(t("patient.alerts.booking_success"));
-                navigate('/calendar');
-                return;
-            }
+            const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
 
             // API mode - create appointment with backend
             const serviceName = selectedService;
-            
-            // Find service price
             const selectedServiceData = servicesData.find(s => s.name === selectedService);
             const servicePrice = selectedServiceData?.price || 0;
-            
+
             const [hours, minutes] = selectedTime.split(':');
             const startDateTime = new Date(selectedDate);
             startDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-            
-            // End time is 1 hour after start
+
             const endDateTime = new Date(startDateTime);
             endDateTime.setHours(startDateTime.getHours() + 1);
 

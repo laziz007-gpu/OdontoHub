@@ -1,20 +1,31 @@
 import api from './api';
-import { Notification, UnreadCount } from '../types/notification';
+
+export interface Notification {
+  id: number;
+  user_id: number;
+  type: string;
+  title: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+  read_at: string | null;
+  data: Record<string, any> | null;
+}
 
 export const getNotifications = async (): Promise<Notification[]> => {
-  const response = await api.get('/api/notifications');
+  const response = await api.get('/api/notifications/');
   return response.data;
 };
 
 export const getUnreadCount = async (): Promise<number> => {
-  const response = await api.get<UnreadCount>('/api/notifications/unread-count');
-  return response.data.count;
+  const response = await api.get('/api/notifications/unread-count');
+  return response.data.unread_count;
 };
 
-export const markAsRead = async (notificationId: number): Promise<void> => {
-  await api.patch(`/api/notifications/${notificationId}/read`);
+export const markAsRead = async (id: number): Promise<void> => {
+  await api.patch(`/api/notifications/${id}/read`);
 };
 
 export const markAllAsRead = async (): Promise<void> => {
-  await api.post('/api/notifications/mark-all-read');
+  await api.patch('/api/notifications/mark-all-read');
 };

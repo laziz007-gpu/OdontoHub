@@ -1,12 +1,24 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Home, Calendar, MessageSquare, FileText, User } from "lucide-react";
+import { Home, Calendar, MessageSquare, FileText, User, Bell } from "lucide-react";
 import { paths } from "../../Routes/path";
 import Logo from "../../assets/img/icons/Logo2.svg";
+import { useEffect, useState } from "react";
+import { getUnreadCount } from "../../api/notifications";
+
 const PatientNavbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
+    const [unread, setUnread] = useState(0);
+
+    useEffect(() => {
+        getUnreadCount().then(setUnread).catch(() => {});
+        const interval = setInterval(() => {
+            getUnreadCount().then(setUnread).catch(() => {});
+        }, 30000);
+        return () => clearInterval(interval);
+    }, []);
 
     const navItems = [
         { icon: <Home size={24} />, path: paths.patientHome, label: t("patient.navbar.home") },
@@ -14,6 +26,20 @@ const PatientNavbar = () => {
         { icon: <MessageSquare size={24} />, path: paths.patientChats, label: t("patient.navbar.chats") },
         { icon: <FileText size={24} />, path: paths.patientHistory, label: t("patient.navbar.history") },
         { icon: <User size={24} />, path: paths.patientProfileSettings, label: t("patient.navbar.profile") },
+        {
+            icon: (
+                <div className="relative">
+                    <Bell size={24} />
+                    {unread > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center">
+                            {unread > 9 ? '9+' : unread}
+                        </span>
+                    )}
+                </div>
+            ),
+            path: '/notifications',
+            label: 'Bildirishnomalar'
+        },
     ];
 
     return (

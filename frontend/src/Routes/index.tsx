@@ -130,6 +130,10 @@ export const router = createBrowserRouter([
                     {
                         path: paths.chatDetail,
                         element: <Chats />
+                    },
+                    {
+                        path: paths.notifications,
+                        element: <Notifications />
                     }
                 ]
             }
@@ -183,11 +187,10 @@ export const router = createBrowserRouter([
                         path: paths.specialties,
                         element: <Specialties />
                     },
-                    // Temporarily disabled - uncomment to enable notifications:
-                    // {
-                    //     path: paths.notifications,
-                    //     element: <Notifications />
-                    // },
+                    {
+                        path: paths.notifications,
+                        element: <Notifications />
+                    },
                     {
                         path: paths.booking,
                         element: <Booking />
