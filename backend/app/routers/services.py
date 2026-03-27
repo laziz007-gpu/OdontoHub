@@ -9,32 +9,16 @@ from app.schemas.service import ServiceCreate, ServiceUpdate, Service as Service
 router = APIRouter(prefix="/services", tags=["Services"])
 
 @router.get("/", response_model=List[ServiceSchema])
-def read_services(dentist_id: int | None = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    query = db.query(Service)
-    if dentist_id:
-        query = query.filter(Service.dentist_id == dentist_id)
-        services = query.offset(skip).limit(limit).all()
-        return services
-    else:
-        # No dentist_id filter — return unique service names (first occurrence of each name)
-        from sqlalchemy import func
-        subq = (
-            db.query(func.min(Service.id).label("min_id"))
-            .group_by(Service.name)
-            .subquery()
-        )
-        services = (
-            db.query(Service)
-            .filter(Service.id.in_(subq))
-            .offset(skip)
-            .limit(limit)
-            .all()
-        )
-        return services
+def read_services(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    services = db.query(Service).offset(skip).limit(limit).all()
+    return services
 
 @router.post("/", response_model=ServiceSchema)
 def create_service(service: ServiceCreate, db: Session = Depends(get_db)):
-    new_service = Service(name=service.name, price=service.price, dentist_id=service.dentist_id)
+    db_service = db.query(Service).filter(Service.name == service.name).first()
+    if db_service:
+        raise HTTPException(status_code=400, detail="Service already exists")
+    new_service = Service(name=service.name, price=service.price)
     db.add(new_service)
     db.commit()
     db.refresh(new_service)

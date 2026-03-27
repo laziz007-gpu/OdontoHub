@@ -1,28 +1,22 @@
 from dotenv import load_dotenv
 load_dotenv()
-
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from app.core.config import settings
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "sqlite:///./sql_app.db"
+import os
+
+DATABASE_URL = settings.DATABASE_URL or "sqlite:///./sql_app.db"
+
+# Render provides 'postgres://' but SQLAlchemy requires 'postgresql://'
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False}
+    if "sqlite" in DATABASE_URL else {}
 )
-
-# Build engine kwargs based on DB type
-if "sqlite" in DATABASE_URL:
-    engine_kwargs = {"connect_args": {"check_same_thread": False}}
-else:
-    # PostgreSQL (Neon, Render, etc.) - SSL handled via URL params
-    engine_kwargs = {
-        "pool_pre_ping": True,
-        "pool_recycle": 300,
-        "connect_args": {"sslmode": "require"} if "neon.tech" in DATABASE_URL else {},
-    }
-
-engine = create_engine(DATABASE_URL, **engine_kwargs)
-
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
