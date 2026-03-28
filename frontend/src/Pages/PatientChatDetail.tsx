@@ -1,73 +1,175 @@
-import React, { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import DentistImg from "../assets/img/photos/Dentist.png";
 import ChatDetailHeader from "../components/PatientChatDetail/ChatDetailHeader";
-import MessageList from "../components/PatientChatDetail/MessageList";
-import ChatInput from "../components/PatientChatDetail/ChatInput";
-import type { Message, Chat } from "../types/patient";
+import { sendMessage, getMessages, deleteMessage, editMessage } from "../api/chat";
+import type { ChatMessage } from "../api/chat";
+import MessageBubble from "../components/Chat/MessageBubble";
+import { Send, Image } from "lucide-react";
 
 const PatientChatDetail = () => {
     const { id } = useParams();
-    const { t } = useTranslation();
     const [message, setMessage] = useState("");
+    const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const [loading, setLoading] = useState(true);
     const [attachedImage, setAttachedImage] = useState<string | null>(null);
+    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editText, setEditText] = useState('');
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [sending, setSending] = useState(false);
+    const fileRef = useRef<HTMLInputElement>(null);
+    const bottomRef = useRef<HTMLDivElement>(null);
 
-    const chatInfo: Partial<Chat> = {
+    const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+    const myUserId = Number(userData.id) || 0;
+
+    const chatInfo = {
         id: Number(id),
-        name: "Алишер Насруллаев",
+        name: userData.role === 'patient' ? 'Shifokor' : 'Bemor',
         avatar: DentistImg,
     };
-    const chatStatus = t("patient.chats.online");
 
-    const initialMessages: Message[] = [
-        { id: 1, text: "Здравствуйте! Как ваши дела?", time: "08:30", sender: "other", image: null },
-        { id: 2, text: "Добрый день! Все хорошо, спасибо. Хотел уточнить время приёма.", time: "08:32", sender: "me", image: null },
-        { id: 3, text: "Ваш приём назначен на завтра в 16:00.", time: "08:34", sender: "other", image: null },
-        { id: 4, text: "Можете отправить фото снимка?", time: "08:35", sender: "other", image: null },
-    ];
+    useEffect(() => {
+        if (!id) return;
+        fetchMessages();
+        const interval = setInterval(fetchMessages, 5000);
+        return () => clearInterval(interval);
+    }, [id]);
 
-    const [chatMessages, setChatMessages] = useState<Message[]>(initialMessages);
+    // Chat ochilganda o'qildi deb belgilash
+    useEffect(() => {
+        if (!id) return;
+        getMessages(Number(id)).then(msgs => {
+            if (msgs.length > 0) {
+                const readMap = JSON.parse(localStorage.getItem('chat_read') || '{}');
+                readMap[Number(id)] = msgs[msgs.length - 1].id;
+                localStorage.setItem('chat_read', JSON.stringify(readMap));
+            }
+        }).catch(() => {});
+    }, [id]);
 
-    const handleSend = () => {
-        if (!message.trim() && !attachedImage) return;
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
 
-        const newMessage: Message = {
-            id: Date.now(),
-            text: message,
-            image: attachedImage,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            sender: "me"
-        };
-
-        setChatMessages([...chatMessages, newMessage]);
-        setMessage("");
-        setAttachedImage(null);
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setAttachedImage(reader.result as string);
-            };
-            reader.readAsDataURL(file);
+    const fetchMessages = async () => {
+        try {
+            const data = await getMessages(Number(id));
+            setMessages(data);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
         }
     };
 
+    const handleSend = async () => {
+        if (editingId) {
+            if (!editText.trim()) return;
+            await editMessage(editingId, editText).catch(() => {});
+            setMessages(prev => prev.map(m => m.id === editingId ? { ...m, text: editText } : m));
+            setEditingId(null); setEditText('');
+            return;
+        }
+        if ((!message.trim() && !imagePreview) || !id) return;
+        if (sending) return;
+        setSending(true);
+        try {
+            const sent = await sendMessage(Number(id), message, imagePreview || undefined);
+            setMessages(prev => [...prev, sent]);
+            setMessage("");
+            setImagePreview(null);
+        } catch {} finally {
+            setSending(false);
+        }
+    };
+
+    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onloadend = () => setImagePreview(reader.result as string);
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    };
+
+    const handleDelete = async (msgId: number) => {
+        await deleteMessage(msgId).catch(() => {});
+        setMessages(prev => prev.filter(m => m.id !== msgId));
+    };
+
+    const handleEdit = (msgId: number, text: string) => {
+        setEditingId(msgId);
+        setEditText(text);
+    };
+
+    const formatTime = (dateStr: string) => {
+        const utc = dateStr.endsWith('Z') || dateStr.includes('+') ? dateStr : dateStr + 'Z';
+        return new Date(utc).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+
     return (
-        <div className="h-screen flex flex-col bg-gray-100/50 max-w-7xl mx-auto w-full relative">
-            <ChatDetailHeader chatInfo={chatInfo} chatStatus={chatStatus} />
-            <MessageList messages={chatMessages} />
-            <ChatInput
-                message={message}
-                attachedImage={attachedImage}
-                onMessageChange={setMessage}
-                onSend={handleSend}
-                onFileChange={handleFileChange}
-                onRemoveImage={() => setAttachedImage(null)}
-            />
+        <div className="h-screen flex flex-col bg-gray-50 max-w-7xl mx-auto w-full">
+            <ChatDetailHeader chatInfo={chatInfo} chatStatus="Online" />
+
+            <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-3">
+                {loading && (
+                    <div className="flex justify-center py-10">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+                    </div>
+                )}
+                {!loading && messages.length === 0 && (
+                    <div className="text-center text-gray-400 py-10">Xabarlar yo'q. Birinchi xabar yuboring!</div>
+                )}
+                {messages.map(msg => (
+                    <MessageBubble
+                        key={msg.id}
+                        id={msg.id}
+                        text={msg.text}
+                        image_data={msg.image_data}
+                        time={formatTime(msg.created_at)}
+                        isMe={msg.sender_id === myUserId}
+                        onDelete={handleDelete}
+                        onEdit={handleEdit}
+                    />
+                ))}
+                <div ref={bottomRef} />
+            </div>
+
+            <div className="p-4 border-t border-gray-100">
+                {editingId && (
+                    <div className="mb-2 bg-blue-50 border border-blue-200 rounded-xl px-4 py-2 text-sm text-blue-700 flex justify-between items-center">
+                        <span>Tahrirlash</span>
+                        <button onClick={() => { setEditingId(null); setEditText(''); }} className="text-blue-400">✕</button>
+                    </div>
+                )}
+                {imagePreview && (
+                    <div className="mb-2 relative inline-block">
+                        <img src={imagePreview} alt="" className="h-20 rounded-xl object-cover" />
+                        <button onClick={() => setImagePreview(null)} className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">✕</button>
+                    </div>
+                )}
+                <input type="file" accept="image/*" ref={fileRef} className="hidden" onChange={handleImageSelect} />
+                <form onSubmit={e => { e.preventDefault(); handleSend(); }} className="flex gap-2">
+                    <button type="button" onClick={() => fileRef.current?.click()} className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-blue-500 transition-colors shrink-0">
+                        <Image size={20} />
+                    </button>
+                    <input
+                        type="text"
+                        value={editingId ? editText : message}
+                        onChange={e => editingId ? setEditText(e.target.value) : setMessage(e.target.value)}
+                        placeholder={editingId ? "Tahrirlang..." : "Xabar yozing..."}
+                        className="flex-1 bg-gray-50 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-200"
+                    />
+                    <button
+                        type="submit"
+                    disabled={sending || (editingId ? !editText.trim() : (!message.trim() && !imagePreview))}
+                        className="w-10 h-10 bg-[#5377f7] text-white rounded-xl flex items-center justify-center disabled:opacity-40 shrink-0"
+                    >
+                        <Send size={16} />
+                    </button>
+                </form>
+            </div>
         </div>
     );
 };

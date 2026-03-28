@@ -45,7 +45,8 @@ const Hero: React.FC<HeroProps> = ({ onSearch }) => {
   };
 
   const formatTime = (d: string) => {
-    const diff = Date.now() - new Date(d).getTime();
+    const utcString = d.endsWith('Z') || d.includes('+') ? d : d + 'Z';
+    const diff = Date.now() - new Date(utcString).getTime();
     const m = Math.floor(diff / 60000);
     if (m < 1) return 'Hozir';
     if (m < 60) return `${m} daqiqa oldin`;

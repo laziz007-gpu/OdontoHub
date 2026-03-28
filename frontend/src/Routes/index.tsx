@@ -188,7 +188,7 @@ export const router = createBrowserRouter([
                         element: <Specialties />
                     },
                     {
-                        path: paths.notifications,
+                        path: paths.patientNotifications,
                         element: <Notifications />
                     },
                     {

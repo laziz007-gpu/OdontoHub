@@ -2,7 +2,7 @@ from sqlalchemy import ForeignKey, Text, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
 
-from app.db.base import Base
+from app.models.base import Base
 
 
 class Message(Base):
@@ -21,7 +21,8 @@ class Message(Base):
         nullable=False
     )
 
-    text: Mapped[str] = mapped_column(Text, nullable=False)
+    text: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    image_data: Mapped[str | None] = mapped_column(Text, nullable=True)  # base64
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

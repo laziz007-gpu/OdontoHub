@@ -50,7 +50,9 @@ const Notifications = () => {
     };
 
     const formatTime = (dateString: string) => {
-        const date = new Date(dateString);
+        // Ensure UTC parsing - add Z if not present
+        const utcString = dateString.endsWith('Z') || dateString.includes('+') ? dateString : dateString + 'Z';
+        const date = new Date(utcString);
         const now = new Date();
         const diff = now.getTime() - date.getTime();
         const mins = Math.floor(diff / 60000);

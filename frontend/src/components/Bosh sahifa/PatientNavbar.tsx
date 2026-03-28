@@ -37,7 +37,7 @@ const PatientNavbar = () => {
                     )}
                 </div>
             ),
-            path: '/notifications',
+            path: paths.patientNotifications,
             label: 'Bildirishnomalar'
         },
     ];

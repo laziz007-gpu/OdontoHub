@@ -25,6 +25,7 @@ export const paths = {
     doctors: '/doctors',
     specialties: '/specialties',
     notifications: '/notifications',
+    patientNotifications: '/patient/notifications',
     booking: '/booking',
     checkupPreview: '/booking/checkup-preview',
     myDentist: '/my-dentist',

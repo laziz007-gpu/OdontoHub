@@ -69,126 +69,12 @@ export const useAllPatients = () => {
     });
 }
 
-const FALLBACK_DENTISTS: DentistProfile[] = [
-    {
-        id: 2,
-        user_id: 3,
-        full_name: "Махмуд Пулатов",
-        pinfl: null,
-        diploma_number: null,
-        verification_status: "approved",
-        specialization: "orthodontist",
-        phone: "+998901234567",
-        address: "Ташкент, Юнусабад",
-        clinic: "Стоматология №1",
-        schedule: "weekdays",
-        work_hours: "09:00-18:00",
-        telegram: "@mahmud_dentist",
-        instagram: "@mahmud_dentist",
-        whatsapp: "+998901234567",
-    },
-    {
-        id: 3,
-        user_id: 4,
-        full_name: "Азиза Каримова",
-        pinfl: null,
-        diploma_number: null,
-        verification_status: "approved",
-        specialization: "therapist",
-        phone: "+998901234568",
-        address: "Ташкент, Мирабад",
-        clinic: "Smile Clinic",
-        schedule: "weekdays",
-        work_hours: "10:00-19:00",
-        telegram: "@aziza_dental",
-        instagram: "@aziza_orthodontist",
-        whatsapp: "+998901234568",
-    },
-    {
-        id: 4,
-        user_id: 5,
-        full_name: "Рустам Алимов",
-        pinfl: null,
-        diploma_number: null,
-        verification_status: "approved",
-        specialization: "surgeon",
-        phone: "+998901234569",
-        address: "Ташкент, Чиланзар",
-        clinic: "Dental Care Center",
-        schedule: "every_day",
-        work_hours: "08:00-17:00",
-        telegram: "@rustam_surgeon",
-        instagram: "@rustam_dental",
-        whatsapp: "+998901234569",
-    },
-    {
-        id: 5,
-        user_id: 6,
-        full_name: "Дилноза Рашидова",
-        pinfl: null,
-        diploma_number: null,
-        verification_status: "approved",
-        specialization: "pediatric",
-        phone: "+998901234570",
-        address: "Ташкент, Юнусабад",
-        clinic: "Kids Dental",
-        schedule: "weekdays",
-        work_hours: "09:00-16:00",
-        telegram: "@dilnoza_kids_dental",
-        instagram: "@dilnoza_dental",
-        whatsapp: "+998901234570",
-    },
-    {
-        id: 6,
-        user_id: 7,
-        full_name: "Бобур Саидов",
-        pinfl: null,
-        diploma_number: null,
-        verification_status: "approved",
-        specialization: "implantologist",
-        phone: "+998901234571",
-        address: "Ташкент, Сергели",
-        clinic: "Premium Dental",
-        schedule: "every_day",
-        work_hours: "10:00-20:00",
-        telegram: "@bobur_dental",
-        instagram: "@bobur_implants",
-        whatsapp: "+998901234571",
-    },
-    {
-        id: 8,
-        user_id: 15,
-        full_name: "Suhrob",
-        pinfl: null,
-        diploma_number: null,
-        verification_status: "approved",
-        specialization: "therapist",
-        phone: "+998901234572",
-        address: "Ташкент, Юнусабад",
-        clinic: "Suhrob Dental",
-        schedule: "weekdays",
-        work_hours: "09:00-18:00",
-        telegram: null,
-        instagram: null,
-        whatsapp: "+998901234572",
-    },
-];
-
 export const useAllDentists = () => {
-    const useApi = import.meta.env.VITE_USE_API !== 'false';
     return useQuery({
         queryKey: ['dentists'],
         queryFn: async () => {
-            if (!useApi) return FALLBACK_DENTISTS;
-            try {
-                const response = await api.get<DentistProfile[]>('/dentists/');
-                if (response.data && response.data.length > 0) {
-                    return response.data;
-                }
-                throw new Error('Empty response');
-            } catch (error) {
-                return FALLBACK_DENTISTS;
-            }
+            const response = await api.get<DentistProfile[]>('/dentists/');
+            return response.data;
         },
         retry: false,
         staleTime: 5 * 60 * 1000,
