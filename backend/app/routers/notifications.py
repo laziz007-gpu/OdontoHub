@@ -146,6 +146,23 @@ def mark_all_notifications_as_read(
         "updated_count": updated_count
     }
 
+@router.delete("/delete-all")
+def delete_all_notifications(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Delete all user notifications"""
+    deleted_count = db.query(Notification).filter(
+        Notification.user_id == current_user.id
+    ).delete()
+    
+    db.commit()
+    
+    return {
+        "message": f"Deleted {deleted_count} notifications",
+        "deleted_count": deleted_count
+    }
+
 @router.delete("/{notification_id}")
 def delete_notification(
     notification_id: int,

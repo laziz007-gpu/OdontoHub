@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Logo from '../assets/img/icons/NotifLogo.svg';
-import { getNotifications, markAsRead, markAllAsRead } from '../api/notifications';
+import { getNotifications, markAsRead, markAllAsRead, deleteAllNotifications } from '../api/notifications';
 import type { Notification } from '../api/notifications';
-import { Bell, CheckCheck } from 'lucide-react';
+import { Bell, CheckCheck, Trash2 } from 'lucide-react';
 
 const typeLabels: Record<string, string> = {
     appointment_confirmed: 'Qabul tasdiqlandi',
@@ -49,6 +49,20 @@ const Notifications = () => {
         setNotifications(prev => prev.map(x => ({ ...x, is_read: true })));
     };
 
+    const handleDeleteAll = async () => {
+        if (notifications.length === 0) return;
+        
+        const confirmed = window.confirm("Barcha bildirishnomalarni o'chirishni tasdiqlaysizmi?");
+        if (confirmed) {
+            try {
+                await deleteAllNotifications();
+                setNotifications([]);
+            } catch (err) {
+                console.error("Delete all error:", err);
+            }
+        }
+    };
+
     const formatTime = (dateString: string) => {
         // Ensure UTC parsing - add Z if not present
         const utcString = dateString.endsWith('Z') || dateString.includes('+') ? dateString : dateString + 'Z';
@@ -86,15 +100,26 @@ const Notifications = () => {
                         )}
                     </div>
                 </div>
-                {unreadCount > 0 && (
-                    <button
-                        onClick={handleMarkAll}
-                        className="flex items-center gap-1.5 px-4 py-2 bg-[#f0f4ff] text-[#5377f7] rounded-2xl text-sm font-bold hover:bg-[#e0e8ff] transition"
-                    >
-                        <CheckCheck size={16} />
-                        Hammasini o'qildi
-                    </button>
-                )}
+                <div className="flex items-center gap-2">
+                    {unreadCount > 0 && (
+                        <button
+                            onClick={handleMarkAll}
+                            className="flex items-center gap-1.5 px-4 py-2 bg-[#f0f4ff] text-[#5377f7] rounded-2xl text-sm font-bold hover:bg-[#e0e8ff] transition"
+                        >
+                            <CheckCheck size={16} />
+                            Hammasini o'qildi
+                        </button>
+                    )}
+                    {notifications.length > 0 && (
+                        <button
+                            onClick={handleDeleteAll}
+                            className="flex items-center justify-center w-10 h-10 bg-[#fff1f1] text-[#ff4d4d] rounded-2xl hover:bg-[#ffe4e4] transition"
+                            title="Hammasini o'chirish"
+                        >
+                            <Trash2 size={18} />
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* List */}
