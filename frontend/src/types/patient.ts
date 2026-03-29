@@ -26,6 +26,8 @@ export interface Doctor {
     telegram?: string;
     instagram?: string;
     whatsapp?: string;
+    latitude?: number;
+    longitude?: number;
 }
 
 export type AppointmentStatus = 'upcoming' | 'past' | 'success' | 'cancelled' | 'rescheduled';

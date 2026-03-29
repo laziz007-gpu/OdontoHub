@@ -1,5 +1,5 @@
 import enum
-from sqlalchemy import String, ForeignKey, Enum, func
+from sqlalchemy import String, ForeignKey, Enum, func, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 from app.core.database import Base
@@ -37,6 +37,8 @@ class DentistProfile(Base):
     telegram: Mapped[str | None] = mapped_column(String, nullable=True)
     instagram: Mapped[str | None] = mapped_column(String, nullable=True)
     whatsapp: Mapped[str | None] = mapped_column(String, nullable=True)
+    latitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+    longitude: Mapped[float | None] = mapped_column(Float, nullable=True)
     works_photos: Mapped[str | None] = mapped_column(String, nullable=True)
     rating: Mapped[float | None] = mapped_column(nullable=True)
     review_count: Mapped[int] = mapped_column(default=0)  # JSON string of photo URLs

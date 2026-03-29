@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import api from "../api/api";
+import { toast } from "../components/Shared/Toast";
 
 interface Service {
     id: number;
@@ -28,6 +29,7 @@ const DoctorServicesPage = () => {
             setServices(response.data);
         } catch (error) {
             console.error('Error fetching services:', error);
+            toast.error('Не удалось загрузить список услуг');
             setServices([
                 { id: 1, name: "Консультация", price: 50000, currency: "UZS" },
                 { id: 2, name: "Лечение кариеса", price: 150000, currency: "UZS" },

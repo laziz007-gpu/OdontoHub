@@ -21,6 +21,8 @@ export default function Chats() {
     const fileRef = useRef<HTMLInputElement>(null);
     const [chatPreviews, setChatPreviews] = useState<Record<number, { last: string; time: string; unread: number }>>({});
     const bottomRef = useRef<HTMLDivElement>(null);
+    const socketRef = useRef<WebSocket | null>(null);
+    const reconnectTimerRef = useRef<number | null>(null);
 
     const { data: appointments = [] } = useMyAppointments();
     const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
@@ -66,9 +68,68 @@ export default function Chats() {
 
     useEffect(() => {
         if (!id) return;
+        setMessages([]);
         fetchMessages();
-        const interval = setInterval(fetchMessages, 5000);
-        return () => clearInterval(interval);
+
+        const token = localStorage.getItem('access_token');
+        if (!token) return;
+
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const apiUrl = new URL(apiBase);
+        const wsProtocol = apiUrl.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${wsProtocol}//${apiUrl.host}/api/chat/ws?token=${encodeURIComponent(token)}`;
+        let isUnmounted = false;
+
+        const connect = () => {
+            if (isUnmounted) return;
+            const socket = new WebSocket(wsUrl);
+            socketRef.current = socket;
+
+            socket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.appointment_id === Number(id)) {
+                    setMessages(prev => {
+                        if (prev.find(m => m.id === data.id)) return prev;
+                        return [...prev, data];
+                    });
+                } else if (data.appointment_id && data.id) {
+                    // Keep side-list previews fresh even when another chat is open.
+                    setChatPreviews(prev => {
+                        const current = prev[data.appointment_id];
+                        return {
+                            ...prev,
+                            [data.appointment_id]: {
+                                last: data.text || '📷 Rasm',
+                                time: formatTime(data.created_at),
+                                unread: (current?.unread || 0) + 1,
+                            },
+                        };
+                    });
+                }
+            };
+
+            socket.onclose = () => {
+                if (isUnmounted) return;
+                reconnectTimerRef.current = window.setTimeout(connect, 1500);
+            };
+
+            socket.onerror = () => {
+                socket.close();
+            };
+        };
+
+        connect();
+
+        return () => {
+            isUnmounted = true;
+            if (reconnectTimerRef.current) {
+                window.clearTimeout(reconnectTimerRef.current);
+            }
+            if (socketRef.current) {
+                socketRef.current.close();
+            }
+            socketRef.current = null;
+        };
     }, [id]);
 
     // Chat ochilganda o'qildi deb belgilash
@@ -89,10 +150,19 @@ export default function Chats() {
     }, [messages]);
 
     const fetchMessages = async () => {
+        if (!id) return;
         try {
             const data = await getMessages(Number(id));
             setMessages(data);
-        } catch {}
+        } catch {
+            // Quick retry avoids stale UI when route changes during reconnect.
+            setTimeout(async () => {
+                try {
+                    const retryData = await getMessages(Number(id));
+                    setMessages(retryData);
+                } catch {}
+            }, 700);
+        }
     };
 
     const handleSend = async (e?: React.FormEvent) => {
@@ -108,10 +178,22 @@ export default function Chats() {
         if (sending) return;
         setSending(true);
         try {
-            const sent = await sendMessage(Number(id), newMessage, imagePreview || undefined);
-            setMessages(prev => [...prev, sent]);
-            setNewMessage('');
-            setImagePreview(null);
+            if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+                socketRef.current.send(JSON.stringify({
+                    appointment_id: Number(id),
+                    text: newMessage,
+                    image_data: imagePreview || undefined
+                }));
+                // WS orqali yuborilganda xabar serverdan qaytib keladi va state'ga qo'shiladi
+                setNewMessage('');
+                setImagePreview(null);
+            } else {
+                // Fallback: Agar socket ulanmagan bo'lsa, HTTP orqali yuborish
+                const sent = await sendMessage(Number(id), newMessage, imagePreview || undefined);
+                setMessages(prev => [...prev, sent]);
+                setNewMessage('');
+                setImagePreview(null);
+            }
         } catch {} finally {
             setSending(false);
         }

@@ -40,9 +40,9 @@ def register(data: RegisterSchema, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=TokenSchema)
 def login(data: LoginSchema, db: Session = Depends(get_db)):
-    print(f"🔍 LOGIN DEBUG: Received phone: '{data.phone}'")
+    print(f"[DEBUG] LOGIN: Received phone: '{data.phone}'")
     user = db.query(User).filter(User.phone == data.phone).first()
-    print(f"🔍 LOGIN DEBUG: User found: {user is not None}")
+    print(f"[DEBUG] LOGIN: User found: {user is not None}")
 
     if not user:
         users = db.query(User).limit(5).all()

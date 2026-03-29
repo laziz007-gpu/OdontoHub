@@ -6,10 +6,17 @@ import { FaMapMarkerAlt } from "react-icons/fa";
 interface DoctorCardProps {
     doctor: Doctor;
     onBook: (doctor: Doctor) => void;
+    onOpenMap: (doctor: Doctor) => void;
 }
 
-const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onBook }) => {
+const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onBook, onOpenMap }) => {
     const navigate = useNavigate();
+    const coordinateLikeAddress = typeof doctor.address === 'string'
+        ? /^\s*-?\d+(?:\.\d+)?\s*,\s*-?\d+(?:\.\d+)?\s*$/.test(doctor.address)
+        : false;
+    const displayAddress = coordinateLikeAddress
+        ? (doctor.clinic || 'Тошкент')
+        : (doctor.address || doctor.clinic || 'Манзил кўрсатилмаган');
 
     const handleCardClick = (e: React.MouseEvent) => {
         // Don't navigate if clicking the button
@@ -46,20 +53,31 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onBook }) => {
                             <FaMapMarkerAlt className="text-white text-[7px] sm:text-[9px]" />
                         </div>
                         <span className="text-white text-[10px] sm:text-sm font-bold truncate">
-                            {doctor.address || "Юнусабад"}
+                            {displayAddress}
                         </span>
                     </div>
                 </div>
 
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onBook(doctor);
-                    }}
-                    className="bg-[#11D76A] hover:bg-[#0fc460] text-white font-bold py-1.5 sm:py-2 px-3 sm:px-6 lg:px-10 rounded-full text-[10px] sm:text-xs lg:text-sm self-start transition-all shadow-sm hover:shadow-md active:scale-95"
-                >
-                    Записаться
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onBook(doctor);
+                        }}
+                        className="bg-[#11D76A] hover:bg-[#0fc460] text-white font-bold py-1.5 sm:py-2 px-3 sm:px-6 lg:px-10 rounded-full text-[10px] sm:text-xs lg:text-sm self-start transition-all shadow-sm hover:shadow-md active:scale-95"
+                    >
+                        Записаться
+                    </button>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onOpenMap(doctor);
+                        }}
+                        className="bg-white/15 hover:bg-white/25 border border-white/40 text-white font-bold py-1.5 sm:py-2 px-3 sm:px-5 rounded-full text-[10px] sm:text-xs lg:text-sm transition-all"
+                    >
+                        На карте
+                    </button>
+                </div>
             </div>
 
             {/* Rating Badge */}

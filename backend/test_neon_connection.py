@@ -121,7 +121,7 @@ if __name__ == "__main__":
         # Если есть аргумент командной строки - проверяем конкретного пользователя
         if len(sys.argv) > 1:
             phone = sys.argv[1]
-            print(f"🔍 Проверяем пользователя: {phone}")
+            print(f"[DEBUG] Проверяем пользователя: {phone}")
             test_specific_user(phone)
     
     print("\n✨ Тест завершен")

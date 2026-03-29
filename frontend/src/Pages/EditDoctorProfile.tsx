@@ -4,6 +4,32 @@ import { useNavigate } from 'react-router-dom';
 import { useDentistProfile, useUpdateDentistProfile } from '../api/profile';
 import { toast } from '../components/Shared/Toast';
 import DentistImg from '../assets/img/photos/Dentist.png';
+import { MapContainer, TileLayer, CircleMarker, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+
+function MapPicker({
+  lat,
+  lng,
+  onPick,
+}: {
+  lat: number;
+  lng: number;
+  onPick: (nextLat: number, nextLng: number) => void;
+}) {
+  useMapEvents({
+    click(event) {
+      onPick(event.latlng.lat, event.latlng.lng);
+    },
+  });
+
+  return (
+    <CircleMarker
+      center={[lat, lng]}
+      radius={10}
+      pathOptions={{ color: '#dc2626', fillColor: '#ef4444', fillOpacity: 0.9 }}
+    />
+  );
+}
 
 export default function EditDoctorProfile() {
   const navigate = useNavigate();
@@ -12,8 +38,10 @@ export default function EditDoctorProfile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [mapAddress, setMapAddress] = useState('');
+  const [mapLoading, setMapLoading] = useState(false);
+  const [mapError, setMapError] = useState('');
+  const [hasPickedLocation, setHasPickedLocation] = useState(false);
   const [coordinates, setCoordinates] = useState({ lat: 41.2995, lng: 69.2401 }); // Tashkent default
-  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
 
   const [formData, setFormData] = useState({
     specialization: '',
@@ -51,6 +79,10 @@ export default function EditDoctorProfile() {
         instagram: dentist.instagram || '',
         whatsapp: dentist.whatsapp || '',
       });
+      if (dentist.latitude && dentist.longitude) {
+        setCoordinates({ lat: dentist.latitude, lng: dentist.longitude });
+        setHasPickedLocation(true);
+      }
     }
   }, [dentist]);
 
@@ -83,17 +115,94 @@ export default function EditDoctorProfile() {
 
   const handleMapClick = () => {
     setMapAddress(formData.address);
+    setMapError('');
     setIsMapModalOpen(true);
   };
 
-  const handleMapConfirm = () => {
-    setFormData({ ...formData, address: mapAddress });
+  const pickLocation = async (lat: number, lng: number) => {
+    setCoordinates({ lat, lng });
+    setHasPickedLocation(true);
+    setMapError('');
+
+    try {
+      const reverse = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+      );
+      const data = await reverse.json();
+      if (data?.display_name) {
+        setMapAddress(data.display_name);
+      }
+    } catch {
+      // Keep manual input as fallback if reverse-geocoding fails.
+    }
+  };
+
+  const handleSearchAddress = async () => {
+    const query = mapAddress.trim();
+    if (!query) {
+      setMapError('Сначала введите адрес');
+      return;
+    }
+    setMapLoading(true);
+    setMapError('');
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`
+      );
+      const data = await response.json();
+      if (!Array.isArray(data) || data.length === 0) {
+        setMapError('Адрес не найден. Уточните адрес и попробуйте снова.');
+        return;
+      }
+      setCoordinates({
+        lat: Number(data[0].lat),
+        lng: Number(data[0].lon),
+      });
+      setHasPickedLocation(true);
+      if (data[0].display_name) {
+        setMapAddress(data[0].display_name);
+      }
+      if (!formData.address && data[0].display_name) {
+        setMapAddress(data[0].display_name);
+      }
+    } catch {
+      setMapError('Не удалось найти адрес. Проверьте интернет и попробуйте снова.');
+    } finally {
+      setMapLoading(false);
+    }
+  };
+
+  const handleMapConfirm = async () => {
+    let finalAddress = mapAddress.trim();
+    if (!finalAddress) {
+      try {
+        const reverse = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coordinates.lat}&lon=${coordinates.lng}`
+        );
+        const data = await reverse.json();
+        finalAddress = data?.display_name || '';
+      } catch {
+        finalAddress = '';
+      }
+    }
+
+    if (!finalAddress) {
+      setMapError('Сначала найдите адрес через кнопку "Найти".');
+      return;
+    }
+
+    setMapAddress(finalAddress);
+    setHasPickedLocation(true);
+    setFormData({
+      ...formData,
+      address: finalAddress,
+    });
     setIsMapModalOpen(false);
   };
 
   const handleSave = async () => {
     try {
-      await updateProfile.mutateAsync({
+      const payload: any = {
         specialization: formData.specialization,
         phone: formData.phone,
         address: formData.address,
@@ -103,15 +212,19 @@ export default function EditDoctorProfile() {
         telegram: formData.telegram,
         instagram: formData.instagram,
         whatsapp: formData.whatsapp,
-      });
+      };
+      if (hasPickedLocation) {
+        payload.latitude = coordinates.lat;
+        payload.longitude = coordinates.lng;
+      }
+      await updateProfile.mutateAsync(payload);
       
       // Обновляем данные профиля
       await refetch();
       
       // Показываем уведомление
-      setShowSuccessNotification(true);
+      toast.success('Профиль успешно обновлён!');
       setTimeout(() => {
-        setShowSuccessNotification(false);
         navigate('/profile');
       }, 2000);
     } catch (error) {
@@ -187,16 +300,18 @@ export default function EditDoctorProfile() {
             {/* Address */}
             <div>
               <label className="block text-sm text-gray-600 mb-2">Адрес</label>
-              <div className="relative">
+              <div className="relative group">
                 <input
                   type="text"
                   value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   onClick={handleMapClick}
-                  className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 pr-12 text-lg font-semibold focus:outline-none focus:border-blue-400 cursor-pointer"
+                  className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 pr-28 text-lg font-semibold focus:outline-none focus:border-blue-400 cursor-pointer group-hover:border-blue-300 transition-colors"
                   placeholder="Выбрать на карте"
                   readOnly
                 />
+                <span className="absolute right-11 top-1/2 -translate-y-1/2 text-xs font-bold text-blue-600">
+                  Открыть карту
+                </span>
                 <MapPin className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
               </div>
             </div>
@@ -426,32 +541,58 @@ export default function EditDoctorProfile() {
 
             {/* Map Container */}
             <div className="relative h-[350px] bg-gray-100">
-              <iframe
-                src={`https://www.google.com/maps?q=${coordinates.lat},${coordinates.lng}&z=15&output=embed`}
+              <MapContainer
+                center={[coordinates.lat, coordinates.lng]}
+                zoom={14}
+                scrollWheelZoom
                 className="w-full h-full"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-                <MapPin className="w-10 h-10 text-red-600 drop-shadow-lg" fill="currentColor" />
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <MapPicker
+                  lat={coordinates.lat}
+                  lng={coordinates.lng}
+                  onPick={pickLocation}
+                />
+              </MapContainer>
+              <div className="absolute left-3 top-3 bg-white/90 rounded-xl px-3 py-1 text-xs text-gray-700 shadow">
+                Нажмите на карту, чтобы выбрать точку
               </div>
             </div>
 
             {/* Address Input */}
             <div className="p-4 border-t">
               <label className="block text-sm text-gray-600 mb-2">Адрес</label>
-              <input
-                type="text"
-                value={mapAddress}
-                onChange={(e) => setMapAddress(e.target.value)}
-                className="w-full h-12 bg-gray-50 border-2 border-gray-200 rounded-2xl px-4 text-base font-semibold focus:outline-none focus:border-blue-400"
-                placeholder="Введите адрес"
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={mapAddress}
+                  onChange={(e) => setMapAddress(e.target.value)}
+                  className="w-full h-12 bg-gray-50 border-2 border-gray-200 rounded-2xl px-4 text-base font-semibold focus:outline-none focus:border-blue-400"
+                  placeholder="Введите адрес"
+                />
+                <button
+                  onClick={handleSearchAddress}
+                  disabled={mapLoading}
+                  className="px-4 h-12 bg-blue-600 text-white text-sm font-bold rounded-2xl hover:bg-blue-700 disabled:opacity-60 transition-colors"
+                >
+                  {mapLoading ? 'Поиск...' : 'Найти'}
+                </button>
+              </div>
+              {mapError ? (
+                <p className="text-xs text-red-500 mt-2">{mapError}</p>
+              ) : null}
               <p className="text-xs text-gray-500 mt-2">
                 Координаты: {coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}
               </p>
+              <button
+                onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${coordinates.lat},${coordinates.lng}`, '_blank')}
+                className="text-xs text-blue-600 mt-1 hover:underline"
+              >
+                Открыть эту точку в Google Maps
+              </button>
             </div>
 
             {/* Actions */}
@@ -473,17 +614,7 @@ export default function EditDoctorProfile() {
         </div>
       )}
 
-      {/* Success Notification */}
-      {showSuccessNotification && (
-        <div className="fixed top-4 right-4 z-50 animate-slide-in">
-          <div className="bg-green-500 text-white px-6 py-4 rounded-2xl shadow-lg flex items-center gap-3">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="font-semibold text-lg">Профиль успешно обновлён!</span>
-          </div>
-        </div>
-      )}
+      {/* Profile edit ends */}
     </div>
   );
 }

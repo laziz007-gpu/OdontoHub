@@ -19,6 +19,8 @@ const PatientChatDetail = () => {
     const [sending, setSending] = useState(false);
     const fileRef = useRef<HTMLInputElement>(null);
     const bottomRef = useRef<HTMLDivElement>(null);
+    const socketRef = useRef<WebSocket | null>(null);
+    const reconnectTimerRef = useRef<number | null>(null);
 
     const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
     const myUserId = Number(userData.id) || 0;
@@ -32,8 +34,53 @@ const PatientChatDetail = () => {
     useEffect(() => {
         if (!id) return;
         fetchMessages();
-        const interval = setInterval(fetchMessages, 5000);
-        return () => clearInterval(interval);
+
+        const token = localStorage.getItem("access_token");
+        if (!token) return;
+
+        const apiBase = import.meta.env.VITE_API_URL || "http://localhost:8000";
+        const apiUrl = new URL(apiBase);
+        const wsProtocol = apiUrl.protocol === "https:" ? "wss:" : "ws:";
+        const wsUrl = `${wsProtocol}//${apiUrl.host}/api/chat/ws?token=${encodeURIComponent(token)}`;
+        let isUnmounted = false;
+
+        const connect = () => {
+            if (isUnmounted) return;
+            const socket = new WebSocket(wsUrl);
+            socketRef.current = socket;
+
+            socket.onmessage = (event) => {
+                const data: ChatMessage | { status?: string } = JSON.parse(event.data);
+                if ("appointment_id" in data && data.appointment_id === Number(id)) {
+                    setMessages((prev) => {
+                        if (prev.some((m) => m.id === data.id)) return prev;
+                        return [...prev, data];
+                    });
+                }
+            };
+
+            socket.onclose = () => {
+                if (isUnmounted) return;
+                reconnectTimerRef.current = window.setTimeout(connect, 1500);
+            };
+
+            socket.onerror = () => {
+                socket.close();
+            };
+        };
+
+        connect();
+
+        return () => {
+            isUnmounted = true;
+            if (reconnectTimerRef.current) {
+                window.clearTimeout(reconnectTimerRef.current);
+            }
+            if (socketRef.current) {
+                socketRef.current.close();
+            }
+            socketRef.current = null;
+        };
     }, [id]);
 
     // Chat ochilganda o'qildi deb belgilash
@@ -75,10 +122,22 @@ const PatientChatDetail = () => {
         if (sending) return;
         setSending(true);
         try {
-            const sent = await sendMessage(Number(id), message, imagePreview || undefined);
-            setMessages(prev => [...prev, sent]);
-            setMessage("");
-            setImagePreview(null);
+            if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+                socketRef.current.send(
+                    JSON.stringify({
+                        appointment_id: Number(id),
+                        text: message,
+                        image_data: imagePreview || undefined,
+                    })
+                );
+                setMessage("");
+                setImagePreview(null);
+            } else {
+                const sent = await sendMessage(Number(id), message, imagePreview || undefined);
+                setMessages((prev) => [...prev, sent]);
+                setMessage("");
+                setImagePreview(null);
+            }
         } catch {} finally {
             setSending(false);
         }

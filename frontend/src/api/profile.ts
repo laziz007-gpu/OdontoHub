@@ -30,6 +30,8 @@ export interface DentistProfile {
     telegram?: string;
     instagram?: string;
     whatsapp?: string;
+    latitude?: number | null;
+    longitude?: number | null;
     works_photos?: string;  // JSON string of photo URLs
 }
 
@@ -145,6 +147,8 @@ export const useUpdateDentistProfile = () => {
             telegram: string;
             instagram: string;
             whatsapp: string;
+            latitude: number;
+            longitude: number;
             works_photos: string;
         }>) => {
             const response = await api.put<DentistProfile>('/dentists/me', data);

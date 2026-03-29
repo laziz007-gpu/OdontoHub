@@ -6,7 +6,7 @@ import CalendarView from '../components/Appointments/CalendarView';
 import AppointmentModal from '../components/Appointments/AppointmentModal';
 import AppointmentDetailModal from '../components/Appointments/AppointmentDetailModal';
 import InProgressView from '../components/Appointments/InProgressView';
-import Toast from '../components/Toast';
+import { toast } from '../components/Shared/Toast';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useMyAppointments } from '../api/appointments';
@@ -20,11 +20,6 @@ const Appointments: React.FC = () => {
     const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' | 'warning'; isVisible: boolean }>({
-        message: '',
-        type: 'success',
-        isVisible: false
-    });
 
     const { data: apiAppointments, isLoading } = useMyAppointments();
     const { data: services } = useServices();
@@ -104,11 +99,10 @@ const Appointments: React.FC = () => {
     }, [allAppointmentsData, effectiveDate]);
 
     const showToast = (message: string, type: 'success' | 'error' | 'info' | 'warning' = 'success') => {
-        setToast({ message, type, isVisible: true });
-    };
-
-    const hideToast = () => {
-        setToast(prev => ({ ...prev, isVisible: false }));
+        if (type === 'success') toast.success(message);
+        else if (type === 'error') toast.error(message);
+        else if (type === 'warning') toast.warning(message);
+        else toast.info(message);
     };
 
     const handleAptClick = (apt: any) => {
@@ -219,12 +213,7 @@ const Appointments: React.FC = () => {
                 appointment={selectedAppointment}
                 onSuccess={showToast}
             />
-            <Toast
-                message={toast.message}
-                type={toast.type}
-                isVisible={toast.isVisible}
-                onClose={hideToast}
-            />
+            {/* Appointments Page Ends */}
         </div>
     );
 };

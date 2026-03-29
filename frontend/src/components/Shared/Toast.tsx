@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CheckCircle, XCircle, AlertCircle, Info, X } from "lucide-react";
+import { AlertCircle, Info, X, ShieldCheck, AlertTriangle } from "lucide-react";
 
 export type ToastType = "success" | "error" | "warning" | "info";
 
@@ -25,7 +25,7 @@ export const toast = {
         setTimeout(() => {
             toasts = toasts.filter(t => t.id !== id);
             notify(toastListeners, toasts);
-        }, 3500);
+        }, 4000); // Slightly longer for readability
     },
     success(message: string) { this.show(message, "success"); },
     error(message: string) { this.show(message, "error"); },
@@ -33,25 +33,44 @@ export const toast = {
     info(message: string) { this.show(message, "info"); },
 };
 
-const icons = {
-    success: <CheckCircle size={20} className="text-emerald-500 shrink-0" />,
-    error: <XCircle size={20} className="text-red-500 shrink-0" />,
-    warning: <AlertCircle size={20} className="text-amber-500 shrink-0" />,
-    info: <Info size={20} className="text-blue-500 shrink-0" />,
-};
-
-const bars = {
-    success: "bg-emerald-500",
-    error: "bg-red-500",
-    warning: "bg-amber-500",
-    info: "bg-blue-500",
+const styles = {
+    success: {
+        bg: "bg-white/95 border-emerald-100",
+        icon: <ShieldCheck size={24} className="text-emerald-500" />,
+        bar: "bg-emerald-500",
+        title: "text-emerald-900",
+        label: "Успешно"
+    },
+    error: {
+        bg: "bg-white/95 border-red-100",
+        icon: <AlertCircle size={24} className="text-red-500" />,
+        bar: "bg-red-500",
+        title: "text-red-900",
+        label: "Ошибка"
+    },
+    warning: {
+        bg: "bg-white/95 border-amber-100",
+        icon: <AlertTriangle size={24} className="text-amber-500" />,
+        bar: "bg-amber-500",
+        title: "text-amber-900",
+        label: "Внимание"
+    },
+    info: {
+        bg: "bg-white/95 border-blue-100",
+        icon: <Info size={24} className="text-blue-500" />,
+        bar: "bg-blue-500",
+        title: "text-blue-900",
+        label: "Инфо"
+    },
 };
 
 function ToastCard({ item, onClose }: { item: ToastItem; onClose: () => void }) {
     const [visible, setVisible] = useState(false);
+    const style = styles[item.type];
 
     useEffect(() => {
-        requestAnimationFrame(() => setVisible(true));
+        const timer = setTimeout(() => setVisible(true), 10);
+        return () => clearTimeout(timer);
     }, []);
 
     const handleClose = () => {
@@ -61,17 +80,45 @@ function ToastCard({ item, onClose }: { item: ToastItem; onClose: () => void }) 
 
     return (
         <div
-            className={`relative flex items-start gap-3 bg-white rounded-2xl shadow-xl px-4 py-3.5 min-w-[280px] max-w-[360px] border border-gray-100 overflow-hidden
-                transition-all duration-300 ease-out
-                ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+            className={`
+                relative flex flex-col w-[340px] border shadow-2xl rounded-[28px] overflow-hidden backdrop-blur-md
+                transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1)
+                ${visible ? "opacity-100 translate-x-0 scale-100" : "opacity-0 translate-x-12 scale-95"}
+                ${style.bg}
+            `}
         >
-            {/* color bar */}
-            <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl ${bars[item.type]}`} />
-            <div className="mt-0.5">{icons[item.type]}</div>
-            <p className="text-sm font-semibold text-[#1D1D2B] flex-1 leading-snug">{item.message}</p>
-            <button onClick={handleClose} className="text-gray-300 hover:text-gray-500 transition-colors mt-0.5">
-                <X size={16} />
-            </button>
+            <div className="flex items-start gap-4 p-5">
+                <div className="shrink-0 w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center shadow-inner">
+                    {style.icon}
+                </div>
+                
+                <div className="flex-1 pt-1">
+                    <h4 className={`text-xs font-bold uppercase tracking-wider mb-0.5 opacity-60 ${style.title}`}>
+                        {style.label}
+                    </h4>
+                    <p className="text-[15px] font-semibold text-gray-800 leading-tight">
+                        {item.message}
+                    </p>
+                </div>
+
+                <button 
+                    onClick={handleClose} 
+                    className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-400"
+                >
+                    <X size={18} />
+                </button>
+            </div>
+
+            {/* Premium Animated Progress Bar */}
+            <div className="h-1 w-full bg-gray-100/50">
+                <div 
+                    className={`h-full ${style.bar} transition-all linear`}
+                    style={{ 
+                        width: visible ? "0%" : "100%",
+                        transitionDuration: '4000ms'
+                    }}
+                />
+            </div>
         </div>
     );
 }
@@ -94,7 +141,7 @@ export function ToastContainer() {
     if (!items.length) return null;
 
     return (
-        <div className="fixed bottom-6 right-4 z-[9999] flex flex-col gap-3 items-end pointer-events-none">
+        <div className="fixed top-6 right-6 z-9999 flex flex-col gap-4 items-end pointer-events-none">
             {items.map(item => (
                 <div key={item.id} className="pointer-events-auto">
                     <ToastCard item={item} onClose={() => remove(item.id)} />
@@ -103,3 +150,4 @@ export function ToastContainer() {
         </div>
     );
 }
+

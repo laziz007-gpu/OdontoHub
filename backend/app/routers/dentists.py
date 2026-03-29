@@ -35,6 +35,8 @@ def get_all_dentists(db: Session = Depends(get_db)):
             "telegram": dentist.telegram,
             "instagram": dentist.instagram,
             "whatsapp": dentist.whatsapp,
+            "latitude": dentist.latitude,
+            "longitude": dentist.longitude,
             "rating": dentist.rating,  # Добавлено
             "review_count": dentist.review_count,  # Добавлено
             "verification_status": dentist.verification_status.value if hasattr(dentist.verification_status, 'value') else dentist.verification_status
@@ -76,6 +78,8 @@ def dentist_me(
         "telegram": profile.telegram,
         "instagram": profile.instagram,
         "whatsapp": profile.whatsapp,
+        "latitude": profile.latitude,
+        "longitude": profile.longitude,
         "works_photos": profile.works_photos,
         "rating": profile.rating,  # Добавляем рейтинг
         "review_count": profile.review_count  # Добавляем количество отзывов
@@ -187,7 +191,7 @@ def update_dentist_profile(
     allowed_fields = [
         'full_name', 'specialization', 'clinic', 'address', 'age', 
         'experience_years', 'schedule', 'work_hours', 'telegram', 
-        'instagram', 'whatsapp', 'works_photos', 'pinfl', 'diploma_number'
+        'instagram', 'whatsapp', 'latitude', 'longitude', 'works_photos', 'pinfl', 'diploma_number'
     ]
     
     # Обновляем только разрешенные поля

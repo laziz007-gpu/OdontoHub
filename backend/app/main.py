@@ -19,7 +19,12 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://localhost:5174",
+        "http://localhost:5175",
         "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+        "http://127.0.0.1:5175",
+        "http://127.0.0.1:3000",
         "https://odontohubapp.netlify.app",
         "https://odontohub.netlify.app",
         "https://odontohub-app.netlify.app",
@@ -34,7 +39,12 @@ app.add_middleware(
 ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:5174",
+    "http://localhost:5175",
     "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+    "http://127.0.0.1:5175",
+    "http://127.0.0.1:3000",
     "https://odontohubapp.netlify.app",
     "https://odontohub.netlify.app",
     "https://odontohub-app.netlify.app",
@@ -110,6 +120,10 @@ def on_startup():
                 fields_to_add.append(('experience_years', 'INTEGER'))
             if 'works_photos' not in existing_columns:
                 fields_to_add.append(('works_photos', 'TEXT'))
+            if 'latitude' not in existing_columns:
+                fields_to_add.append(('latitude', 'DOUBLE PRECISION'))
+            if 'longitude' not in existing_columns:
+                fields_to_add.append(('longitude', 'DOUBLE PRECISION'))
             if 'created_at' not in existing_columns:
                 fields_to_add.append(('created_at', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'))
             if 'updated_at' not in existing_columns:
@@ -122,9 +136,9 @@ def on_startup():
                         conn.execute(text(
                             f"ALTER TABLE dentist_profiles ADD COLUMN {field_name} {field_type}"
                         ))
-                print("✓ Dentist profile fields migration completed")
+                print("OK: Dentist profile fields migration completed")
             else:
-                print("✓ All dentist profile fields already exist")
+                print("OK: All dentist profile fields already exist")
     except Exception as e:
         print(f"Warning: Could not migrate dentist fields: {e}")
         # Don't fail startup if migration fails
@@ -176,12 +190,16 @@ def migrate_dentist_fields():
             fields_to_add.append(('experience_years', 'INTEGER'))
         if 'works_photos' not in existing_columns:
             fields_to_add.append(('works_photos', 'TEXT'))
+        if 'latitude' not in existing_columns:
+            fields_to_add.append(('latitude', 'DOUBLE PRECISION'))
+        if 'longitude' not in existing_columns:
+            fields_to_add.append(('longitude', 'DOUBLE PRECISION'))
 
         if not fields_to_add:
             return {
                 "status": "success",
                 "message": "All fields already exist",
-                "existing_fields": ["age", "experience_years", "works_photos"]
+                "existing_fields": ["age", "experience_years", "works_photos", "latitude", "longitude"]
             }
 
         with engine.begin() as conn:
@@ -332,6 +350,8 @@ async def get_all_dentists(db: Session = Depends(get_db)):
                 "instagram": dentist.instagram,
                 "whatsapp": dentist.whatsapp,
                 "works_photos": dentist.works_photos,
+                "latitude": dentist.latitude,
+                "longitude": dentist.longitude,
                 "pinfl": dentist.pinfl,
                 "diploma_number": dentist.diploma_number,
                 "verification_status": dentist.verification_status.value,
