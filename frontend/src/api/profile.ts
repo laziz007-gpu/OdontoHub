@@ -12,6 +12,7 @@ export interface Patient {
     phone?: string | null;
     source?: string | null;
     status?: string | null;
+    dentist_id?: number | null;
 }
 
 export interface DentistProfile {
@@ -32,7 +33,7 @@ export interface DentistProfile {
     whatsapp?: string;
     latitude?: number | null;
     longitude?: number | null;
-    works_photos?: string;  // JSON string of photo URLs
+    works_photos?: string;
 }
 
 export const usePatientProfile = () => {
@@ -63,7 +64,17 @@ export const useDentistProfile = () => {
 export const useAllPatients = () => {
     return useQuery({
         queryKey: ['patients'],
-        queryFn: async () => {
+        queryFn: async (): Promise<Patient[]> => {
+            const accessToken = localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
+            const isLocalMode = accessToken?.startsWith('local_token_');
+
+            if (isLocalMode) {
+                // In local mode, return ALL stored patients.
+                // There's only one doctor's data in localStorage, so no cross-contamination.
+                const patients = JSON.parse(localStorage.getItem('patients') || '[]');
+                return patients;
+            }
+
             const response = await api.get<Patient[]>('/patients/');
             return response.data;
         },
@@ -98,6 +109,26 @@ export const useCreatePatient = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (data: Omit<Patient, 'id' | 'user_id'> & { source?: string }) => {
+            const accessToken = localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
+            const isLocalMode = accessToken?.startsWith('local_token_');
+
+            if (isLocalMode) {
+                const raw = JSON.parse(localStorage.getItem('patients') || '[]');
+                const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+                const dentistId = userData.dentist_id || 1;
+                
+                const newPatient = {
+                    ...data,
+                    id: Math.max(0, ...raw.map((p: any) => p.id)) + 1,
+                    user_id: 0,
+                    dentist_id: dentistId,
+                    created_at: new Date().toISOString()
+                };
+                raw.push(newPatient);
+                localStorage.setItem('patients', JSON.stringify(raw));
+                return newPatient as Patient;
+            }
+
             const response = await api.post<Patient>('/patients/', data);
             return response.data;
         },

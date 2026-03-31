@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "./api"
-import { isAuthenticated } from "../utils/auth"
 
 export interface Appointment {
     id: number;
@@ -31,12 +30,45 @@ export const useCreateAppointment = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (data: AppointmentCreate) => {
+            const accessToken = sessionStorage.getItem('access_token') || localStorage.getItem('access_token');
+            const isLocalMode = accessToken?.startsWith('local_token_');
+
+            if (isLocalMode) {
+                const raw = JSON.parse(localStorage.getItem('appointments') || '[]');
+                const patients = JSON.parse(localStorage.getItem('patients') || '[]');
+                const patient = patients.find((p: any) => p.id === data.patient_id);
+                
+                const newApt = {
+                    ...data,
+                    id: Math.max(0, ...raw.map((a: any) => a.id)) + 1,
+                    status: 'pending',
+                    created_at: new Date().toISOString(),
+                    patient_name: patient ? patient.full_name : 'Пациент'
+                };
+                raw.push(newApt);
+                localStorage.setItem('appointments', JSON.stringify(raw));
+                
+                return {
+                    id: newApt.id,
+                    dentist_id: newApt.dentist_id,
+                    patient_id: newApt.patient_id || 1,
+                    start_time: newApt.start_time,
+                    end_time: newApt.end_time,
+                    status: 'pending',
+                    service: newApt.service,
+                    price: newApt.price,
+                    notes: newApt.notes,
+                    patient_name: newApt.patient_name
+                } as Appointment;
+            }
+
             const response = await api.post<Appointment>('/appointments/', data);
             return response.data;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['appointments'] });
             queryClient.invalidateQueries({ queryKey: ['myAppointments'] });
+            queryClient.invalidateQueries({ queryKey: ['patients'] });
         }
     });
 };
@@ -98,12 +130,28 @@ export const useUpdateAppointment = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async ({ id, ...data }: { id: number } & Partial<Appointment>) => {
+            const accessToken = sessionStorage.getItem('access_token') || localStorage.getItem('access_token');
+            const isLocalMode = accessToken?.startsWith('local_token_');
+
+            if (isLocalMode) {
+                const raw = JSON.parse(localStorage.getItem('appointments') || '[]');
+                const updated = raw.map((a: any) => {
+                    if (a.id === id) {
+                        return { ...a, ...data };
+                    }
+                    return a;
+                });
+                localStorage.setItem('appointments', JSON.stringify(updated));
+                return { id, ...data } as Appointment;
+            }
+
             const response = await api.patch<Appointment>(`/appointments/${id}`, data);
             return response.data;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['appointments'] });
             queryClient.invalidateQueries({ queryKey: ['myAppointments'] });
+            queryClient.invalidateQueries({ queryKey: ['patients'] });
         }
     });
 };
@@ -121,6 +169,7 @@ export const useCancelAppointment = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['appointments'] });
             queryClient.invalidateQueries({ queryKey: ['myAppointments'] });
+            queryClient.invalidateQueries({ queryKey: ['patients'] });
         }
     });
 };
@@ -139,6 +188,7 @@ export const useRescheduleAppointment = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['appointments'] });
             queryClient.invalidateQueries({ queryKey: ['myAppointments'] });
+            queryClient.invalidateQueries({ queryKey: ['patients'] });
         }
     });
 };

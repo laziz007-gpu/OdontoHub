@@ -4,6 +4,7 @@
         "patients": "Пациенты",
         "appointments": "Приёмы",
         "chats": "Чаты",
+        "notifications": "Уведомления",
         "focus_title": "Сегодняшний фокус",
         "focus_appointment_single": "приём сегодня",
         "focus_appointments_plural": "приёмов сегодня",
@@ -487,11 +488,11 @@
             "greeting_subtitle": "Время позаботиться о своем здоровье",
             "search": "Поиск...",
             "upcoming": "Ближайшие приёмы",
-            "services": "Наши услуги",
+            "services": "Специалисты",
             "services_all": "Все",
-            "services_treatment": "Лечение",
-            "services_hygiene": "Гигиена",
-            "services_surgery": "Хирургия",
+            "services_treatment": "Терапевт",
+            "services_hygiene": "Хирург",
+            "services_surgery": "Ортодонт",
             "action_book": "Запись к стоматологу",
             "action_doctors": "Врачи",
             "action_my_dentist": "Мой стоматолог",
@@ -560,6 +561,21 @@
             "type_extraction": "Удаление зуба мудрости",
             "type_examination": "Осмотр",
             "specialty_general": "Общий-профильный стоматолог"
+        },
+        "specialties": {
+            "title": "Специалисты",
+            "found_count": "Найдено: {{count}} специалистов",
+            "view_btn": "Посмотреть",
+            "items": {
+                "therapist": { "name": "Терапевт", "desc": "Лечение кариеса, каналов" },
+                "surgeon": { "name": "Хирург", "desc": "Удаление, имплантация" },
+                "orthopedist": { "name": "Ортопед", "desc": "Протезирование, виниры" },
+                "orthodontist": { "name": "Ортодонт", "desc": "Исправление прикуса (брекеты)" },
+                "periodontist": { "name": "Пародонтолог", "desc": "Лечение десен" },
+                "pediatric": { "name": "Детский стоматолог", "desc": "Лечение зубов у детей" },
+                "hygienist": { "name": "Гигиенист", "desc": "Чистка зубов, гигиена" },
+                "aesthetic": { "name": "Эстетик", "desc": "Отбеливание, реставрация" }
+            }
         },
         "alerts": {
             "appointment_cancelled": "Приём отменён",

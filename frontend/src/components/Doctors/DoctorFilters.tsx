@@ -129,8 +129,9 @@ const DoctorFilters = ({
                 <CustomDropdown
                     value={district}
                     onChange={onDistrictChange}
-                    active
+                    active={district !== 'all'}
                     options={[
+                        { value: 'all', label: 'Все районы' },
                         { value: 'yunusabad', label: 'Юнусабад' },
                         { value: 'chilonzor', label: 'Чиланзар' },
                         { value: 'mirabad', label: 'Мирабад' },
@@ -140,6 +141,7 @@ const DoctorFilters = ({
                 <CustomDropdown
                     value={rating}
                     onChange={onRatingChange}
+                    active={rating !== ''}
                     options={[
                         { value: '', label: 'Рейтинг' },
                         { value: 'high', label: 'Высокий' },

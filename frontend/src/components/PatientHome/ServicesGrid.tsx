@@ -34,6 +34,7 @@ const ServicesGrid = () => {
                 {services.map((service, idx) => (
                     <div
                         key={idx}
+                        onClick={() => navigate(paths.doctors, { state: { specialty: service.label === t("patient.home.services_all") ? "" : service.label } })}
                         className="bg-white rounded-4xl shadow-sm hover:shadow-xl transition-all duration-300 p-6 md:p-8 lg:p-12 flex flex-col items-center justify-center gap-4 md:gap-6 cursor-pointer group border border-gray-100 hover:border-gray-200 active:scale-95"
                     >
                         <div className="flex items-center justify-center text-gray-700 group-hover:text-blue-600 transition-colors">

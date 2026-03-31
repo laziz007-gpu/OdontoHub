@@ -81,9 +81,16 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onBook, onOpenMap }) =>
             </div>
 
             {/* Rating Badge */}
-            <div className="absolute right-2.5 sm:right-4 lg:right-6 top-2.5 sm:top-4 lg:top-6 bg-[#F8BD00] rounded-[10px] sm:rounded-[14px] w-9 h-9 sm:w-12 sm:h-12 lg:w-14 lg:h-14 flex flex-col items-center justify-center p-1 shadow-sm">
-                <span className="text-white text-[9px] sm:text-xs">✨</span>
-                <span className="text-white font-bold text-[10px] sm:text-sm lg:text-base leading-none">{doctor.rating}</span>
+            <div className="absolute right-2.5 sm:right-4 lg:right-6 top-2.5 sm:top-4 lg:top-6 bg-[#F8BD00] rounded-[10px] sm:rounded-[14px] px-2 py-1 flex flex-col items-center justify-center shadow-sm min-w-[36px] sm:min-w-[48px] lg:min-w-[56px]">
+                <div className="flex items-center gap-0.5">
+                    <span className="text-white text-[8px] sm:text-[10px]">⭐</span>
+                    <span className="text-white font-black text-[12px] sm:text-base lg:text-lg leading-none">{doctor.rating || '0.0'}</span>
+                </div>
+                {doctor.review_count !== undefined && (
+                    <span className="text-white/80 text-[7px] sm:text-[9px] font-bold uppercase mt-0.5 whitespace-nowrap">
+                        {doctor.review_count} sharh
+                    </span>
+                )}
             </div>
         </div>
     );

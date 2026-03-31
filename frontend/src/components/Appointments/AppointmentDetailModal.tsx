@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Video } from 'lucide-react';
+import { Video, Edit3, Save, Loader2, X } from 'lucide-react';
 import { type AppointmentStatus } from './AppointmentCard';
-import { useCancelAppointment, useRescheduleAppointment } from '../../api/appointments';
+import { useCancelAppointment, useRescheduleAppointment, useUpdateAppointment } from '../../api/appointments';
 import RescheduleModal from './RescheduleModal';
+import { toast } from '../Shared/Toast';
 
 interface AppointmentDetailModalProps {
     isOpen: boolean;
@@ -25,8 +26,22 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
+    
+    // Notes editing state
+    const [isEditingNotes, setIsEditingNotes] = useState(false);
+    const [notes, setNotes] = useState(appointment?.raw?.notes || '');
+    
     const cancelMutation = useCancelAppointment();
     const rescheduleMutation = useRescheduleAppointment();
+    const updateMutation = useUpdateAppointment();
+
+    useEffect(() => {
+        if (appointment?.raw?.notes) {
+            setNotes(appointment.raw.notes);
+        } else {
+            setNotes('');
+        }
+    }, [appointment?.raw?.notes, isOpen]);
 
     if (!isOpen || !appointment) return null;
 
@@ -57,6 +72,19 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
         }
     };
 
+    const handleSaveNotes = async () => {
+        try {
+            await updateMutation.mutateAsync({
+                id: appointment.id,
+                notes: notes
+            });
+            setIsEditingNotes(false);
+            toast.success('Заметка сақланди');
+        } catch (error) {
+            toast.error('Хатолик юз берди');
+        }
+    };
+
     const statusColors: Record<AppointmentStatus, string> = {
         'completed': 'text-[#10d16d]',
         'cancelled': 'text-[#ff4560]',
@@ -74,8 +102,13 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
                 onClick={(e) => e.stopPropagation()}
                 className="bg-white w-full max-w-[400px] h-full shadow-2xl animate-in slide-in-from-right duration-300 p-8 flex flex-col overflow-y-auto"
             >
-                {/* Image Placeholder */}
-                <div className="w-full aspect-video bg-[#e0e0e0] rounded-[24px] mb-8"></div>
+                {/* Header with Close */}
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-black text-[#1a1f36]">Детальная информация</h2>
+                    <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                        <X size={24} className="text-gray-400" />
+                    </button>
+                </div>
 
                 {/* Patient Info */}
                 <div className="space-y-6 flex-1">
@@ -101,18 +134,58 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
                         </div>
                     </div>
 
-                    {appointment.raw?.notes && (
-                        <div className="pt-4 border-t border-gray-100">
-                            <span className="text-gray-500 font-bold block mb-2">Заметки:</span>
-                            <p className="text-[#1a1f36] font-medium italic">{appointment.raw.notes}</p>
+                    {/* Notes Section */}
+                    <div className="pt-6 border-t border-gray-100">
+                        <div className="flex justify-between items-center mb-3">
+                            <span className="text-gray-500 font-bold">Эслатмалар (Заметки):</span>
+                            {!isEditingNotes && (
+                                <button 
+                                    onClick={() => setIsEditingNotes(true)}
+                                    className="p-2 bg-amber-50 text-[#fdbc31] rounded-lg hover:bg-[#fdbc31] hover:text-white transition-all cursor-pointer"
+                                >
+                                    <Edit3 size={16} />
+                                </button>
+                            )}
                         </div>
-                    )}
+                        
+                        {isEditingNotes ? (
+                            <div className="space-y-3">
+                                <textarea
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                    placeholder="Заметка ёзинг..."
+                                    className="w-full h-32 bg-amber-50/50 rounded-2xl p-4 text-[#1a1f36] font-medium border-none focus:ring-2 focus:ring-[#fdbc31]/20 outline-none resize-none"
+                                    autoFocus
+                                />
+                                <div className="flex gap-2">
+                                    <button 
+                                        onClick={() => setIsEditingNotes(false)}
+                                        className="flex-1 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors"
+                                    >
+                                        Бекор қилиш
+                                    </button>
+                                    <button 
+                                        onClick={handleSaveNotes}
+                                        disabled={updateMutation.isPending}
+                                        className="flex-2 py-3 bg-[#fdbc31] text-white font-black rounded-xl shadow-lg shadow-[#fdbc31]/20 hover:bg-[#e09d15] transition-all flex items-center justify-center gap-2"
+                                    >
+                                        {updateMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                                        Сақлаш
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <p className={`text-[#1a1f36] font-medium italic ${!notes ? 'text-gray-300' : ''}`}>
+                                {notes || "Эслатмалар йўқ"}
+                            </p>
+                        )}
+                    </div>
 
                     {/* Service Box */}
-                    <div className="mt-10 bg-[#4f6bff] rounded-[20px] p-6 text-white space-y-4">
+                    <div className="mt-8 bg-[#4f6bff] rounded-[24px] p-6 text-white space-y-4">
                         <div className="flex justify-between items-start">
                             <h3 className="text-xl font-black">{appointment.service}</h3>
-                            <span className="text-[12px] font-bold bg-white/20 px-3 py-1 rounded-full">
+                            <span className="text-[12px] font-bold bg-white/20 px-3 py-1 rounded-full text-white">
                                 {t('appointments.detail.initial')}
                             </span>
                         </div>
@@ -124,9 +197,8 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
                     </div>
                 </div>
 
-                {/* Close Button */}
+                {/* Footer Actions */}
                 <div className="flex flex-col gap-3 mt-8">
-                    {/* Online consultation button */}
                     {appointment.status !== 'cancelled' && appointment.status !== 'completed' && (
                         <button
                             onClick={() => {
@@ -138,30 +210,24 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
                                     }
                                 });
                             }}
-                            className="w-full py-5 bg-[#4E70FF] text-white text-xl font-black rounded-[20px] shadow-lg shadow-blue-500/30 hover:bg-[#3d5ce0] transition-all active:scale-[0.98] flex items-center justify-center gap-3"
+                            className="w-full py-5 bg-[#4E70FF] text-white text-xl font-black rounded-[24px] shadow-lg shadow-blue-500/30 hover:bg-[#3d5ce0] transition-all active:scale-[0.98] flex items-center justify-center gap-3"
                         >
                             <Video size={22} />
                             Онлайн консультация
                         </button>
                     )}
                     <div className="flex gap-3">
-                        <button
-                            onClick={onClose}
-                            className="flex-1 py-5 bg-gray-100 text-gray-600 text-xl font-black rounded-[20px] hover:bg-gray-200 transition-all active:scale-[0.98]"
-                        >
-                            {t('common.close')}
-                        </button>
                         {appointment.status !== 'cancelled' && appointment.status !== 'completed' && (
                             <>
                                 <button
                                     onClick={() => setIsRescheduleOpen(true)}
-                                    className="flex-1 py-5 bg-[#feb019] text-white text-xl font-black rounded-[20px] shadow-lg shadow-[#feb019]/30 hover:bg-[#e09d15] transition-all active:scale-[0.98]"
+                                    className="flex-1 py-5 bg-[#feb019] text-white text-xl font-black rounded-[24px] shadow-lg shadow-[#feb019]/30 hover:bg-[#e09d15] transition-all active:scale-[0.98]"
                                 >
                                     Перенести
                                 </button>
                                 <button
                                     onClick={handleCancel}
-                                    className="flex-1 py-5 bg-[#ff4560] text-white text-xl font-black rounded-[20px] shadow-lg shadow-[#ff4560]/30 hover:bg-[#e03d54] transition-all active:scale-[0.98]"
+                                    className="flex-1 py-5 bg-[#ff4560] text-white text-xl font-black rounded-[24px] shadow-lg shadow-[#ff4560]/30 hover:bg-[#e03d54] transition-all active:scale-[0.98]"
                                 >
                                     Отменить
                                 </button>

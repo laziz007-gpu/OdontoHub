@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Hero from '../components/Bosh sahifa/Hero'
+import NewPatients from '../components/Bosh sahifa/NewPatients'
 import Analytics from '../components/Bosh sahifa/Analytics'
-import Patsent from "../components/Bosh sahifa/Patsent"
 import PatientSearch from "../components/Bosh sahifa/PatientSearch"
 import Tezroq from '../components/Bosh sahifa/Tezroq'
 import Section from '../components/Bosh sahifa/Section'
@@ -23,8 +23,8 @@ const Render = () => {
         {/* Chap tomon (asosiy kontent) */}
         <div className="lg:col-span-8 flex flex-col space-y-6">
           <Analytics />
+          <NewPatients />
           <PatientSearch searchQuery={searchQuery} />
-          <Patsent searchQuery={searchQuery} />
           <Tezroq />
         </div>
 

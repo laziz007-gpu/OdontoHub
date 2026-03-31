@@ -483,11 +483,11 @@
       "greeting_subtitle": "Time to take care of your health",
       "search": "Search...",
       "upcoming": "Upcoming Appointments",
-      "services": "Our Services",
+      "services": "Specialists",
       "services_all": "All",
-      "services_treatment": "Treatment",
-      "services_hygiene": "Hygiene",
-      "services_surgery": "Surgery",
+      "services_treatment": "Therapist",
+      "services_hygiene": "Surgeon",
+      "services_surgery": "Orthodontist",
       "action_book": "Book an Appointment",
       "action_doctors": "Doctors",
       "action_my_dentist": "My Dentist",
@@ -553,6 +553,21 @@
       "type_extraction": "Wisdom Tooth Extraction",
       "type_examination": "Examination",
       "specialty_general": "General-profile dentist"
+    },
+    "specialties": {
+      "title": "Specialists",
+      "found_count": "Found: {{count}} specialists",
+      "view_btn": "View",
+      "items": {
+        "therapist": { "name": "Therapist", "desc": "Treatment of caries, canals" },
+        "surgeon": { "name": "Surgeon", "desc": "Extraction, implantation" },
+        "orthopedist": { "name": "Orthopedist", "desc": "Prosthetics, veneers" },
+        "orthodontist": { "name": "Orthodontist", "desc": "Bite correction (braces)" },
+        "periodontist": { "name": "Periodontist", "desc": "Gum treatment" },
+        "pediatric": { "name": "Pediatric Dentist", "desc": "Dental treatment for children" },
+        "hygienist": { "name": "Hygienist", "desc": "Professional cleaning, hygiene" },
+        "aesthetic": { "name": "Aesthetic Dentist", "desc": "Whitening, restoration" }
+      }
     },
     "alerts": {
       "appointment_cancelled": "Appointment cancelled",

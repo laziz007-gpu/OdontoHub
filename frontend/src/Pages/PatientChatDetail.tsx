@@ -12,13 +12,13 @@ const PatientChatDetail = () => {
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [loading, setLoading] = useState(true);
-    const [attachedImage, setAttachedImage] = useState<string | null>(null);
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editText, setEditText] = useState('');
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [sending, setSending] = useState(false);
     const fileRef = useRef<HTMLInputElement>(null);
     const bottomRef = useRef<HTMLDivElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const socketRef = useRef<WebSocket | null>(null);
     const reconnectTimerRef = useRef<number | null>(null);
 
@@ -83,7 +83,6 @@ const PatientChatDetail = () => {
         };
     }, [id]);
 
-    // Chat ochilganda o'qildi deb belgilash
     useEffect(() => {
         if (!id) return;
         getMessages(Number(id)).then(msgs => {
@@ -98,6 +97,14 @@ const PatientChatDetail = () => {
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
+
+    // Auto-resize textarea
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 128)}px`;
+        }
+    }, [message, editText, editingId]);
 
     const fetchMessages = async () => {
         try {
@@ -168,17 +175,19 @@ const PatientChatDetail = () => {
     };
 
     return (
-        <div className="h-screen flex flex-col bg-gray-50 max-w-7xl mx-auto w-full">
-            <ChatDetailHeader chatInfo={chatInfo} chatStatus="Online" />
+        <div className="h-dvh flex flex-col bg-gray-50 max-w-7xl mx-auto w-full overflow-hidden">
+            <div className="shrink-0">
+                <ChatDetailHeader chatInfo={chatInfo} chatStatus="Online" />
+            </div>
 
-            <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-3">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-4 space-y-3 no-scrollbar scroll-smooth">
                 {loading && (
                     <div className="flex justify-center py-10">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
                     </div>
                 )}
                 {!loading && messages.length === 0 && (
-                    <div className="text-center text-gray-400 py-10">Xabarlar yo'q. Birinchi xabar yuboring!</div>
+                    <div className="text-center text-gray-400 py-10 text-sm italic">Xabarlar yo'q. Birinchi xabar yuboring!</div>
                 )}
                 {messages.map(msg => (
                     <MessageBubble
@@ -192,40 +201,55 @@ const PatientChatDetail = () => {
                         onEdit={handleEdit}
                     />
                 ))}
-                <div ref={bottomRef} />
+                <div ref={bottomRef} className="h-2" />
             </div>
 
-            <div className="p-4 border-t border-gray-100">
+            <div className="shrink-0 p-3 sm:p-4 bg-white border-t border-gray-100 pb-[calc(12px+env(safe-area-inset-bottom,0px))]">
                 {editingId && (
-                    <div className="mb-2 bg-blue-50 border border-blue-200 rounded-xl px-4 py-2 text-sm text-blue-700 flex justify-between items-center">
-                        <span>Tahrirlash</span>
-                        <button onClick={() => { setEditingId(null); setEditText(''); }} className="text-blue-400">✕</button>
+                    <div className="mb-2 bg-blue-50 border border-blue-200 rounded-xl px-4 py-2 text-xs sm:text-sm text-blue-700 flex justify-between items-center animate-in slide-in-from-bottom-2">
+                        <span className="font-semibold line-clamp-1">Tahrirlash: {editText}</span>
+                        <button onClick={() => { setEditingId(null); setEditText(''); }} className="text-blue-400 p-1 hover:bg-blue-100 rounded-full transition-colors">✕</button>
                     </div>
                 )}
                 {imagePreview && (
-                    <div className="mb-2 relative inline-block">
-                        <img src={imagePreview} alt="" className="h-20 rounded-xl object-cover" />
-                        <button onClick={() => setImagePreview(null)} className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">✕</button>
+                    <div className="mb-2 relative inline-block animate-in zoom-in-95 group">
+                        <img src={imagePreview} alt="" className="h-24 sm:h-32 rounded-xl object-cover border-2 border-white shadow-xl" />
+                        <button onClick={() => setImagePreview(null)} className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white rounded-full text-xs flex items-center justify-center shadow-lg shadow-red-500/30 hover:scale-110 transition-all">✕</button>
                     </div>
                 )}
                 <input type="file" accept="image/*" ref={fileRef} className="hidden" onChange={handleImageSelect} />
-                <form onSubmit={e => { e.preventDefault(); handleSend(); }} className="flex gap-2">
-                    <button type="button" onClick={() => fileRef.current?.click()} className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-blue-500 transition-colors shrink-0">
-                        <Image size={20} />
+                <form onSubmit={e => { e.preventDefault(); handleSend(); }} className="flex items-end gap-2 px-1">
+                    <button 
+                        type="button" 
+                        onClick={() => fileRef.current?.click()} 
+                        className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-full transition-all shrink-0 active:scale-90"
+                    >
+                        <Image size={22} className="sm:size-[26px]" />
                     </button>
-                    <input
-                        type="text"
-                        value={editingId ? editText : message}
-                        onChange={e => editingId ? setEditText(e.target.value) : setMessage(e.target.value)}
-                        placeholder={editingId ? "Tahrirlang..." : "Xabar yozing..."}
-                        className="flex-1 bg-gray-50 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-200"
-                    />
+                    <div className="flex-1 relative min-w-0">
+                        <textarea
+                            ref={textareaRef}
+                            value={editingId ? editText : message}
+                            onChange={e => {
+                                editingId ? setEditText(e.target.value) : setMessage(e.target.value);
+                            }}
+                            placeholder={editingId ? "Tahrirlash..." : "Xabar yozing..."}
+                            className="w-full bg-gray-50 rounded-2xl px-4 py-2.5 sm:py-3.5 text-sm sm:text-base font-medium outline-none focus:ring-2 focus:ring-blue-100 border border-transparent focus:border-blue-200 resize-none max-h-32 transition-all custom-scrollbar"
+                            rows={1}
+                            onKeyDown={e => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSend();
+                                }
+                            }}
+                        />
+                    </div>
                     <button
                         type="submit"
-                    disabled={sending || (editingId ? !editText.trim() : (!message.trim() && !imagePreview))}
-                        className="w-10 h-10 bg-[#5377f7] text-white rounded-xl flex items-center justify-center disabled:opacity-40 shrink-0"
+                        disabled={sending || (editingId ? !editText.trim() : (!message.trim() && !imagePreview))}
+                        className="w-10 h-10 sm:w-12 sm:h-12 bg-[#4D71F8] hover:bg-[#3b5cd9] text-white rounded-2xl flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-blue-500/20 active:scale-95 transition-all shrink-0 mb-0.5"
                     >
-                        <Send size={16} />
+                        <Send size={18} className="sm:size-[20px]" />
                     </button>
                 </form>
             </div>

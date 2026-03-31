@@ -554,6 +554,21 @@
       "type_examination": "Тексеру",
       "specialty_general": "Жалпы-профильді стоматолог"
     },
+    "specialties": {
+      "title": "Мамандар",
+      "found_count": "Табылды: {{count}} маман",
+      "view_btn": "Көру",
+      "items": {
+        "therapist": { "name": "Терапевт", "desc": "Кариесті, каналдарды емдеу" },
+        "surgeon": { "name": "Хирург", "desc": "Тісті жұлу, имплантация" },
+        "orthopedist": { "name": "Ортопед", "desc": "Протездеу, винирлер" },
+        "orthodontist": { "name": "Ортодонт", "desc": "Тістеуді түзету (брекеттер)" },
+        "periodontist": { "name": "Пародонтолог", "desc": "Қызыл иекті емдеу" },
+        "pediatric": { "name": "Балалар стоматологы", "desc": "Балалардың тістерін емдеу" },
+        "hygienist": { "name": "Гигиенист", "desc": "Тістерді тазалау, гигиена" },
+        "aesthetic": { "name": "Эстетик", "desc": "Ағарту, реставрация" }
+      }
+    },
     "alerts": {
       "appointment_cancelled": "Қабылдау болдырылмады",
       "select_new_date": "Жаңа күнді таңдаңыз",

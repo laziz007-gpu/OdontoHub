@@ -59,13 +59,29 @@ const ActionButtons = ({ phone, doctorName }: { phone?: string; doctorName?: str
             const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
             const updated = appointments.map((app: any) =>
                 app.id.toString() === id
-                    ? { ...app, date: new Date(newDate).toLocaleDateString('ru-RU') }
+                    ? { ...app, date: new Date(newDate).toLocaleDateString('ru-RU'), status: 'moved' }
                     : app
             );
             localStorage.setItem('appointments', JSON.stringify(updated));
+        } else {
+            try {
+                const startDate = new Date(newDate);
+                const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+                import('../../api/api').then(({ default: api }) => {
+                    api.patch(`/appointments/${id}`, {
+                        start_time: startDate.toISOString(),
+                        end_time: endDate.toISOString(),
+                        status: 'moved'
+                    });
+                });
+            } catch (e) {
+                toast.error('Ошибка при переносе');
+                setShowRescheduleModal(false);
+                return;
+            }
         }
 
-        toast.success(t("patient.alerts.appointment_rescheduled") + " " + new Date(newDate).toLocaleDateString('ru-RU'));
+        toast.success(t("patient.alerts.appointment_rescheduled") + " " + new Date(newDate).toLocaleString('ru-RU'));
         setShowRescheduleModal(false);
         navigate('/calendar');
     };
@@ -148,9 +164,9 @@ const ActionButtons = ({ phone, doctorName }: { phone?: string; doctorName?: str
                         <h3 className="text-2xl font-black text-gray-900 mb-6">Перенести приём</h3>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-bold text-gray-500 mb-2">Выберите новую дату</label>
+                                <label className="block text-sm font-bold text-gray-500 mb-2">Выберите новую дату и время</label>
                                 <input
-                                    type="date"
+                                    type="datetime-local"
                                     value={newDate}
                                     onChange={(e) => setNewDate(e.target.value)}
                                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"

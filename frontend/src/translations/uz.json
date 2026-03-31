@@ -4,6 +4,7 @@
     "patients": "Bemorlar",
     "appointments": "Qabullar",
     "chats": "Chatlar",
+    "notifications": "Bildirishnomalar",
     "focus_title": "Bugungi fokus",
     "focus_appointments": "7 ta qabul",
     "focus_consultations": "3 onlayn konsultatsiya",
@@ -483,11 +484,11 @@
       "greeting_subtitle": "Sog'ligingizga g'amxo'rlik qilish vaqti keldi",
       "search": "Qidiruv...",
       "upcoming": "Yaqindagi qabullar",
-      "services": "Bizning xizmatlar",
-      "services_all": "Hammasi",
-      "services_treatment": "Davolash",
-      "services_hygiene": "Gigiyena",
-      "services_surgery": "Xirurgiya",
+      "services": "Mutaxassislar",
+      "services_all": "Barchasi",
+      "services_treatment": "Terapevt",
+      "services_hygiene": "Xirurg",
+      "services_surgery": "Ortodont",
       "action_book": "Stomatologga yozilish",
       "action_doctors": "Shifokorlar",
       "action_my_dentist": "Mening stomatologim",
@@ -556,6 +557,21 @@
       "type_extraction": "Aql tishini oldirish",
       "type_examination": "Ko'rik",
       "specialty_general": "Umumiy-profil stomatolog"
+    },
+    "specialties": {
+      "title": "Mutaxassislar",
+      "found_count": "Topildi: {{count}} ta mutaxassis",
+      "view_btn": "Ko'rish",
+      "items": {
+        "therapist": { "name": "Terapevt", "desc": "Karies va kanallarni davolash" },
+        "surgeon": { "name": "Xirurg", "desc": "Tish olish, implantatsiya" },
+        "orthopedist": { "name": "Ortoped", "desc": "Protezlash, vinirlar" },
+        "orthodontist": { "name": "Ortodont", "desc": "Tishlarni tekislash (breket)" },
+        "periodontist": { "name": "Parodontolog", "desc": "Mulklar davolash" },
+        "pediatric": { "name": "Bolalar stomatologi", "desc": "Bolalar tishlarini davolash" },
+        "hygienist": { "name": "Gigiyenist", "desc": "Tishlarni tozalash, gigiyena" },
+        "aesthetic": { "name": "Estetik stomatolog", "desc": "Tishlarni oqartirish, restavratsiya" }
+      }
     },
     "alerts": {
       "appointment_cancelled": "Qabul bekor qilindi",

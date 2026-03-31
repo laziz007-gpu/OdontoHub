@@ -1,20 +1,48 @@
-import React from 'react';
-import { ChevronLeft, Paperclip, Plus, Clock } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ChevronLeft, Paperclip, Plus, Clock, Save, Edit3, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useUpdateAppointment } from '../../api/appointments';
+import { toast } from '../Shared/Toast';
 
 interface InProgressViewProps {
     onBack: () => void;
     appointment: {
+        id: number;
         patientName: string;
         service: string;
+        notes?: string | null;
         [key: string]: any;
     } | null;
 }
 
 const InProgressView: React.FC<InProgressViewProps> = ({ onBack, appointment }) => {
     const { t } = useTranslation();
+    const updateMutation = useUpdateAppointment();
+    
+    // Local state for notes
+    const [notes, setNotes] = useState(appointment?.notes || '');
+    const [isEditingNotes, setIsEditingNotes] = useState(false);
+
+    useEffect(() => {
+        if (appointment?.notes) {
+            setNotes(appointment.notes);
+        }
+    }, [appointment?.notes]);
 
     if (!appointment) return null;
+
+    const handleSaveNotes = async () => {
+        try {
+            await updateMutation.mutateAsync({
+                id: appointment.id,
+                notes: notes
+            });
+            setIsEditingNotes(false);
+            toast.success('Заметка сақланди');
+        } catch (error) {
+            toast.error('Хатолик юз берди');
+        }
+    };
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
@@ -40,11 +68,14 @@ const InProgressView: React.FC<InProgressViewProps> = ({ onBack, appointment }) 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Left Column: Top Row */}
                 <div className="bg-white rounded-[32px] p-8 shadow-sm flex items-center gap-6">
-                    <div className="w-32 h-32 bg-[#e0e0e0] rounded-[24px] shrink-0"></div>
+                    <div className="w-32 h-32 bg-[#e0e0e0] rounded-[24px] shrink-0 flex items-center justify-center font-black text-4xl text-gray-400">
+                        {appointment.patientName?.charAt(0)}
+                    </div>
                     <div>
                         <h3 className="text-3xl font-black text-[#1a1f36] leading-tight">
                             {appointment.patientName}
                         </h3>
+                        <p className="text-gray-400 font-bold mt-1">{appointment.service}</p>
                     </div>
                 </div>
 
@@ -64,33 +95,83 @@ const InProgressView: React.FC<InProgressViewProps> = ({ onBack, appointment }) 
                     {/* Recipe Card */}
                     <div className="bg-white rounded-[32px] p-8 shadow-sm relative group min-h-[220px]">
                         <h4 className="text-2xl font-black text-[#1a1f36] mb-4">{t('appointments.progress.recipe')}</h4>
-                        <div className="flex items-center gap-3 text-lg font-bold text-[#1a1f36]">
-                            <div className="w-2 h-2 bg-[#1a1f36] rounded-full"></div>
-                            <span>{t('appointments.progress.recipe')}</span>
+                        <div className="flex items-center gap-3 text-lg font-bold text-gray-300 italic">
+                            <div className="w-2 h-2 bg-gray-200 rounded-full"></div>
+                            <span>Ҳозирча рецепт йўқ</span>
                         </div>
                         <button className="absolute bottom-6 right-6 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:bg-[#4f6bff] hover:text-white transition-all cursor-pointer">
                             <Plus className="w-5 h-5" />
                         </button>
                     </div>
 
-                    {/* Notes Card */}
-                    <div className="bg-white rounded-[32px] p-8 shadow-sm relative group min-h-[220px]">
-                        <h4 className="text-2xl font-black text-[#fdbc31] mb-4">{t('appointments.progress.notes')}</h4>
-                        <div className="flex items-center gap-3 text-lg font-bold text-[#1a1f36]">
-                            <div className="w-2 h-2 bg-[#fdbc31] rounded-full"></div>
-                            <span>{t('appointments.progress.notes')}</span>
+                    {/* Notes Card - ACTIVE */}
+                    <div className="bg-white rounded-[32px] p-8 shadow-sm relative group min-h-[220px] flex flex-col">
+                        <div className="flex justify-between items-start mb-4">
+                            <h4 className="text-2xl font-black text-[#fdbc31]">{t('appointments.progress.notes')}</h4>
+                            {!isEditingNotes && (
+                                <button 
+                                    onClick={() => setIsEditingNotes(true)}
+                                    className="p-2 bg-amber-50 text-[#fdbc31] rounded-xl hover:bg-[#fdbc31] hover:text-white transition-all cursor-pointer"
+                                >
+                                    <Edit3 size={18} />
+                                </button>
+                            )}
                         </div>
-                        <button className="absolute bottom-6 right-6 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:bg-[#4f6bff] hover:text-white transition-all cursor-pointer">
-                            <Plus className="w-5 h-5" />
-                        </button>
+                        
+                        <div className="flex-1">
+                            {isEditingNotes ? (
+                                <textarea
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                    placeholder="Заметқа ёзинг..."
+                                    className="w-full h-24 bg-amber-50/50 rounded-2xl p-4 text-[#1a1f36] font-bold border-none focus:ring-2 focus:ring-[#fdbc31]/20 outline-none resize-none"
+                                    autoFocus
+                                />
+                            ) : (
+                                <div className="flex items-start gap-3 text-lg font-medium text-[#1a1f36] italic">
+                                    <div className="w-2 h-2 bg-[#fdbc31] rounded-full mt-2.5 shrink-0"></div>
+                                    <p className={notes ? "" : "text-gray-300"}>
+                                        {notes || "Эслатмалар йўқ"}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        {isEditingNotes && (
+                            <div className="mt-4 flex gap-2">
+                                <button 
+                                    onClick={() => setIsEditingNotes(false)}
+                                    className="px-4 py-2 text-sm font-bold text-gray-400 hover:text-gray-600 transition-colors"
+                                >
+                                    Бекор қилиш
+                                </button>
+                                <button 
+                                    onClick={handleSaveNotes}
+                                    disabled={updateMutation.isPending}
+                                    className="flex-1 py-3 bg-[#fdbc31] text-white font-black rounded-xl shadow-lg shadow-[#fdbc31]/20 hover:bg-[#e09d15] transition-all flex items-center justify-center gap-2"
+                                >
+                                    {updateMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                                    Сақлаш
+                                </button>
+                            </div>
+                        )}
+                        
+                        {!isEditingNotes && !notes && (
+                            <button 
+                                onClick={() => setIsEditingNotes(true)}
+                                className="absolute bottom-6 right-6 w-12 h-12 bg-[#fdbc31] rounded-full flex items-center justify-center text-white shadow-lg shadow-[#fdbc31]/20 hover:scale-110 transition-all cursor-pointer"
+                            >
+                                <Plus className="w-6 h-6" />
+                            </button>
+                        )}
                     </div>
 
                     {/* Allergies Card */}
                     <div className="bg-white rounded-[32px] p-8 shadow-sm relative group min-h-[220px]">
                         <h4 className="text-2xl font-black text-[#ff3b30] mb-4">{t('appointments.progress.allergies')}</h4>
-                        <div className="flex items-center gap-3 text-lg font-bold text-[#1a1f36]">
-                            <div className="w-2 h-2 bg-[#ff3b30] rounded-full"></div>
-                            <span>{t('appointments.progress.allergies')}</span>
+                        <div className="flex items-center gap-3 text-lg font-bold text-gray-300 italic">
+                            <div className="w-2 h-2 bg-gray-200 rounded-full"></div>
+                            <span>Аллергия йўқ</span>
                         </div>
                         <button className="absolute bottom-6 right-6 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:bg-[#4f6bff] hover:text-white transition-all cursor-pointer">
                             <Plus className="w-5 h-5" />

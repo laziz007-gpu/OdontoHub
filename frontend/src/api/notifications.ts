@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import api from './api';
 
 export interface Notification {
@@ -8,18 +9,31 @@ export interface Notification {
   message: string;
   is_read: boolean;
   created_at: string;
-  read_at: string | null;
-  data: Record<string, any> | null;
 }
 
-export const getNotifications = async (): Promise<Notification[]> => {
-  const response = await api.get('/api/notifications/');
-  return response.data;
+export const useNotifications = () => {
+    return useQuery({
+        queryKey: ['notifications'],
+        queryFn: async (): Promise<Notification[]> => {
+            const response = await api.get('/api/notifications/');
+            return response.data;
+        }
+    });
 };
 
-export const getUnreadCount = async (): Promise<number> => {
-  const response = await api.get('/api/notifications/unread-count');
-  return response.data.unread_count;
+export const useUnreadCount = () => {
+    return useQuery({
+        queryKey: ['notifications', 'unread-count'],
+        queryFn: async (): Promise<number> => {
+            try {
+                const response = await api.get('/api/notifications/unread-count');
+                return response.data.unread_count || 0;
+            } catch (err) {
+                return 0;
+            }
+        },
+        refetchInterval: 30000, // Refetch every 30 seconds
+    });
 };
 
 export const markAsRead = async (id: number): Promise<void> => {
@@ -32,4 +46,18 @@ export const markAllAsRead = async (): Promise<void> => {
 
 export const deleteAllNotifications = async (): Promise<void> => {
   await api.delete('/api/notifications/delete-all');
+};
+
+export const getUnreadCount = async (): Promise<number> => {
+    try {
+        const response = await api.get('/api/notifications/unread-count');
+        return response.data.unread_count || 0;
+    } catch (err) {
+        return 0;
+    }
+};
+
+export const getNotifications = async (): Promise<Notification[]> => {
+  const response = await api.get('/api/notifications/');
+  return response.data;
 };

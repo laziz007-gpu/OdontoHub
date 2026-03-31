@@ -36,7 +36,13 @@ const PatientAppointmentDetail = () => {
         const local = appointments.find((a: any) => a.id.toString() === id);
         if (local) {
             const dentist = allDentists.find(d => d.id === local.doctor_id);
-            isActive = local.status === 'upcoming';
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const [day, month, year] = local.date.split('.');
+            const appDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+            const isPast = appDate < today;
+
+            isActive = local.status === 'upcoming' && !isPast;
             appointment = {
                 title: local.service || "Консультация",
                 date: local.date,
@@ -78,7 +84,9 @@ const PatientAppointmentDetail = () => {
         const startDate = new Date(appointmentData.start_time);
         const endDate = new Date(appointmentData.end_time);
         const duration = Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60));
-        isActive = appointmentData.status === "pending" || appointmentData.status === "confirmed";
+        const now = new Date();
+        const isPast = endDate < now;
+        isActive = (appointmentData.status === "pending" || appointmentData.status === "confirmed") && !isPast;
         appointment = {
             title: appointmentData.service || "Консультация",
             date: startDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }),
@@ -151,14 +159,19 @@ const PatientAppointmentDetail = () => {
                         <AppointmentDetailsCard details={appointment.details} />
                     </div>
                     <div className="space-y-6 flex flex-col">
-                        <div className="bg-white rounded-[2rem] lg:rounded-[2.5rem] p-1 shadow-sm border border-gray-50 overflow-hidden">
+                        <div className="bg-white rounded-4xl lg:rounded-[2.5rem] p-1 shadow-sm border border-gray-50 overflow-hidden">
                             <PriceCard price={appointment.price} service={appointment.title} />
                         </div>
                         <div>
-                            {isActive
-                                ? <ActionButtons phone={appointment.doctor.phone} doctorName={appointment.doctor.name} />
-                                : <ReviewButton />
-                            }
+                            {isActive ? (
+                                <ActionButtons phone={appointment.doctor.phone} doctorName={appointment.doctor.name} />
+                            ) : (appointment.details.status === "завершён" || (appointmentData && new Date(appointmentData.end_time) < new Date() && appointmentData.status !== "cancelled")) ? (
+                                <ReviewButton />
+                            ) : (
+                                <div className="bg-white rounded-4xl p-6 text-center border border-gray-100 italic text-gray-400 font-bold">
+                                    {appointment.details.status === "отменён" ? "Qabul bekor qilingan" : "Qabul yakunlangan"}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -35,8 +35,15 @@ export default function Analytics() {
       return appDate >= firstDayOfMonth;
     }).length || 0;
 
-    // New patients this week - просто показываем общее количество пациентов
-    const weekPatients = patients?.length || 0;
+    // New patients this week
+    const lastWeek = new Date(today);
+    lastWeek.setDate(lastWeek.getDate() - 7);
+    
+    const weekPatients = patients?.filter((p: any) => {
+      if (!p.created_at) return false;
+      const createdDate = new Date(p.created_at);
+      return createdDate >= lastWeek;
+    }).length || 0;
 
     return [
       { value: todayAppointments, titleKey: "dashboard.stats.consultations_today", change: 0 },

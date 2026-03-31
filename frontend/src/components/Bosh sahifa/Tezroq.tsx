@@ -58,10 +58,7 @@ const Tezroq: React.FC = () => {
     });
     
     localStorage.setItem(notesKey, JSON.stringify(notes));
-    
-    toast.success('Заметка успешно добавлена');
-    // Navigate to patient profile
-    navigate(`${paths.patient}/${patientId}`);
+    // Modal already handles success toast and closing
   };
 
   return (
@@ -102,7 +99,7 @@ const Tezroq: React.FC = () => {
         onClose={() => setIsPatientModalOpen(false)}
         onSuccess={() => {
           setIsPatientModalOpen(false);
-          navigate(paths.patient);
+          // Stay on current page as requested
         }}
       />
 

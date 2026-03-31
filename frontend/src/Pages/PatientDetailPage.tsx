@@ -104,7 +104,7 @@ const PatientDetailPage = () => {
 
       {/* Content */}
       <div className="px-4 mt-6">
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
+        <div className="bg-white rounded-2xl p-6 shadow-sm min-h-[400px]">
           {activeTab === 'info' && <PatientInfoSection patientId={patientId} />}
           {activeTab === 'appointments' && <AppointmentsSection patientId={patientId} dentistId={dentistId} />}
           {activeTab === 'prescriptions' && <PrescriptionSection patientId={patientId} />}

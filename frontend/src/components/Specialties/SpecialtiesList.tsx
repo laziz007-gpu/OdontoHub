@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from "react-i18next";
 import { FiArrowUpRight } from 'react-icons/fi';
 import { paths } from '../../Routes/path';
 
@@ -9,63 +10,30 @@ interface Specialty {
     count: number;
 }
 
-const specialties: Specialty[] = [
-    {
-        id: 'therapist',
-        name: 'Терапевт',
-        description: 'Лечение кариеса, каналов',
-        count: 245
-    },
-    {
-        id: 'surgeon',
-        name: 'Хирург',
-        description: 'Удаление, имплантация',
-        count: 245
-    },
-    {
-        id: 'orthopedist',
-        name: 'Ортопед',
-        description: 'Протезирование, виниры',
-        count: 245
-    },
-    {
-        id: 'orthodontist',
-        name: 'Ортодонт',
-        description: 'Исправление прикуса',
-        count: 245
-    },
-    {
-        id: 'periodontist',
-        name: 'Пародонтолог',
-        description: 'Лечение десен',
-        count: 245
-    },
-    {
-        id: 'pediatric',
-        name: 'Детский стоматолог',
-        description: 'Специфическое лечение молочных и постоянных зубов у детей с учетом психологии.',
-        count: 245
-    },
-    {
-        id: 'hygienist',
-        name: 'Гигиенист',
-        description: 'Профессиональная чистка зубов, снятие камня, обучение гигиене',
-        count: 245
-    },
-    {
-        id: 'aesthetic',
-        name: 'Эстетик',
-        description: 'Отбеливание, художественная реставрация для улучшения внешнего вида улыбки.',
-        count: 245
-    }
-];
-
 const SpecialtiesList: React.FC = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
+
+    const specialtyIds = [
+        'therapist', 'surgeon', 'orthopedist', 'orthodontist',
+        'periodontist', 'pediatric', 'hygienist', 'aesthetic'
+    ];
+
+    const specialties: Specialty[] = specialtyIds.map(id => ({
+        id: id,
+        name: t(`patient.specialties.items.${id}.name`),
+        description: t(`patient.specialties.items.${id}.desc`),
+        count: 245 // Hardcoded for now per user screenshot
+    }));
 
     const handleView = (specialty: Specialty) => {
-        // Navigate to doctors list, potentially filtered by specialty in the future
-        navigate(paths.doctors, { state: { specialty: specialty.name } });
+        // Navigate to doctors list, filtered by specialty and passing the stable ID
+        navigate(paths.doctors, { 
+            state: { 
+                specialty: specialty.name,
+                specialtyId: specialty.id 
+            } 
+        });
     };
 
     return (
@@ -90,12 +58,12 @@ const SpecialtiesList: React.FC = () => {
                                 onClick={() => handleView(item)}
                                 className="bg-[#4D71F8] hover:bg-[#3b5cd9] text-white py-2.5 sm:py-3 px-6 sm:px-8 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 group-hover:shadow-lg group-hover:shadow-blue-500/20 self-start sm:self-auto w-full sm:w-auto"
                             >
-                                <span className="text-sm sm:text-base">Посмотреть</span>
+                                <span className="text-sm sm:text-base">{t('patient.specialties.view_btn')}</span>
                                 <FiArrowUpRight className="text-lg sm:text-xl" />
                             </button>
 
                             <span className="text-[#1D1D2B] font-bold text-xs sm:text-sm lg:text-base whitespace-nowrap">
-                                Найдено: {item.count} специалистов
+                                {t('patient.specialties.found_count', { count: item.count })}
                             </span>
                         </div>
                     </div>

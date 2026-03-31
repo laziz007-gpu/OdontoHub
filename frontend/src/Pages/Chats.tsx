@@ -21,6 +21,7 @@ export default function Chats() {
     const fileRef = useRef<HTMLInputElement>(null);
     const [chatPreviews, setChatPreviews] = useState<Record<number, { last: string; time: string; unread: number }>>({});
     const bottomRef = useRef<HTMLDivElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const socketRef = useRef<WebSocket | null>(null);
     const reconnectTimerRef = useRef<number | null>(null);
 
@@ -93,7 +94,6 @@ export default function Chats() {
                         return [...prev, data];
                     });
                 } else if (data.appointment_id && data.id) {
-                    // Keep side-list previews fresh even when another chat is open.
                     setChatPreviews(prev => {
                         const current = prev[data.appointment_id];
                         return {
@@ -132,7 +132,6 @@ export default function Chats() {
         };
     }, [id]);
 
-    // Chat ochilganda o'qildi deb belgilash
     useEffect(() => {
         if (!id) return;
         getMessages(Number(id)).then(msgs => {
@@ -149,13 +148,20 @@ export default function Chats() {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
+    // Auto-resize textarea
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 128)}px`;
+        }
+    }, [newMessage, editText, editingId]);
+
     const fetchMessages = async () => {
         if (!id) return;
         try {
             const data = await getMessages(Number(id));
             setMessages(data);
         } catch {
-            // Quick retry avoids stale UI when route changes during reconnect.
             setTimeout(async () => {
                 try {
                     const retryData = await getMessages(Number(id));
@@ -184,11 +190,9 @@ export default function Chats() {
                     text: newMessage,
                     image_data: imagePreview || undefined
                 }));
-                // WS orqali yuborilganda xabar serverdan qaytib keladi va state'ga qo'shiladi
                 setNewMessage('');
                 setImagePreview(null);
             } else {
-                // Fallback: Agar socket ulanmagan bo'lsa, HTTP orqali yuborish
                 const sent = await sendMessage(Number(id), newMessage, imagePreview || undefined);
                 setMessages(prev => [...prev, sent]);
                 setNewMessage('');
@@ -219,54 +223,61 @@ export default function Chats() {
     };
 
     return (
-        <div className="flex h-[calc(100vh-80px)] mt-[72px] md:mt-4 m-2 md:m-4 bg-white rounded-[24px] overflow-hidden border border-gray-100 shadow-sm">
+        <div className="flex h-dvh md:h-[calc(100vh-32px)] md:m-4 bg-white md:rounded-[24px] overflow-hidden border border-gray-100 shadow-sm transition-all duration-300">
             {/* Chat list */}
-            <div className={`w-full lg:w-[320px] border-r border-gray-100 flex flex-col flex-shrink-0 ${id ? 'hidden lg:flex' : 'flex'}`}>
-                <div className="p-4 border-b border-gray-100">
-                    <h2 className="text-xl font-black text-gray-900 mb-3">Chatlar</h2>
+            <div className={`w-full lg:w-[350px] border-r border-gray-100 flex flex-col shrink-0 ${id ? 'hidden lg:flex' : 'flex'}`}>
+                <div className="p-4 sm:p-6 border-b border-gray-100 bg-white sticky top-0 z-10">
+                    <h2 className="text-xl sm:text-2xl font-black text-gray-900 mb-4">Chatlar</h2>
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                             type="text"
                             placeholder="Qidirish..."
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
-                            className="w-full bg-gray-50 rounded-xl py-2.5 pl-9 pr-4 text-sm outline-none"
+                            className="w-full bg-gray-50 rounded-2xl py-3 pl-11 pr-4 text-sm font-medium outline-none focus:ring-2 focus:ring-blue-100 transition-all border border-transparent focus:border-blue-200"
                         />
                     </div>
                 </div>
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-y-auto no-scrollbar">
                     {chats.length === 0 && (
-                        <div className="text-center text-gray-400 py-16 text-sm">Chatlar yo'q</div>
+                        <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-2">
+                            <MessageCircle size={32} className="opacity-20" />
+                            <p className="text-sm font-medium">Chatlar topilmadi</p>
+                        </div>
                     )}
                     {chats.map(apt => {
                         const preview = chatPreviews[apt.id];
+                        const isActive = Number(id) === apt.id;
                         return (
                             <div
                                 key={apt.id}
                                 onClick={() => {
-                                const readMap = JSON.parse(localStorage.getItem('chat_read') || '{}');
-                                getMessages(apt.id).then(msgs => {
-                                    if (msgs.length > 0) {
-                                        readMap[apt.id] = msgs[msgs.length - 1].id;
-                                        localStorage.setItem('chat_read', JSON.stringify(readMap));
-                                    }
-                                }).catch(() => {});
-                                setChatPreviews(prev => ({ ...prev, [apt.id]: { ...prev[apt.id], unread: 0 } }));
-                                navigate(paths.chatDetail.replace(':id', String(apt.id)));
-                            }}
-                                className={`flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-50 ${Number(id) === apt.id ? 'bg-blue-50' : ''}`}
+                                    const readMap = JSON.parse(localStorage.getItem('chat_read') || '{}');
+                                    getMessages(apt.id).then(msgs => {
+                                        if (msgs.length > 0) {
+                                            readMap[apt.id] = msgs[msgs.length - 1].id;
+                                            localStorage.setItem('chat_read', JSON.stringify(readMap));
+                                        }
+                                    }).catch(() => {});
+                                    setChatPreviews(prev => ({ ...prev, [apt.id]: { ...prev[apt.id], unread: 0 } }));
+                                    navigate(paths.chatDetail.replace(':id', String(apt.id)));
+                                }}
+                                className={`flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50 transition-all border-b border-gray-50/50 ${isActive ? 'bg-blue-50/80 border-l-4 border-l-[#4D71F8]' : ''}`}
                             >
-                                <img src={DentistImg} alt="" className="w-11 h-11 rounded-full object-cover shrink-0" />
+                                <div className="relative shrink-0">
+                                    <img src={DentistImg} alt="" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+                                    {preview?.unread ? <div className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div> : null}
+                                </div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="flex justify-between items-baseline">
-                                        <p className="font-bold text-gray-900 text-sm truncate">{apt.patient_name || 'Bemor'}</p>
-                                        <span className="text-[10px] text-gray-400 shrink-0 ml-1">{preview?.time || ''}</span>
+                                    <div className="flex justify-between items-baseline mb-0.5">
+                                        <p className={`font-bold text-sm truncate ${isActive ? 'text-[#4D71F8]' : 'text-gray-900'}`}>{apt.patient_name || 'Bemor'}</p>
+                                        <span className="text-[10px] font-bold text-gray-400 shrink-0 ml-1 uppercase">{preview?.time || ''}</span>
                                     </div>
-                                    <div className="flex justify-between items-center mt-0.5">
-                                        <p className="text-xs text-gray-400 truncate">{preview?.last || apt.service || 'Qabul'}</p>
+                                    <div className="flex justify-between items-center">
+                                        <p className="text-xs text-gray-500 truncate font-medium">{preview?.last || apt.service || 'Qabul'}</p>
                                         {preview?.unread ? (
-                                            <span className="ml-1 w-4 h-4 bg-[#5377f7] text-white text-[9px] font-black rounded-full flex items-center justify-center shrink-0">
+                                            <span className="ml-2 px-1.5 py-0.5 bg-[#4D71F8] text-white text-[10px] font-black rounded-full shadow-sm shadow-blue-500/20">
                                                 {preview.unread}
                                             </span>
                                         ) : null}
@@ -279,23 +290,29 @@ export default function Chats() {
             </div>
 
             {/* Chat area */}
-            <div className={`flex-1 flex flex-col ${!id ? 'hidden lg:flex' : 'flex'}`}>
+            <div className={`flex-1 flex flex-col bg-gray-50/30 ${!id ? 'hidden lg:flex' : 'flex'}`}>
                 {activeApt ? (
                     <>
-                        <div className="p-4 border-b border-gray-100 flex items-center gap-3">
-                            <button onClick={() => navigate(paths.chats)} className="lg:hidden p-2 hover:bg-gray-50 rounded-xl">
-                                <ArrowLeft size={20} />
+                        <div className="p-3 sm:p-4 bg-white border-b border-gray-100 flex items-center gap-4 shrink-0 shadow-sm z-10">
+                            <button onClick={() => navigate(paths.chats)} className="lg:hidden p-2 hover:bg-gray-100 rounded-full transition-colors shrink-0">
+                                <ArrowLeft size={20} className="text-gray-600" />
                             </button>
-                            <img src={DentistImg} alt="" className="w-10 h-10 rounded-full object-cover" />
-                            <div>
-                                <p className="font-bold text-gray-900">{activeApt.patient_name || 'Bemor'}</p>
-                                <p className="text-xs text-gray-400">{activeApt.service}</p>
+                            <img src={DentistImg} alt="" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+                            <div className="min-w-0">
+                                <p className="font-bold text-gray-900 text-sm sm:text-base truncate">{activeApt.patient_name || 'Bemor'}</p>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                    <p className="text-[10px] sm:text-xs font-bold text-emerald-500 uppercase tracking-wider">Online</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-3">
+                        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4 no-scrollbar scroll-smooth">
                             {messages.length === 0 && (
-                                <div className="text-center text-gray-400 py-10 text-sm">Xabarlar yo'q</div>
+                                <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-2">
+                                    <MessageCircle size={40} className="opacity-10" />
+                                    <p className="text-sm italic font-medium">Bemor bilan muloqotni boshlang</p>
+                                </div>
                             )}
                             {messages.map(msg => (
                                 <MessageBubble
@@ -309,40 +326,52 @@ export default function Chats() {
                                     onEdit={handleEdit}
                                 />
                             ))}
-                            <div ref={bottomRef} />
+                            <div ref={bottomRef} className="h-2" />
                         </div>
 
-                        <div className="p-4 border-t border-gray-100 relative">
+                        <div className="p-3 sm:p-4 bg-white border-t border-gray-100 shrink-0 pb-[calc(12px+env(safe-area-inset-bottom,0px))]">
                             {editingId && (
-                                <div className="mb-2 bg-blue-50 border border-blue-200 rounded-xl px-4 py-2 text-sm text-blue-700 flex justify-between items-center">
-                                    <span>Tahrirlash</span>
-                                    <button onClick={() => { setEditingId(null); setEditText(''); }}>✕</button>
+                                <div className="mb-3 bg-blue-50 border border-blue-200 rounded-2xl px-4 py-2.5 text-xs sm:text-sm text-blue-700 flex justify-between items-center animate-in slide-in-from-bottom-2">
+                                    <div className="flex items-center gap-2 overflow-hidden">
+                                        <div className="w-1 h-8 bg-blue-400 rounded-full shrink-0"></div>
+                                        <span className="font-semibold truncate">Tahrirlash: {editText}</span>
+                                    </div>
+                                    <button onClick={() => { setEditingId(null); setEditText(''); }} className="text-blue-400 p-1 hover:bg-blue-100 rounded-full transition-colors ml-2">✕</button>
                                 </div>
                             )}
                             {imagePreview && (
-                                <div className="mb-2 relative inline-block">
-                                    <img src={imagePreview} alt="" className="h-20 rounded-xl object-cover" />
-                                    <button onClick={() => setImagePreview(null)} className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">✕</button>
+                                <div className="mb-3 relative inline-block animate-in zoom-in-95 group">
+                                    <img src={imagePreview} alt="" className="h-24 sm:h-32 rounded-2xl object-cover border-2 border-white shadow-xl" />
+                                    <button onClick={() => setImagePreview(null)} className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white rounded-full text-xs flex items-center justify-center shadow-lg shadow-red-500/30 hover:scale-110 active:scale-95 transition-all">✕</button>
                                 </div>
                             )}
                             <input type="file" accept="image/*" ref={fileRef} className="hidden" onChange={handleImageSelect} />
-                            <form onSubmit={handleSend} className="flex gap-2">
-                                <button type="button" onClick={() => fileRef.current?.click()} className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-blue-500 transition-colors shrink-0">
-                                    <Image size={20} />
+                            <form onSubmit={handleSend} className="flex items-end gap-2 sm:gap-3 px-1">
+                                <button type="button" onClick={() => fileRef.current?.click()} className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-gray-400 hover:text-[#4D71F8] hover:bg-blue-50 rounded-full transition-all shrink-0 active:scale-90">
+                                    <Image size={22} className="sm:size-[26px]" />
                                 </button>
-                                <input
-                                    type="text"
-                                    value={editingId ? editText : newMessage}
-                                    onChange={e => editingId ? setEditText(e.target.value) : setNewMessage(e.target.value)}
-                                    placeholder={editingId ? "Tahrirlang..." : "Xabar yozing..."}
-                                    className="flex-1 bg-gray-50 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-200"
-                                />
+                                <div className="flex-1 min-w-0">
+                                    <textarea
+                                        ref={textareaRef}
+                                        value={editingId ? editText : newMessage}
+                                        onChange={e => editingId ? setEditText(e.target.value) : setNewMessage(e.target.value)}
+                                        placeholder={editingId ? "Tahrirlash..." : "Xabar yozing..."}
+                                        className="w-full bg-gray-50 rounded-2xl px-4 py-3 sm:py-4 text-sm sm:text-base font-medium outline-none border border-transparent focus:border-blue-200 focus:ring-4 focus:ring-blue-100/50 transition-all resize-none max-h-32 custom-scrollbar"
+                                        rows={1}
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter' && !e.shiftKey) {
+                                                e.preventDefault();
+                                                handleSend();
+                                            }
+                                        }}
+                                    />
+                                </div>
                                 <button
                                     type="submit"
-                                disabled={sending || (editingId ? !editText.trim() : (!newMessage.trim() && !imagePreview))}
-                                    className="w-10 h-10 bg-[#5377f7] text-white rounded-xl flex items-center justify-center disabled:opacity-40 hover:bg-[#4156d9] transition-colors shrink-0"
+                                    disabled={sending || (editingId ? !editText.trim() : (!newMessage.trim() && !imagePreview))}
+                                    className="w-10 h-10 sm:w-12 sm:h-12 bg-[#4D71F8] hover:bg-[#3b5cd9] text-white rounded-2xl flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30 active:scale-95 transition-all shrink-0 mb-0.5"
                                 >
-                                    <Send size={16} />
+                                    <Send size={18} className="sm:size-[22px]" />
                                 </button>
                             </form>
                         </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { usePatient } from '../../api/profile';
 
 interface PatientInfoSectionProps {
@@ -72,16 +72,6 @@ const PatientInfoSection = ({ patientId }: PatientInfoSectionProps) => {
         </div>
       </div>
 
-      {/* Дополнительная информация */}
-      <div className="bg-gray-50 rounded-2xl p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Дополнительно</h2>
-        <div className="space-y-3">
-          <div className="flex items-start">
-            <div className="w-32 text-gray-600 font-medium">Источник:</div>
-            <div className="flex-1 text-gray-900">{patient.source || 'Не указан'}</div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

@@ -38,8 +38,6 @@ const Appointments: React.FC = () => {
                     const dentistId = userData.dentist_id || 2;
                     if (app.dentist_id !== dentistId) return false;
                 }
-                // Hide cancelled appointments from doctor view
-                if (app.status === 'cancelled') return false;
                 return true;
             })
             .map(app => {
@@ -74,6 +72,7 @@ const Appointments: React.FC = () => {
                     status,
                     service: serviceLabel,
                     patientName: app.patient_name || 'Пациент',
+                    notes: app.notes || null,
                     raw: { ...app, price }
                 };
             })
@@ -187,7 +186,7 @@ const Appointments: React.FC = () => {
                                     <AppointmentCard
                                         key={apt.id || idx}
                                         {...apt}
-                                        service={apt.service}
+                                        notes={apt.notes}
                                         onClick={() => handleAptClick(apt)}
                                     />
                                 ))}

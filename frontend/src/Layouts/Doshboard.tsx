@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Users, Calendar, MessageCircle, LayoutDashboard, Menu, X } from "lucide-react";
+import { Users, Calendar, MessageCircle, LayoutDashboard, Bell, Menu, X } from "lucide-react";
 import Logo from "../assets/img/icons/Logo3.svg";
 import { paths } from "../Routes/path";
 import { useTranslation } from "react-i18next";
 import { useMyAppointments } from "../api/appointments";
 import { useAllPatients } from "../api/profile";
+import { useUnreadCount } from "../api/notifications";
 
 type MenuItem = {
   id: string;
@@ -57,14 +58,17 @@ export default function Sidebar() {
     { id: "patients", label: t('sidebar.patients'), icon: Users, path: paths.patient },
     { id: "appointments", label: t('sidebar.appointments'), icon: Calendar, path: paths.appointments },
     { id: "chats", label: t('sidebar.chats'), icon: MessageCircle, path: paths.chats },
+    { id: "notifications", label: t('sidebar.notifications', 'Уведомления'), icon: Bell, path: '/notifications' },
   ];
+
+  const { data: unreadCount = 0 } = useUnreadCount();
 
   const SidebarInner = ({ isDrawer = false }: { isDrawer?: boolean }) => (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header qismi */}
       <div className="sticky top-0 z-10 bg-white border-b lg:border-none p-5 sm:p-6 flex items-center justify-between">
         <Link to={paths.menu} className="flex items-center gap-3">
-          <img src={Logo} alt="OdontoHUB" className="w-[216px] h-[52px] w-auto" />
+          <img src={Logo} alt="OdontoHUB" className="h-[52px] w-auto" />
         </Link>
         {isDrawer && (
           <button
@@ -97,6 +101,11 @@ export default function Sidebar() {
             >
               <div className="relative shrink-0">
                 <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                {item.id === 'notifications' && unreadCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
               </div>
               <span className="text-[15px]">{item.label}</span>
             </Link>
@@ -105,7 +114,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Fokus kartasi */}
-      <div className="m-5 p-6 rounded-3xl bg-gradient-to-br from-gray-900 to-gray-800 text-white relative overflow-hidden shadow-xl">
+      <div className="m-5 p-6 rounded-3xl bg-linear-to-br from-gray-900 to-gray-800 text-white relative overflow-hidden shadow-xl">
         <div className="absolute inset-0 opacity-30 pointer-events-none">
         </div>
         <div className="relative z-10 text-center">
@@ -127,7 +136,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:w-[280px] lg:flex-shrink-0 lg:border-r lg:border-gray-100 lg:h-screen lg:sticky lg:top-0 bg-white z-10">
+      <aside className="hidden lg:flex lg:w-[280px] lg:shrink-0 lg:border-r lg:border-gray-100 lg:h-screen lg:sticky lg:top-0 bg-white z-10">
         <SidebarInner />
       </aside>
 

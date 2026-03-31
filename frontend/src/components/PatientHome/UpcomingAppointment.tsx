@@ -20,13 +20,33 @@ const UpcomingAppointment = () => {
 
     if (!appointments || appointments.length === 0) return null;
 
-    // Only show upcoming (pending/confirmed) appointments — if none, show nothing
-    const upcoming = appointments.find(a => a.status === 'pending' || a.status === 'confirmed');
+    // Filter and sort to find the NEAREST upcoming appointment
+    const sorted = [...appointments]
+        .filter(a =>
+            (a.status === 'pending' || a.status === 'confirmed' || a.status === 'moved') &&
+            new Date(a.start_time).getTime() > new Date().getTime()
+        )
+        .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
+
+    const upcoming = sorted[0];
     if (!upcoming) return null;
 
     const startTime = new Date(upcoming.start_time);
-    const timeStr = `${startTime.getHours().toString().padStart(2,'0')}:${startTime.getMinutes().toString().padStart(2,'0')}`;
-    const dateStr = startTime.toLocaleDateString('ru-RU');
+    const timeStr = `${startTime.getHours().toString().padStart(2, '0')}:${startTime.getMinutes().toString().padStart(2, '0')}`;
+    const dateStr = startTime.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+
+    const getRemainingTime = (target: Date) => {
+        const diff = target.getTime() - new Date().getTime();
+        const mins = Math.floor(diff / (1000 * 60));
+        const hours = Math.floor(mins / 60);
+        const days = Math.floor(hours / 24);
+
+        if (days > 0) return `${days}д ${hours % 24}ч`;
+        if (hours > 0) return `${hours}ч ${mins % 60}м`;
+        return `${mins}м`;
+    };
+
+    const remainingTimeStr = getRemainingTime(startTime);
 
     return (
         <div className="space-y-4">
@@ -72,12 +92,14 @@ const UpcomingAppointment = () => {
                 <div className="bg-white/15 backdrop-blur-xl rounded-2xl lg:rounded-3xl py-4 px-6 lg:px-10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs lg:text-lg font-black border border-white/10 relative z-10">
                     <div className="flex items-center gap-3">
                         <Calendar size={16} className="lg:size-6" />
-                        <span>{dateStr}</span>
+                        <span>{dateStr}, {timeStr}</span>
                     </div>
                     <div className="w-px h-6 bg-white/20 hidden sm:block"></div>
-                    <div className="flex items-center gap-3">
-                        <span className="opacity-80">{t("patient.home.until_appointment")}</span>
-                        <span className="font-mono text-sm lg:text-xl tracking-wider">{timeStr}</span>
+                    <div className="flex items-center gap-3 text-blue-50">
+                        <span className="opacity-80">До приёма:</span>
+                        <span className="font-mono text-sm lg:text-xl tracking-wider bg-white/20 px-4 py-1.5 rounded-xl">
+                            {remainingTimeStr}
+                        </span>
                     </div>
                 </div>
 
