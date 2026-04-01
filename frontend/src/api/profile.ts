@@ -34,6 +34,7 @@ export interface DentistProfile {
     latitude?: number | null;
     longitude?: number | null;
     works_photos?: string;
+    diploma_photo_url?: string;
 }
 
 export const usePatientProfile = () => {
@@ -183,6 +184,26 @@ export const useUpdateDentistProfile = () => {
             works_photos: string;
         }>) => {
             const response = await api.put<DentistProfile>('/dentists/me', data);
+            return response.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['dentistProfile'] });
+        }
+    });
+};
+
+export const useUploadDiploma = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (file: File) => {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const response = await api.post('/dentists/me/diploma', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
             return response.data;
         },
         onSuccess: () => {

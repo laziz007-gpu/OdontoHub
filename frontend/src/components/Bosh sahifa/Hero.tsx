@@ -6,7 +6,7 @@ import { paths } from '../../Routes/path';
 import { useTranslation } from 'react-i18next';
 import type { RootState } from '../../store/store';
 import { getUnreadCount, getNotifications, markAsRead } from '../../api/notifications';
-import { useDentistStats } from '../../api/profile';
+import { useDentistStats, useDentistProfile } from '../../api/profile';
 import { useDentistReviews } from '../../api/reviews';
 import type { Notification as NotifType } from '../../api/notifications';
 
@@ -34,7 +34,8 @@ const Hero: React.FC<HeroProps> = ({ onSearch }) => {
 
   // Dynamic Data
   const { data: stats } = useDentistStats();
-  const dentistId = (user as any)?.dentist_profile?.id;
+  const { data: dentistProfile } = useDentistProfile();
+  const dentistId = dentistProfile?.id || (user as any)?.dentist_profile?.id || (user as any)?.dentist_id || (user as any)?.id;
   const { data: reviewsData, isLoading: reviewsLoading } = useDentistReviews(dentistId);
 
   const typeLabels: Record<string, string> = {

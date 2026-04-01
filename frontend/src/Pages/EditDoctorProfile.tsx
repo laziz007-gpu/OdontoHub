@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, MapPin, ChevronDown, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useDentistProfile, useUpdateDentistProfile } from '../api/profile';
+import { useDentistProfile, useUpdateDentistProfile, useUploadDiploma } from '../api/profile';
 import { toast } from '../components/Shared/Toast';
 import DentistImg from '../assets/img/photos/Dentist.png';
 import { MapContainer, TileLayer, CircleMarker, useMapEvents } from 'react-leaflet';
@@ -35,7 +35,9 @@ export default function EditDoctorProfile() {
   const navigate = useNavigate();
   const { data: dentist, refetch } = useDentistProfile();
   const updateProfile = useUpdateDentistProfile();
+  const uploadDiploma = useUploadDiploma();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const diplomaInputRef = useRef<HTMLInputElement>(null);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
   const [mapAddress, setMapAddress] = useState('');
   const [mapLoading, setMapLoading] = useState(false);
@@ -110,6 +112,22 @@ export default function EditDoctorProfile() {
     if (file) {
       const url = URL.createObjectURL(file);
       setAvatar(url);
+    }
+  };
+
+  const handleDiplomaChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Using a toast message
+    toast.success('Загрузка диплома...');
+    try {
+      await uploadDiploma.mutateAsync(file);
+      await refetch();
+      toast.success('Диплом успешно загружен и отправлен на проверку!');
+    } catch (error) {
+      console.error('Failed to upload diploma:', error);
+      toast.error('Ошибка при загрузке диплома');
     }
   };
 
@@ -441,6 +459,48 @@ export default function EditDoctorProfile() {
               </button>
               <button className="text-blue-600 font-semibold text-lg hover:underline">
                 Добавить аватарку
+              </button>
+            </div>
+
+            {/* Diploma Upload */}
+            <div className="bg-white p-6 rounded-3xl border-2 border-blue-200">
+              <h3 className="text-xl font-bold mb-4">Ваш Диплом</h3>
+              {dentist?.diploma_photo_url ? (
+                <div className="mb-4">
+                  <div className="w-full h-48 bg-gray-100 rounded-xl overflow-hidden mb-3 border border-gray-200">
+                    <img 
+                      src={`http://localhost:8000${dentist.diploma_photo_url}`} 
+                      alt="Diploma" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm font-semibold text-gray-500">Статус верификации:</span>
+                    {dentist.verification_status === 'approved' && <span className="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-sm font-bold">Одобрено</span>}
+                    {dentist.verification_status === 'pending' && <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-lg text-sm font-bold">Ожидает проверки</span>}
+                    {dentist.verification_status === 'rejected' && <span className="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-sm font-bold">Отклонено</span>}
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200 text-center text-gray-500 text-sm">
+                  Диплом еще не загружен
+                </div>
+              )}
+              
+              <input
+                type="file"
+                ref={diplomaInputRef}
+                onChange={handleDiplomaChange}
+                className="hidden"
+                accept="image/*,application/pdf"
+              />
+              <button
+                onClick={() => diplomaInputRef.current?.click()}
+                disabled={uploadDiploma.isPending}
+                className="w-full py-3 bg-blue-50 text-blue-600 font-bold rounded-xl hover:bg-blue-100 transition-colors disabled:opacity-50"
+              >
+                {uploadDiploma.isPending ? 'Загрузка...' : (dentist?.diploma_photo_url ? 'Загрузить новый диплом' : 'Добавить копию диплома')}
               </button>
             </div>
 

@@ -75,6 +75,12 @@ def create_patient(
         if existing_user:
             profile = db.query(PatientProfile).filter(PatientProfile.user_id == existing_user.id).first()
             if profile:
+                # Update source if it's currently None so the patient becomes visible to dentists
+                if not profile.source and data.source:
+                    profile.source = data.source
+                    db.commit()
+                    db.refresh(profile)
+
                 schema = PatientSchema.model_validate(profile)
                 schema.phone = existing_user.phone
                 schema.status = calculate_patient_status(profile.id, db)

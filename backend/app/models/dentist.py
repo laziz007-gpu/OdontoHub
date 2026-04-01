@@ -20,6 +20,7 @@ class DentistProfile(Base):
     full_name: Mapped[str]
     pinfl: Mapped[str | None] = mapped_column(String, nullable=True)
     diploma_number: Mapped[str | None] = mapped_column(String, nullable=True)
+    diploma_photo_url: Mapped[str | None] = mapped_column(String, nullable=True)
     verification_status: Mapped[VerificationStatus] = mapped_column(
         Enum(VerificationStatus, values_callable=lambda x: [e.value for e in x], create_type=False),
         default=VerificationStatus.PENDING

@@ -31,7 +31,7 @@ export interface Doctor {
     longitude?: number;
 }
 
-export type AppointmentStatus = 'upcoming' | 'past' | 'success' | 'cancelled' | 'rescheduled';
+export type AppointmentStatus = 'upcoming' | 'past' | 'success' | 'cancelled' | 'rescheduled' | 'pending';
 
 export interface Appointment {
     id: number;
@@ -42,7 +42,7 @@ export interface Appointment {
     time: string;
     image?: string;
     type: 'upcoming' | 'past';
-    status?: 'success' | 'cancelled' | 'rescheduled';
+    status?: 'success' | 'cancelled' | 'rescheduled' | 'pending';
     statusText?: string;
     rating?: number;
     commentTitle?: string;

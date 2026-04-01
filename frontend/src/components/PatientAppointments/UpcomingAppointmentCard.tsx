@@ -9,12 +9,18 @@ interface UpcomingAppointmentCardProps {
 
 const UpcomingAppointmentCard = ({ appointment }: UpcomingAppointmentCardProps) => {
     const navigate = useNavigate();
+    const isPending = appointment.status === 'pending';
 
     return (
         <div
             onClick={() => navigate(paths.patientAppointmentDetail.replace(":id", appointment.id.toString()))}
-            className="bg-blue-600 rounded-3xl sm:rounded-4xl lg:rounded-[2.5rem] p-3 sm:p-4 lg:p-6 flex gap-3 sm:gap-4 lg:gap-6 text-white shadow-xl shadow-blue-500/20 group hover:scale-[1.01] transition-transform duration-300 cursor-pointer"
+            className={`${isPending ? 'bg-slate-500 shadow-slate-500/20' : 'bg-blue-600 shadow-blue-500/20'} rounded-3xl sm:rounded-4xl lg:rounded-[2.5rem] p-3 sm:p-4 lg:p-6 flex gap-3 sm:gap-4 lg:gap-6 text-white shadow-xl group hover:scale-[1.01] transition-transform duration-300 cursor-pointer relative`}
         >
+            {isPending && (
+                <div className="absolute top-4 right-4 sm:top-6 sm:right-6 bg-amber-400 text-amber-900 text-[10px] sm:text-xs font-black px-3 py-1 rounded-full whitespace-nowrap shadow-sm z-10">
+                    {appointment.statusText || 'Kutilmoqda'}
+                </div>
+            )}
             {/* Doctor Card */}
             <div className="w-24 h-32 sm:w-32 sm:h-40 lg:w-48 lg:h-60 bg-white rounded-2xl sm:rounded-3xl lg:rounded-4xl p-1 lg:p-1.5 shrink-0 overflow-hidden shadow-inner">
                 <img

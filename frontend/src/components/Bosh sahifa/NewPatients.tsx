@@ -3,15 +3,26 @@ import { useMyAppointments, useUpdateAppointment } from '../../api/appointments'
 import Nuqta from '../../assets/img/icons/3dots.svg';
 import { ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from '../../components/Shared/Toast';
+import { useState } from 'react';
 
 const NewPatients = () => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const { data: appointments = [], isLoading } = useMyAppointments();
-    const { mutate: updateStatus } = useUpdateAppointment();
+    const { mutate: updateStatus, isPending: isUpdating } = useUpdateAppointment();
+    const [loadingId, setLoadingId] = useState<number | null>(null);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     // Filter for pending appointments (New Patients)
-    const newPatients = appointments.filter(a => a.status === 'pending');
+    const newPatients = appointments.filter(a => {
+        if (a.status !== 'pending') return false;
+        const appDate = new Date(a.start_time);
+        appDate.setHours(0, 0, 0, 0);
+        return appDate >= today;
+    });
 
     if (isLoading) {
         return (
@@ -28,7 +39,17 @@ const NewPatients = () => {
     if (newPatients.length === 0) return null;
 
     const handleAccept = (id: number) => {
-        updateStatus({ id, status: 'confirmed' });
+        setLoadingId(id);
+        updateStatus({ id, status: 'confirmed' }, {
+            onSuccess: () => {
+                toast.success(t('dashboard.new_patients.accepted_success', 'Приём успешно принят'));
+                setLoadingId(null);
+            },
+            onError: () => {
+                toast.error(t('common.errors.something_went_wrong', 'Что-то пошло не так'));
+                setLoadingId(null);
+            }
+        });
     };
 
     const formatDate = (dateStr: string) => {
@@ -110,9 +131,14 @@ const NewPatients = () => {
                         <div className="flex gap-2">
                             <button 
                                 onClick={() => handleAccept(patient.id)}
-                                className="flex-1 bg-[#00D775] hover:bg-[#00c56b] text-white py-3.5 rounded-2xl font-black text-sm shadow-xl shadow-green-500/20 transition-all active:scale-95"
+                                disabled={isUpdating && loadingId === patient.id}
+                                className={`flex-1 bg-[#00D775] hover:bg-[#00c56b] text-white py-3.5 rounded-2xl font-black text-sm shadow-xl shadow-green-500/20 transition-all active:scale-95 flex items-center justify-center gap-2 ${isUpdating && loadingId === patient.id ? 'opacity-70 cursor-not-allowed' : ''}`}
                             >
-                                {t('dashboard.new_patients.accept_btn', 'Принять')}
+                                {isUpdating && loadingId === patient.id ? (
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                    t('dashboard.new_patients.accept_btn', 'Принять')
+                                )}
                             </button>
 
                             <button className="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-2xl flex items-center justify-center transition-all active:scale-95 group">

@@ -54,7 +54,7 @@ const Patsant: FC = () => {
         name: p.full_name || 'No Name',
         age: calculateAge(p.birth_date),
         phone: p.phone || '',
-        diagnosis: p.source || 'Checkup',
+        diagnosis: p.source === 'doctor_added' ? 'Konsultatsiya' : (p.source || 'Checkup'),
         status: status,
         statusColor: statusColor,
         img: Rasm

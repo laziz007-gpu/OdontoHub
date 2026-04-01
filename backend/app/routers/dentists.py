@@ -65,6 +65,7 @@ def dentist_me(
         "full_name": profile.full_name,
         "pinfl": profile.pinfl,
         "diploma_number": profile.diploma_number,
+        "diploma_photo_url": profile.diploma_photo_url,
         "verification_status": profile.verification_status.value if hasattr(profile.verification_status, 'value') else profile.verification_status,
         "specialization": profile.specialization,
         "phone": user.phone,  # Берем из user, а не из profile
@@ -249,6 +250,7 @@ def get_pending_dentists(db: Session = Depends(get_db)):
             "address": dentist.address,
             "pinfl": dentist.pinfl,
             "diploma_number": dentist.diploma_number,
+            "diploma_photo_url": dentist.diploma_photo_url,
             "age": dentist.age,
             "experience_years": dentist.experience_years,
             "created_at": dentist.created_at.isoformat() if dentist.created_at else None,
@@ -313,4 +315,44 @@ def reject_dentist(dentist_id: int, db: Session = Depends(get_db)):
         "full_name": dentist.full_name,
         "verification_status": "rejected",
         "message": "Dentist rejected"
+    }
+
+from fastapi import UploadFile, File
+
+@router.post("/me/diploma")
+async def upload_diploma(
+    file: UploadFile = File(...),
+    user: User = Depends(require_role(UserRole.DENTIST)),
+    db: Session = Depends(get_db)
+):
+    """Upload dentist diploma"""
+    if not user.dentist_profile:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Profile not found")
+    
+    import uuid
+    import os
+    
+    upload_dir = "uploads/diplomas"
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir, exist_ok=True)
+    
+    file_extension = os.path.splitext(file.filename)[1] if file.filename else ".jpg"
+    file_name = f"{uuid.uuid4()}{file_extension}"
+    file_path = os.path.join(upload_dir, file_name)
+    
+    with open(file_path, "wb") as buffer:
+        content = await file.read()
+        buffer.write(content)
+    
+    from app.models.dentist import VerificationStatus
+    user.dentist_profile.diploma_photo_url = f"/{file_path}"
+    user.dentist_profile.verification_status = VerificationStatus.PENDING # Reset status to pending on new upload
+    db.commit()
+    db.refresh(user.dentist_profile)
+    
+    return {
+        "url": user.dentist_profile.diploma_photo_url,
+        "message": "Diploma uploaded successfully and is pending review",
+        "verification_status": "pending"
     }

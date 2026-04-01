@@ -44,8 +44,8 @@ const PatientAppointments = () => {
                     time: app.time,
                     image: DentistImg,
                     type: isPast ? 'past' : 'upcoming',
-                    status: isPast ? 'success' : 'success',
-                    statusText: isPast ? t("patient.appointments.success_status") : t("patient.appointments.success_status"),
+                    status: isPast ? 'success' : (app.status === 'pending' ? 'pending' : 'success'),
+                    statusText: isPast ? t("patient.appointments.success_status") : (app.status === 'pending' ? t("patient.appointments.pending_status", "Kutilmoqda") : t("patient.appointments.success_status")),
                     comment: app.comment,
                     commentTitle: t("patient.appointments.comment_label")
                 };
@@ -73,12 +73,14 @@ const PatientAppointments = () => {
                 type: isPast ? 'past' : 'upcoming',
                 status: app.status === 'completed' ? 'success' :
                     app.status === 'cancelled' ? 'cancelled' :
-                    app.status === 'moved' ? 'rescheduled' : 'success',
+                    app.status === 'moved' ? 'rescheduled' : 
+                    app.status === 'pending' ? 'pending' : 'success',
                 statusText: app.status === 'completed' ? t("patient.appointments.success_status") :
                     app.status === 'cancelled' ? (t("patient.appointments.cancelled_status") || 'Отменён') :
                     app.status === 'moved' ? (t("patient.appointments.rescheduled_status") || 'Перенесён') :
+                    app.status === 'pending' ? t("patient.appointments.pending_status", "Kutilmoqda") :
                     t("patient.appointments.success_status"),
-                comment: app.cancel_reason,
+                comment: app.cancel_reason || undefined,
                 commentTitle: t("patient.appointments.comment_label")
             };
         });
