@@ -85,6 +85,7 @@ def on_startup():
     from app.models.photo import PatientPhoto
     from app.models.message import Message
     from app.models.review import Review
+    from app.models.notification import Notification
 
     db_url = str(engine.url)
     if "postgresql" in db_url or "postgres" in db_url:
@@ -276,6 +277,7 @@ def init_database():
         from app.models.payment import Payment
         from app.models.photo import PatientPhoto
         from app.models.message import Message
+        from app.models.notification import Notification
 
         db_url = str(engine.url)
         if "postgresql" in db_url or "postgres" in db_url:

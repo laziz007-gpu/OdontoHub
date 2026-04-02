@@ -9,8 +9,19 @@ from app.schemas.service import ServiceCreate, ServiceUpdate, Service as Service
 router = APIRouter(prefix="/services", tags=["Services"])
 
 @router.get("/", response_model=List[ServiceSchema])
-def read_services(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    services = db.query(Service).offset(skip).limit(limit).all()
+def read_services(
+    skip: int = 0,
+    limit: int = 100,
+    search: str = None,
+    dentist_id: int = None,
+    db: Session = Depends(get_db)
+):
+    query = db.query(Service)
+    if search:
+        query = query.filter(Service.name.ilike(f"%{search}%"))
+    if dentist_id:
+        query = query.filter(Service.dentist_id == dentist_id)
+    services = query.offset(skip).limit(limit).all()
     return services
 
 @router.post("/", response_model=ServiceSchema)

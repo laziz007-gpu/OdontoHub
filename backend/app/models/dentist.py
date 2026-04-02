@@ -41,6 +41,7 @@ class DentistProfile(Base):
     latitude: Mapped[float | None] = mapped_column(Float, nullable=True)
     longitude: Mapped[float | None] = mapped_column(Float, nullable=True)
     works_photos: Mapped[str | None] = mapped_column(String, nullable=True)
+    gender: Mapped[str | None] = mapped_column(String, nullable=True)  # "male" | "female"
     rating: Mapped[float | None] = mapped_column(nullable=True)
     review_count: Mapped[int] = mapped_column(default=0)  # JSON string of photo URLs
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())

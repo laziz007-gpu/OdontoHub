@@ -84,12 +84,14 @@ class NotificationService:
     @staticmethod
     def notify_review_received(db: Session, user_id: int, review_data: Dict[str, Any]):
         """Уведомление о новом отзыве"""
+        patient_name = review_data.get('patient_name', 'Bemor')
+        rating = review_data.get('rating', 0)
         return NotificationService.create_notification(
             db=db,
             user_id=user_id,
             notification_type=NotificationType.REVIEW_RECEIVED,
-            title="Новый отзыв",
-            message=f"Вы получили новый отзыв с оценкой {review_data.get('rating')} звезд",
+            title="Yangi baho",
+            message=f"Sizni baholashdi! {patient_name} sizga {rating} ball berdi.",
             data=review_data
         )
     

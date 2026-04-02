@@ -9,15 +9,105 @@ from app.models.dentist import DentistProfile
 router = APIRouter(prefix="/dentists", tags=["Dentists"])
 
 @router.get("/")
-def get_all_dentists(db: Session = Depends(get_db)):
+def get_all_dentists(
+    db: Session = Depends(get_db),
+    search: str = None,
+    gender: str = None,
+    region: str = None,
+    district: str = None,
+    specialty: str = None,
+):
     """Get all approved dentists (public endpoint)"""
     from sqlalchemy.orm import joinedload
+    from sqlalchemy import or_, func
     
-    dentists = db.query(DentistProfile).options(
+    query = db.query(DentistProfile).options(
         joinedload(DentistProfile.user)
     ).filter(
         DentistProfile.verification_status == "approved"
-    ).all()
+    )
+
+    if search:
+        search_lower = f"%{search.lower()}%"
+        query = query.filter(
+            or_(
+                func.lower(DentistProfile.full_name).like(search_lower),
+                func.lower(DentistProfile.specialization).like(search_lower),
+                func.lower(DentistProfile.clinic).like(search_lower),
+                func.lower(DentistProfile.address).like(search_lower),
+            )
+        )
+
+    if specialty:
+        # Smart mapping for specialties
+        spec_map = {
+            'therapist': ['терапевт', 'terapevt', 'therapist'],
+            'surgeon': ['хирург', 'xirurg', 'surgeon'],
+            'orthopedist': ['ортопед', 'ortoped', 'orthopedist', 'ortopedik'],
+            'orthodontist': ['ортодонт', 'ortodont', 'orthodontist'],
+            'periodontist': ['пародонтолог', 'parodontolog', 'periodontist'],
+            'pediatric': ['детский', 'bolalar', 'pediatric'],
+            'hygienist': ['гигиенист', 'gigiyenist', 'hygienist'],
+            'aesthetic': ['эстетик', 'estetik', 'aesthetic']
+        }
+        
+        keywords = spec_map.get(specialty.lower(), [specialty.lower()])
+        conditions = [func.lower(DentistProfile.specialization).like(f"%{kw}%") for kw in keywords]
+        query = query.filter(or_(*conditions))
+
+    if gender:
+        query = query.filter(DentistProfile.gender == gender)
+
+    if region and region != 'all':
+        region_map = {
+            'toshkent_shahar': ['toshkent', 'ташкент', 'tashkent'],
+            'toshkent_vil': ['toshkent viloyat', 'ташкентская область'],
+            'samarqand': ['samarqand', 'самарканд'],
+            'fargona': ["farg'ona", 'фергана', 'fergana'],
+            'andijon': ['andijon', 'андижан'],
+            'namangan': ['namangan', 'наманган'],
+            'buxoro': ['buxoro', 'бухара', 'bukhara'],
+            'qashqadaryo': ['qashqadaryo', 'кашкадарья', 'qarshi', 'qарши'],
+            'surhondaryo': ['surxondaryo', 'сурхандарья', 'termiz'],
+            'jizzax': ['jizzax', 'джизак'],
+            'sirdaryo': ['sirdaryo', 'сырдарья', 'guliston'],
+            'xorazm': ['xorazm', 'хорезм', 'urganch'],
+            'qoraqalpog': ["qoraqalpog'iston", 'каракалпакстан', 'nukus'],
+            'navoiy': ['navoiy', 'навои'],
+        }
+        keywords = region_map.get(region, [region])
+        conditions = []
+        for kw in keywords:
+            conditions.append(func.lower(DentistProfile.address).like(f"%%{kw.lower()}%%"))
+            conditions.append(func.lower(DentistProfile.clinic).like(f"%%{kw.lower()}%%"))
+        query = query.filter(or_(*conditions))
+
+    if district and district != 'all':
+        district_map = {
+            'yunusabad': ['yunusobod', 'yunusabad', 'юнусабад'],
+            'chilonzor': ['chilonzor', 'чиланзар', 'chilandzar'],
+            'mirabad': ['mirobod', 'mirabad', 'мирабад'],
+            'sergeli': ['sergeli', 'сергели'],
+            'shayxontohur': ['shayxontohur', 'шайхантахур'],
+            'uchtepa': ['uchtepa', 'учтепа'],
+            'yakkasaroy': ['yakkasaroy', 'яккасарай'],
+            'olmazor': ['olmazor', 'олмазор'],
+            'bektemir': ['bektemir', 'бектемир'],
+            'yangihayot': ['yangihayot', 'янгихаёт'],
+            'angren': ['angren', 'ангрен'],
+            'bekabad': ['bekobod', 'bekabad', 'bekobod'],
+            'chirchiq': ['chirchiq', 'чирчик'],
+            'olmaliq': ['olmaliq', 'алмалык'],
+            'nurafshon': ['nurafshon', 'нурафшон'],
+        }
+        keywords = district_map.get(district, [district])
+        conditions = []
+        for kw in keywords:
+            conditions.append(func.lower(DentistProfile.address).like(f"%%{kw.lower()}%%"))
+            conditions.append(func.lower(DentistProfile.clinic).like(f"%%{kw.lower()}%%"))
+        query = query.filter(or_(*conditions))
+
+    dentists = query.all()
     
     result = []
     for dentist in dentists:
@@ -26,8 +116,8 @@ def get_all_dentists(db: Session = Depends(get_db)):
             "user_id": dentist.user_id,
             "full_name": dentist.full_name,
             "specialization": dentist.specialization,
-            "phone": dentist.user.phone if dentist.user else None,  # Исправлено
-            "email": dentist.user.email if dentist.user else None,  # Добавлено
+            "phone": dentist.user.phone if dentist.user else None,
+            "email": dentist.user.email if dentist.user else None,
             "address": dentist.address,
             "clinic": dentist.clinic,
             "schedule": dentist.schedule,
@@ -37,8 +127,11 @@ def get_all_dentists(db: Session = Depends(get_db)):
             "whatsapp": dentist.whatsapp,
             "latitude": dentist.latitude,
             "longitude": dentist.longitude,
-            "rating": dentist.rating,  # Добавлено
-            "review_count": dentist.review_count,  # Добавлено
+            "rating": dentist.rating,
+            "review_count": dentist.review_count,
+            "gender": dentist.gender,
+            "experience_years": getattr(dentist, 'experience_years', None),
+            "works_photos": getattr(dentist, 'works_photos', None),
             "verification_status": dentist.verification_status.value if hasattr(dentist.verification_status, 'value') else dentist.verification_status
         })
     
@@ -192,7 +285,8 @@ def update_dentist_profile(
     allowed_fields = [
         'full_name', 'specialization', 'clinic', 'address', 'age', 
         'experience_years', 'schedule', 'work_hours', 'telegram', 
-        'instagram', 'whatsapp', 'latitude', 'longitude', 'works_photos', 'pinfl', 'diploma_number'
+        'instagram', 'whatsapp', 'latitude', 'longitude', 'works_photos',
+        'pinfl', 'diploma_number', 'gender'
     ]
     
     # Обновляем только разрешенные поля

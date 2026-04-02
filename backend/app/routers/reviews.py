@@ -8,6 +8,7 @@ from app.models.review import Review
 from app.models.dentist import DentistProfile
 from pydantic import BaseModel
 from typing import Optional
+from app.services.notification_service import NotificationService
 
 router = APIRouter(prefix="/reviews", tags=["Reviews"])
 
@@ -47,6 +48,30 @@ def create_review(data: ReviewCreate, db: Session = Depends(get_db), current_use
         dentist.rating = round(float(avg), 1)
         dentist.review_count = db.query(func.count(Review.id)).filter(Review.dentist_id == data.dentist_id).scalar() or 0
         db.commit()
+
+    # Send notification to doctor
+    try:
+        # Re-fetch dentist after previous commit to avoid detached state issues
+        dentist = db.query(DentistProfile).filter(DentistProfile.id == data.dentist_id).first()
+        if dentist:
+            # Get patient name safely
+            patient_name = "Bemor"
+            if current_user.patient_profile:
+                patient_name = current_user.patient_profile.full_name
+            
+            NotificationService.notify_review_received(
+                db=db,
+                user_id=dentist.user_id,
+                review_data={
+                    "rating": data.rating,
+                    "patient_name": patient_name,
+                    "review_id": review.id
+                }
+            )
+    except Exception as e:
+        # Don't fail review creation if notification fails 
+        import logging
+        logging.error(f"Failed to send notification: {e}")
 
     return {"id": review.id, "rating": review.rating, "comment": review.comment}
 
