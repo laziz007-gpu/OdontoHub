@@ -33,6 +33,9 @@ export interface DentistProfile {
     whatsapp?: string;
     latitude?: number | null;
     longitude?: number | null;
+    experience_years?: number | null;
+    rating?: number | null;
+    review_count?: number | null;
     works_photos?: string;
     diploma_photo_url?: string;
 }
@@ -83,11 +86,17 @@ export const useAllPatients = () => {
     });
 }
 
-export const useAllDentists = () => {
+export const useAllDentists = (params?: {
+    search?: string;
+    gender?: string;
+    region?: string;
+    district?: string;
+    specialty?: string;
+}) => {
     return useQuery({
-        queryKey: ['dentists'],
+        queryKey: ['dentists', params],
         queryFn: async () => {
-            const response = await api.get<DentistProfile[]>('/dentists/');
+            const response = await api.get<DentistProfile[]>('/dentists/', { params });
             return response.data;
         },
         retry: false,

@@ -1,81 +1,75 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { X } from 'lucide-react';
+import { X, Navigation } from 'lucide-react';
 import { paths } from '../../Routes/path';
 import DoctorCard from './DoctorCard';
 import DoctorFilters from './DoctorFilters';
 import { useAllDentists } from '../../api/profile';
-import type { Doctor } from '../../types/patient';
 import DoctorImg from "../../assets/img/photos/Dentist.png";
 
 const DoctorsList: React.FC = () => {
     const { t } = useTranslation();
     const routeLocation = useLocation();
     const navigate = useNavigate();
-    
-    // Fetch dentists from API
-    const { data: dentists, isLoading } = useAllDentists();
-    
-    // Initialize from navigation state if available
+
+    // Filters
     const [searchTerm, setSearchTerm] = useState("");
     const [activeSpecialtyId, setActiveSpecialtyId] = useState(() => {
         const state = routeLocation.state as { specialtyId?: string };
         return state?.specialtyId || "";
     });
 
+    const [region, setRegion] = useState("all");
+    const [district, setDistrict] = useState("all");
+    const [specialty, setSpecialty] = useState("");
+    const [rating, setRating] = useState("");
+    const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+    const [sortByDistance, setSortByDistance] = useState(false);
+    
+    const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+    const [mapQuery, setMapQuery] = useState<string>('');
+    const [mapTitle, setMapTitle] = useState<string>('Lokatsiya');
+
     useEffect(() => {
         const state = routeLocation.state as { specialtyId?: string };
         if (state?.specialtyId) {
             setActiveSpecialtyId(state.specialtyId);
-            setSearchTerm(""); // Keep search bar empty per user request
+            setSearchTerm("");
             window.history.replaceState({}, document.title);
         }
     }, [routeLocation.state]);
 
-    const [locationFilter, setLocationFilter] = useState("tashkent");
-    const [district, setDistrict] = useState("all");
-    const [rating, setRating] = useState("");
-    const [isMapModalOpen, setIsMapModalOpen] = useState(false);
-    const [mapQuery, setMapQuery] = useState<string>('');
-    const [mapTitle, setMapTitle] = useState<string>('Локация');
+    const { data: dentists, isLoading } = useAllDentists({
+        search: searchTerm || undefined,
+        region: region !== 'all' ? region : undefined,
+        district: district !== 'all' ? district : undefined,
+        specialty: specialty || activeSpecialtyId || undefined,
+    });
 
-    // Cross-language specialty mapping to ensure filtering works regardless of UI language
-    const specializationMap: Record<string, string[]> = {
-        therapist: ['терапевт', 'terapevt', 'therapist'],
-        surgeon: ['хирург', 'xirurg', 'surgeon'],
-        orthopedist: ['ортопед', 'ortoped', 'orthopedist', 'ortopedik'],
-        orthodontist: ['ортодонт', 'ortodont', 'orthodontist'],
-        periodontist: ['пародонтолог', 'parodontolog', 'periodontist'],
-        pediatric: ['детский', 'bolalar', 'pediatric'],
-        hygienist: ['гигиенист', 'gigiyenist', 'hygienist'],
-        aesthetic: ['эстетик', 'estetik', 'aesthetic']
+    // Haversine formula
+    const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
     };
 
-    const isMatch = (docSpec: string | null | undefined, search: string, enforcedId?: string) => {
-        if (!docSpec) return false;
-        const dl = docSpec.toLowerCase();
-        
-        // 1. If we have an enforced ID (from direct click), check its aliases
-        if (enforcedId && specializationMap[enforcedId]) {
-            if (specializationMap[enforcedId].some(a => dl.includes(a))) return true;
+    useEffect(() => {
+        if (sortByDistance && !userLocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+                (err) => {
+                    console.error("Geolocation error:", err);
+                    setSortByDistance(false);
+                }
+            );
         }
-
-        if (!search) return false;
-        const sl = search.toLowerCase();
-        
-        // 2. Direct string match
-        if (dl.includes(sl) || sl.includes(dl)) return true;
-
-        // 3. Cross-language categorical match
-        for (const [key, aliases] of Object.entries(specializationMap)) {
-            const isDocInCat = aliases.some(a => dl.includes(a));
-            const isSearchInCat = aliases.some(a => sl.includes(a));
-            if (isDocInCat && isSearchInCat) return true;
-        }
-        
-        return false;
-    };
+    }, [sortByDistance, userLocation]);
 
 
     const parseCoordinates = (value?: string | null): { lat: number; lng: number } | null => {
@@ -84,16 +78,13 @@ const DoctorsList: React.FC = () => {
         if (parts.length !== 2) return null;
         const lat = Number(parts[0].trim());
         const lng = Number(parts[1].trim());
-        if (Number.isNaN(lat) || Number.isNaN(lng)) return null;
-        return { lat, lng };
+        return (!Number.isNaN(lat) && !Number.isNaN(lng)) ? { lat, lng } : null;
     };
 
-    const getDoctorCoords = (doctor: Doctor): { lat: number; lng: number } | null => {
+    const getDoctorCoords = (doctor: any): { lat: number; lng: number } | null => {
         const lat = Number(doctor.latitude);
         const lng = Number(doctor.longitude);
-        if (Number.isFinite(lat) && Number.isFinite(lng)) {
-            return { lat, lng };
-        }
+        if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng };
         return parseCoordinates(doctor.address);
     };
 
@@ -103,136 +94,93 @@ const DoctorsList: React.FC = () => {
         setIsMapModalOpen(true);
     };
 
-    // Convert backend dentist data to Doctor type
-    const doctors: Doctor[] = (dentists || [])
-        .filter(d => {
-            // 1. Strict Category Filter (if selected via grid)
-            if (activeSpecialtyId) {
-                if (!isMatch(d.specialization, "", activeSpecialtyId)) return false;
-            }
-
-            // 2. Search Term Filter (manual user input)
-            if (searchTerm) {
-                const searchLower = searchTerm.toLowerCase();
-                const nameMatch = d.full_name?.toLowerCase().includes(searchLower);
-                // In manual search, we check both name and specialization strings
-                const specMatch = isMatch(d.specialization, searchTerm);
-                if (!nameMatch && !specMatch) return false;
-            }
-
-            // 3. District Filter
-            if (district && district !== 'all') {
-                const districtLower = district.toLowerCase();
-                const addressStr = ((d.address || '') + ' ' + (d.clinic || '')).toLowerCase();
-                if (districtLower === 'yunusabad' && !addressStr.includes('юнусабад') && !addressStr.includes('yunusobod')) return false;
-                if (districtLower === 'chilonzor' && !addressStr.includes('чиланзар') && !addressStr.includes('chilonzor')) return false;
-                if (districtLower === 'mirabad' && !addressStr.includes('мирабад') && !addressStr.includes('mirobod')) return false;
-                if (districtLower === 'sergeli' && !addressStr.includes('сергели') && !addressStr.includes('sergeli')) return false;
-            }
-            return true;
-        })
+    // Processed doctors
+    const doctorsList = (dentists || [])
         .map(d => {
-            const coordsFromAddress = parseCoordinates(d.address);
-            const numericLat = typeof d.latitude === 'number' ? d.latitude : Number(d.latitude);
-            const numericLng = typeof d.longitude === 'number' ? d.longitude : Number(d.longitude);
-            const lat = Number.isFinite(numericLat) ? numericLat : coordsFromAddress?.lat;
-            const lng = Number.isFinite(numericLng) ? numericLng : coordsFromAddress?.lng;
-            const looksLikeCoords = !!coordsFromAddress;
-            const docRating = (d as any).rating != null ? (d as any).rating : 0;
-
+            const coords = getDoctorCoords(d);
+            const dist = (userLocation && coords) ? getDistance(userLocation.lat, userLocation.lng, coords.lat, coords.lng) : null;
+            
             return {
-                id: d.id,
+                ...d,
                 name: d.full_name,
-                direction: d.specialization || "Стоматолог",
-                experience: (d as any).experience_years ? `${(d as any).experience_years} yil tajriba` : "5 yil tajriba",
-                rating: docRating,
-                review_count: (d as any).review_count || 0,
+                direction: d.specialization || "Stomatolog",
+                experience: d.experience_years ? `${d.experience_years} yil tajriba` : "5 yil tajriba",
+                rating: d.rating || 0,
+                review_count: d.review_count || 0,
                 image: DoctorImg,
-                specialty: d.specialization || "Umumiy stomatologiya",
-                address: looksLikeCoords ? (d.clinic || "Тошкент") : (d.address || d.clinic || "Манзил кўрсатилмаган"),
-                phone: d.phone,
-                clinic: d.clinic,
-                work_hours: d.work_hours,
-                works_photos: d.works_photos,
-                telegram: d.telegram,
-                instagram: d.instagram,
-                whatsapp: d.whatsapp,
-                latitude: lat ?? undefined,
-                longitude: lng ?? undefined,
+                distance: dist,
+                latitude: d.latitude ?? undefined,
+                longitude: d.longitude ?? undefined
             };
         })
         .sort((a, b) => {
-            if (rating === 'high') return Number(b.rating) - Number(a.rating);
-            if (rating === 'low') return Number(a.rating) - Number(b.rating);
-            return 0; // default order
+            if (sortByDistance && a.distance !== null && b.distance !== null) return a.distance - b.distance;
+            if (rating === 'high') return b.rating - a.rating;
+            if (rating === 'low') return a.rating - b.rating;
+            return 0;
         });
-
-    const handleBook = (doctor: Doctor) => {
-        // Always navigate to booking page to select date/time
-        navigate(paths.booking, { state: { doctor } });
-    };
-
-    const handleOpenDoctorMap = (doctor: Doctor) => {
-        const coords = getDoctorCoords(doctor);
-        if (coords) {
-            openMapModal(`${coords.lat},${coords.lng}`, doctor.name || 'Локация врача');
-            return;
-        }
-
-        const rawAddress = doctor.address || doctor.clinic || 'Тошкент';
-        openMapModal(rawAddress, doctor.name || 'Локация врача');
-    };
 
     return (
         <div className="flex flex-col">
             <DoctorFilters
                 searchTerm={searchTerm}
-                onSearchChange={(val) => {
-                    setSearchTerm(val);
-                    if (val) setActiveSpecialtyId(""); // Clear category if user starts typing manually
-                }}
-                location={locationFilter}
-                onLocationChange={setLocationFilter}
+                onSearchChange={(val) => { setSearchTerm(val); if (val) setActiveSpecialtyId(""); }}
+                region={region}
+                onRegionChange={setRegion}
                 district={district}
                 onDistrictChange={setDistrict}
+                specialty={specialty}
+                onSpecialtyChange={setSpecialty}
                 rating={rating}
                 onRatingChange={setRating}
             />
 
-            {activeSpecialtyId && (
-                <div className="flex items-center gap-2 mb-4 px-1">
-                    <div className="bg-blue-50 text-[#4D71F8] px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 border border-blue-100">
-                        <span>{t(`patient.specialties.items.${activeSpecialtyId}.name`)}</span>
-                        <button 
-                            onClick={() => setActiveSpecialtyId("")}
-                            className="hover:bg-blue-100 rounded-full p-0.5 transition-colors"
-                        >
-                            <X size={14} />
-                        </button>
-                    </div>
+            <div className="flex items-center justify-between mb-4 px-1">
+                <div className="flex items-center gap-2">
+                    {activeSpecialtyId && (
+                        <div className="bg-blue-50 text-[#4D71F8] px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 border border-blue-100">
+                            <span>{t(`patient.specialties.items.${activeSpecialtyId}.name`)}</span>
+                            <button onClick={() => setActiveSpecialtyId("")} className="hover:bg-blue-100 rounded-full p-0.5"><X size={14} /></button>
+                        </div>
+                    )}
                     <span className="text-gray-400 text-xs font-semibold">
-                        {t('patient.specialties.found_count', { count: doctors.length })}
+                        {doctorsList.length} ta shifokor topildi
                     </span>
                 </div>
-            )}
+                
+                <button
+                    onClick={() => setSortByDistance(!sortByDistance)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all ${
+                        sortByDistance ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                >
+                    <Navigation size={14} />
+                    {sortByDistance ? "Yaqinroq" : "Masofa bo'yicha"}
+                </button>
+            </div>
 
             {isLoading ? (
-                <div className="flex items-center justify-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
-                </div>
+                <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" /></div>
             ) : (
                 <div className="space-y-3 pb-32">
-                    {doctors.map((doctor, index) => (
+                    {doctorsList.map((doctor, index) => (
                         <DoctorCard
                             key={index}
-                            doctor={doctor}
-                            onBook={handleBook}
-                            onOpenMap={handleOpenDoctorMap}
+                            doctor={{
+                                ...doctor,
+                                address: doctor.distance !== null ? `${doctor.distance.toFixed(1)} km masofada` : (doctor.address || doctor.clinic || "Manzil ko'rsatilmagan")
+                            }}
+                            onBook={(doc) => navigate(paths.booking, { state: { doctor: doc } })}
+                            onOpenMap={(doc) => {
+                                const coords = getDoctorCoords(doc);
+                                coords ? openMapModal(`${coords.lat},${coords.lng}`, doc.name) : openMapModal(doc.address || 'Toshkent', doc.name);
+                            }}
                         />
                     ))}
-                    {doctors.length === 0 && (
-                        <div className="text-center py-12">
-                            <p className="text-gray-500 text-lg">{t('patients_list.table.not_found')}</p>
+                    {doctorsList.length === 0 && (
+                        <div className="text-center py-16">
+                            <p className="text-4xl mb-3">🔍</p>
+                            <p className="text-gray-500 text-base font-bold">Shifokor topilmadi</p>
                         </div>
                     )}
                 </div>
@@ -241,50 +189,33 @@ const DoctorsList: React.FC = () => {
             <div className="fixed bottom-24 sm:bottom-6 left-0 right-0 flex justify-center z-10 px-4 pointer-events-none">
                 <button
                     onClick={() => {
-                        const points = doctors
-                            .map((d) => getDoctorCoords(d))
-                            .filter((p): p is { lat: number; lng: number } => !!p);
-
-                        if (points.length === 0) {
-                            openMapModal(`стоматология ${district} ${location}`, 'Стоматологи на карте');
-                            return;
-                        }
-
-                        const first = points[0];
-                        openMapModal(`${first.lat},${first.lng}`, 'Стоматолог на карте');
+                        const first = doctorsList.find(d => getDoctorCoords(d));
+                        if (!first) return openMapModal("стоматология тошкент", "Xaritada stomatologlar");
+                        const coords = getDoctorCoords(first);
+                        openMapModal(`${coords?.lat},${coords?.lng}`, "Xaritada stomatologlar");
                     }}
-                    className="pointer-events-auto bg-[#11D76A] text-white font-bold text-sm sm:text-base py-2.5 sm:py-3 px-8 sm:px-10 rounded-full shadow-[0_4px_20px_rgba(17,215,106,0.3)] hover:bg-[#0fc460] transition-all active:scale-95"
+                    className="pointer-events-auto bg-[#11D76A] text-white font-bold text-sm py-3 px-10 rounded-full shadow-lg hover:bg-[#0fc460] active:scale-95 transition-all"
                 >
-                    {t('doctor_profile.all')} {t('doctor_profile.contacts')} {/** Map indicator */}
+                    🗺️ Xaritada ko'rish
                 </button>
             </div>
 
             {isMapModalOpen && (
-                <div className="fixed inset-0 z-100 bg-black/55 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-100 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
                     <div className="w-full max-w-4xl bg-white rounded-2xl overflow-hidden shadow-2xl">
                         <div className="flex items-center justify-between px-4 py-3 border-b">
-                            <h3 className="font-bold text-[#1D1D2B]">{mapTitle}</h3>
-                            <button
-                                onClick={() => setIsMapModalOpen(false)}
-                                className="w-9 h-9 rounded-full hover:bg-gray-100 flex items-center justify-center"
-                            >
-                                <X size={18} />
-                            </button>
+                            <h3 className="font-bold text-[#1D1D2B] font-serif">{mapTitle}</h3>
+                            <button onClick={() => setIsMapModalOpen(false)} className="w-9 h-9 rounded-full hover:bg-gray-100 flex items-center justify-center"><X size={18} /></button>
                         </div>
-                        <div className="h-[65vh] min-h-[360px]">
+                        <div className="h-[60vh] min-h-[300px]">
                             <iframe
                                 src={`https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&z=15&output=embed`}
-                                className="w-full h-full"
-                                style={{ border: 0 }}
-                                loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                                title="doctor-location-map"
+                                className="w-full h-full" style={{ border: 0 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="map"
                             />
                         </div>
                     </div>
                 </div>
             )}
-
         </div>
     );
 };

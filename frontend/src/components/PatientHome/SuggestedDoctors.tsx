@@ -1,15 +1,67 @@
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useAllDentists } from "../../api/profile";
 import { useMyAppointments } from "../../api/appointments";
 import DoctorImg from "../../assets/img/photos/Dentist.png";
 import { Link, useNavigate } from "react-router-dom";
 import { paths } from "../../Routes/path";
+import { MapPin } from "lucide-react";
 
 const SuggestedDoctors = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { data: dentists, isLoading: isLoadingDentists } = useAllDentists();
     const { data: appointments, isLoading: isLoadingAppointments } = useMyAppointments();
+    const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+
+    useEffect(() => {
+        const storedLocation = localStorage.getItem('user_location');
+        if (storedLocation) {
+            setUserLocation(JSON.parse(storedLocation));
+        } else {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                    setUserLocation(loc);
+                    localStorage.setItem('user_location', JSON.stringify(loc));
+                },
+                (err) => console.log("Geolocation error:", err)
+            );
+        }
+    }, []);
+
+    const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    };
+
+    const suggestedDoctors = useMemo(() => {
+        if (!dentists) return [];
+        let list = [...dentists];
+        
+        if (userLocation) {
+            list = list.map(d => {
+                const lat = Number(d.latitude);
+                const lng = Number(d.longitude);
+                const dist = (Number.isFinite(lat) && Number.isFinite(lng)) 
+                    ? getDistance(userLocation.lat, userLocation.lng, lat, lng) 
+                    : null;
+                return { ...d, distance: dist };
+            }).sort((a, b) => {
+                if (a.distance === null) return 1;
+                if (b.distance === null) return -1;
+                return a.distance - b.distance;
+            });
+        }
+        
+        return list.slice(0, 5);
+    }, [dentists, userLocation]);
 
     const isLoading = isLoadingDentists || isLoadingAppointments;
     const hasUpcomingAppointments = appointments && appointments.length > 0;
@@ -32,43 +84,54 @@ const SuggestedDoctors = () => {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between px-2">
-                <h2 className="text-2xl font-black text-gray-900 leading-tight font-serif tracking-tight">
-                    {t("patient.home.suggested_doctors", "Рекомендуемые врачи")}
-                </h2>
+                <div className="flex items-center gap-2">
+                    <h2 className="text-2xl font-black text-gray-900 leading-tight font-serif tracking-tight">
+                        {t("patient.home.suggested_doctors", "Sizga yaqin shifokorlar")}
+                    </h2>
+                    {userLocation && <MapPin size={18} className="text-blue-500 animate-bounce" />}
+                </div>
                 <Link to={paths.doctors} className="text-blue-600 font-bold hover:underline">
-                    {t("patient.home.see_all", "Все")}
+                    {t("patient.home.see_all", "Barchasi")}
                 </Link>
             </div>
 
             <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar -mx-2 px-2">
-                {dentists.map((doctor) => (
+                {suggestedDoctors.map((doctor: any) => (
                     <div
                         key={doctor.id}
                         onClick={() => navigate(paths.booking, {
                             state: {
                                 doctor: {
+                                    ...doctor,
                                     name: doctor.full_name,
-                                    direction: doctor.specialization || "Стоматолог",
+                                    direction: doctor.specialization || "Stomatolog",
                                     image: DoctorImg,
-                                    specialty: doctor.specialization || "Общая стоматология",
-                                    experience: "3 года",
-                                    rating: "4.7"
+                                    specialty: doctor.specialization || "Umumiy stomatologiya",
+                                    experience: `${doctor.experience_years || 5} yil tajriba`,
+                                    rating: doctor.rating || "5.0"
                                 }
                             }
                         })}
-                        className="min-w-[240px] bg-linear-to-br from-blue-500 to-blue-600 rounded-[32px] p-6 text-white shadow-lg cursor-pointer transition-transform hover:scale-[1.02] active:scale-95"
+                        className="min-w-[260px] bg-white border border-gray-100 rounded-[32px] p-6 text-gray-900 shadow-xl shadow-blue-500/5 cursor-pointer transition-all hover:scale-[1.02] hover:shadow-blue-500/10 active:scale-95 group"
                     >
-                        <div className="bg-white rounded-[24px] w-24 h-24 mb-4 overflow-hidden flex items-center justify-center">
-                            <img src={DoctorImg} alt={doctor.full_name} className="w-full h-full object-cover" />
-                        </div>
-                        <h3 className="text-xl font-bold mb-1 truncate">{doctor.full_name}</h3>
-                        <p className="text-white/80 text-sm mb-4">{doctor.specialization || "Стоматолог"}</p>
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-1 bg-yellow-400 rounded-full px-2 py-0.5 text-xs font-bold text-gray-900">
-                                <span>✨</span>
-                                <span>4.7</span>
+                        <div className="relative mb-4">
+                            <div className="bg-blue-50 rounded-[24px] w-24 h-24 overflow-hidden flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                                <img src={DoctorImg} alt={doctor.full_name} className="w-full h-full object-cover" />
                             </div>
-                            <span className="text-sm font-semibold">Записаться →</span>
+                            {doctor.distance !== null && (
+                                <div className="absolute -right-2 -bottom-2 bg-[#4D71F8] text-white px-3 py-1 rounded-full text-[10px] font-black shadow-lg">
+                                    {doctor.distance.toFixed(1)} km
+                                </div>
+                            )}
+                        </div>
+                        <h3 className="text-xl font-black mb-1 truncate text-blue-900">{doctor.full_name}</h3>
+                        <p className="text-gray-500 text-sm mb-4 font-semibold">{doctor.specialization || "Stomatolog"}</p>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1 bg-yellow-50 rounded-full px-2 py-1 text-xs font-black text-yellow-600">
+                                <span>⭐</span>
+                                <span>{doctor.rating || "5.0"}</span>
+                            </div>
+                            <span className="text-sm font-black text-blue-600 group-hover:translate-x-1 transition-transform">Band qilish →</span>
                         </div>
                     </div>
                 ))}

@@ -39,6 +39,7 @@ import DoctorCasesPage from "../Pages/DoctorCasesPage";
 import VideoCallPage from "../Pages/VideoCallPage";
 import ChatProfilePage from "../Pages/ChatProfilePage";
 import TreatmentsListPage from "../Pages/TreatmentsListPage";
+import SearchResultsPage from "../Pages/SearchResultsPage";
 
 export const router = createBrowserRouter([
     // ─── Public routes (unauthenticated) ───
@@ -218,6 +219,10 @@ export const router = createBrowserRouter([
                     {
                         path: paths.treatments,
                         element: <TreatmentsListPage />
+                    },
+                    {
+                        path: paths.searchResults,
+                        element: <SearchResultsPage />
                     }
                 ]
             }

@@ -33,5 +33,6 @@ export const paths = {
     treatments: '/treatments',
     doctorServices: '/doctor-services',
     doctorCases: '/doctor-cases',
-    videoCall: '/video-call'
+    videoCall: '/video-call',
+    searchResults: '/search'
 } as const;
