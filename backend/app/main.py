@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from app.core.database import engine, Base, get_db
 from app.routers import auth, patients, dentists, services, appointments
@@ -12,6 +13,10 @@ import os
 # from app.routers import notifications
 
 app = FastAPI(title="OdontoHub API", version="1.0.0")
+
+# Serve uploaded files (diplomas, photos, etc.)
+os.makedirs("uploads", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # CORS configuration - MUST be added before routes
 app.add_middleware(
@@ -94,6 +99,7 @@ def on_startup():
             ("userrole", ["patient", "dentist"]),
             ("verificationstatus", ["pending", "approved", "rejected"]),
             ("appointment_status", ["pending", "confirmed", "moved", "cancelled", "completed"]),
+            ("notificationtype", ["appointment_confirmed", "appointment_cancelled", "appointment_reminder", "payment_received", "review_received", "profile_approved", "profile_rejected", "system_message", "new_message"]),
         ]
         with engine.begin() as conn:
             for type_name, values in enum_types:
@@ -104,6 +110,15 @@ def on_startup():
                     f"EXCEPTION WHEN duplicate_object THEN NULL; "
                     f"END $$;"
                 ))
+
+        # Add new_message to notificationtype enum if missing
+        with engine.begin() as conn:
+            conn.execute(text(
+                "DO $$ BEGIN "
+                "  ALTER TYPE notificationtype ADD VALUE IF NOT EXISTS 'new_message'; "
+                "EXCEPTION WHEN others THEN NULL; "
+                "END $$;"
+            ))
 
     # Migrate dentist profile fields if missing (before creating tables)
     try:

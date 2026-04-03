@@ -15,6 +15,7 @@ from app.schemas.chat import WSMessage
 from app.core.security import get_current_user
 from app.core.config import settings
 from app.services.chat_manager import manager
+from app.services.notification_service import NotificationService
 
 router = APIRouter(
     prefix="/chat",
@@ -128,6 +129,17 @@ async def websocket_chat(
             await manager.send_personal_message(delivery_payload, user.id)
             if manager.is_online(recipient_user_id):
                 await manager.send_personal_message(delivery_payload, recipient_user_id)
+            else:
+                try:
+                    NotificationService.notify_new_message(
+                        db=db,
+                        recipient_user_id=recipient_user_id,
+                        sender_name=user.dentist_profile.full_name if user.dentist_profile else (user.patient_profile.full_name if user.patient_profile else "Foydalanuvchi"),
+                        text=ws_msg.text or "",
+                        appointment_id=ws_msg.appointment_id
+                    )
+                except Exception:
+                    pass
 
     except WebSocketDisconnect:
         pass
@@ -169,6 +181,17 @@ def send_message(data: MessageCreate, db: Session = Depends(get_db), current_use
     }
     if manager.is_online(recipient_user_id):
         manager.send_personal_message_sync(delivery_payload, recipient_user_id)
+    else:
+        try:
+            NotificationService.notify_new_message(
+                db=db,
+                recipient_user_id=recipient_user_id,
+                sender_name=current_user.dentist_profile.full_name if current_user.dentist_profile else (current_user.patient_profile.full_name if current_user.patient_profile else "Foydalanuvchi"),
+                text=data.text or "",
+                appointment_id=data.appointment_id
+            )
+        except Exception:
+            pass
 
     return message
 

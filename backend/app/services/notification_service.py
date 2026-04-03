@@ -123,6 +123,19 @@ class NotificationService:
         )
     
     @staticmethod
+    def notify_new_message(db: Session, recipient_user_id: int, sender_name: str, text: str, appointment_id: int):
+        """Yangi chat xabari keldi bildirishnomasi"""
+        preview = (text[:50] + "...") if text and len(text) > 50 else (text or "📎 Rasm")
+        return NotificationService.create_notification(
+            db=db,
+            user_id=recipient_user_id,
+            notification_type=NotificationType.NEW_MESSAGE,
+            title=f"💬 {sender_name}",
+            message=preview,
+            data={"appointment_id": appointment_id}
+        )
+
+    @staticmethod
     def notify_system_message(db: Session, user_id: int, title: str, message: str, data: Optional[Dict[str, Any]] = None):
         """Системное уведомление"""
         return NotificationService.create_notification(

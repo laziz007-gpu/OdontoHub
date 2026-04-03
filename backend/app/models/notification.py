@@ -13,6 +13,7 @@ class NotificationType(enum.Enum):
     PROFILE_APPROVED = "profile_approved"
     PROFILE_REJECTED = "profile_rejected"
     SYSTEM_MESSAGE = "system_message"
+    NEW_MESSAGE = "new_message"
 
 class Notification(Base):
     __tablename__ = "notifications"

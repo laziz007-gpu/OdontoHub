@@ -365,21 +365,6 @@ def approve_dentist(dentist_id: int, db: Session = Depends(get_db)):
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Dentist not found")
     
-    if dentist.verification_status != VerificationStatus.PENDING:
-        from fastapi import HTTPException
-        raise HTTPException(status_code=400, detail="Dentist is not pending approval")
-    
-    # Проверяем, заполнены ли обязательные поля
-    required_fields = ['specialization', 'clinic', 'pinfl', 'diploma_number']
-    missing_fields = [field for field in required_fields if not getattr(dentist, field)]
-    
-    if missing_fields:
-        from fastapi import HTTPException
-        raise HTTPException(
-            status_code=400, 
-            detail=f"Missing required fields: {', '.join(missing_fields)}"
-        )
-    
     dentist.verification_status = VerificationStatus.APPROVED
     db.commit()
     
@@ -394,21 +379,50 @@ def approve_dentist(dentist_id: int, db: Session = Depends(get_db)):
 def reject_dentist(dentist_id: int, db: Session = Depends(get_db)):
     """Reject a pending dentist (admin only)"""
     from app.models.dentist import VerificationStatus
-    
+
     dentist = db.query(DentistProfile).filter(DentistProfile.id == dentist_id).first()
-    
+
     if not dentist:
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Dentist not found")
-    
+
     dentist.verification_status = VerificationStatus.REJECTED
     db.commit()
-    
+
     return {
         "id": dentist.id,
         "full_name": dentist.full_name,
         "verification_status": "rejected",
         "message": "Dentist rejected"
+    }
+
+
+@router.put("/{dentist_id}/status")
+def update_dentist_status(
+    dentist_id: int,
+    body: dict,
+    db: Session = Depends(get_db)
+):
+    """Update dentist verification status (admin only). Body: {verification_status: pending|approved|rejected}"""
+    from app.models.dentist import VerificationStatus
+    from fastapi import HTTPException
+
+    dentist = db.query(DentistProfile).filter(DentistProfile.id == dentist_id).first()
+    if not dentist:
+        raise HTTPException(status_code=404, detail="Dentist not found")
+
+    new_status = body.get("verification_status")
+    try:
+        dentist.verification_status = VerificationStatus(new_status)
+    except ValueError:
+        raise HTTPException(status_code=400, detail=f"Invalid status: {new_status}")
+
+    db.commit()
+    return {
+        "id": dentist.id,
+        "full_name": dentist.full_name,
+        "verification_status": dentist.verification_status.value,
+        "message": f"Status updated to {dentist.verification_status.value}"
     }
 
 from fastapi import UploadFile, File
@@ -434,13 +448,15 @@ async def upload_diploma(
     file_extension = os.path.splitext(file.filename)[1] if file.filename else ".jpg"
     file_name = f"{uuid.uuid4()}{file_extension}"
     file_path = os.path.join(upload_dir, file_name)
-    
+
     with open(file_path, "wb") as buffer:
         content = await file.read()
         buffer.write(content)
-    
+
     from app.models.dentist import VerificationStatus
-    user.dentist_profile.diploma_photo_url = f"/{file_path}"
+    # Use forward slashes for URL (important on Windows)
+    url_path = f"/uploads/diplomas/{file_name}"
+    user.dentist_profile.diploma_photo_url = url_path
     user.dentist_profile.verification_status = VerificationStatus.PENDING # Reset status to pending on new upload
     db.commit()
     db.refresh(user.dentist_profile)
