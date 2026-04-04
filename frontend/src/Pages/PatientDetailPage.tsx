@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useDentistProfile, useDeletePatient } from '../api/profile';
 import { toast } from '../components/Shared/Toast';
 import PatientInfoSection from '../components/Patients/PatientInfoSection';
@@ -15,6 +16,7 @@ type TabType = 'info' | 'appointments' | 'prescriptions' | 'allergies' | 'photos
 const PatientDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('info');
   const { data: dentistProfile } = useDentistProfile();
   const deletePatient = useDeletePatient();
@@ -23,25 +25,25 @@ const PatientDetailPage = () => {
   const dentistId = dentistProfile?.id || 0;
 
   const handleDeletePatient = async () => {
-    if (window.confirm('Вы уверены, что хотите удалить этого пациента? Все данные будут удалены безвозвратно.')) {
+    if (window.confirm(t('patient_profile.patient_detail.delete_confirm'))) {
       try {
         await deletePatient.mutateAsync(patientId);
-        toast.success('Пациент успешно удалён');
+        toast.success(t('patient_profile.patient_detail.delete_success'));
         navigate('/patients');
       } catch (error) {
         console.error('Error deleting patient:', error);
-        toast.error('Ошибка при удалении пациента');
+        toast.error(t('patient_profile.patient_detail.delete_error'));
       }
     }
   };
 
   const tabs = [
-    { id: 'info' as TabType, label: 'Информация', color: 'blue' },
-    { id: 'appointments' as TabType, label: 'Приёмы', color: 'purple' },
-    { id: 'prescriptions' as TabType, label: 'Рецепты', color: 'blue' },
-    { id: 'allergies' as TabType, label: 'Аллергии', color: 'red' },
-    { id: 'photos' as TabType, label: 'Фото', color: 'indigo' },
-    { id: 'payments' as TabType, label: 'Оплаты', color: 'green' },
+    { id: 'info' as TabType, label: t('patient_profile.tabs.info'), color: 'blue' },
+    { id: 'appointments' as TabType, label: t('patient_profile.tabs.appointments'), color: 'purple' },
+    { id: 'prescriptions' as TabType, label: t('patient_profile.tabs.prescriptions'), color: 'blue' },
+    { id: 'allergies' as TabType, label: t('patient_profile.tabs.allergies'), color: 'red' },
+    { id: 'photos' as TabType, label: t('patient_profile.tabs.photo'), color: 'indigo' },
+    { id: 'payments' as TabType, label: t('patient_profile.tabs.payments'), color: 'green' },
   ];
 
   const getTabColorClass = (tabId: TabType, isActive: boolean) => {
@@ -70,7 +72,7 @@ const PatientDetailPage = () => {
               <path d="M15 18L9 12L15 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <h1 className="text-2xl md:text-3xl font-black text-[#1D1D2B]">Данные пациента</h1>
+          <h1 className="text-2xl md:text-3xl font-black text-[#1D1D2B]">{t('patient_profile.patient_detail.title')}</h1>
         </div>
         
         <button
@@ -79,7 +81,7 @@ const PatientDetailPage = () => {
           className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Trash2 className="w-4 h-4" />
-          <span className="hidden sm:inline font-bold">Удалить</span>
+          <span className="hidden sm:inline font-bold">{t('patient_profile.patient_detail.delete_btn')}</span>
         </button>
       </div>
 

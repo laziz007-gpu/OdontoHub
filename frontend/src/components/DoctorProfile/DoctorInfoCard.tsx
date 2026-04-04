@@ -21,7 +21,7 @@ const DoctorInfoCard: FC<DoctorInfoCardProps> = ({ name, gender, age, specializa
             >
                 <img src={avatar || DentistImg} alt="Doctor" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="text-[10px] font-bold text-center px-2">Изменить фото</span>
+                    <span className="text-[10px] font-bold text-center px-2">{t('doctor_profile.change_photo')}</span>
                 </div>
             </div>
             <div>
@@ -29,7 +29,7 @@ const DoctorInfoCard: FC<DoctorInfoCardProps> = ({ name, gender, age, specializa
                 <div className="space-y-0.5 text-[13px] text-blue-50">
                     <p>{t('patient_profile.gender')}: <span className="text-white font-medium">{gender}</span></p>
                     <p>{t('patient_profile.age')}: <span className="text-white font-medium">{age}</span></p>
-                    <p>Специализация: <span className="text-white font-medium">{specialization}</span></p>
+                    <p>{t('doctor_profile.specialization_label')}: <span className="text-white font-medium">{specialization}</span></p>
                 </div>
             </div>
         </div>

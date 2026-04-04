@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Allergy, AllergySeverity } from '../../types/allergy';
+import { useTranslation } from 'react-i18next';
+import type { Allergy, AllergySeverity } from '../../types/allergy';
 import { getAllergies, deleteAllergy } from '../../api/allergies';
 import AddAllergyModal from './AddAllergyModal';
 import EditAllergyModal from './EditAllergyModal';
@@ -10,6 +11,7 @@ interface AllergySectionProps {
 }
 
 const AllergySection = ({ patientId }: AllergySectionProps) => {
+  const { t, i18n } = useTranslation();
   const [allergies, setAllergies] = useState<Allergy[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,14 +30,14 @@ const AllergySection = ({ patientId }: AllergySectionProps) => {
       setError(null);
     } catch (err) {
       console.error('Error fetching allergies:', err);
-      setError('Не удалось загрузить аллергии');
+      setError(t('patient_profile.allergies_view.fetch_error'));
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (allergyId: number) => {
-    if (!confirm('Вы уверены, что хотите удалить эту аллергию?')) {
+    if (!confirm(t('patient_profile.allergies_view.delete_confirm'))) {
       return;
     }
 
@@ -44,7 +46,7 @@ const AllergySection = ({ patientId }: AllergySectionProps) => {
       setAllergies(prev => prev.filter(a => a.id !== allergyId));
     } catch (err) {
       console.error('Error deleting allergy:', err);
-      toast.error('Не удалось удалить аллергию');
+      toast.error(t('patient_profile.allergies_view.delete_error'));
     }
   };
 
@@ -64,11 +66,11 @@ const AllergySection = ({ patientId }: AllergySectionProps) => {
   const getSeverityLabel = (severity: AllergySeverity) => {
     switch (severity) {
       case 'mild':
-        return 'Легкая';
+        return t('patient_profile.allergies_view.severity.mild');
       case 'moderate':
-        return 'Средняя';
+        return t('patient_profile.allergies_view.severity.moderate');
       case 'severe':
-        return 'Тяжелая';
+        return t('patient_profile.allergies_view.severity.severe');
       default:
         return severity;
     }
@@ -76,7 +78,7 @@ const AllergySection = ({ patientId }: AllergySectionProps) => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU', { 
+    return date.toLocaleDateString(i18n.language, { 
       year: 'numeric', 
       month: 'long', 
       day: 'numeric' 
@@ -84,7 +86,7 @@ const AllergySection = ({ patientId }: AllergySectionProps) => {
   };
 
   if (loading) {
-    return <div className="text-center py-4">Загрузка...</div>;
+    return <div className="text-center py-4 text-gray-500">{t('common.loading') || 'Загрузка...'}</div>;
   }
 
   if (error) {
@@ -94,18 +96,18 @@ const AllergySection = ({ patientId }: AllergySectionProps) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-bold text-[#1D1D2B]">Аллергии</h3>
+        <h3 className="text-xl font-bold text-[#1D1D2B]">{t('patient_profile.allergies_view.title')}</h3>
         <button
           onClick={() => setShowAddModal(true)}
           className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
         >
-          Добавить аллергию
+          {t('patient_profile.allergies_view.add_btn')}
         </button>
       </div>
 
       {allergies.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
-          Нет аллергий
+          {t('patient_profile.allergies_view.no_allergies')}
         </div>
       ) : (
         <div className="space-y-3">
@@ -125,12 +127,12 @@ const AllergySection = ({ patientId }: AllergySectionProps) => {
                     </span>
                   </div>
                   <div className="space-y-1 text-sm">
-                    <p><span className="font-medium">Реакция:</span> {allergy.reaction_type}</p>
+                    <p><span className="font-medium">{t('patient_profile.allergies_view.reaction')}:</span> {allergy.reaction_type}</p>
                     {allergy.notes && (
-                      <p><span className="font-medium">Примечания:</span> {allergy.notes}</p>
+                      <p><span className="font-medium">{t('patient_profile.allergies_view.notes')}:</span> {allergy.notes}</p>
                     )}
                     <p className="text-xs opacity-70 mt-2">
-                      Задокументировано: {formatDate(allergy.documented_at)}
+                      {t('patient_profile.allergies_view.documented_at')}: {formatDate(allergy.documented_at)}
                     </p>
                   </div>
                 </div>

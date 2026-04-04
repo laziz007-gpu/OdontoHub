@@ -57,7 +57,10 @@
       "4": "Thursday",
       "5": "Friday",
       "6": "Saturday"
-    }
+    },
+    "confirm_delete": "Are you sure?",
+    "delete": "Delete",
+    "cancel": "Cancel"
   },
   "appointments": {
     "title": "Appointments",
@@ -195,15 +198,82 @@
     "female": "Female",
     "patient_title": "Patient",
     "online": "Online",
-    "fio": "Full Name",
-    "in_platform": "In platform",
     "notes": "Notes",
     "prescription": "Prescription",
+    "labels": {
+      "full_name": "Full Name",
+      "phone": "Phone",
+      "age": "Age",
+      "gender": "Gender",
+      "address": "Address",
+      "not_specified": "Not specified",
+      "personal_data": "Personal data",
+      "info_not_found": "Patient information not found",
+      "years_label": "yo"
+    },
+    "allergies_view": {
+      "title": "Allergies",
+      "add_btn": "Add Allergy",
+      "no_allergies": "No allergies",
+      "reaction": "Reaction",
+      "notes": "Notes",
+      "documented_at": "Documented",
+      "delete_confirm": "Are you sure you want to delete this allergy?",
+      "delete_error": "Failed to delete allergy",
+      "fetch_error": "Failed to load allergies",
+      "severity": {
+        "mild": "Mild",
+        "moderate": "Moderate",
+        "severe": "Severe"
+      },
+      "add_title": "Add Allergy",
+      "edit_title": "Edit Allergy",
+      "allergen": "Allergen",
+      "reaction_type": "Reaction Type",
+      "severity_label": "Severity",
+      "placeholder_allergen": "e.g., Penicillin",
+      "placeholder_reaction": "e.g., Rash, swelling",
+      "placeholder_notes": "Additional information...",
+      "saving": "Saving...",
+      "error_required": "Please fill in all required fields",
+      "error_add": "Failed to add allergy",
+      "error_update": "Failed to update allergy"
+    },
+    "prescriptions_view": {
+      "title": "Prescriptions",
+      "add_btn": "Add Prescription",
+      "no_prescriptions": "No prescriptions",
+      "medication": "Medication",
+      "dosage": "Dosage",
+      "frequency": "Frequency",
+      "duration": "Duration",
+      "notes": "Notes",
+      "prescribed_at": "Prescribed",
+      "delete_confirm": "Are you sure you want to delete this prescription?",
+      "delete_error": "Failed to delete prescription",
+      "fetch_error": "Failed to load prescriptions",
+      "add_title": "Add Prescription",
+      "edit_title": "Edit Prescription",
+      "save_error": "Failed to save prescription",
+      "medication_label": "Medication Name",
+      "dosage_label": "Dosage",
+      "frequency_label": "Frequency",
+      "duration_label": "Duration",
+      "notes_label": "Notes",
+      "placeholder_medication": "e.g., Amoxicillin",
+      "placeholder_dosage": "e.g., 500 mg",
+      "placeholder_frequency": "e.g., 3 times a day",
+      "placeholder_duration": "e.g., 7 days",
+      "placeholder_notes": "Additional instructions...",
+      "error_fields": "Please fill in all required fields"
+    },
     "tabs": {
-      "data": "Data",
+      "info": "Info",
       "photo": "Photo",
       "treatments": "Treatments",
       "appointments": "Appointments",
+      "prescriptions": "Prescriptions",
+      "allergies": "Allergies",
       "payments": "Payments",
       "chat": "Chat"
     },
@@ -226,6 +296,13 @@
       "percentage": "Percentage",
       "debts": "Debts",
       "currency": "sum"
+    },
+    "patient_detail": {
+      "title": "Patient Data",
+      "delete_btn": "Delete",
+      "delete_confirm": "Are you sure you want to delete this patient? All data will be permanently removed.",
+      "delete_success": "Patient successfully deleted",
+      "delete_error": "Error deleting patient"
     }
   },
   "patients_list": {
@@ -250,6 +327,23 @@
     "defaults": {
       "new_patient": "New Patient",
       "checkup": "Check-up"
+    },
+    "add_modal": {
+      "title": "Add Patient",
+      "full_name": "Full Name",
+      "full_name_placeholder": "Enter full name",
+      "phone": "Phone Number",
+      "gender": "Gender",
+      "gender_select": "Select gender",
+      "gender_male": "Male",
+      "gender_female": "Female",
+      "birth_date": "Date of Birth",
+      "address": "Address",
+      "address_placeholder": "Enter address",
+      "cancel": "Cancel",
+      "add": "Add",
+      "error_required": "Please enter name and phone number",
+      "success_added": "Patient added successfully"
     }
   },
   "doctor_profile": {
@@ -280,7 +374,12 @@
     "education": "Education",
     "clinic": "Clinic",
     "every_day": "Every Day",
-    "weekend": "Weekends"
+    "weekend": "Weekends",
+    "change_photo": "Change photo",
+    "specialization_label": "Specialization",
+    "age_label": "Age",
+    "address_placeholder": "Enter address",
+    "no_services": "No services added yet"
   },
   "dashboard": {
     "search_placeholder": "Search patients, services...",

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.core.database import engine, Base, get_db
 from app.routers import auth, patients, dentists, services, appointments
 from app.routers import prescriptions, allergies, payments, photos, chat
-from app.routers import reviews, notifications
+from app.routers import reviews, notifications, complaints
 import traceback
 import os
 # Temporarily disabled - uncomment to enable notifications:
@@ -91,6 +91,7 @@ def on_startup():
     from app.models.message import Message
     from app.models.review import Review
     from app.models.notification import Notification
+    from app.models.complaint import Complaint
 
     db_url = str(engine.url)
     if "postgresql" in db_url or "postgres" in db_url:
@@ -155,12 +156,22 @@ def on_startup():
                 print("OK: Dentist profile fields migration completed")
             else:
                 print("OK: All dentist profile fields already exist")
+
+        # Fix complaints.patient_id — make it nullable if not already
+        if 'complaints' in inspector.get_table_names():
+            complaint_cols = {c['name']: c for c in inspector.get_columns('complaints')}
+            if 'patient_id' in complaint_cols and not complaint_cols['patient_id']['nullable']:
+                with engine.begin() as conn:
+                    conn.execute(text("ALTER TABLE complaints ALTER COLUMN patient_id DROP NOT NULL"))
+                print("OK: complaints.patient_id is now nullable")
+
     except Exception as e:
         print(f"Warning: Could not migrate dentist fields: {e}")
         # Don't fail startup if migration fails
 
     # Create all tables (checkfirst=True skips existing tables)
     Base.metadata.create_all(bind=engine, checkfirst=True)
+
 
 # Include routers
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
@@ -175,7 +186,7 @@ app.include_router(allergies.router, prefix="/api", tags=["Allergies"])
 app.include_router(payments.router, prefix="/api", tags=["Payments"])
 app.include_router(photos.router, prefix="/api", tags=["Photos"])
 app.include_router(reviews.router, tags=["Reviews"])
-
+app.include_router(complaints.router, tags=["Complaints"])
 
 @app.get("/")
 def read_root():
@@ -293,6 +304,7 @@ def init_database():
         from app.models.photo import PatientPhoto
         from app.models.message import Message
         from app.models.notification import Notification
+        from app.models.complaint import Complaint
 
         db_url = str(engine.url)
         if "postgresql" in db_url or "postgres" in db_url:
@@ -321,7 +333,7 @@ def init_database():
             "tables": [
                 "users", "patient_profiles", "dentist_profiles",
                 "services", "appointments", "prescriptions",
-                "allergies", "payments", "patient_photos"
+                "allergies", "payments", "patient_photos", "complaints"
             ]
         }
     except Exception as e:

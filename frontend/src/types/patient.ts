@@ -29,6 +29,7 @@ export interface Doctor {
     whatsapp?: string;
     latitude?: number;
     longitude?: number;
+    verification_status?: string;
 }
 
 export type AppointmentStatus = 'upcoming' | 'past' | 'success' | 'cancelled' | 'rescheduled' | 'pending';

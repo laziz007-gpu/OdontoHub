@@ -22,7 +22,7 @@ const ServicesSection: FC = () => {
     };
 
     const handleDelete = async (id: number) => {
-        if (window.confirm(t('common.confirm_delete') || 'Вы уверены?')) {
+        if (window.confirm(t('common.confirm_delete'))) {
             try {
                 await deleteService.mutateAsync(id);
             } catch (error) {
@@ -39,7 +39,7 @@ const ServicesSection: FC = () => {
                     onClick={handleAdd}
                     className="flex items-center gap-1.5 bg-[#5B7FFF] text-white px-4 py-1.5 rounded-full text-[11px] font-bold hover:bg-blue-600 transition-all"
                 >
-                    {t('doctor_profile.add') || 'Добавить'}
+                    {t('doctor_profile.add')}
                     <div className="w-4 h-4 bg-white rounded-full flex items-center justify-center">
                         <Plus className="w-2.5 h-2.5 text-blue-600" strokeWidth={3} />
                     </div>
@@ -78,7 +78,7 @@ const ServicesSection: FC = () => {
                     ))}
                     {(!services || services.length === 0) && (
                         <div className="col-span-full py-8 text-center text-gray-400 font-bold bg-gray-50 rounded-[24px] border border-dashed border-gray-200">
-                            {t('doctor_profile.no_services') || 'Услуги еще не добавлены'}
+                            {t('doctor_profile.no_services')}
                         </div>
                     )}
                 </div>

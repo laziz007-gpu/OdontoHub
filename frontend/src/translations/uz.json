@@ -58,7 +58,10 @@
       "4": "Payshanba",
       "5": "Juma",
       "6": "Shanba"
-    }
+    },
+    "confirm_delete": "Ishonchingiz komilmi?",
+    "delete": "O'chirish",
+    "cancel": "Bekor qilish"
   },
   "appointments": {
     "title": "Qabullar",
@@ -195,16 +198,82 @@
     "male": "Erkak",
     "female": "Ayol",
     "patient_title": "Bemor",
-    "online": "Onlayn",
-    "fio": "F.I.SH.",
-    "in_platform": "Platformada",
     "notes": "Eslatmalar",
     "prescription": "Retsept",
+    "labels": {
+      "full_name": "F.I.SH.",
+      "phone": "Telefon",
+      "age": "Yoshi",
+      "gender": "Jinsi",
+      "address": "Manzil",
+      "not_specified": "Ko'rsatilmagan",
+      "personal_data": "Shaxsiy ma'lumotlar",
+      "info_not_found": "Bemor haqida ma'lumot topilmadi",
+      "years_label": "yosh"
+    },
+    "allergies_view": {
+      "title": "Allergiyalar",
+      "add_btn": "Allergiya qo'shish",
+      "no_allergies": "Allergiyalar yo'q",
+      "reaction": "Reaksiya",
+      "notes": "Eslatmalar",
+      "documented_at": "Hujjatlashtirilgan",
+      "delete_confirm": "Ushbu allergiyani o'chirishga ishonchingiz komilmi?",
+      "delete_error": "Allergiyani o'chirib bo'lmadi",
+      "fetch_error": "Allergiyalarni yuklab bo'lmadi",
+      "severity": {
+        "mild": "Yengil",
+        "moderate": "O'rtacha",
+        "severe": "Og'ir"
+      },
+      "add_title": "Allergiya qo'shish",
+      "edit_title": "Allergiyani tahrirlash",
+      "allergen": "Allergen",
+      "reaction_type": "Reaksiya turi",
+      "severity_label": "Og'irlik darajasi",
+      "placeholder_allergen": "Masalan: Penitsillin",
+      "placeholder_reaction": "Masalan: Toshma, shish",
+      "placeholder_notes": "Qo'shimcha ma'lumotlar...",
+      "saving": "Saqlanmoqda...",
+      "error_required": "Iltimos, barcha majburiy maydonlarni to'ldiring",
+      "error_add": "Allergiyani qo'shib bo'lmadi",
+      "error_update": "Allergiyani yangilab bo'lmadi"
+    },
+    "prescriptions_view": {
+      "title": "Retseptlar",
+      "add_btn": "Retsept qo'shish",
+      "no_prescriptions": "Retseptlar yo'q",
+      "medication": "Dori vositasi",
+      "dosage": "Dozalash",
+      "frequency": "Qabul qilish chastotasi",
+      "duration": "Davomiyligi",
+      "notes": "Eslatmalar",
+      "prescribed_at": "Tayinlangan",
+      "delete_confirm": "Ushbu retseptni o'chirishga ishonchingiz komilmi?",
+      "delete_error": "Retseptni o'chirib bo'lmadi",
+      "fetch_error": "Retseptlarni yuklab bo'lmadi",
+      "add_title": "Retsept qo'shish",
+      "edit_title": "Retseptni tahrirlash",
+      "save_error": "Retseptni saqlab bo'lmadi",
+      "medication_label": "Dori vositasi nomi",
+      "dosage_label": "Dozalash",
+      "frequency_label": "Qabul qilish chastotasi",
+      "duration_label": "Davomiyligi",
+      "notes_label": "Eslatmalar",
+      "placeholder_medication": "Masalan: Amoksitsillin",
+      "placeholder_dosage": "Masalan: 500 mg",
+      "placeholder_frequency": "Masalan: Kuniga 3 marta",
+      "placeholder_duration": "Masalan: 7 kun",
+      "placeholder_notes": "Qo'shimcha ko'rsatmalar...",
+      "error_fields": "Iltimos, barcha majburiy maydonlarni to'ldiring"
+    },
     "tabs": {
-      "data": "Ma'lumotlar",
+      "info": "Ma'lumotlar",
       "photo": "Rasm",
       "treatments": "Davolash",
-      "appointments": "Priemlar",
+      "appointments": "Qabullar",
+      "prescriptions": "Retseptlar",
+      "allergies": "Allergiyalar",
       "payments": "To'lovlar",
       "chat": "Chat"
     },
@@ -227,6 +296,13 @@
       "percentage": "Foiz",
       "debts": "Qarzlar",
       "currency": "so'm"
+    },
+    "patient_detail": {
+      "title": "Bemor ma'lumotlari",
+      "delete_btn": "O'chirish",
+      "delete_confirm": "Ushbu bemorni o'chirishga ishonchingiz komilmi? Barcha ma'lumotlar butunlay o'chiriladi.",
+      "delete_success": "Bemor muvaffaqiyatli o'chirildi",
+      "delete_error": "Bemorni o'chirishda xatolik"
     }
   },
   "patients_list": {
@@ -251,6 +327,23 @@
     "defaults": {
       "new_patient": "Yangi Bemor",
       "checkup": "Ko'rik"
+    },
+    "add_modal": {
+      "title": "Bemor qo'shish",
+      "full_name": "F.I.SH.",
+      "full_name_placeholder": "To'liq ismni kiriting",
+      "phone": "Telefon raqami",
+      "gender": "Jinsi",
+      "gender_select": "Jinsni tanlang",
+      "gender_male": "Erkak",
+      "gender_female": "Ayol",
+      "birth_date": "Tug'ilgan sana",
+      "address": "Manzil",
+      "address_placeholder": "Manzilni kiriting",
+      "cancel": "Bekor qilish",
+      "add": "Qo'shish",
+      "error_required": "Iltimos, ism va telefon raqamini kiriting",
+      "success_added": "Bemor muvaffaqiyatli qo'shildi"
     }
   },
   "doctor_profile": {
@@ -281,7 +374,12 @@
     "education": "Ta'lim",
     "clinic": "Klinika",
     "every_day": "Har kuni",
-    "weekend": "Dam olish kunlari"
+    "weekend": "Dam olish kunlari",
+    "change_photo": "Rasmni o'zgartirish",
+    "specialization_label": "Mutaxassislik",
+    "age_label": "Yoshi",
+    "address_placeholder": "Manzilni kiriting",
+    "no_services": "Xizmatlar hali qo'shilmagan"
   },
   "dashboard": {
     "search_placeholder": "Bemorlar, xizmatlarni qidirish...",

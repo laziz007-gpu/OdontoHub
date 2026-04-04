@@ -59,7 +59,10 @@
             "4": "Четверг",
             "5": "Пятница",
             "6": "Суббота"
-        }
+        },
+        "confirm_delete": "Вы уверены?",
+        "delete": "Удалить",
+        "cancel": "Отмена"
     },
     "appointments": {
         "title": "Приёмы",
@@ -198,17 +201,83 @@
         "male": "Мужчина",
         "female": "Женщина",
         "patient_title": "Пациент",
-        "online": "В сети",
-        "fio": "Ф.И.О.",
-        "in_platform": "В платформе",
         "notes": "Заметки",
         "no_notes": "Заметок пока нет",
         "prescription": "Рецепт",
+        "labels": {
+            "full_name": "ФИО",
+            "phone": "Телефон",
+            "age": "Возраст",
+            "gender": "Пол",
+            "address": "Адрес",
+            "not_specified": "Не указан",
+            "personal_data": "Личные данные",
+            "info_not_found": "Информация о пациенте не найдена",
+            "years_label": "лет"
+        },
+        "allergies_view": {
+            "title": "Аллергии",
+            "add_btn": "Добавить аллергию",
+            "no_allergies": "Нет аллергий",
+            "reaction": "Реакция",
+            "notes": "Примечания",
+            "documented_at": "Задокументировано",
+            "delete_confirm": "Вы уверены, что хотите удалить эту аллергию?",
+            "delete_error": "Не удалось удалить аллергию",
+            "fetch_error": "Не удалось загрузить аллергии",
+            "severity": {
+                "mild": "Легкая",
+                "moderate": "Средняя",
+                "severe": "Тяжелая"
+            },
+            "add_title": "Добавить аллергию",
+            "edit_title": "Редактировать аллергию",
+            "allergen": "Аллерген",
+            "reaction_type": "Тип реакции",
+            "severity_label": "Степень тяжести",
+            "placeholder_allergen": "Например: Пенициллин",
+            "placeholder_reaction": "Например: Сыпь, отек",
+            "placeholder_notes": "Дополнительная информация...",
+            "saving": "Сохранение...",
+            "error_required": "Пожалуйста, заполните все обязательные поля",
+            "error_add": "Не удалось добавить аллергию",
+            "error_update": "Не удалось обновить аллергию"
+        },
+        "prescriptions_view": {
+            "title": "Рецепты",
+            "add_btn": "Добавить рецепт",
+            "no_prescriptions": "Нет рецептов",
+            "medication": "Лекарство",
+            "dosage": "Дозировка",
+            "frequency": "Частота",
+            "duration": "Длительность",
+            "notes": "Примечания",
+            "prescribed_at": "Назначено",
+            "delete_confirm": "Вы уверены, что хотите удалить этот рецепт?",
+            "delete_error": "Не удалось удалить рецепт",
+            "fetch_error": "Не удалось загрузить рецепты",
+            "add_title": "Добавить рецепт",
+            "edit_title": "Редактировать рецепт",
+            "save_error": "Не удалось сохранить рецепт",
+            "medication_label": "Название препарата",
+            "dosage_label": "Дозировка",
+            "frequency_label": "Частота приёма",
+            "duration_label": "Длительность",
+            "notes_label": "Примечания",
+            "placeholder_medication": "Например: Амоксициллин",
+            "placeholder_dosage": "Например: 500 мг",
+            "placeholder_frequency": "Например: 3 раза в день",
+            "placeholder_duration": "Например: 7 дней",
+            "placeholder_notes": "Дополнительные инструкции...",
+            "error_fields": "Пожалуйста, заполните все обязательные поля"
+        },
         "tabs": {
-            "data": "Данные",
+            "info": "Данные",
             "photo": "Фото",
             "treatments": "Лечения",
             "appointments": "Приёмы",
+            "prescriptions": "Рецепты",
+            "allergies": "Аллергии",
             "payments": "Оплаты",
             "chat": "Чат"
         },
@@ -231,6 +300,13 @@
             "percentage": "Процент",
             "debts": "Долги",
             "currency": "сум"
+        },
+        "patient_detail": {
+            "title": "Данные пациента",
+            "delete_btn": "Удалить",
+            "delete_confirm": "Вы уверены, что хотите удалить этого пациента? Все данные будут удалены безвозвратно.",
+            "delete_success": "Пациент успешно удалён",
+            "delete_error": "Ошибка при удалении пациента"
         }
     },
     "patients_list": {
@@ -255,6 +331,23 @@
         "defaults": {
             "new_patient": "Новый Пациент",
             "checkup": "Осмотр"
+        },
+        "add_modal": {
+            "title": "Добавить пациента",
+            "full_name": "ФИО",
+            "full_name_placeholder": "Введите полное имя",
+            "phone": "Номер телефона",
+            "gender": "Пол",
+            "gender_select": "Выберите пол",
+            "gender_male": "Мужской",
+            "gender_female": "Женский",
+            "birth_date": "Дата рождения",
+            "address": "Адрес",
+            "address_placeholder": "Введите адрес",
+            "cancel": "Отмена",
+            "add": "Добавить",
+            "error_required": "Пожалуйста, введите имя и номер телефона",
+            "success_added": "Пациент успешно добавлен"
         }
     },
     "doctor_profile": {
@@ -285,7 +378,12 @@
         "education": "Образование",
         "clinic": "Клиника",
         "every_day": "Каждый день",
-        "weekend": "Выходные дни"
+        "weekend": "Выходные дни",
+        "change_photo": "Изменить фото",
+        "specialization_label": "Специализация",
+        "age_label": "Возраст",
+        "address_placeholder": "Введите адрес",
+        "no_services": "Услуги еще не добавлены"
     },
     "dashboard": {
         "search_placeholder": "Пациент",

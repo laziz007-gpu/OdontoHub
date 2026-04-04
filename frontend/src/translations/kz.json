@@ -57,7 +57,10 @@
       "4": "Бейсенбі",
       "5": "Жұма",
       "6": "Сенбі"
-    }
+    },
+    "confirm_delete": "Сенімдісіз бе?",
+    "delete": "Жою",
+    "cancel": "Болдырмау"
   },
   "appointments": {
     "title": "Қабылдаулар",
@@ -194,16 +197,82 @@
     "male": "Ер",
     "female": "Әйел",
     "patient_title": "Пациент",
-    "online": "Желіде",
-    "fio": "Т.А.Ә.",
-    "in_platform": "Платформада",
     "notes": "Жазбалар",
     "prescription": "Рецепт",
+    "labels": {
+      "full_name": "Т.А.Ә.",
+      "phone": "Телефон",
+      "age": "Жасы",
+      "gender": "Жынысы",
+      "address": "Мекенжай",
+      "not_specified": "Көрсетілмеген",
+      "personal_data": "Жеке мәліметтер",
+      "info_not_found": "Пациент туралы мәлімет табылмады",
+      "years_label": "жас"
+    },
+    "allergies_view": {
+      "title": "Аллергиялар",
+      "add_btn": "Аллергия қосу",
+      "no_allergies": "Аллергиялар жоқ",
+      "reaction": "Реакция",
+      "notes": "Ескертпелер",
+      "documented_at": "Құжатталған",
+      "delete_confirm": "Бұл аллергияны жойғыңыз келетініне сенімдісіз бе?",
+      "delete_error": "Аллергияны жою мүмкін болмады",
+      "fetch_error": "Аллергияларды жүктеу мүмкін болмады",
+      "severity": {
+        "mild": "Жеңіл",
+        "moderate": "Орташа",
+        "severe": "Ауыр"
+      },
+      "add_title": "Аллергия қосу",
+      "edit_title": "Аллергияны өңдеу",
+      "allergen": "Аллерген",
+      "reaction_type": "Реакция түрі",
+      "severity_label": "Ауырлық дәрежесі",
+      "placeholder_allergen": "Мысалы: Пенициллин",
+      "placeholder_reaction": "Мысалы: Бөртпе, ісіну",
+      "placeholder_notes": "Қосымша мәліметтер...",
+      "saving": "Сақталуда...",
+      "error_required": "Барлық міндетті өрістерді толтырыңыз",
+      "error_add": "Аллергияны қосу мүмкін болмады",
+      "error_update": "Аллергияны жаңарту мүмкін болмады"
+    },
+    "prescriptions_view": {
+      "title": "Рецепттер",
+      "add_btn": "Рецепт қосу",
+      "no_prescriptions": "Рецепттер жоқ",
+      "medication": "Дәрі",
+      "dosage": "Дозасы",
+      "frequency": "Жиілігі",
+      "duration": "Ұзақтығы",
+      "notes": "Ескертпелер",
+      "prescribed_at": "Тағайындалды",
+      "delete_confirm": "Бұл рецептті жойғыңыз келетініне сенімдісіз бе?",
+      "delete_error": "Рецептті жою мүмкін болмады",
+      "fetch_error": "Рецепттерді жүктеу мүмкін болмады",
+      "add_title": "Рецепт қосу",
+      "edit_title": "Рецептті өңдеу",
+      "save_error": "Рецептті сақтау мүмкін болмады",
+      "medication_label": "Препарат атауы",
+      "dosage_label": "Дозасы",
+      "frequency_label": "Қабылдау жиілігі",
+      "duration_label": "Ұзақтығы",
+      "notes_label": "Ескертпелер",
+      "placeholder_medication": "Мысалы: Амоксициллин",
+      "placeholder_dosage": "Мысалы: 500 мг",
+      "placeholder_frequency": "Мысалы: Күніне 3 рет",
+      "placeholder_duration": "Мысалы: 7 күн",
+      "placeholder_notes": "Қосымша нұсқаулар...",
+      "error_fields": "Барлық міндетті өрістерді толтырыңыз"
+    },
     "tabs": {
-      "data": "Деректер",
+      "info": "Деректер",
       "photo": "Фото",
       "treatments": "Емдеу",
       "appointments": "Қабылдаулар",
+      "prescriptions": "Рецепттер",
+      "allergies": "Аллергиялар",
       "payments": "Төлемдер",
       "chat": "Чат"
     },
@@ -226,6 +295,13 @@
       "percentage": "Пайыз",
       "debts": "Қарыздар",
       "currency": "сом"
+    },
+    "patient_detail": {
+      "title": "Пациент мәліметтері",
+      "delete_btn": "Жою",
+      "delete_confirm": "Бұл пациентті жойғыңыз келетініне сенімдісіз бе? Барлық деректер біржола жойылады.",
+      "delete_success": "Пациент сәтті жойылды",
+      "delete_error": "Пациентті жою кезінде қате"
     }
   },
   "patients_list": {
@@ -250,6 +326,23 @@
     "defaults": {
       "new_patient": "Жаңа Пациент",
       "checkup": "Тексеру"
+    },
+    "add_modal": {
+      "title": "Пациент қосу",
+      "full_name": "Т.А.Ә.",
+      "full_name_placeholder": "Толық аты-жөнін енгізіңіз",
+      "phone": "Телефон нөмірі",
+      "gender": "Жынысы",
+      "gender_select": "Жынысын таңдаңыз",
+      "gender_male": "Ер",
+      "gender_female": "Әйел",
+      "birth_date": "Туған күні",
+      "address": "Мекенжай",
+      "address_placeholder": "Мекенжайды енгізіңіз",
+      "cancel": "Болдырмау",
+      "add": "Қосу",
+      "error_required": "Аты-жөнін және телефон нөмірін енгізіңіз",
+      "success_added": "Пациент сәтті қосылды"
     }
   },
   "doctor_profile": {
@@ -280,7 +373,11 @@
     "education": "Білім",
     "clinic": "Клиника",
     "every_day": "Күн сайын",
-    "weekend": "Демалыс күндері"
+    "weekend": "Демалыс күндері",
+    "change_photo": "Фотоны өзгерту",
+    "specialization_label": "Мамандығы",
+    "age_label": "Жасы",
+    "address_placeholder": "Мекенжайды енгізіңіз"
   },
   "dashboard": {
     "search_placeholder": "Пациенттерді, қызметтерді іздеу...",

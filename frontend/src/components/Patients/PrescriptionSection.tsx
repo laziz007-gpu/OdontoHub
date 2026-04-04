@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Prescription } from '../../types/prescription';
+import { useTranslation } from 'react-i18next';
+import type { Prescription } from '../../types/prescription';
 import { getPrescriptions, deletePrescription } from '../../api/prescriptions';
 import AddPrescriptionModal from './AddPrescriptionModal';
 import EditPrescriptionModal from './EditPrescriptionModal';
@@ -10,6 +11,7 @@ interface PrescriptionSectionProps {
 }
 
 const PrescriptionSection = ({ patientId }: PrescriptionSectionProps) => {
+  const { t, i18n } = useTranslation();
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,14 +30,14 @@ const PrescriptionSection = ({ patientId }: PrescriptionSectionProps) => {
       setError(null);
     } catch (err) {
       console.error('Error fetching prescriptions:', err);
-      setError('Не удалось загрузить рецепты');
+      setError(t('patient_profile.prescriptions_view.fetch_error'));
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (prescriptionId: number) => {
-    if (!confirm('Вы уверены, что хотите удалить этот рецепт?')) {
+    if (!confirm(t('patient_profile.prescriptions_view.delete_confirm'))) {
       return;
     }
 
@@ -44,13 +46,13 @@ const PrescriptionSection = ({ patientId }: PrescriptionSectionProps) => {
       setPrescriptions(prev => prev.filter(p => p.id !== prescriptionId));
     } catch (err) {
       console.error('Error deleting prescription:', err);
-      toast.error('Не удалось удалить рецепт');
+      toast.error(t('patient_profile.prescriptions_view.delete_error'));
     }
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU', { 
+    return date.toLocaleDateString(i18n.language, { 
       year: 'numeric', 
       month: 'long', 
       day: 'numeric' 
@@ -58,7 +60,7 @@ const PrescriptionSection = ({ patientId }: PrescriptionSectionProps) => {
   };
 
   if (loading) {
-    return <div className="text-center py-4">Загрузка...</div>;
+    return <div className="text-center py-4">{t('common.loading') || 'Загрузка...'}</div>;
   }
 
   if (error) {
@@ -68,18 +70,18 @@ const PrescriptionSection = ({ patientId }: PrescriptionSectionProps) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-bold text-[#1D1D2B]">Рецепты</h3>
+        <h3 className="text-xl font-bold text-[#1D1D2B]">{t('patient_profile.prescriptions_view.title')}</h3>
         <button
           onClick={() => setShowAddModal(true)}
           className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
         >
-          Добавить рецепт
+          {t('patient_profile.prescriptions_view.add_btn')}
         </button>
       </div>
 
       {prescriptions.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
-          Нет рецептов
+          {t('patient_profile.prescriptions_view.no_prescriptions')}
         </div>
       ) : (
         <div className="space-y-3">
@@ -94,14 +96,14 @@ const PrescriptionSection = ({ patientId }: PrescriptionSectionProps) => {
                     {prescription.medication_name}
                   </h4>
                   <div className="mt-2 space-y-1 text-sm text-gray-600">
-                    <p><span className="font-medium">Дозировка:</span> {prescription.dosage}</p>
-                    <p><span className="font-medium">Частота:</span> {prescription.frequency}</p>
-                    <p><span className="font-medium">Длительность:</span> {prescription.duration}</p>
+                    <p><span className="font-medium">{t('patient_profile.prescriptions_view.dosage')}:</span> {prescription.dosage}</p>
+                    <p><span className="font-medium">{t('patient_profile.prescriptions_view.frequency')}:</span> {prescription.frequency}</p>
+                    <p><span className="font-medium">{t('patient_profile.prescriptions_view.duration')}:</span> {prescription.duration}</p>
                     {prescription.notes && (
-                      <p><span className="font-medium">Примечания:</span> {prescription.notes}</p>
+                      <p><span className="font-medium">{t('patient_profile.prescriptions_view.notes')}:</span> {prescription.notes}</p>
                     )}
                     <p className="text-xs text-gray-400 mt-2">
-                      Назначено: {formatDate(prescription.prescribed_at)}
+                      {t('patient_profile.prescriptions_view.prescribed_at')}: {formatDate(prescription.prescribed_at)}
                     </p>
                   </div>
                 </div>

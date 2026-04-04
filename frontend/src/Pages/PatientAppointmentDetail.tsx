@@ -5,6 +5,8 @@ import DoctorInfoCard from "../components/PatientAppointmentDetail/DoctorInfoCar
 import AppointmentDetailsCard from "../components/PatientAppointmentDetail/AppointmentDetailsCard";
 import PriceCard from "../components/PatientAppointmentDetail/PriceCard";
 import ReviewButton from "../components/PatientAppointmentDetail/ReviewButton";
+import ComplaintModal from "../components/Complaints/ComplaintModal";
+import { useState } from "react";
 import ActionButtons from "../components/PatientAppointmentDetail/ActionButtons";
 import { useAppointment } from "../api/appointments";
 import { useAllDentists } from "../api/profile";
@@ -13,6 +15,7 @@ import type { AppointmentDetail } from "../types/patient";
 const PatientAppointmentDetail = () => {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
+    const [isComplaintModalOpen, setIsComplaintModalOpen] = useState(false);
 
     const { data: appointmentData, isLoading } = useAppointment(parseInt(id || '0'));
     const { data: allDentists = [] } = useAllDentists();
@@ -166,7 +169,15 @@ const PatientAppointmentDetail = () => {
                             {isActive ? (
                                 <ActionButtons phone={appointment.doctor.phone} doctorName={appointment.doctor.name} />
                             ) : (appointment.details.status === "завершён" || (appointmentData && new Date(appointmentData.end_time) < new Date() && appointmentData.status !== "cancelled")) ? (
-                                <ReviewButton />
+                                <div className="space-y-4">
+                                    <ReviewButton />
+                                    <button
+                                        onClick={() => setIsComplaintModalOpen(true)}
+                                        className="w-full py-4 rounded-[20px] text-base font-bold transition-all active:scale-95 flex items-center justify-center gap-2 text-red-500 bg-white border border-red-100 hover:bg-red-50 shadow-sm"
+                                    >
+                                        Shifokor ustidan shikoyat qilish
+                                    </button>
+                                </div>
                             ) : (
                                 <div className="bg-white rounded-4xl p-6 text-center border border-gray-100 italic text-gray-400 font-bold">
                                     {appointment.details.status === "отменён" ? "Qabul bekor qilingan" : "Qabul yakunlangan"}
@@ -176,6 +187,13 @@ const PatientAppointmentDetail = () => {
                     </div>
                 </div>
             </div>
+            
+            <ComplaintModal 
+                isOpen={isComplaintModalOpen} 
+                onClose={() => setIsComplaintModalOpen(false)} 
+                dentistId={appointmentData?.dentist_id || appointment.doctor.id || 0} 
+                dentistName={appointmentData?.dentist_name || appointment.doctor.name || "Доктор"} 
+            />
         </div>
     );
 };

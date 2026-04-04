@@ -1,10 +1,13 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Video } from "lucide-react";
+import { ArrowLeft, Video, AlertCircle } from "lucide-react";
+import React, { useState } from "react";
+import ComplaintModal from "../components/Complaints/ComplaintModal";
 import DentistImg from "../assets/img/photos/Dentist.png";
 
 const DoctorProfilePreview = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const [isComplaintModalOpen, setIsComplaintModalOpen] = useState(false);
     
     // Get doctor data from navigation state
     const doctorFromState = location.state?.doctor;
@@ -27,6 +30,7 @@ const DoctorProfilePreview = () => {
         instagram: doctorFromState.instagram,
         whatsapp: doctorFromState.whatsapp,
         work_hours: doctorFromState.work_hours,
+        verification_status: doctorFromState.verification_status,
     } : {
         id: 1,
         name: "Махмуд Пулатов",
@@ -40,7 +44,8 @@ const DoctorProfilePreview = () => {
         clinic: "Не указано",
         specialty: "Ортодонтия",
         experience: "5 лет",
-        image: DentistImg
+        image: DentistImg,
+        verification_status: "approved"
     };
 
     const handleBook = async () => {
@@ -82,6 +87,14 @@ const DoctorProfilePreview = () => {
                         <div className="w-full bg-white rounded-[24px] p-5 shadow-sm">
                             <h2 className="text-xl font-black text-[#1D1D2B]">{doctorData.name}</h2>
                             <p className="text-xs font-bold text-gray-400 mt-1">{doctorData.phone}</p>
+                            {doctorData.verification_status === "approved" && (
+                                <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#E8F8F0] text-[#11D76A] rounded-xl border border-[#11D76A]/20">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 22C6.477 22 2 17.523 2 12C2 6.477 6.477 2 12 2C17.523 2 22 6.477 22 12C22 17.523 17.523 22 12 22ZM16.707 9.293C16.316 8.902 15.684 8.902 15.293 9.293L10.5 14.086L8.707 12.293C8.316 11.902 7.684 11.902 7.293 12.293C6.902 12.684 6.902 13.316 7.293 13.707L9.793 16.207C10.184 16.598 10.816 16.598 11.207 16.207L16.707 10.707C17.098 10.316 17.098 9.684 16.707 9.293Z" fill="currentColor"/>
+                                    </svg>
+                                    <span className="text-xs font-black">Diplomi bor</span>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -188,8 +201,25 @@ const DoctorProfilePreview = () => {
                             Записаться
                         </button>
                     </div>
+
+                    <div className="pb-12">
+                        <button
+                            onClick={() => setIsComplaintModalOpen(true)}
+                            className="w-full py-4 rounded-[24px] text-base font-bold transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-red-500 bg-red-50 hover:bg-red-100"
+                        >
+                            <AlertCircle size={20} />
+                            Shifokor ustidan shikoyat qilish
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            <ComplaintModal 
+                isOpen={isComplaintModalOpen} 
+                onClose={() => setIsComplaintModalOpen(false)} 
+                dentistId={doctorData.id} 
+                dentistName={doctorData.name} 
+            />
         </div>
     );
 };

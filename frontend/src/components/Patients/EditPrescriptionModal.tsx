@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { Prescription, PrescriptionUpdate } from '../../types/prescription';
+import { useTranslation } from 'react-i18next';
+import type { Prescription, PrescriptionUpdate } from '../../types/prescription';
 import { updatePrescription } from '../../api/prescriptions';
+import { useState } from 'react';
 
 interface EditPrescriptionModalProps {
   prescription: Prescription;
@@ -10,6 +11,7 @@ interface EditPrescriptionModalProps {
 }
 
 const EditPrescriptionModal = ({ prescription, patientId, onClose, onSuccess }: EditPrescriptionModalProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<PrescriptionUpdate>({
     medication_name: prescription.medication_name,
     dosage: prescription.dosage,
@@ -30,7 +32,7 @@ const EditPrescriptionModal = ({ prescription, patientId, onClose, onSuccess }: 
       onSuccess();
     } catch (err) {
       console.error('Error updating prescription:', err);
-      setError('Не удалось обновить рецепт');
+      setError(t('patient_profile.prescriptions_view.save_error'));
     } finally {
       setLoading(false);
     }
@@ -39,7 +41,7 @@ const EditPrescriptionModal = ({ prescription, patientId, onClose, onSuccess }: 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl max-w-md w-full p-6">
-        <h2 className="text-2xl font-bold text-[#1D1D2B] mb-4">Редактировать рецепт</h2>
+        <h2 className="text-2xl font-bold text-[#1D1D2B] mb-4">{t('patient_profile.prescriptions_view.edit_title')}</h2>
         
         {error && (
           <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
@@ -50,7 +52,7 @@ const EditPrescriptionModal = ({ prescription, patientId, onClose, onSuccess }: 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Название препарата
+              {t('patient_profile.prescriptions_view.medication_label')}
             </label>
             <input
               type="text"
@@ -62,7 +64,7 @@ const EditPrescriptionModal = ({ prescription, patientId, onClose, onSuccess }: 
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Дозировка
+              {t('patient_profile.prescriptions_view.dosage_label')}
             </label>
             <input
               type="text"
@@ -74,7 +76,7 @@ const EditPrescriptionModal = ({ prescription, patientId, onClose, onSuccess }: 
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Частота приёма
+              {t('patient_profile.prescriptions_view.frequency_label')}
             </label>
             <input
               type="text"
@@ -86,7 +88,7 @@ const EditPrescriptionModal = ({ prescription, patientId, onClose, onSuccess }: 
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Длительность
+              {t('patient_profile.prescriptions_view.duration_label')}
             </label>
             <input
               type="text"
@@ -98,7 +100,7 @@ const EditPrescriptionModal = ({ prescription, patientId, onClose, onSuccess }: 
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Примечания
+              {t('patient_profile.prescriptions_view.notes_label')}
             </label>
             <textarea
               value={formData.notes}
@@ -115,14 +117,14 @@ const EditPrescriptionModal = ({ prescription, patientId, onClose, onSuccess }: 
               className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               disabled={loading}
             >
-              Отмена
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
               disabled={loading}
             >
-              {loading ? 'Сохранение...' : 'Сохранить'}
+              {loading ? t('common.saving') : t('common.save')}
             </button>
           </div>
         </form>

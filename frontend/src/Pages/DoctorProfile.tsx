@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, type FC } from 'react';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import type { RootState } from '../store/store';
 import PageHeader from '../components/DoctorProfile/PageHeader';
 import DoctorInfoCard from '../components/DoctorProfile/DoctorInfoCard';
@@ -33,26 +34,27 @@ interface ProfileData {
 }
 
 const DoctorProfile: FC = () => {
+  const { t } = useTranslation();
   const user = useSelector((state: RootState) => state.user.user);
   const { data: dentistData } = useDentistProfile();
 
   const [profileData, setProfileData] = useState<ProfileData>({
     phone: user?.phone || '+998 (93) 123 45 67',
     email: user?.email || 'example@gmail.com',
-    address: 'ул. Амира Темура, 11кв, 20дом',
+    address: t('doctor_profile.address_placeholder') || 'ул. Амира Темура, 11кв, 20дом',
     education: 'ТашПМИ (Факультет)',
     clinic: 'OdontoHub',
-    specialization: 'Хирург',
+    specialization: t('patient.specialties.items.surgeon.name') || 'Хирург',
     telegram: '@stom',
     instagram: 'stomatolog.uz',
     whatsapp: user?.phone || '+998 90 123 45 67',
-    schedule: 'Каждый день',
+    schedule: t('doctor_profile.every_day') || 'Каждый день',
     workStart: '08',
     startMinute: '00',
     workEnd: '16',
     endMinute: '00',
-    gender: 'Мужчина',
-    age: '25 лет',
+    gender: t('patient_profile.male') || 'Мужчина',
+    age: `25 ${t('patients_list.table.age_label')}`,
     name: user?.full_name || 'Пулатов Махмуд'
   });
 

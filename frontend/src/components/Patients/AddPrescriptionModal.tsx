@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { PrescriptionCreate } from '../../types/prescription';
+import { useTranslation } from 'react-i18next';
+import type { PrescriptionCreate } from '../../types/prescription';
 import { addPrescription } from '../../api/prescriptions';
 
 interface AddPrescriptionModalProps {
@@ -9,6 +10,7 @@ interface AddPrescriptionModalProps {
 }
 
 const AddPrescriptionModal = ({ patientId, onClose, onSuccess }: AddPrescriptionModalProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<PrescriptionCreate>({
     medication_name: '',
     dosage: '',
@@ -23,7 +25,7 @@ const AddPrescriptionModal = ({ patientId, onClose, onSuccess }: AddPrescription
     e.preventDefault();
     
     if (!formData.medication_name || !formData.dosage || !formData.frequency || !formData.duration) {
-      setError('Пожалуйста, заполните все обязательные поля');
+      setError(t('patient_profile.prescriptions_view.error_fields'));
       return;
     }
 
@@ -34,7 +36,7 @@ const AddPrescriptionModal = ({ patientId, onClose, onSuccess }: AddPrescription
       onSuccess();
     } catch (err) {
       console.error('Error adding prescription:', err);
-      setError('Не удалось добавить рецепт');
+      setError(t('patient_profile.prescriptions_view.save_error'));
     } finally {
       setLoading(false);
     }
@@ -43,7 +45,7 @@ const AddPrescriptionModal = ({ patientId, onClose, onSuccess }: AddPrescription
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl max-w-md w-full p-6">
-        <h2 className="text-2xl font-bold text-[#1D1D2B] mb-4">Добавить рецепт</h2>
+        <h2 className="text-2xl font-bold text-[#1D1D2B] mb-4">{t('patient_profile.prescriptions_view.add_title')}</h2>
         
         {error && (
           <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
@@ -54,66 +56,66 @@ const AddPrescriptionModal = ({ patientId, onClose, onSuccess }: AddPrescription
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Название препарата *
+              {t('patient_profile.prescriptions_view.medication_label')} *
             </label>
             <input
               type="text"
               value={formData.medication_name}
               onChange={(e) => setFormData({ ...formData, medication_name: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Например: Амоксициллин"
+              placeholder={t('patient_profile.prescriptions_view.placeholder_medication')}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Дозировка *
+              {t('patient_profile.prescriptions_view.dosage_label')} *
             </label>
             <input
               type="text"
               value={formData.dosage}
               onChange={(e) => setFormData({ ...formData, dosage: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Например: 500 мг"
+              placeholder={t('patient_profile.prescriptions_view.placeholder_dosage')}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Частота приёма *
+              {t('patient_profile.prescriptions_view.frequency_label')} *
             </label>
             <input
               type="text"
               value={formData.frequency}
               onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Например: 3 раза в день"
+              placeholder={t('patient_profile.prescriptions_view.placeholder_frequency')}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Длительность *
+              {t('patient_profile.prescriptions_view.duration_label')} *
             </label>
             <input
               type="text"
               value={formData.duration}
               onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Например: 7 дней"
+              placeholder={t('patient_profile.prescriptions_view.placeholder_duration')}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Примечания
+              {t('patient_profile.prescriptions_view.notes_label')}
             </label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={3}
-              placeholder="Дополнительные инструкции..."
+              placeholder={t('patient_profile.prescriptions_view.placeholder_notes')}
             />
           </div>
 
@@ -124,14 +126,14 @@ const AddPrescriptionModal = ({ patientId, onClose, onSuccess }: AddPrescription
               className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               disabled={loading}
             >
-              Отмена
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
               disabled={loading}
             >
-              {loading ? 'Сохранение...' : 'Сохранить'}
+              {loading ? t('common.saving') : t('common.save')}
             </button>
           </div>
         </form>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Loader2, User, Phone, MapPin, Calendar, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useCreatePatient } from '../../api/profile';
 import { toast } from '../Shared/Toast';
 
@@ -10,6 +11,7 @@ interface AddPatientModalProps {
 }
 
 const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSuccess }) => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         full_name: '',
         phone: '',
@@ -24,7 +26,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSu
         e.preventDefault();
         
         if (!formData.full_name.trim() || !formData.phone.trim()) {
-            toast.warning('Iltimos, ism va telefon raqamini kiriting');
+            toast.warning(t('patients_list.add_modal.error_required'));
             return;
         }
 
@@ -38,7 +40,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSu
                 source: 'doctor_added'
             });
             
-            toast.success('Bemor muvaffaqiyatli qo\'shildi');
+            toast.success(t('patients_list.add_modal.success_added'));
             
             // Reset form
             setFormData({
@@ -78,7 +80,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSu
                 </button>
 
                 <h2 className="text-3xl md:text-4xl font-black text-[#1a1f36] mb-8 pr-8">
-                    Добавить пациента
+                    {t('patients_list.add_modal.title')}
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -86,13 +88,13 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSu
                     <div className="space-y-2">
                         <label className="flex items-center gap-2 text-sm font-bold text-gray-500 ml-1">
                             <User size={16} />
-                            ФИО <span className="text-red-500">*</span>
+                            {t('patients_list.add_modal.full_name')} <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
                             value={formData.full_name}
                             onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                            placeholder="Введите полное имя"
+                            placeholder={t('patients_list.add_modal.full_name_placeholder')}
                             className="w-full h-14 bg-[#efefef] rounded-[20px] px-6 text-base font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none transition-all placeholder:text-gray-400"
                             required
                         />
@@ -103,7 +105,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSu
                         <div className="space-y-2">
                             <label className="flex items-center gap-2 text-sm font-bold text-gray-500 ml-1">
                                 <Phone size={16} />
-                                Номер телефона <span className="text-red-500">*</span>
+                                {t('patients_list.add_modal.phone')} <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="tel"
@@ -119,16 +121,16 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSu
                         <div className="space-y-2">
                             <label className="flex items-center gap-2 text-sm font-bold text-gray-500 ml-1">
                                 <Check size={16} />
-                                Пол
+                                {t('patients_list.add_modal.gender')}
                             </label>
                             <select
                                 value={formData.gender}
                                 onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                                 className="w-full h-14 bg-[#efefef] rounded-[20px] px-6 text-base font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none appearance-none cursor-pointer"
                             >
-                                <option value="">Выберите пол</option>
-                                <option value="male">Мужской</option>
-                                <option value="female">Женский</option>
+                                <option value="">{t('patients_list.add_modal.gender_select')}</option>
+                                <option value="male">{t('patients_list.add_modal.gender_male')}</option>
+                                <option value="female">{t('patients_list.add_modal.gender_female')}</option>
                             </select>
                         </div>
                     </div>
@@ -137,7 +139,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSu
                     <div className="space-y-2">
                         <label className="flex items-center gap-2 text-sm font-bold text-gray-500 ml-1">
                             <Calendar size={16} />
-                            Дата рождения
+                            {t('patients_list.add_modal.birth_date')}
                         </label>
                         <input
                             type="date"
@@ -151,12 +153,12 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSu
                     <div className="space-y-2">
                         <label className="flex items-center gap-2 text-sm font-bold text-gray-500 ml-1">
                             <MapPin size={16} />
-                            Адрес
+                            {t('patients_list.add_modal.address')}
                         </label>
                         <textarea
                             value={formData.address}
                             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                            placeholder="Введите адрес"
+                            placeholder={t('patients_list.add_modal.address_placeholder')}
                             rows={3}
                             className="w-full bg-[#efefef] rounded-[24px] px-6 py-4 text-base font-bold text-[#1a1f36] border-none focus:ring-2 focus:ring-[#4f6bff]/20 outline-none resize-none transition-all placeholder:text-gray-400"
                         />
@@ -169,7 +171,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSu
                             onClick={onClose}
                             className="flex-1 py-4 bg-gray-100 text-gray-500 text-lg font-black rounded-[22px] hover:bg-gray-200 transition-all active:scale-[0.98] cursor-pointer"
                         >
-                            Отмена
+                            {t('patients_list.add_modal.cancel')}
                         </button>
                         <button
                             type="submit"
@@ -177,7 +179,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSu
                             className="flex-2 py-4 bg-[#00e396] text-white text-lg font-black rounded-[22px] shadow-xl shadow-[#00e396]/20 hover:bg-[#00d08a] transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
                         >
                             {createPatient.isPending && <Loader2 className="w-5 h-5 animate-spin" />}
-                            Добавить
+                            {t('patients_list.add_modal.add')}
                         </button>
                     </div>
                 </form>
