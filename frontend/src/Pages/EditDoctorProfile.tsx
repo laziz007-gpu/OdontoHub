@@ -58,6 +58,8 @@ export default function EditDoctorProfile() {
     telegram: '',
     instagram: '',
     whatsapp: '',
+    age: '',
+    gender: '',
   });
 
   // Обновляем formData когда приходят данные с сервера
@@ -68,7 +70,7 @@ export default function EditDoctorProfile() {
       const [endHour, endMinute] = workHours[1]?.split(':') || ['16', '00'];
 
       setFormData({
-        specialization: dentist.specialization || 'Хирург',
+        specialization: dentist.specialization || '',
         phone: dentist.phone || '',
         address: dentist.address || '',
         clinic: dentist.clinic || '',
@@ -80,6 +82,8 @@ export default function EditDoctorProfile() {
         telegram: dentist.telegram || '',
         instagram: dentist.instagram || '',
         whatsapp: dentist.whatsapp || '',
+        age: dentist.age != null ? String(dentist.age) : '',
+        gender: dentist.gender || '',
       });
       if (dentist.latitude && dentist.longitude) {
         setCoordinates({ lat: dentist.latitude, lng: dentist.longitude });
@@ -230,6 +234,8 @@ export default function EditDoctorProfile() {
         telegram: formData.telegram,
         instagram: formData.instagram,
         whatsapp: formData.whatsapp,
+        age: formData.age ? parseInt(formData.age, 10) : null,
+        gender: formData.gender || null,
       };
       if (hasPickedLocation) {
         payload.latitude = coordinates.lat;
@@ -277,11 +283,43 @@ export default function EditDoctorProfile() {
                   onChange={(e) => setFormData({ ...formData, specialization: e.target.value })}
                   className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold appearance-none cursor-pointer focus:outline-none focus:border-blue-400"
                 >
+                  <option value="">Танланмаган</option>
                   {specializations.map((spec) => (
                     <option key={spec} value={spec}>{spec}</option>
                   ))}
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Age and Gender */}
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="block text-sm text-gray-600 mb-2">Ёш</label>
+                <input
+                  type="number"
+                  min="18"
+                  max="99"
+                  value={formData.age}
+                  onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                  className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold focus:outline-none focus:border-blue-400"
+                  placeholder="30"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm text-gray-600 mb-2">Жинс</label>
+                <div className="relative">
+                  <select
+                    value={formData.gender}
+                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                    className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold appearance-none cursor-pointer focus:outline-none focus:border-blue-400"
+                  >
+                    <option value="">Танланмаган</option>
+                    <option value="male">Эркак</option>
+                    <option value="female">Аёл</option>
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                </div>
               </div>
             </div>
 

@@ -275,7 +275,8 @@
       "prescriptions": "Retseptlar",
       "allergies": "Allergiyalar",
       "payments": "To'lovlar",
-      "chat": "Chat"
+      "chat": "Chat",
+      "medcard": "Medkarta"
     },
     "treatments_table": {
       "no": "№",

@@ -53,7 +53,8 @@ const PaymentsSection = ({ patientId }: PaymentsSectionProps) => {
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    const utcString = dateString.endsWith('Z') || dateString.includes('+') ? dateString : dateString + 'Z';
+    const date = new Date(utcString);
     return date.toLocaleDateString('ru-RU', {
       day: '2-digit',
       month: 'long',

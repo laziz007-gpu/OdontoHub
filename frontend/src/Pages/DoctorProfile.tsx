@@ -54,7 +54,7 @@ const DoctorProfile: FC = () => {
     workEnd: '16',
     endMinute: '00',
     gender: t('patient_profile.male') || 'Мужчина',
-    age: `25 ${t('patients_list.table.age_label')}`,
+    age: '',
     name: user?.full_name || 'Пулатов Махмуд'
   });
 
@@ -80,6 +80,14 @@ const DoctorProfile: FC = () => {
         startMinute: startMinute,
         workEnd: endHour,
         endMinute: endMinute,
+        age: dentistData.age != null
+          ? `${dentistData.age} ${t('patients_list.table.age_label')}`
+          : prev.age,
+        gender: dentistData.gender === 'male'
+          ? t('patient_profile.male')
+          : dentistData.gender === 'female'
+            ? t('patient_profile.female')
+            : prev.gender,
       }));
     }
   }, [dentistData]);

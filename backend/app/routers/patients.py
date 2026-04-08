@@ -5,12 +5,61 @@ from datetime import datetime
 from app.core.database import get_db
 from app.core.security import require_role, hash_password, get_current_user
 from app.schemas.patient import PatientCreate, PatientUpdate, PatientSchema
+from app.schemas.appointment import MedcardResponse, MedcardPatientSchema, MedcardAllergySchema, MedcardPrescriptionSchema, MedcardAppointmentSchema
 from app.models.patient import PatientProfile
 from app.models.user import User, UserRole
 from app.models.appointment import Appointment, AppointmentStatus
+from app.models.allergy import Allergy
+from app.models.prescription import Prescription
 
 
 router = APIRouter(prefix="/patients", tags=["Patients"])
+
+
+def build_medcard_response(patient_id: int, db: Session) -> MedcardResponse:
+    profile = db.query(PatientProfile).filter(PatientProfile.id == patient_id).first()
+    if not profile:
+        raise HTTPException(status_code=404, detail="Patient not found")
+
+    allergies = db.query(Allergy).filter(Allergy.patient_id == patient_id).all()
+    prescriptions = db.query(Prescription).filter(Prescription.patient_id == patient_id).order_by(Prescription.prescribed_at.desc()).all()
+    appointments = db.query(Appointment).filter(Appointment.patient_id == patient_id).order_by(Appointment.start_time.asc()).all()
+
+    from app.models.dentist import DentistProfile
+
+    dentist_names: dict[int, str | None] = {}
+    appt_schemas = []
+
+    for appt in appointments:
+        if appt.dentist_id not in dentist_names:
+            dentist = db.query(DentistProfile).filter(DentistProfile.id == appt.dentist_id).first()
+            dentist_names[appt.dentist_id] = dentist.full_name if dentist else None
+        appt_schemas.append(MedcardAppointmentSchema(
+            id=appt.id,
+            start_time=appt.start_time,
+            end_time=appt.end_time,
+            service=appt.service,
+            status=appt.status,
+            visit_type=appt.visit_type,
+            notes=appt.notes,
+            diagnosis=appt.diagnosis,
+            treatment_notes=appt.treatment_notes,
+            dentist_name=dentist_names[appt.dentist_id],
+        ))
+
+    return MedcardResponse(
+        patient=MedcardPatientSchema(
+            id=profile.id,
+            full_name=profile.full_name,
+            birth_date=profile.birth_date,
+            gender=profile.gender,
+            address=profile.address,
+            phone=profile.user.phone if profile.user else None,
+        ),
+        allergies=[MedcardAllergySchema.model_validate(a) for a in allergies],
+        prescriptions=[MedcardPrescriptionSchema.model_validate(p) for p in prescriptions],
+        appointments=appt_schemas,
+    )
 
 def calculate_patient_status(patient_id: int, db: Session) -> str:
     """
@@ -151,6 +200,17 @@ def patient_me(
     schema.status = calculate_patient_status(user.patient_profile.id, db)
     return schema
 
+
+@router.get("/me/medcard", response_model=MedcardResponse)
+def patient_medcard_me(
+    db: Session = Depends(get_db),
+    user: User = Depends(require_role(UserRole.PATIENT))
+):
+    if not user.patient_profile:
+        raise HTTPException(status_code=404, detail="Patient profile not found")
+
+    return build_medcard_response(user.patient_profile.id, db)
+
 from fastapi import HTTPException
 
 @router.get("/{patient_id}", response_model=PatientSchema)
@@ -187,6 +247,15 @@ def update_patient(
     schema.phone = profile.user.phone if profile.user else None
     schema.status = calculate_patient_status(profile.id, db)
     return schema
+
+@router.get("/{patient_id}/medcard", response_model=MedcardResponse)
+def get_patient_medcard(
+    patient_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_role(UserRole.DENTIST))
+):
+    return build_medcard_response(patient_id, db)
+
 
 @router.delete("/{patient_id}")
 def delete_patient(

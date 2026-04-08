@@ -279,7 +279,8 @@
             "prescriptions": "Рецепты",
             "allergies": "Аллергии",
             "payments": "Оплаты",
-            "chat": "Чат"
+            "chat": "Чат",
+            "medcard": "Медкарта"
         },
         "treatments_table": {
             "no": "№",

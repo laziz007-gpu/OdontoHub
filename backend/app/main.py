@@ -157,6 +157,24 @@ def on_startup():
             else:
                 print("OK: All dentist profile fields already exist")
 
+        # Add missing columns to appointments
+        if 'appointments' in inspector.get_table_names():
+            appt_cols = [col['name'] for col in inspector.get_columns('appointments')]
+            appt_fields = []
+            if 'visit_type' not in appt_cols:
+                appt_fields.append(('visit_type', "VARCHAR DEFAULT 'primary'"))
+            if 'diagnosis' not in appt_cols:
+                appt_fields.append(('diagnosis', 'TEXT'))
+            if 'treatment_notes' not in appt_cols:
+                appt_fields.append(('treatment_notes', 'TEXT'))
+            if 'price' not in appt_cols:
+                appt_fields.append(('price', 'REAL'))
+            if appt_fields:
+                with engine.begin() as conn:
+                    for field_name, field_type in appt_fields:
+                        conn.execute(text(f"ALTER TABLE appointments ADD COLUMN {field_name} {field_type}"))
+                print(f"OK: appointments migration — added {[f[0] for f in appt_fields]}")
+
         # Fix complaints.patient_id — make it nullable if not already
         if 'complaints' in inspector.get_table_names():
             complaint_cols = {c['name']: c for c in inspector.get_columns('complaints')}

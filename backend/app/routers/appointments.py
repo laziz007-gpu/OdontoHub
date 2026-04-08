@@ -44,7 +44,9 @@ def create_appointment(
             end_time=appointment.end_time,
             status=AppointmentStatus.PENDING,
             service=appointment.service,
-            notes=appointment.notes
+            notes=appointment.notes,
+            visit_type=appointment.visit_type or "primary",
+            price=appointment.price
         )
         db.add(db_appointment)
         db.commit()

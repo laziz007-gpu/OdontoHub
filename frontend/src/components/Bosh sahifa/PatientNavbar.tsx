@@ -24,7 +24,7 @@ const PatientNavbar = () => {
         { icon: <Home size={24} />, path: paths.patientHome, label: t("patient.navbar.home") },
         { icon: <Calendar size={24} />, path: paths.patientCalendar, label: t("patient.navbar.appointments") },
         { icon: <MessageSquare size={24} />, path: paths.patientChats, label: t("patient.navbar.chats") },
-        { icon: <FileText size={24} />, path: paths.patientHistory, label: t("patient.navbar.history") },
+        { icon: <FileText size={24} />, path: paths.patientHistory, label: t("patient_profile.tabs.medcard") },
         { icon: <User size={24} />, path: paths.patientProfileSettings, label: t("patient.navbar.profile") },
         {
             icon: (

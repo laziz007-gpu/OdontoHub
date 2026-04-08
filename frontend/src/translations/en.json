@@ -275,7 +275,8 @@
       "prescriptions": "Prescriptions",
       "allergies": "Allergies",
       "payments": "Payments",
-      "chat": "Chat"
+      "chat": "Chat",
+      "medcard": "Medical Card"
     },
     "treatments_table": {
       "no": "№",

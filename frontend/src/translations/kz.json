@@ -274,7 +274,8 @@
       "prescriptions": "Рецепттер",
       "allergies": "Аллергиялар",
       "payments": "Төлемдер",
-      "chat": "Чат"
+      "chat": "Чат",
+      "medcard": "Медкарта"
     },
     "treatments_table": {
       "no": "№",

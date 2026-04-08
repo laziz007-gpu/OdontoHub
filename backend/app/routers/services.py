@@ -26,10 +26,7 @@ def read_services(
 
 @router.post("/", response_model=ServiceSchema)
 def create_service(service: ServiceCreate, db: Session = Depends(get_db)):
-    db_service = db.query(Service).filter(Service.name == service.name).first()
-    if db_service:
-        raise HTTPException(status_code=400, detail="Service already exists")
-    new_service = Service(name=service.name, price=service.price)
+    new_service = Service(name=service.name, price=service.price, dentist_id=service.dentist_id)
     db.add(new_service)
     db.commit()
     db.refresh(new_service)

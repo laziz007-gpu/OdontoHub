@@ -60,6 +60,13 @@ class Appointment(Base):
     cancel_reason: Mapped[str | None] = mapped_column(nullable=True)
     service: Mapped[str | None] = mapped_column(nullable=True)
     notes: Mapped[str | None] = mapped_column(nullable=True)
+    visit_type: Mapped[str] = mapped_column(
+        default="primary",
+        server_default="primary"
+    )
+    diagnosis: Mapped[str | None] = mapped_column(nullable=True)
+    treatment_notes: Mapped[str | None] = mapped_column(nullable=True)
+    price: Mapped[float | None] = mapped_column(nullable=True)
 
     __table_args__ = (
         UniqueConstraint(

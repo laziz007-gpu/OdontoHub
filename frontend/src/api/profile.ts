@@ -38,6 +38,8 @@ export interface DentistProfile {
     review_count?: number | null;
     works_photos?: string;
     diploma_photo_url?: string;
+    age?: number | null;
+    gender?: string | null;
 }
 
 export const usePatientProfile = () => {
@@ -191,6 +193,8 @@ export const useUpdateDentistProfile = () => {
             latitude: number;
             longitude: number;
             works_photos: string;
+            age: number | null;
+            gender: string | null;
         }>) => {
             const response = await api.put<DentistProfile>('/dentists/me', data);
             return response.data;

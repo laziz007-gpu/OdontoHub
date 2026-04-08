@@ -77,11 +77,12 @@ const AllergySection = ({ patientId }: AllergySectionProps) => {
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(i18n.language, { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    const utcString = dateString.endsWith('Z') || dateString.includes('+') ? dateString : dateString + 'Z';
+    const date = new Date(utcString);
+    return date.toLocaleDateString(i18n.language, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   };
 

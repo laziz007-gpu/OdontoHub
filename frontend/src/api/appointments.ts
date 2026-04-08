@@ -14,6 +14,7 @@ export interface Appointment {
     cancel_reason?: string | null;
     dentist_name?: string;
     patient_name?: string;
+    visit_type?: "primary" | "follow_up";
 }
 
 export interface AppointmentCreate {
@@ -24,6 +25,7 @@ export interface AppointmentCreate {
     service?: string;
     price?: number;
     notes?: string;
+    visit_type?: "primary" | "follow_up";
 }
 
 export const useCreateAppointment = () => {
@@ -37,17 +39,21 @@ export const useCreateAppointment = () => {
                 const raw = JSON.parse(localStorage.getItem('appointments') || '[]');
                 const patients = JSON.parse(localStorage.getItem('patients') || '[]');
                 const patient = patients.find((p: any) => p.id === data.patient_id);
-                
+                const start = new Date(data.start_time);
+
                 const newApt = {
                     ...data,
                     id: Math.max(0, ...raw.map((a: any) => a.id)) + 1,
                     status: 'pending',
                     created_at: new Date().toISOString(),
-                    patient_name: patient ? patient.full_name : 'Пациент'
+                    patient_name: patient ? patient.full_name : 'РџР°С†РёРµРЅС‚',
+                    doctor_name: 'Р”РѕРєС‚РѕСЂ',
+                    date: start.toLocaleDateString('ru-RU'),
+                    time: start.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
                 };
                 raw.push(newApt);
                 localStorage.setItem('appointments', JSON.stringify(raw));
-                
+
                 return {
                     id: newApt.id,
                     dentist_id: newApt.dentist_id,
@@ -58,17 +64,21 @@ export const useCreateAppointment = () => {
                     service: newApt.service,
                     price: newApt.price,
                     notes: newApt.notes,
-                    patient_name: newApt.patient_name
+                    patient_name: newApt.patient_name,
+                    dentist_name: newApt.doctor_name
                 } as Appointment;
             }
 
             const response = await api.post<Appointment>('/appointments/', data);
             return response.data;
         },
-        onSuccess: () => {
+        onSuccess: (_data, variables) => {
             queryClient.invalidateQueries({ queryKey: ['appointments'] });
             queryClient.invalidateQueries({ queryKey: ['myAppointments'] });
             queryClient.invalidateQueries({ queryKey: ['patients'] });
+            if (variables.patient_id) {
+                queryClient.invalidateQueries({ queryKey: ['patientAppointments', variables.patient_id] });
+            }
         }
     });
 };
@@ -97,16 +107,16 @@ export const useMyAppointments = () => {
                     const end_time = a.end_time || new Date(new Date(start_time).getTime() + 60 * 60 * 1000).toISOString();
                     return {
                         id: a.id,
-                        dentist_id: a.doctor_id || 2,
+                        dentist_id: a.doctor_id || a.dentist_id || 2,
                         patient_id: a.patient_id || 1,
                         start_time,
                         end_time,
                         status: (a.status === 'upcoming' ? 'pending' : a.status === 'past' ? 'completed' : a.status) as Appointment['status'],
                         service: a.service || null,
                         price: a.price || null,
-                        notes: a.comment || null,
-                        dentist_name: a.doctor_name || 'Доктор',
-                        patient_name: a.patient_name || userData.full_name || 'Пациент',
+                        notes: a.notes || a.comment || null,
+                        dentist_name: a.doctor_name || a.dentist_name || 'Р”РѕРєС‚РѕСЂ',
+                        patient_name: a.patient_name || userData.full_name || 'РџР°С†РёРµРЅС‚',
                     };
                 });
             }
@@ -148,10 +158,13 @@ export const useUpdateAppointment = () => {
             const response = await api.patch<Appointment>(`/appointments/${id}`, data);
             return response.data;
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ['appointments'] });
             queryClient.invalidateQueries({ queryKey: ['myAppointments'] });
             queryClient.invalidateQueries({ queryKey: ['patients'] });
+            if (data?.patient_id) {
+                queryClient.invalidateQueries({ queryKey: ['patientAppointments', data.patient_id] });
+            }
         }
     });
 };
@@ -193,13 +206,21 @@ export const useRescheduleAppointment = () => {
     });
 };
 
-// Direct API call for getting patient appointments (for dentist view)
 export const getPatientAppointments = async (patientId: number): Promise<Appointment[]> => {
     const response = await api.get<Appointment[]>(`/appointments/patient/${patientId}`);
     return response.data;
 };
 
-// Get single appointment by ID
+export const usePatientAppointments = (patientId: number) => {
+    return useQuery({
+        queryKey: ['patientAppointments', patientId],
+        queryFn: () => getPatientAppointments(patientId),
+        enabled: !!patientId,
+        staleTime: 0,
+        refetchOnMount: 'always',
+    });
+};
+
 export const useAppointment = (id: number) => {
     return useQuery({
         queryKey: ['appointment', id],

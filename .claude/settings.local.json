@@ -4,7 +4,10 @@
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('deps:', list\\(d.get\\('dependencies',{}\\).keys\\(\\)\\)\\)\")",
       "Read(//c/Users/admin/.claude/projects/C--Users-admin-Desktop-GoFamily-OdontoHub/memory//**)",
       "Read(//c/Users/admin/.claude/projects/C--Users-admin-Desktop-GoFamily-OdontoHub/memory/**)",
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "Bash(python -c ':*)",
+      "Bash(npx tsc:*)",
+      "Bash(python add_price_column.py)"
     ]
   }
 }

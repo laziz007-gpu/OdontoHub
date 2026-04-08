@@ -10,8 +10,9 @@ import AllergySection from '../components/Patients/AllergySection';
 import AppointmentsSection from '../components/Patients/AppointmentsSection';
 import PhotosSection from '../components/Patients/PhotosSection';
 import PaymentsSection from '../components/Patients/PaymentsSection';
+import MedcardSection from '../components/Patients/MedcardSection';
 
-type TabType = 'info' | 'appointments' | 'prescriptions' | 'allergies' | 'photos' | 'payments';
+type TabType = 'info' | 'appointments' | 'prescriptions' | 'allergies' | 'photos' | 'payments' | 'medcard';
 
 const PatientDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -39,6 +40,7 @@ const PatientDetailPage = () => {
 
   const tabs = [
     { id: 'info' as TabType, label: t('patient_profile.tabs.info'), color: 'blue' },
+    { id: 'medcard' as TabType, label: t('patient_profile.tabs.medcard'), color: 'teal' },
     { id: 'appointments' as TabType, label: t('patient_profile.tabs.appointments'), color: 'purple' },
     { id: 'prescriptions' as TabType, label: t('patient_profile.tabs.prescriptions'), color: 'blue' },
     { id: 'allergies' as TabType, label: t('patient_profile.tabs.allergies'), color: 'red' },
@@ -53,6 +55,7 @@ const PatientDetailPage = () => {
       green: isActive ? 'bg-green-500 text-white' : 'text-gray-600 hover:bg-gray-100',
       purple: isActive ? 'bg-purple-500 text-white' : 'text-gray-600 hover:bg-gray-100',
       indigo: isActive ? 'bg-indigo-500 text-white' : 'text-gray-600 hover:bg-gray-100',
+      teal: isActive ? 'bg-teal-500 text-white' : 'text-gray-600 hover:bg-gray-100',
     };
     
     const tab = tabs.find(t => t.id === tabId);
@@ -108,6 +111,7 @@ const PatientDetailPage = () => {
       <div className="px-4 mt-6">
         <div className="bg-white rounded-2xl p-6 shadow-sm min-h-[400px]">
           {activeTab === 'info' && <PatientInfoSection patientId={patientId} />}
+          {activeTab === 'medcard' && <MedcardSection patientId={patientId} />}
           {activeTab === 'appointments' && <AppointmentsSection patientId={patientId} dentistId={dentistId} />}
           {activeTab === 'prescriptions' && <PrescriptionSection patientId={patientId} />}
           {activeTab === 'allergies' && <AllergySection patientId={patientId} />}

@@ -13,7 +13,9 @@ const AddAppointmentModal = ({ patientId, dentistId, onClose, onSuccess }: AddAp
     start_time: '',
     end_time: '',
     service: '',
-    notes: ''
+    notes: '',
+    visit_type: 'primary' as 'primary' | 'follow_up',
+    price: ''
   });
   const [error, setError] = useState<string | null>(null);
   const createAppointment = useCreateAppointment();
@@ -34,7 +36,9 @@ const AddAppointmentModal = ({ patientId, dentistId, onClose, onSuccess }: AddAp
         start_time: formData.start_time,
         end_time: formData.end_time,
         service: formData.service || undefined,
-        notes: formData.notes || undefined
+        notes: formData.notes || undefined,
+        visit_type: formData.visit_type,
+        price: formData.price ? parseFloat(formData.price) : undefined
       });
       onSuccess();
       onClose();
@@ -93,6 +97,34 @@ const AddAppointmentModal = ({ patientId, dentistId, onClose, onSuccess }: AddAp
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Например: Консультация"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Narxi (so'm)
+            </label>
+            <input
+              type="number"
+              value={formData.price}
+              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Masalan: 250000"
+              min="0"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Тип приёма
+            </label>
+            <select
+              value={formData.visit_type}
+              onChange={(e) => setFormData({ ...formData, visit_type: e.target.value as 'primary' | 'follow_up' })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            >
+              <option value="primary">1-ko'rik (Birinchi qabul)</option>
+              <option value="follow_up">Davomiy (Qayta qabul)</option>
+            </select>
           </div>
 
           <div>

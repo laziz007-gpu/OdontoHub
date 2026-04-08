@@ -1,25 +1,45 @@
-import { useTranslation } from "react-i18next";
+import type { MedcardPrescription } from "../../api/medcard";
 
 interface PrescriptionCardProps {
-    prescriptions: string[];
+  prescriptions: MedcardPrescription[];
 }
 
-const PrescriptionCard = ({ prescriptions }: PrescriptionCardProps) => {
-    const { t } = useTranslation();
+const formatDate = (iso?: string | null) => {
+  if (!iso) return null;
+  const utcValue = iso.endsWith("Z") || iso.includes("+") ? iso : `${iso}Z`;
+  return new Date(utcValue).toLocaleDateString("ru-RU");
+};
 
-    return (
-        <div className="space-y-6">
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-blue-900">{t("patient.history.prescription", "Рецепт")}</h2>
-            <div className="bg-blue-50 rounded-4xl p-8 space-y-4 border border-blue-100 shadow-sm">
-                {prescriptions.map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-4">
-                        <div className="w-3 h-3 bg-blue-600 rounded-full shadow-[0_0_10px_rgba(37,99,235,0.3)]" />
-                        <p className="text-xl md:text-2xl font-bold text-blue-800">{item}</p>
-                    </div>
-                ))}
+const PrescriptionCard = ({ prescriptions }: PrescriptionCardProps) => {
+  return (
+    <div className="space-y-6">
+      <h2 className="text-3xl md:text-4xl font-black tracking-tight text-blue-900">Retseptlar</h2>
+      <div className="bg-blue-50 rounded-[2rem] p-6 md:p-8 space-y-4 border border-blue-100 shadow-sm">
+        {prescriptions.length === 0 ? (
+          <p className="text-lg md:text-xl font-bold text-blue-800/70">Hozircha retsept kiritilmagan</p>
+        ) : (
+          prescriptions.map((prescription) => (
+            <div key={prescription.id} className="rounded-[1.5rem] bg-white px-5 py-4 border border-blue-100">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                <p className="text-xl md:text-2xl font-black text-blue-800">{prescription.medication_name}</p>
+                {formatDate(prescription.prescribed_at) && (
+                  <span className="text-sm font-bold text-blue-500">{formatDate(prescription.prescribed_at)}</span>
+                )}
+              </div>
+              <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm md:text-base text-blue-900">
+                {prescription.dosage && <span><b>Doza:</b> {prescription.dosage}</span>}
+                {prescription.frequency && <span><b>Qabul:</b> {prescription.frequency}</span>}
+                {prescription.duration && <span><b>Muddat:</b> {prescription.duration}</span>}
+              </div>
+              {prescription.notes && (
+                <p className="mt-3 text-sm md:text-base text-blue-900/70">{prescription.notes}</p>
+              )}
             </div>
-        </div>
-    );
+          ))
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default PrescriptionCard;

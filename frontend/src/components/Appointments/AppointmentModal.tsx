@@ -148,13 +148,17 @@ const AppointmentModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
             const start = new Date(selectedYear, selectedMonth, selectedDay, parseInt(hour), parseInt(minute));
             const end = new Date(start.getTime() + 60 * 60 * 1000);
 
+            const selectedServiceObj = services.find(s => s.name === selectedService);
+            const servicePrice = selectedServiceObj ? parseFloat(selectedServiceObj.price) : undefined;
+
             await createAppointment.mutateAsync({
                 dentist_id: dentistId,
                 patient_id: Number(finalPatientId),
                 start_time: start.toISOString(),
                 end_time: end.toISOString(),
                 service: selectedService,
-                notes: notes
+                notes: notes,
+                price: servicePrice
             });
 
             toast.success('Қабул муваффақиятli сақланди');

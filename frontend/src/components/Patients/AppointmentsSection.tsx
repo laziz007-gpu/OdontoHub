@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { getPatientAppointments, type Appointment } from '../../api/appointments';
+import { useState } from 'react';
+import { usePatientAppointments, type Appointment } from '../../api/appointments';
 import AddAppointmentModal from './AddAppointmentModal';
 
 interface AppointmentsSectionProps {
@@ -8,31 +8,12 @@ interface AppointmentsSectionProps {
 }
 
 const AppointmentsSection = ({ patientId, dentistId }: AppointmentsSectionProps) => {
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
-
-  useEffect(() => {
-    fetchAppointments();
-  }, [patientId]);
-
-  const fetchAppointments = async () => {
-    try {
-      setLoading(true);
-      const data = await getPatientAppointments(patientId);
-      setAppointments(data);
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching appointments:', err);
-      setError('Не удалось загрузить приёмы');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: appointments = [], isLoading, error } = usePatientAppointments(patientId);
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    const utcString = dateString.endsWith('Z') || dateString.includes('+') ? dateString : dateString + 'Z';
+    const date = new Date(utcString);
     return date.toLocaleDateString('ru-RU', {
       day: '2-digit',
       month: 'long',
@@ -68,7 +49,7 @@ const AppointmentsSection = ({ patientId, dentistId }: AppointmentsSectionProps)
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-gray-800">История приёмов</h2>
-        <button 
+        <button
           onClick={() => setShowAddModal(true)}
           className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
         >
@@ -78,11 +59,11 @@ const AppointmentsSection = ({ patientId, dentistId }: AppointmentsSectionProps)
 
       {error && (
         <div className="bg-red-50 text-red-600 p-4 rounded-lg">
-          {error}
+          Не удалось загрузить приёмы
         </div>
       )}
 
-      {loading ? (
+      {isLoading ? (
         <div className="flex justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
         </div>
@@ -95,7 +76,7 @@ const AppointmentsSection = ({ patientId, dentistId }: AppointmentsSectionProps)
         </div>
       ) : (
         <div className="space-y-3">
-          {appointments.map((appointment) => (
+          {appointments.map((appointment: Appointment) => (
             <div key={appointment.id} className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
@@ -119,7 +100,7 @@ const AppointmentsSection = ({ patientId, dentistId }: AppointmentsSectionProps)
           patientId={patientId}
           dentistId={dentistId}
           onClose={() => setShowAddModal(false)}
-          onSuccess={fetchAppointments}
+          onSuccess={() => setShowAddModal(false)}
         />
       )}
     </div>

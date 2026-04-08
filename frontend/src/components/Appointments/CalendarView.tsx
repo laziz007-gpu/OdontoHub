@@ -32,7 +32,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
         const appointmentCounts: Record<string, number> = {};
         if (apiAppointments && Array.isArray(apiAppointments)) {
             apiAppointments.forEach(apt => {
-                const aptDate = new Date(apt.start_time);
+                const raw = apt.start_time;
+                const utc = raw.endsWith('Z') || raw.includes('+') ? raw : raw + 'Z';
+                const aptDate = new Date(utc);
                 const dateKey = `${aptDate.getFullYear()}-${aptDate.getMonth()}-${aptDate.getDate()}`;
                 appointmentCounts[dateKey] = (appointmentCounts[dateKey] || 0) + 1;
             });
@@ -127,8 +129,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({ onBack }) => {
                         <div className="bg-white rounded-[12px] px-3 py-2 min-w-[40px] flex items-center justify-center">
                             <span className="text-[#1a1f36] font-black text-lg">
                                 {apiAppointments?.filter(apt => {
-                                    const aptDate = new Date(apt.start_time);
-                                    return aptDate.getMonth() === viewDate.getMonth() && 
+                                    const raw = apt.start_time;
+                                    const utc = raw.endsWith('Z') || raw.includes('+') ? raw : raw + 'Z';
+                                    const aptDate = new Date(utc);
+                                    return aptDate.getMonth() === viewDate.getMonth() &&
                                            aptDate.getFullYear() === viewDate.getFullYear();
                                 }).length || 0}
                             </span>

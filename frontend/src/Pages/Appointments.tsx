@@ -41,7 +41,10 @@ const Appointments: React.FC = () => {
                 return true;
             })
             .map(app => {
-                const startDate = new Date(app.start_time);
+                // Ensure UTC parsing: append 'Z' if no timezone info present
+                const rawTime = app.start_time;
+                const utcTime = rawTime.endsWith('Z') || rawTime.includes('+') ? rawTime : rawTime + 'Z';
+                const startDate = new Date(utcTime);
                 const time = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
 
                 let status: AppointmentStatus = 'in_queue';
@@ -61,7 +64,7 @@ const Appointments: React.FC = () => {
                 const dateStr = `${startDate.getFullYear()}-${(startDate.getMonth() + 1).toString().padStart(2, '0')}-${startDate.getDate().toString().padStart(2, '0')}`;
 
                 const matchingService = services?.find(s => s.name === app.service);
-                const price = matchingService?.price;
+                const price = matchingService?.price ?? app.price;
 
                 return {
                     id: app.id,
@@ -112,6 +115,7 @@ const Appointments: React.FC = () => {
             status: apt.status,
             service: apt.service,
             patientName: apt.patientName,
+            notes: apt.notes,
             raw: apt.raw
         });
         if (apt.status === 'in_progress') {

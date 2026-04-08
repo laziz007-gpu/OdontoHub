@@ -26,7 +26,7 @@ const Booking = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const { data: dentists = [] } = useAllDentists();
-    const { data: servicesData = [] } = useServices();
+    const { data: servicesData = [] } = useServices(selectedDoctor ? parseInt(selectedDoctor) : undefined);
     const createAppointment = useCreateAppointment();
 
     const doctors = dentists.map(d => ({
@@ -147,7 +147,7 @@ const Booking = () => {
                                 placeholder="Выберите стоматолога"
                                 value={selectedDoctor}
                                 options={doctors}
-                                onChange={setSelectedDoctor}
+                                onChange={(val) => { setSelectedDoctor(val); setSelectedService(""); }}
                                 type="doctor"
                             />
                         </div>
