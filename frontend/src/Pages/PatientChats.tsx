@@ -94,10 +94,10 @@ const PatientChats = () => {
     );
 
     return (
-        <div className="min-h-screen flex flex-col bg-gray-100/50 max-w-7xl mx-auto w-full">
+        <div className="bg-gray-100/50 max-w-7xl mx-auto w-full">
             <ChatHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
-            <div className="flex-1 px-4 py-6 space-y-3 pb-32">
+            <div className="px-4 py-6 space-y-3">
                 {isLoading && (
                     <div className="flex justify-center py-10">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />

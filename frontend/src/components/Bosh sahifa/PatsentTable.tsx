@@ -51,8 +51,8 @@ export default function PatientsTable({ patients }: Props) {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-2 sm:p-6 bg-gray-50 min-h-screen">
-      <div className="hidden sm:grid grid-cols-6 px-6 py-3 bg-white border-b text-sm font-medium text-gray-600">
+    <div className="w-full">
+      <div className="hidden sm:grid grid-cols-6 px-6 py-3 bg-white border-b text-sm font-medium text-gray-600 rounded-t-2xl">
         <div>{t('patients_list.table.name')}</div>
         <div>{t('patients_list.table.age')}</div>
         <div>{t('patients_list.table.phone')}</div>
@@ -65,7 +65,7 @@ export default function PatientsTable({ patients }: Props) {
         {patients.map(p => (
           <div
             key={p.id}
-            className="flex flex-col sm:grid sm:grid-cols-6 items-start sm:items-center px-4 py-4 sm:px-6 bg-white rounded-xl sm:rounded-lg shadow-sm hover:shadow-md transition-shadow relative gap-3 sm:gap-0"
+            className="flex flex-col sm:grid sm:grid-cols-6 items-start sm:items-center px-4 py-4 sm:px-6 bg-white rounded-2xl sm:rounded-none sm:last:rounded-b-2xl shadow-sm hover:shadow-md transition-shadow relative gap-3 sm:gap-0"
           >
             <Link to={`/patients/${p.id}`} className="absolute inset-0 z-10" />
 
@@ -81,7 +81,7 @@ export default function PatientsTable({ patients }: Props) {
             </div>
 
             {/* Mobile View: Row of details */}
-            <div className="flex items-center gap-4 sm:hidden w-full text-sm text-gray-600 border-t pt-3">
+            <div className="flex items-start gap-3 sm:hidden w-full text-sm text-gray-600 border-t pt-3">
               <div className="flex-1">
                 <span className="text-[10px] uppercase text-gray-400 block">{t('patients_list.table.age')}</span>
                 {p.age} {t('patients_list.table.age_label')}
@@ -89,6 +89,12 @@ export default function PatientsTable({ patients }: Props) {
               <div className="flex-1">
                 <span className="text-[10px] uppercase text-gray-400 block">{t('patients_list.table.diagnosis')}</span>
                 <span className="line-clamp-1">{p.diagnosis}</span>
+              </div>
+              <div className="shrink-0">
+                <span className="text-[10px] uppercase text-gray-400 block mb-1">{t('patients_list.table.status')}</span>
+                <div className={`font-bold text-xs px-2.5 py-1 rounded-full bg-opacity-10 ${p.statusColor} ${p.status === 'Р›Р•Р§РРўРЎРЇ' ? 'bg-blue-100' : p.status === 'РќРћР’Р«Р™' ? 'bg-green-100' : 'bg-gray-100'}`}>
+                  {getStatusLabel(p.status)}
+                </div>
               </div>
               <button
                 onClick={(e) => handleDelete(e, p.id, p.name)}

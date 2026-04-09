@@ -6,7 +6,7 @@ import SuggestedDoctors from "../components/PatientHome/SuggestedDoctors";
 
 const PatientHome = () => {
     return (
-        <div className="p-4 space-y-8 pb-24 max-w-7xl mx-auto w-full">
+        <div className="p-4 space-y-8 max-w-7xl mx-auto w-full">
             <SearchBar />
             <UpcomingAppointment />
             <SuggestedDoctors />

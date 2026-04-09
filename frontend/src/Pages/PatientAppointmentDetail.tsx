@@ -124,7 +124,7 @@ const PatientAppointmentDetail = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#F5F7FA] p-4 md:p-8 max-w-5xl mx-auto w-full flex flex-col font-sans pb-20">
+        <div className="min-h-screen bg-[#F5F7FA] p-4 md:p-8 max-w-5xl mx-auto w-full flex flex-col font-sans">
             {/* Header */}
             <div className="flex items-center justify-between mb-8 md:mb-12">
                 <div className="flex items-center gap-6">

@@ -55,7 +55,7 @@ const Finance: React.FC = () => {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     return (
-        <div className="flex-1 bg-[#f5f7fb] h-screen overflow-y-auto custom-scrollbar">
+        <div className="flex-1 bg-[#f5f7fb] min-h-screen overflow-y-auto custom-scrollbar">
             <div className="min-w-0 p-4 lg:p-8">
                 {/* Header Context from Image */}
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">

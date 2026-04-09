@@ -45,7 +45,6 @@ const Tezroq: React.FC = () => {
   };
 
   const handleNoteSuccess = (patientId: number, note: string) => {
-    // Save note to localStorage
     const notesKey = `patient_notes_${patientId}`;
     const existingNotes = localStorage.getItem(notesKey);
     const notes = existingNotes ? JSON.parse(existingNotes) : [];
@@ -54,28 +53,27 @@ const Tezroq: React.FC = () => {
       id: Date.now(),
       text: note,
       date: new Date().toISOString(),
-      createdBy: 'Врач' // TODO: Get from current user
+      createdBy: 'Врач'
     });
     
     localStorage.setItem(notesKey, JSON.stringify(notes));
-    // Modal already handles success toast and closing
   };
 
   return (
     <div>
       {/* Quick Actions */}
-      <div className="bg-white rounded-2xl p-6 mb-8">
-        <h2 className="text-xl font-bold mb-6">{t('dashboard.quick_actions.title')}</h2>
-        <div className="grid grid-cols-2 gap-4">
+      <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-4 sm:mb-8">
+        <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">{t('dashboard.quick_actions.title')}</h2>
+        <div className="grid grid-cols-2 gap-2 sm:gap-4">
           {actions.map((action, index) => (
             <button
               key={index}
               onClick={() => handleActionClick(action)}
-              className="bg-gray-50 hover:bg-gray-100 rounded-2xl p-6 text-center transition-colors relative"
+              className="bg-gray-50 hover:bg-gray-100 rounded-xl sm:rounded-2xl p-3 sm:p-6 text-center transition-colors relative"
             >
-              <p className="font-semibold text-gray-900">{t(action.titleKey)}</p>
+              <p className="font-semibold text-gray-900 text-xs sm:text-base">{t(action.titleKey)}</p>
               {action.action === 'message' && (
-                <span className="absolute top-2 right-2 text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full font-medium">
+                <span className="absolute top-1 right-1 sm:top-2 sm:right-2 text-[10px] sm:text-xs bg-yellow-100 text-yellow-700 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full font-medium">
                   В разработке
                 </span>
               )}
@@ -99,7 +97,6 @@ const Tezroq: React.FC = () => {
         onClose={() => setIsPatientModalOpen(false)}
         onSuccess={() => {
           setIsPatientModalOpen(false);
-          // Stay on current page as requested
         }}
       />
 

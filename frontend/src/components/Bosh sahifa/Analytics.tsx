@@ -22,20 +22,17 @@ export default function Analytics() {
     const todayEnd = new Date(today);
     todayEnd.setHours(23, 59, 59, 999);
 
-    // Appointments today
     const todayAppointments = appointments?.filter((app: any) => {
       const appDate = new Date(app.start_time);
       return appDate >= today && appDate <= todayEnd;
     }).length || 0;
 
-    // Appointments this month
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     const monthAppointments = appointments?.filter((app: any) => {
       const appDate = new Date(app.start_time);
       return appDate >= firstDayOfMonth;
     }).length || 0;
 
-    // New patients this week
     const lastWeek = new Date(today);
     lastWeek.setDate(lastWeek.getDate() - 7);
     
@@ -53,7 +50,7 @@ export default function Analytics() {
   }, [appointments, patients]);
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 mb-8">
+    <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-8">
       {stats.map((item) => {
         const isPositive = item.change > 0;
         const isNegative = item.change < 0;
@@ -68,27 +65,25 @@ export default function Analytics() {
         return (
           <div
             key={item.titleKey}
-            className="bg-white rounded-2xl px-6 py-5 flex-1 shadow-md"
+            className="bg-white rounded-xl sm:rounded-2xl px-3 sm:px-6 py-3 sm:py-5 shadow-md flex flex-col justify-center items-center text-center"
           >
-            {/* Yuqori qator */}
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-5xl font-bold text-gray-900">
+            <div className="flex items-center justify-center mb-1 sm:mb-3 w-full">
+              <h2 className="text-2xl sm:text-5xl font-bold text-gray-900">
                 {item.value}
               </h2>
 
               {hasChange && (
                 <div className={`flex items-center gap-1 ${changeColor}`}>
-                  <span className="text-lg font-bold">
+                  <span className="text-sm sm:text-lg font-bold">
                     {isPositive ? `+${item.change}` : item.change}
                   </span>
-                  {isPositive && <HiArrowUp className="w-5 h-5" />}
-                  {isNegative && <HiArrowDown className="w-5 h-5" />}
+                  {isPositive && <HiArrowUp className="w-4 h-4 sm:w-5 sm:h-5" />}
+                  {isNegative && <HiArrowDown className="w-4 h-4 sm:w-5 sm:h-5" />}
                 </div>
               )}
             </div>
 
-            {/* Pastki qator */}
-            <p className="text-gray-600 text-sm font-medium">
+            <p className="text-gray-600 text-[11px] sm:text-sm font-medium leading-tight">
               {t(item.titleKey)}
             </p>
           </div>

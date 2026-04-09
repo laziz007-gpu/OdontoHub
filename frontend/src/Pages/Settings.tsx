@@ -7,7 +7,6 @@ import Language from '../components/Settings/Language';
 import Image from '../components/Settings/Image';
 import Support from '../components/Settings/Support';
 import { useTranslation } from 'react-i18next';
-import MobileHeaderAndDrawer from '../Layouts/MobileHeaderAndDrawer';
 
 const Settings: React.FC = () => {
     const { t } = useTranslation();
@@ -22,9 +21,7 @@ const Settings: React.FC = () => {
     ];
 
     return (
-        <div className="w-full min-h-screen bg-[#F4F5FA] p-6 font-onest max-lg:pt-20">
-            {/* Mobile Header */}
-            <MobileHeaderAndDrawer />
+        <div className="w-full min-h-screen bg-[#F4F5FA] p-6 font-onest">
 
             {/* Top Bar */}
             <SettingsHeader />

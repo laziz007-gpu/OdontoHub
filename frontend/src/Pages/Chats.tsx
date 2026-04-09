@@ -223,11 +223,21 @@ export default function Chats() {
     };
 
     return (
-        <div className="flex h-dvh md:h-[calc(100vh-32px)] md:m-4 bg-white md:rounded-[24px] overflow-hidden border border-gray-100 shadow-sm transition-all duration-300">
+        <div className="flex h-[calc(100dvh-56px)] md:h-[calc(100vh-88px)] lg:h-[calc(100vh-32px)] md:m-4 bg-white md:rounded-[24px] overflow-hidden border border-gray-100 shadow-sm transition-all duration-300">
             {/* Chat list */}
             <div className={`w-full lg:w-[350px] border-r border-gray-100 flex flex-col shrink-0 ${id ? 'hidden lg:flex' : 'flex'}`}>
                 <div className="p-4 sm:p-6 border-b border-gray-100 bg-white sticky top-0 z-10">
-                    <h2 className="text-xl sm:text-2xl font-black text-gray-900 mb-4">Chatlar</h2>
+                    <div className="flex items-center gap-3 mb-4">
+                        <button
+                            type="button"
+                            onClick={() => navigate(paths.menu)}
+                            className="p-2 rounded-full hover:bg-gray-100 transition-colors shrink-0"
+                            aria-label="Orqaga qaytish"
+                        >
+                            <ArrowLeft size={20} className="text-gray-600" />
+                        </button>
+                        <h2 className="text-xl sm:text-2xl font-black text-gray-900">Chatlar</h2>
+                    </div>
                     <div className="relative">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input

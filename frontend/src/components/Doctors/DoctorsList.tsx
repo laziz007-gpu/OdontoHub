@@ -162,7 +162,7 @@ const DoctorsList: React.FC = () => {
             {isLoading ? (
                 <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" /></div>
             ) : (
-                <div className="space-y-3 pb-32">
+                <div className="space-y-3">
                     {doctorsList.map((doctor, index) => (
                         <DoctorCard
                             key={index}

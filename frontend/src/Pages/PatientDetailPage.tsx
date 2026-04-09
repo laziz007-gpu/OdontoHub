@@ -65,7 +65,7 @@ const PatientDetailPage = () => {
   return (
     <div className="min-h-screen bg-[#E8E8E8] pb-8">
       {/* Header */}
-      <div className="bg-white px-4 py-6 flex items-center justify-between gap-4 sticky top-0 z-20 rounded-b-[40px] shadow-sm">
+      <div className="bg-white px-4 py-6 flex items-center justify-between gap-4 sticky top-14 lg:top-0 z-30 rounded-b-[40px] shadow-sm">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}

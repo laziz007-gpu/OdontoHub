@@ -175,7 +175,7 @@ const PatientChatDetail = () => {
     };
 
     return (
-        <div className="h-dvh flex flex-col bg-gray-50 max-w-7xl mx-auto w-full overflow-hidden">
+        <div className="h-[calc(100dvh-112px)] sm:h-[calc(100dvh-32px)] md:h-[calc(100dvh-64px)] lg:h-[calc(100dvh-96px)] flex flex-col bg-gray-50 max-w-7xl mx-auto w-full overflow-hidden">
             <div className="shrink-0">
                 <ChatDetailHeader chatInfo={chatInfo} chatStatus="Online" />
             </div>

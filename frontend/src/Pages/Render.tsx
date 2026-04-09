@@ -10,18 +10,18 @@ const Render = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+    <div className="px-3 sm:px-6 lg:px-8 py-2 sm:py-6 lg:py-8">
 
       {/* Hero qismi - to'liq kenglikda */}
-      <div className="mb-6 max-lg:pt-16">
+      <div className="mb-2 sm:mb-6 max-lg:pt-[52px]">
         <Hero onSearch={setSearchQuery} />
       </div>
 
       {/* Asosiy grid - mobilda 1 ustun, lg dan boshlab 12 ustun grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
 
         {/* Chap tomon (asosiy kontent) */}
-        <div className="lg:col-span-8 flex flex-col space-y-6">
+        <div className="lg:col-span-8 flex flex-col space-y-4 sm:space-y-6">
           <Analytics />
           <NewPatients />
           <PatientSearch searchQuery={searchQuery} />

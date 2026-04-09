@@ -39,7 +39,7 @@ const SearchResultsPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="min-h-screen bg-gray-50">
             {/* Header */}
             <div className="bg-white px-4 py-4 sticky top-0 z-10 shadow-sm">
                 <div className="flex items-center gap-3">

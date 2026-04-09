@@ -70,60 +70,60 @@ const Section: FC = () => {
   };
 
   return (
-    <div className="sticky top-6 w-full bg-white rounded-3xl shadow-sm p-6 flex flex-col gap-5 h-fit max-h-[calc(100vh-48px)] overflow-y-auto custom-scrollbar">
-      <h2 className="text-2xl font-bold text-gray-900">{t('dashboard.appointments_card.title')}</h2>
+    <div className="lg:sticky lg:top-6 w-full bg-white rounded-2xl sm:rounded-3xl shadow-sm p-4 sm:p-6 flex flex-col gap-4 sm:gap-5 h-fit lg:max-h-[calc(100vh-48px)] overflow-y-auto custom-scrollbar">
+      <h2 className="text-lg sm:text-2xl font-bold text-gray-900">{t('dashboard.appointments_card.title')}</h2>
 
       {/* Date Navigation */}
       <div className="flex items-center justify-between">
-        <button onClick={goToPreviousDay} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <ChevronLeft className="w-5 h-5 text-gray-400" />
+        <button onClick={goToPreviousDay} className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
         </button>
         <div className="text-center">
-          <p className="text-xs text-gray-500 font-medium mb-0.5">{t('dashboard.appointments_card.today')}</p>
-          <p className="text-sm font-bold text-gray-900">{formatDate(effectiveDate)}</p>
+          <p className="text-[10px] sm:text-xs text-gray-500 font-medium mb-0.5">{t('dashboard.appointments_card.today')}</p>
+          <p className="text-xs sm:text-sm font-bold text-gray-900">{formatDate(effectiveDate)}</p>
         </div>
-        <button onClick={goToNextDay} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <ChevronRight className="w-5 h-5 text-gray-400" />
+        <button onClick={goToNextDay} className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
         </button>
       </div>
 
       {/* Appointments List */}
       {isLoading ? (
-        <div className="flex justify-center py-10">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+        <div className="flex justify-center py-8 sm:py-10">
+          <div className="animate-spin rounded-full h-7 w-7 sm:h-8 sm:w-8 border-b-2 border-gray-900" />
         </div>
       ) : appointments.length > 0 ? (
-        <div className="flex flex-col gap-0 mt-2">
+        <div className="flex flex-col gap-0 mt-1 sm:mt-2">
           {appointments.map((apt, index) => (
             <div
               key={apt.id}
               onClick={() => navigate('/appointments')}
-              className={`flex items-center justify-between py-4 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors ${
+              className={`flex items-center justify-between py-3 sm:py-4 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors ${
                 index !== appointments.length - 1 ? "border-b border-gray-100" : ""
               }`}
             >
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-full bg-gray-200 flex-shrink-0 flex items-center justify-center font-bold text-gray-600">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gray-200 flex-shrink-0 flex items-center justify-center font-bold text-gray-600 text-sm sm:text-base">
                   {apt.name.charAt(0)}
                 </div>
                 <div>
-                  <p className="font-semibold text-sm text-gray-900">{apt.name}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{apt.time}</p>
+                  <p className="font-semibold text-xs sm:text-sm text-gray-900">{apt.name}</p>
+                  <p className="text-[11px] sm:text-xs text-gray-500 mt-0.5">{apt.time}</p>
                 </div>
               </div>
               <button
                 onClick={(e) => { e.stopPropagation(); navigate('/appointments'); }}
                 className="p-1 hover:bg-gray-200 rounded-lg transition-colors"
               >
-                <MoreVertical className="w-5 h-5 text-gray-600" />
+                <MoreVertical className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
               </button>
             </div>
           ))}
         </div>
       ) : (
-        <div className="text-center py-10">
-          <p className="text-gray-400 font-medium">Нет записей</p>
-          <p className="text-gray-300 text-sm mt-1">На выбранную дату записей нет</p>
+        <div className="text-center py-8 sm:py-10">
+          <p className="text-gray-400 font-medium text-sm sm:text-base">Нет записей</p>
+          <p className="text-gray-300 text-xs sm:text-sm mt-1">На выбранную дату записей нет</p>
         </div>
       )}
     </div>

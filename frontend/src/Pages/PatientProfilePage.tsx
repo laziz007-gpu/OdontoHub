@@ -179,7 +179,7 @@ const PatientProfilePage = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-[#F5F7FF] pb-32">
+        <div className="min-h-screen bg-[#F5F7FF]">
             {isLoading && (
                 <div className="fixed inset-0 bg-white/80 flex items-center justify-center z-50">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />

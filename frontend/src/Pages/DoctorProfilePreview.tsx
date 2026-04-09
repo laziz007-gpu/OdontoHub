@@ -31,6 +31,8 @@ const DoctorProfilePreview = () => {
         whatsapp: doctorFromState.whatsapp,
         work_hours: doctorFromState.work_hours,
         verification_status: doctorFromState.verification_status,
+        diploma_number: doctorFromState.diploma_number,
+        diploma_photo_url: doctorFromState.diploma_photo_url,
     } : {
         id: 1,
         name: "Махмуд Пулатов",
@@ -45,7 +47,8 @@ const DoctorProfilePreview = () => {
         specialty: "Ортодонтия",
         experience: "5 лет",
         image: DentistImg,
-        verification_status: "approved"
+        verification_status: "approved",
+        diploma_photo_url: null
     };
 
     const handleBook = async () => {
@@ -87,7 +90,7 @@ const DoctorProfilePreview = () => {
                         <div className="w-full bg-white rounded-[24px] p-5 shadow-sm">
                             <h2 className="text-xl font-black text-[#1D1D2B]">{doctorData.name}</h2>
                             <p className="text-xs font-bold text-gray-400 mt-1">{doctorData.phone}</p>
-                            {doctorData.verification_status === "approved" && (
+                            {doctorData.diploma_photo_url && (
                                 <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#E8F8F0] text-[#11D76A] rounded-xl border border-[#11D76A]/20">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M12 22C6.477 22 2 17.523 2 12C2 6.477 6.477 2 12 2C17.523 2 22 6.477 22 12C22 17.523 17.523 22 12 22ZM16.707 9.293C16.316 8.902 15.684 8.902 15.293 9.293L10.5 14.086L8.707 12.293C8.316 11.902 7.684 11.902 7.293 12.293C6.902 12.684 6.902 13.316 7.293 13.707L9.793 16.207C10.184 16.598 10.816 16.598 11.207 16.207L16.707 10.707C17.098 10.316 17.098 9.684 16.707 9.293Z" fill="currentColor"/>

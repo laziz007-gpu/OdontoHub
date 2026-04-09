@@ -1,4 +1,6 @@
 import { useState, useMemo, type FC } from 'react'
+import { ArrowLeft } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import Qidiruv from "../components/Bosh sahifa/Qidiruv"
 import PatientsTable from "../components/Bosh sahifa/PatsentTable"
 import Rasm from "../assets/img/photos/Subtract.png"
@@ -6,6 +8,7 @@ import { type Patient } from '../data/patients'
 import { useTranslation } from 'react-i18next'
 import { useAllPatients, useCreatePatient } from '../api/profile'
 import { toast } from '../components/Shared/Toast'
+import { paths } from '../Routes/path'
 
 interface Filters {
   status: string;
@@ -15,6 +18,7 @@ interface Filters {
 
 const Patsant: FC = () => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [filters, setFilters] = useState<Filters>({
     status: 'All',
@@ -97,15 +101,31 @@ const Patsant: FC = () => {
   }
 
   return (
-    <div>
-      <Qidiruv
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        onAdd={handleAddPatient}
-        onApplyFilter={setFilters}
-      />
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 pt-4 sm:pt-6 lg:pt-8 pb-6">
+        <div className="flex items-center gap-2 sm:gap-4 mb-3 sm:mb-6">
+          <button
+            type="button"
+            onClick={() => navigate(paths.menu)}
+            className="p-1.5 sm:p-2.5 text-[#1e2235] hover:bg-white rounded-xl transition-colors shrink-0"
+            aria-label="Orqaga qaytish"
+          >
+            <ArrowLeft size={20} className="sm:size-6" />
+          </button>
+          <h1 className="text-xl sm:text-3xl font-black text-[#1e2235] leading-tight flex-1">
+            {t('sidebar.patients')}
+          </h1>
+        </div>
 
-      <PatientsTable patients={filteredPatients} />
+        <Qidiruv
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          onAdd={handleAddPatient}
+          onApplyFilter={setFilters}
+        />
+
+        <PatientsTable patients={filteredPatients} />
+      </div>
     </div>
   )
 }

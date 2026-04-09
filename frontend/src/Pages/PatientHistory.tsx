@@ -99,7 +99,7 @@ const PatientHistory: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#000814] pb-24">
+    <div className="min-h-screen bg-white text-[#000814]">
       <div className="p-4 md:p-6 flex items-center gap-4 border-b border-gray-100 sticky top-0 bg-white/95 backdrop-blur-sm z-10">
         <button
           onClick={() => navigate(-1)}
