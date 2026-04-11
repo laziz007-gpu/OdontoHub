@@ -18,10 +18,12 @@ export interface RegisterData {
     email?: string;
     full_name: string;
     role: UserRole;
+    password: string;
 }
 
 export interface LoginData {
     phone: string;
+    password: string;
 }
 
 export interface TokenResponse {

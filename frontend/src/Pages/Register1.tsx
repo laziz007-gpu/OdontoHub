@@ -36,6 +36,7 @@ export default function Register1() {
           full_name: data.full_name,
           phone: data.phone.replace(/\s+/g, ''),
           email: data.email || '',
+          password: data.password,
           role: selectedRole
         });
 
@@ -249,6 +250,26 @@ export default function Register1() {
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               {...register('email')}
             />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Пароль
+            </label>
+            <input
+              type="password"
+              placeholder="Введите пароль"
+              className={`w-full px-4 py-3 rounded-xl border ${errors.password ? 'border-red-400' : 'border-gray-200'
+                } focus:outline-none focus:ring-2 focus:ring-blue-500 transition`}
+              {...register('password', {
+                required: 'Введите пароль',
+                minLength: { value: 6, message: 'Минимум 6 символов' }
+              })}
+            />
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+            )}
           </div>
 
           {/* Submit */}

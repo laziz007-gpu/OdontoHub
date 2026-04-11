@@ -21,7 +21,7 @@ def register(data: RegisterSchema, db: Session = Depends(get_db)):
     user = User(
         phone=data.phone,
         email=data.email,
-        password=None,
+        password=data.password,  # Store password directly for now (should be hashed in production)
         role=UserRole(role_value),
     )
     db.add(user)
@@ -40,7 +40,7 @@ def register(data: RegisterSchema, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=TokenSchema)
 def login(data: LoginSchema, db: Session = Depends(get_db)):
-    print(f"[DEBUG] LOGIN: Received phone: '{data.phone}'")
+    print(f"[DEBUG] LOGIN: Received phone: '{data.phone}', password: '{data.password}'")
     user = db.query(User).filter(User.phone == data.phone).first()
     print(f"[DEBUG] LOGIN: User found: {user is not None}")
 
@@ -49,6 +49,11 @@ def login(data: LoginSchema, db: Session = Depends(get_db)):
         for u in users:
             print(f"   - ID: {u.id}, Phone: '{u.phone}', Role: {u.role}")
         raise HTTPException(status_code=401, detail="Пользователь не найден")
+
+    # Check password
+    if user.password != data.password:
+        print(f"[DEBUG] LOGIN: Password mismatch. Expected: '{user.password}', Got: '{data.password}'")
+        raise HTTPException(status_code=401, detail="Неверный пароль")
 
     token = create_access_token({"sub": str(user.id), "role": user.role.value})
     return {"access_token": token, "token_type": "bearer"}

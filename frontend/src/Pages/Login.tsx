@@ -26,7 +26,10 @@ export default function Login() {
 
     if (useAPI) {
       try {
-        const result = await api.post('/auth/login', { phone: cleanPhone });
+        const result = await api.post('/auth/login', { 
+          phone: cleanPhone,
+          password: data.password 
+        });
         const { access_token } = result.data;
         localStorage.setItem('access_token', access_token);
 
@@ -105,6 +108,26 @@ export default function Login() {
             />
             {errors.phone && (
               <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
+            )}
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Пароль
+            </label>
+            <input
+              type="password"
+              placeholder="Введите пароль"
+              className={`w-full px-4 py-3 rounded-xl border ${errors.password ? 'border-red-400' : 'border-gray-200'
+                } focus:outline-none focus:ring-2 focus:ring-blue-500 transition`}
+              {...register('password', {
+                required: 'Введите пароль',
+                minLength: { value: 6, message: 'Минимум 6 символов' }
+              })}
+            />
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
             )}
           </div>
 

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест авторизации фронтенда</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .error { color: red; }
+        .success { color: green; }
+        .info { color: blue; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        input { padding: 8px; margin: 5px; width: 200px; }
+        .log { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 3px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Тест авторизации фронтенда</h1>
+        
+        <div class="section">
+            <h2>Токен не найден в localStorage</h2>
+            <p id="tokenStatus" class="error">Токен не найден в localStorage</p>
+            <button onclick="checkToken()">Проверить токен</button>
+            <button onclick="clearToken()">Очистить токен</button>
+        </div>
+
+        <div class="section">
+            <h2>Вход в систему</h2>
+            <div>
+                <input type="text" id="phone" placeholder="Телефон" value="+998901234567">
+                <input type="password" id="password" placeholder="Пароль" value="password123">
+            </div>
+            <div>
+                <button onclick="loginDoctor()">Войти как врач</button>
+                <button onclick="loginPatient()">Войти как пациент</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Тест настроек уведомлений</h2>
+            <button onclick="testNotificationSettings()">Тест настроек уведомлений</button>
+        </div>
+
+        <div class="section">
+            <h2>Логи</h2>
+            <div id="logs"></div>
+            <button onclick="clearLogs()">Очистить логи</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log ${type}`;
+            logEntry.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logs.appendChild(logEntry);
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function checkToken() {
+            const token = localStorage.getItem('access_token');
+            const statusEl = document.getElementById('tokenStatus');
+            
+            if (token) {
+                statusEl.textContent = `Токен найден: ${token.substring(0, 20)}...`;
+                statusEl.className = 'success';
+                log(`Токен найден: ${token.substring(0, 20)}...`, 'success');
+            } else {
+                statusEl.textContent = 'Токен не найден в localStorage';
+                statusEl.className = 'error';
+                log('Токен не найден в localStorage', 'error');
+            }
+        }
+
+        function clearToken() {
+            localStorage.removeItem('access_token');
+            log('Токен удален из localStorage', 'info');
+            checkToken();
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+        }
+
+        async function loginDoctor() {
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            
+            log(`Попытка входа врача: ${phone}`, 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ phone, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('access_token', data.access_token);
+                    log(`Вход успешен! Токен сохранен.`, 'success');
+                    checkToken();
+                } else {
+                    log(`Ошибка входа: ${data.detail}`, 'error');
+                }
+            } catch (error) {
+                log(`Исключение при входе: ${error.message}`, 'error');
+            }
+        }
+
+        async function loginPatient() {
+            const response = await fetch(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    phone: '+998911111111', 
+                    password: 'password123' 
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                localStorage.setItem('access_token', data.access_token);
+                log(`Вход пациента успешен! Токен сохранен.`, 'success');
+                checkToken();
+            } else {
+                log(`Ошибка входа пациента: ${data.detail}`, 'error');
+            }
+        }
+
+        async function testNotificationSettings() {
+            const token = localStorage.getItem('access_token');
+            
+            if (!token) {
+                log('Нет токена! Сначала войдите в систему.', 'error');
+                return;
+            }
+            
+            log('Тестируем настройки уведомлений...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/notifications/settings`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log(`Настройки получены: ${JSON.stringify(data)}`, 'success');
+                } else {
+                    log(`Ошибка получения настроек: ${response.status} - ${data.detail}`, 'error');
+                }
+            } catch (error) {
+                log(`Исключение при получении настроек: ${error.message}`, 'error');
+            }
+        }
+
+        // Проверяем токен при загрузке страницы
+        window.onload = function() {
+            checkToken();
+        };
+    </script>
+</body>
+</html>
