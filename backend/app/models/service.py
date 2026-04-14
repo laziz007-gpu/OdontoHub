@@ -11,4 +11,4 @@ class Service(Base):
     name: Mapped[str] = mapped_column(String, index=True)
     price: Mapped[float] = mapped_column(Float)
     currency: Mapped[str] = mapped_column(String, default="UZS")
-    dentist_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("dentists.id"), nullable=True)
+    dentist_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("dentist_profiles.id"), nullable=True)

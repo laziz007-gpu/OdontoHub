@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import logo from "../assets/img/icons/Logo.svg"
+import GoSmileLogo from "../components/Shared/GoSmileLogo";
 import { paths } from '../Routes/path';
 
 type Language = 'uz' | 'ru' | 'kz' | 'en';
@@ -32,22 +32,22 @@ const Welcome = () => {
       />
       
       {/* Синий overlay */}
-      <div className="absolute inset-0 bg-blue-600 opacity-80" />
+      <div className="absolute inset-0 gradient-primary opacity-90" />
 
       {/* Контент */}
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
         
-        {/* Иконка */}
+        {/* Логотип */}
         <div className="mb-8">
-          <img src={logo} alt="" />
+          <GoSmileLogo variant="full" size="xl" white />
         </div>
 
         {/* Заголовок */}
         <div className="text-center mb-4">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-2">
-            OdontoHub
+          <h1 className="text-5xl md:text-6xl font-heading font-bold text-white mb-2">
+            GoSmile
           </h1>
-          <p className="text-2xl text-white font-serif italic opacity-90">
+          <p className="text-2xl text-white font-railway opacity-90">
             {t('dd')}
           </p>
         </div>

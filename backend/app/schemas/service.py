@@ -6,7 +6,7 @@ class ServiceBase(BaseModel):
     price: float
 
 class ServiceCreate(ServiceBase):
-    dentist_id: Optional[int] = None
+    currency: Optional[str] = "UZS"
 
 class ServiceUpdate(ServiceBase):
     name: str | None = None

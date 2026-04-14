@@ -1,9 +1,7 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Users, Calendar, MessageCircle, LayoutDashboard, Bell, Menu, X } from "lucide-react";
-import Logo from "../assets/img/icons/Logo3.svg";
+import GoSmileLogo from "../components/Shared/GoSmileLogo";
 import { paths } from "../Routes/path";
 import { useTranslation } from "react-i18next";
 import { useMyAppointments } from "../api/appointments";
@@ -68,7 +66,7 @@ export default function Sidebar() {
       {/* Header qismi */}
       <div className="sticky top-0 z-10 bg-white border-b lg:border-none p-5 sm:p-6 flex items-center justify-between">
         <Link to={paths.menu} className="flex items-center gap-3">
-          <img src={Logo} alt="OdontoHUB" className="h-[52px] w-auto" />
+          <GoSmileLogo variant="full" size="md" auto />
         </Link>
         {isDrawer && (
           <button
@@ -144,7 +142,7 @@ export default function Sidebar() {
       <header className="lg:hidden fixed top-0 inset-x-0 z-40 bg-white border-b shadow-sm">
         <div className="flex items-center justify-between px-4 py-3.5">
           <Link to="/" className="flex items-center gap-3">
-            <img src={Logo} alt="OdontoHUB" className="h-7 w-auto" />
+            <GoSmileLogo variant="full" size="sm" auto />
           </Link>
           <button
             onClick={() => setIsMobileOpen(true)}
