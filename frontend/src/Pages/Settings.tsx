@@ -21,12 +21,12 @@ const Settings: React.FC = () => {
     ];
 
     return (
-        <div className="w-full min-h-screen bg-[#F4F5FA] p-6 font-onest">
+        <div className="min-h-screen w-full bg-[#F4F5FA] p-4 font-onest sm:p-6">
 
             {/* Top Bar */}
             <SettingsHeader />
 
-            <h1 className="text-3xl font-bold text-[#1E2532] mb-6">{t('settings.title')}</h1>
+            <h1 className="mb-6 text-2xl font-bold text-[#1E2532] sm:text-3xl">{t('settings.title')}</h1>
 
             {/* Tabs */}
             <SettingsTabs

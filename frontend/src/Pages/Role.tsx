@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { User, Stethoscope } from "lucide-react";
 import { paths } from "../Routes/path";
-import logo from "../assets/img/icons/Logo.svg";
+import GoSmileLogo from "../components/Shared/GoSmileLogo";
 import { RootState } from "../store/store";
 
 export default function Role() {
@@ -19,13 +19,13 @@ export default function Role() {
   }, [role, navigate]);
 
   return (
-    <div className="min-h-screen bg-blue-600 flex flex-col items-center justify-center p-6 text-white text-center">
+    <div className="min-h-screen gradient-primary flex flex-col items-center justify-center p-6 text-white text-center">
       <div className="mb-8">
-        <img src={logo} alt="Logo" className="w-24 h-24" />
+        <GoSmileLogo variant="full" size="xl" white />
       </div>
 
-      <h1 className="text-3xl font-bold mb-2">Добро пожаловать!</h1>
-      <p className="opacity-80 mb-12">Выберите вашу роль в системе</p>
+      <h1 className="text-3xl font-heading font-bold mb-2">Добро пожаловать!</h1>
+      <p className="opacity-80 mb-12 font-railway">Выберите вашу роль в системе GoSmile</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-md">
         <button

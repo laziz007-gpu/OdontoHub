@@ -53,16 +53,20 @@ def get_current_user(
         )
         user_id = payload.get("sub")
         if user_id is None:
+            print(f"[AUTH] Invalid token: no user_id in payload")
             raise HTTPException(status_code=401, detail="Invalid token")
 
-    except JWTError:
+    except JWTError as e:
+        print(f"[AUTH] JWT Error: {e}")
         raise HTTPException(status_code=401, detail="Invalid token")
 
     user = db.query(User).filter(User.id == int(user_id)).first()
 
     if not user:
+        print(f"[AUTH] User not found: {user_id}")
         raise HTTPException(status_code=401, detail="User not found")
 
+    print(f"[AUTH] User authenticated: {user.id} ({user.role.value})")
     return user
 
 
@@ -71,6 +75,7 @@ def get_current_user(
 def require_role(role: UserRole):
     def checker(user: User = Depends(get_current_user)):
         if user.role != role:
-            raise HTTPException(status_code=403, detail="Access denied")
+            print(f"[AUTH] Access denied: user {user.id} has role {user.role.value}, required {role.value}")
+            raise HTTPException(status_code=403, detail=f"Access denied. Required role: {role.value}, your role: {user.role.value}")
         return user
     return checker

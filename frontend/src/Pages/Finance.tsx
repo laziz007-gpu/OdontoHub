@@ -58,15 +58,15 @@ const Finance: React.FC = () => {
         <div className="flex-1 bg-[#f5f7fb] min-h-screen overflow-y-auto custom-scrollbar">
             <div className="min-w-0 p-4 lg:p-8">
                 {/* Header Context from Image */}
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
-                    <div className="flex items-center gap-4">
+                <div className="mb-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
+                    <div className="flex min-w-0 items-center gap-3 sm:gap-4">
                         <button
                             onClick={() => (activeView === 'monitoring' ? setActiveView('finance') : navigate(-1))}
                             className="w-10 h-10 flex items-center justify-center bg-[#1e2235] rounded-full shadow-sm hover:bg-[#2c314a] transition-colors shrink-0"
                         >
                             <ArrowLeft className="w-5 h-5 text-white" />
                         </button>
-                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#1e2235] tracking-tight truncate">
+                        <h2 className="break-words text-2xl font-extrabold tracking-tight text-[#1e2235] sm:text-4xl lg:text-5xl">
                             {activeView === 'finance' ? t('analytics.finance.title') : t('analytics.monitoring.title')}
                         </h2>
                     </div>
@@ -230,9 +230,9 @@ const Finance: React.FC = () => {
                             </div>
 
                             <div className="lg:col-span-12 bg-white rounded-[40px] p-8 shadow-sm">
-                                <div className="flex justify-between items-center mb-8">
+                                <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
                                     <h3 className="text-[#4156d9] font-black text-3xl">{t('analytics.finance.today')}</h3>
-                                    <button className="border-2 border-[#fb8a61] text-[#fb8a61] rounded-2xl px-8 py-2.5 flex items-center gap-2 font-bold">
+                                    <button className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-[#fb8a61] px-6 py-2.5 font-bold text-[#fb8a61] sm:w-auto sm:px-8">
                                         <Plus className="w-5 h-5" />
                                         <span className="text-lg">+{t('analytics.finance.add_expense')}</span>
                                     </button>
@@ -252,12 +252,12 @@ const Finance: React.FC = () => {
                                             <span className="text-3xl font-bold">{t('analytics.stats.thousand')}</span>
                                         </div>
                                     </div>
-                                    <div className="lg:col-span-12 bg-[#5377f7] rounded-[32px] p-8 text-white flex justify-between items-center group hover:bg-[#4156d9] transition-all">
+                                    <div className="group flex flex-col gap-6 rounded-[32px] bg-[#5377f7] p-8 text-white transition-all hover:bg-[#4156d9] lg:col-span-12 sm:flex-row sm:items-center sm:justify-between">
                                         <div className="flex flex-col">
                                             <span className="opacity-80 text-lg font-bold mb-1">{t('analytics.finance.appointments')}</span>
                                             <span className="text-6xl font-black">8</span>
                                         </div>
-                                        <button className="bg-white text-[#567af3] px-10 py-5 rounded-3xl font-black text-xl">
+                                        <button className="rounded-3xl bg-white px-8 py-4 text-lg font-black text-[#567af3] sm:px-10 sm:py-5 sm:text-xl">
                                             {t('analytics.finance.view')}
                                         </button>
                                     </div>
@@ -272,12 +272,12 @@ const Finance: React.FC = () => {
                                 <div className="text-gray-400 font-bold text-xl mb-8">{t('analytics.finance.per_month')}</div>
                                 <div className="space-y-4 flex-1">
                                     {services.map((service, index) => (
-                                        <div key={service.id} className="bg-[#fdbc31] rounded-[24px] p-6 lg:p-7 flex items-center justify-between text-[#1e2235] border border-amber-200/50 shadow-sm">
-                                            <div className="flex items-center gap-4">
+                                        <div key={service.id} className="flex flex-col gap-4 rounded-[24px] border border-amber-200/50 bg-[#fdbc31] p-5 text-[#1e2235] shadow-sm sm:flex-row sm:items-center sm:justify-between lg:p-7">
+                                            <div className="flex min-w-0 items-center gap-4">
                                                 <span className="text-gray-800 font-extrabold text-xl opacity-40">{index + 1}</span>
-                                                <span className="font-bold text-xl leading-tight">{service.name}</span>
+                                                <span className="min-w-0 break-words font-bold text-xl leading-tight">{service.name}</span>
                                             </div>
-                                            <div className="flex items-center gap-4 shrink-0">
+                                            <div className="flex shrink-0 items-center gap-4 self-end sm:self-auto">
                                                 <span className="font-black text-3xl">{service.count}</span>
                                                 {service.trend === 'up' ? <TrendingUp className="w-8 h-8 text-green-800" /> : <TrendingDown className="w-8 h-8 text-red-800" />}
                                             </div>

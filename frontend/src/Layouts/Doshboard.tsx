@@ -1,9 +1,7 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Users, Calendar, MessageCircle, LayoutDashboard, Bell, Menu, X } from "lucide-react";
-import Logo from "../assets/img/icons/Logo3.svg";
+import GoSmileLogo from "../components/Shared/GoSmileLogo";
 import { paths } from "../Routes/path";
 import { useTranslation } from "react-i18next";
 import { useMyAppointments } from "../api/appointments";
@@ -64,11 +62,11 @@ export default function Sidebar() {
   const { data: unreadCount = 0 } = useUnreadCount();
 
   const SidebarInner = ({ isDrawer = false }: { isDrawer?: boolean }) => (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex min-h-full flex-col bg-white">
       {/* Header qismi */}
-      <div className="sticky top-0 z-10 bg-white border-b lg:border-none p-5 sm:p-6 flex items-center justify-between">
-        <Link to={paths.menu} className="flex items-center gap-3">
-          <img src={Logo} alt="OdontoHUB" className="h-[52px] w-auto" />
+      <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-4 py-5 sm:px-5 sm:py-6 lg:border-none">
+        <Link to={paths.menu} className="flex w-full min-w-0 items-center overflow-hidden">
+          <GoSmileLogo variant="full" size="xl" auto />
         </Link>
         {isDrawer && (
           <button
@@ -82,7 +80,7 @@ export default function Sidebar() {
       </div>
 
       {/* Menu */}
-      <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+      <nav className="flex-1 space-y-2 overflow-y-auto px-3 py-5 sm:px-4 sm:py-6">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path || (item.id === 'chats' && location.pathname.startsWith('/chats'));
@@ -114,7 +112,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Fokus kartasi */}
-      <div className="m-5 p-6 rounded-3xl bg-linear-to-br from-gray-900 to-gray-800 text-white relative overflow-hidden shadow-xl">
+      <div className="relative m-3 mt-0 overflow-hidden rounded-3xl bg-linear-to-br from-gray-900 to-gray-800 p-5 text-white shadow-xl sm:m-5 sm:p-6">
         <div className="absolute inset-0 opacity-30 pointer-events-none">
         </div>
         <div className="relative z-10 text-center">
@@ -136,15 +134,15 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:w-[280px] lg:shrink-0 lg:border-r lg:border-gray-100 lg:h-screen lg:sticky lg:top-0 bg-white z-10">
+      <aside className="z-10 hidden bg-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-[280px] lg:shrink-0 lg:border-r lg:border-gray-100">
         <SidebarInner />
       </aside>
 
       {/* Mobile header */}
-      <header className="lg:hidden fixed top-0 inset-x-0 z-40 bg-white border-b shadow-sm">
-        <div className="flex items-center justify-between px-4 py-3.5">
-          <Link to="/" className="flex items-center gap-3">
-            <img src={Logo} alt="OdontoHUB" className="h-7 w-auto" />
+      <header className="fixed inset-x-0 top-0 z-40 border-b bg-white shadow-sm lg:hidden">
+        <div className="flex h-20 items-center justify-between px-4">
+          <Link to={paths.menu} className="flex min-w-0 items-center">
+            <GoSmileLogo variant="full" size="sm" auto />
           </Link>
           <button
             onClick={() => setIsMobileOpen(true)}
@@ -166,7 +164,7 @@ export default function Sidebar() {
 
         {/* Sidebar panel */}
         <aside
-          className={`absolute inset-y-0 left-0 w-[85vw] max-w-xs bg-white shadow-2xl transform transition-transform duration-300 ease-in-out ${isMobileOpen ? "translate-x-0" : "-translate-x-full"
+          className={`absolute inset-y-0 left-0 w-[88vw] max-w-xs bg-white shadow-2xl transform transition-transform duration-300 ease-in-out ${isMobileOpen ? "translate-x-0" : "-translate-x-full"
             }`}
         >
           <div className="h-full overflow-y-auto">

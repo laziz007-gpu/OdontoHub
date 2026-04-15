@@ -11,15 +11,15 @@ export const SettingsHeader: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
 
   return (
-    <div className="flex items-center justify-between mb-8 gap-6">
+    <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-4 lg:gap-6">
       <button
         onClick={() => navigate(-1)}
-        className="w-[52px] h-[52px] rounded-full bg-[#1E2532] flex items-center justify-center text-white hover:opacity-90 transition-opacity"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#1E2532] text-white transition-opacity hover:opacity-90 sm:h-[52px] sm:w-[52px]"
       >
         <ArrowLeft size={24} />
       </button>
 
-      <div className="relative flex-1 max-w-4xl">
+      <div className="relative order-3 w-full flex-1 sm:order-2 sm:max-w-4xl">
         <input
           type="text"
           placeholder="Поиск"
@@ -30,12 +30,12 @@ export const SettingsHeader: React.FC = () => {
 
       <Link
         to={user?.role === 'dentist' ? paths.profile : paths.patientProfileSettings}
-        className="flex h-[52px] pl-3 pr-5 items-center gap-3 bg-[#1e2532] text-white rounded-2xl hover:bg-[#2c3545] transition-colors"
+        className="order-2 flex h-11 w-full items-center justify-center gap-3 rounded-2xl bg-[#1e2532] px-3 text-white transition-colors hover:bg-[#2c3545] sm:order-3 sm:h-[52px] sm:w-auto sm:justify-start sm:pr-5"
       >
         <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center bg-gray-700">
           <img src={DentistImg} alt="Profile" className="w-full h-full object-cover" />
         </div>
-        <div className="hidden md:flex flex-col leading-tight">
+        <div className="min-w-0 hidden md:flex flex-col leading-tight">
           <span className="font-bold text-sm whitespace-nowrap">
             {user?.full_name || 'Пользователь'}
           </span>

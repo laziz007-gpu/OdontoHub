@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Home, Calendar, MessageSquare, FileText, User, Bell } from "lucide-react";
 import { paths } from "../../Routes/path";
-import Logo from "../../assets/img/icons/Logo2.svg";
+import GoSmileLogo from "../../components/Shared/GoSmileLogo";
 import { useEffect, useState } from "react";
 import { getUnreadCount } from "../../api/notifications";
 
@@ -67,8 +67,13 @@ const PatientNavbar = () => {
 
             {/* Desktop Sidebar Navigation */}
             <aside className="hidden sm:flex fixed left-0 top-0 bottom-0 w-20 lg:w-64 bg-white border-r border-gray-200 flex-col py-8 z-50">
+                {/* Full logo - only on lg+ */}
                 <div className="px-6 mb-10 hidden lg:block">
-                    <img src={Logo} alt="" />
+                    <GoSmileLogo variant="full" size="md" auto />
+                </div>
+                {/* Icon logo - only on sm..lg */}
+                <div className="flex justify-center mb-10 lg:hidden">
+                    <GoSmileLogo variant="icon" size="sm" />
                 </div>
                 <div className="px-4 lg:px-6 space-y-4">
                     {navItems.map((item, index) => {

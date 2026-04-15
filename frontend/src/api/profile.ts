@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "./api"
-import { isPatient, isDentist, isAuthenticated } from "../utils/auth"
+import { isPatient, isDentist, isAuthenticated, getUserRole } from "../utils/auth"
 
 export interface Patient {
     id: number;
@@ -44,34 +44,41 @@ export interface DentistProfile {
 
 export const usePatientProfile = () => {
     const accessToken = localStorage.getItem('access_token')
+    const userRole = getUserRole()
+    
     return useQuery({
         queryKey: ['patientProfile'],
         queryFn: async () => {
             const response = await api.get<Patient>('/patients/me');
             return response.data;
         },
-        enabled: !!accessToken && isAuthenticated() && isPatient(),
+        enabled: !!accessToken && isAuthenticated() && isPatient() && userRole === 'patient',
     })
 }
 
 export const useDentistProfile = () => {
+    const accessToken = localStorage.getItem('access_token')
+    const userRole = getUserRole()
+    
     return useQuery({
         queryKey: ['dentistProfile'],
         queryFn: async () => {
             const response = await api.get<DentistProfile>('/dentists/me');
             return response.data;
         },
-        enabled: !!localStorage.getItem('access_token') && isAuthenticated() && isDentist(),
+        enabled: !!accessToken && isAuthenticated() && isDentist() && userRole === 'dentist',
         staleTime: 0,
         refetchOnMount: 'always',
     })
 }
 
 export const useAllPatients = () => {
+    const accessToken = localStorage.getItem('access_token')
+    const userRole = getUserRole()
+    
     return useQuery({
         queryKey: ['patients'],
         queryFn: async (): Promise<Patient[]> => {
-            const accessToken = localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
             const isLocalMode = accessToken?.startsWith('local_token_');
 
             if (isLocalMode) {
@@ -84,7 +91,7 @@ export const useAllPatients = () => {
             const response = await api.get<Patient[]>('/patients/');
             return response.data;
         },
-        enabled: isAuthenticated() && isDentist(),
+        enabled: !!accessToken && isAuthenticated() && isDentist() && userRole === 'dentist',
     });
 }
 
@@ -239,12 +246,14 @@ export interface DentistStats {
 
 export const useDentistStats = () => {
     const accessToken = localStorage.getItem('access_token')
+    const userRole = getUserRole()
+    
     return useQuery({
         queryKey: ['dentistStats'],
         queryFn: async () => {
             const response = await api.get<DentistStats>('/dentists/me/stats');
             return response.data;
         },
-        enabled: !!accessToken && isAuthenticated() && isDentist(),
+        enabled: !!accessToken && isAuthenticated() && isDentist() && userRole === 'dentist',
     })
 };

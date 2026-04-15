@@ -12,10 +12,12 @@ class RegisterSchema(BaseModel):
     role: UserRole
     full_name: str
     email: str | None = None
+    password: str
 
 
 class LoginSchema(BaseModel):
     phone: str
+    password: str
 
 
 class TokenSchema(BaseModel):

@@ -68,7 +68,7 @@ const Analitic = () => {
                 </div>
 
                 {/* Period Filter */}
-                <div className="flex gap-3 mb-6">
+                <div className="mb-6 flex flex-wrap gap-3">
                     <button
                         onClick={() => setPeriod('week')}
                         className={`px-6 py-2.5 rounded-2xl font-bold text-sm transition-all ${period === 'week' ? 'bg-[#5377f7] text-white shadow-lg shadow-blue-500/20' : 'bg-white text-gray-500 hover:bg-gray-50'}`}

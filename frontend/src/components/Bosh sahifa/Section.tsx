@@ -70,7 +70,7 @@ const Section: FC = () => {
   };
 
   return (
-    <div className="lg:sticky lg:top-6 w-full bg-white rounded-2xl sm:rounded-3xl shadow-sm p-4 sm:p-6 flex flex-col gap-4 sm:gap-5 h-fit lg:max-h-[calc(100vh-48px)] overflow-y-auto custom-scrollbar">
+    <div className="xl:sticky xl:top-6 w-full bg-white rounded-2xl sm:rounded-3xl shadow-sm p-4 sm:p-6 flex flex-col gap-4 sm:gap-5 h-fit xl:max-h-[calc(100vh-48px)] overflow-y-auto custom-scrollbar">
       <h2 className="text-lg sm:text-2xl font-bold text-gray-900">{t('dashboard.appointments_card.title')}</h2>
 
       {/* Date Navigation */}

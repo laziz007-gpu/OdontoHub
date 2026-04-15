@@ -1,6 +1,6 @@
 import React, { useState, useEffect, type FC } from 'react';
 import { Menu, X, LayoutDashboard, Users, Calendar, MessageCircle, type LucideIcon } from 'lucide-react';
-import Logo from '../assets/img/icons/Logo3.svg'; // o'zingiznikini qo'ying
+import GoSmileLogo from '../components/Shared/GoSmileLogo';
 // import NotificationBadge from '../components/Shared/NotificationBadge';
 
 interface MenuItem {
@@ -39,7 +39,7 @@ const MobileHeaderAndDrawer: FC = () => {
         <div className="px-4 py-3.5 flex items-center justify-between">
           {/* Logo chapda */}
           <div className="flex items-center gap-3">
-            <img src={Logo} alt="OdontoHUB" className="h-8 w-auto" />
+            <GoSmileLogo variant="full" size="md" auto />
           </div>
 
           {/* BURGER — o'ngda */}
@@ -80,7 +80,7 @@ const MobileHeaderAndDrawer: FC = () => {
           {/* Header ichida yopish tugmasi + logo */}
           <div className="p-5 flex items-center justify-between border-b">
             <div className="flex items-center gap-3">
-              <img src={Logo} alt="OdontoHUB" className="h-8 w-auto" />
+              <GoSmileLogo variant="full" size="md" auto />
             </div>
             <button
               onClick={() => setIsOpen(false)}

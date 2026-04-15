@@ -5,8 +5,9 @@ import { useDispatch } from 'react-redux'
 import { setUser } from '../store/slices/userSlice'
 import type { RegisterData, UserRole } from '../interfaces'
 import { Stethoscope, User } from 'lucide-react'
+import axios from 'axios'
 import api from '../api/api'
-import logo from '../assets/img/icons/Logo.svg'
+import GoSmileLogo from '../components/Shared/GoSmileLogo'
 import { paths } from '../Routes/path'
 import { toast } from '../components/Shared/Toast'
 
@@ -36,6 +37,7 @@ export default function Register1() {
           full_name: data.full_name,
           phone: data.phone.replace(/\s+/g, ''),
           email: data.email || '',
+          password: data.password,
           role: selectedRole
         });
 
@@ -143,22 +145,27 @@ export default function Register1() {
     } catch (error) {
       setIsLoading(false);
       console.error('Registration error:', error);
+      const detail = axios.isAxiosError(error) ? error.response?.data?.detail : undefined;
+      if (detail) {
+        toast.error(detail);
+        return;
+      }
       toast.error(error instanceof Error ? error.message : 'Ошибка регистрации');
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-600 to-blue-800 flex flex-col items-center justify-center px-4 py-8">
+    <div className="min-h-screen gradient-primary flex flex-col items-center justify-center px-4 py-8">
       {/* Logo */}
       <div className="mb-4">
-        <img src={logo} alt="OdontoHub" className="w-16 h-16" />
+        <GoSmileLogo variant="full" size="lg" white />
       </div>
 
-      <h1 className="text-3xl font-bold text-white mb-2">Регистрация</h1>
-      <p className="text-white/70 mb-6">Создайте новый аккаунт</p>
+      <h1 className="text-3xl font-heading font-bold text-white mb-2">Регистрация</h1>
+      <p className="text-white/80 mb-6 font-railway">Создайте новый аккаунт GoSmile</p>
 
       {/* Card */}
-      <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl">
+      <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-strong animate-slide-up">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Role selection */}
           <div>
@@ -169,8 +176,8 @@ export default function Register1() {
               <button
                 type="button"
                 onClick={() => setSelectedRole('dentist')}
-                className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${selectedRole === 'dentist'
-                  ? 'border-blue-500 bg-blue-50 text-blue-600'
+                className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all font-railway ${selectedRole === 'dentist'
+                  ? 'border-primary-500 bg-primary-50 text-primary-600'
                   : 'border-gray-200 text-gray-500 hover:border-gray-300'
                   }`}
               >
@@ -181,8 +188,8 @@ export default function Register1() {
               <button
                 type="button"
                 onClick={() => setSelectedRole('patient')}
-                className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${selectedRole === 'patient'
-                  ? 'border-blue-500 bg-blue-50 text-blue-600'
+                className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all font-railway ${selectedRole === 'patient'
+                  ? 'border-primary-500 bg-primary-50 text-primary-600'
                   : 'border-gray-200 text-gray-500 hover:border-gray-300'
                   }`}
               >
@@ -191,7 +198,7 @@ export default function Register1() {
               </button>
             </div>
             {!selectedRole && errors.full_name && (
-              <p className="text-red-500 text-xs mt-1">Выберите роль</p>
+              <p className="text-error-500 text-sm mt-1 font-railway">Выберите роль</p>
             )}
           </div>
 
@@ -251,11 +258,31 @@ export default function Register1() {
             />
           </div>
 
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Пароль
+            </label>
+            <input
+              type="password"
+              placeholder="Введите пароль"
+              className={`w-full px-4 py-3 rounded-xl border ${errors.password ? 'border-red-400' : 'border-gray-200'
+                } focus:outline-none focus:ring-2 focus:ring-blue-500 transition`}
+              {...register('password', {
+                required: 'Введите пароль',
+                minLength: { value: 6, message: 'Минимум 6 символов' }
+              })}
+            />
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+            )}
+          </div>
+
           {/* Submit */}
           <button
             type="submit"
             disabled={isLoading || !selectedRole}
-            className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-semibold text-lg hover:bg-blue-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-primary w-full py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <span className="flex items-center justify-center gap-2">
@@ -269,9 +296,9 @@ export default function Register1() {
         </form>
 
         {/* Login link */}
-        <p className="text-center text-gray-500 text-sm mt-6">
+        <p className="text-center text-gray-500 text-sm mt-6 font-railway">
           Уже есть аккаунт?{' '}
-          <Link to={paths.login} className="text-blue-600 font-medium hover:underline">
+          <Link to={paths.login} className="text-primary-500 font-medium hover:text-primary-600 transition-colors">
             Войти
           </Link>
         </p>

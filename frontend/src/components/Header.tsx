@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Users, Calendar, MessageCircle, LayoutDashboard, Menu, X } from 'lucide-react';
-import Logo from '../assets/img/icons/Logo3.svg';
+import GoSmileLogo from '../components/Shared/GoSmileLogo';
 import { useDentistStats } from '../api/profile';
 
 // Menu item turi
@@ -81,8 +81,7 @@ export default function Header() {
       <aside className="hidden lg:flex lg:w-[280px] lg:h-screen lg:bg-white lg:flex-col border-r border-gray-100">
         <div className="p-8 pb-2">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg"></div>
-            <img src={Logo} alt="Logo" />
+            <GoSmileLogo variant="full" size="lg" auto />
           </div>
         </div>
         <SidebarContent />
@@ -91,8 +90,7 @@ export default function Header() {
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white p-4 border-b flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg"></div>
-          <img src={Logo} alt="Logo" />
+          <GoSmileLogo variant="full" size="md" auto />
         </div>
         <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 rounded-lg bg-gray-50">
           <Menu className="w-6 h-6 text-[#1e2235]" />

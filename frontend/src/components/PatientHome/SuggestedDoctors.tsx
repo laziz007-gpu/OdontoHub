@@ -49,13 +49,13 @@ const SuggestedDoctors = () => {
             list = list.map(d => {
                 const lat = Number(d.latitude);
                 const lng = Number(d.longitude);
-                const dist = (Number.isFinite(lat) && Number.isFinite(lng)) 
+                const dist = (Number.isFinite(lat) && Number.isFinite(lng) && lat !== 0 && lng !== 0) 
                     ? getDistance(userLocation.lat, userLocation.lng, lat, lng) 
                     : null;
                 return { ...d, distance: dist };
             }).sort((a, b) => {
-                if (a.distance === null) return 1;
-                if (b.distance === null) return -1;
+                if (a.distance === null || a.distance === undefined) return 1;
+                if (b.distance === null || b.distance === undefined) return -1;
                 return a.distance - b.distance;
             });
         }
@@ -118,9 +118,9 @@ const SuggestedDoctors = () => {
                             <div className="bg-blue-50 rounded-[24px] w-24 h-24 overflow-hidden flex items-center justify-center group-hover:bg-blue-100 transition-colors">
                                 <img src={DoctorImg} alt={doctor.full_name} className="w-full h-full object-cover" />
                             </div>
-                            {doctor.distance !== null && (
+                            {doctor.distance !== null && doctor.distance !== undefined && (
                                 <div className="absolute -right-2 -bottom-2 bg-[#4D71F8] text-white px-3 py-1 rounded-full text-[10px] font-black shadow-lg">
-                                    {doctor.distance.toFixed(1)} km
+                                    {Number(doctor.distance).toFixed(1)} km
                                 </div>
                             )}
                         </div>

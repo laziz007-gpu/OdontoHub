@@ -144,20 +144,20 @@ const Appointments: React.FC = () => {
                     <>
                         {/* Header */}
                         <div className="flex flex-col gap-6">
-                            <div className="relative flex items-center h-14">
-                                <div className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-4">
+                            <div className="relative flex min-h-12 items-center sm:h-14">
+                                <div className="flex min-w-0 items-center gap-3 sm:absolute sm:left-0 sm:top-1/2 sm:-translate-y-1/2 sm:gap-4">
                                     <button
                                         onClick={() => navigate(-1)}
-                                        className="bg-[#1a1f36] rounded-full p-1 cursor-pointer hover:bg-[#2a2f46] transition-colors"
+                                        className="shrink-0 rounded-full bg-[#1a1f36] p-1 cursor-pointer transition-colors hover:bg-[#2a2f46]"
                                     >
                                         <ChevronLeft className="w-5 h-5 text-white" />
                                     </button>
-                                    <h1 className="text-3xl font-black text-[#1a1f36] tracking-tight">{t('appointments.title')}</h1>
+                                    <h1 className="truncate text-2xl font-black tracking-tight text-[#1a1f36] sm:text-3xl">{t('appointments.title')}</h1>
                                 </div>
                             </div>
 
                             <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 pb-2">
-                                <h2 className="text-3xl md:text-4xl xl:text-5xl font-black text-[#1a1f36] tracking-tight truncate">{formattedDate}</h2>
+                                <h2 className="text-2xl font-black tracking-tight text-[#1a1f36] sm:text-3xl md:text-4xl xl:text-5xl">{formattedDate}</h2>
                                 <div className="flex flex-wrap items-center gap-3 md:gap-4 self-start xl:self-auto">
                                     <button
                                         onClick={() => setView('calendar')}

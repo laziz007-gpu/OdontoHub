@@ -10,18 +10,17 @@ const Render = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className="px-3 sm:px-6 lg:px-8 py-2 sm:py-6 lg:py-8">
+    <div>
+      {/* Hero qismi - to'liq kenglikda, padding yo'q */}
+      <Hero onSearch={setSearchQuery} />
 
-      {/* Hero qismi - to'liq kenglikda */}
-      <div className="mb-2 sm:mb-6 max-lg:pt-[52px]">
-        <Hero onSearch={setSearchQuery} />
-      </div>
-
+      {/* Asosiy kontent */}
+      <div className="px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
       {/* Asosiy grid - mobilda 1 ustun, lg dan boshlab 12 ustun grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 sm:gap-6">
 
         {/* Chap tomon (asosiy kontent) */}
-        <div className="lg:col-span-8 flex flex-col space-y-4 sm:space-y-6">
+        <div className="xl:col-span-8 flex flex-col space-y-4 sm:space-y-6 min-w-0">
           <Analytics />
           <NewPatients />
           <PatientSearch searchQuery={searchQuery} />
@@ -29,10 +28,11 @@ const Render = () => {
         </div>
 
         {/* O'ng tomon (sidebar yoki Section) */}
-        <div className="lg:col-span-4">
+        <div className="xl:col-span-4 min-w-0">
           <Section />
         </div>
 
+      </div>
       </div>
     </div>
   )

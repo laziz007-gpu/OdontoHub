@@ -18,6 +18,7 @@ export const useRegister = () => {
           const userResponse = await api.get('/auth/me')
           if (userResponse.data) {
             setUser(userResponse.data)
+            localStorage.setItem('user_data', JSON.stringify(userResponse.data))
           }
         } catch (error) {
           console.error('Failed to fetch user data:', error)
@@ -34,7 +35,7 @@ export const useRegister = () => {
 export const useLogin = () => {
   return useMutation({
     mutationFn: (data: LoginData) => {
-      // Отправляем только телефон в JSON формате
+      // Отправляем телефон и пароль в JSON формате
       return api.post<TokenResponse>('/auth/login', data)
     },
 
@@ -48,6 +49,7 @@ export const useLogin = () => {
           const userResponse = await api.get('/auth/me')
           if (userResponse.data) {
             setUser(userResponse.data)
+            localStorage.setItem('user_data', JSON.stringify(userResponse.data))
           }
         } catch (error) {
           console.error('Failed to fetch user data:', error)
