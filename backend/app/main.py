@@ -183,6 +183,13 @@ def on_startup():
                     conn.execute(text("ALTER TABLE complaints ALTER COLUMN patient_id DROP NOT NULL"))
                 print("OK: complaints.patient_id is now nullable")
 
+        if 'users' in inspector.get_table_names():
+            user_cols = [col['name'] for col in inspector.get_columns('users')]
+            if 'backup_phone' not in user_cols:
+                with engine.begin() as conn:
+                    conn.execute(text("ALTER TABLE users ADD COLUMN backup_phone VARCHAR"))
+                print("OK: users migration - added backup_phone")
+
     except Exception as e:
         print(f"Warning: Could not migrate dentist fields: {e}")
         # Don't fail startup if migration fails

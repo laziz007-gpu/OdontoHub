@@ -23,3 +23,16 @@ class LoginSchema(BaseModel):
 class TokenSchema(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+
+class ChangePasswordSchema(BaseModel):
+    current_password: str
+    new_password: str
+
+
+class BackupPhoneSchema(BaseModel):
+    backup_phone: str | None = None
+
+
+class BackupPhoneResponseSchema(BaseModel):
+    backup_phone: str | None = None

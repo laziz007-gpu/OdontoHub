@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { User, Stethoscope } from "lucide-react";
 import { paths } from "../Routes/path";
-import GoSmileLogo from "../components/Shared/GoSmileLogo";
+import GoSmileLogo from "../assets/img/icons/logo1.png";
 import { RootState } from "../store/store";
 
 export default function Role() {
@@ -21,7 +21,7 @@ export default function Role() {
   return (
     <div className="min-h-screen gradient-primary flex flex-col items-center justify-center p-6 text-white text-center">
       <div className="mb-8">
-        <GoSmileLogo variant="full" size="xl" white />
+        <img src={GoSmileLogo} alt="GoSmile" />
       </div>
 
       <h1 className="text-3xl font-heading font-bold mb-2">Добро пожаловать!</h1>

@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Users, Calendar, MessageCircle, LayoutDashboard, Bell, Menu, X } from "lucide-react";
-import GoSmileLogo from "../components/Shared/GoSmileLogo";
-import { paths } from "../Routes/path";
+import { Bell, Calendar, LayoutDashboard, Menu, MessageCircle, Users, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
 import { useMyAppointments } from "../api/appointments";
-import { useAllPatients } from "../api/profile";
 import { useUnreadCount } from "../api/notifications";
+import { useAllPatients } from "../api/profile";
+import GoSmileLogo from "../assets/img/icons/logo1.png";
+import { paths } from "../Routes/path";
 
 type MenuItem = {
   id: string;
@@ -20,11 +21,10 @@ export default function Sidebar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { t } = useTranslation();
 
-  // Fetch real data
   const { data: appointments } = useMyAppointments();
   const { data: patients } = useAllPatients();
+  const { data: unreadCount = 0 } = useUnreadCount();
 
-  // Calculate today's stats
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);
@@ -35,15 +35,13 @@ export default function Sidebar() {
     return aptDate >= today && aptDate < tomorrow;
   }).length || 0;
 
-  // Calculate today's new patients
-  const newPatientsToday = patients?.filter((p: any) => {
-    if (!p.created_at) return false;
-    const createdDate = new Date(p.created_at);
+  const newPatientsToday = patients?.filter((patient: any) => {
+    if (!patient.created_at) return false;
+    const createdDate = new Date(patient.created_at);
     createdDate.setHours(0, 0, 0, 0);
     return createdDate.getTime() === today.getTime();
   }).length || 0;
 
-  // Mobile drawer ochilganda body scrollni bloklash
   useEffect(() => {
     document.body.style.overflow = isMobileOpen ? "hidden" : "";
     return () => {
@@ -52,38 +50,34 @@ export default function Sidebar() {
   }, [isMobileOpen]);
 
   const menuItems: MenuItem[] = [
-    { id: "dashboard", label: t('sidebar.dashboard'), icon: LayoutDashboard, path: paths.menu },
-    { id: "patients", label: t('sidebar.patients'), icon: Users, path: paths.patient },
-    { id: "appointments", label: t('sidebar.appointments'), icon: Calendar, path: paths.appointments },
-    { id: "chats", label: t('sidebar.chats'), icon: MessageCircle, path: paths.chats },
-    { id: "notifications", label: t('sidebar.notifications', 'Уведомления'), icon: Bell, path: '/notifications' },
+    { id: "dashboard", label: t("sidebar.dashboard"), icon: LayoutDashboard, path: paths.menu },
+    { id: "patients", label: t("sidebar.patients"), icon: Users, path: paths.patient },
+    { id: "appointments", label: t("sidebar.appointments"), icon: Calendar, path: paths.appointments },
+    { id: "chats", label: t("sidebar.chats"), icon: MessageCircle, path: paths.chats },
+    { id: "notifications", label: t("sidebar.notifications", "Уведомления"), icon: Bell, path: paths.notifications },
   ];
 
-  const { data: unreadCount = 0 } = useUnreadCount();
-
   const SidebarInner = ({ isDrawer = false }: { isDrawer?: boolean }) => (
-    <div className="flex flex-col min-h-screen bg-white">
-      {/* Header qismi */}
-      <div className="sticky top-0 z-10 bg-white border-b lg:border-none p-5 sm:p-6 flex items-center justify-between">
+    <div className="app-panel custom-scrollbar flex min-h-screen flex-col overflow-y-auto rounded-[32px] bg-transparent font-railway">
+      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/50 bg-transparent p-5 backdrop-blur-xl sm:p-6">
         <Link to={paths.menu} className="flex items-center gap-3">
-          <GoSmileLogo variant="full" size="md" auto />
+          <img src={GoSmileLogo} alt="GoSmile" />
         </Link>
         {isDrawer && (
           <button
-            className="p-2 -mr-2 text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+            className="rounded-full p-2 text-[#44507e] transition-colors hover:bg-white/60"
             onClick={() => setIsMobileOpen(false)}
-            aria-label="Yopish"
+            aria-label="Закрыть"
           >
-            <X size={26} />
+            <X size={24} />
           </button>
         )}
       </div>
 
-      {/* Menu */}
-      <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+      <nav className="flex-1 space-y-2 px-4 py-6">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = location.pathname === item.path || (item.id === 'chats' && location.pathname.startsWith('/chats'));
+          const isActive = location.pathname === item.path || (item.id === "chats" && location.pathname.startsWith("/chats"));
 
           return (
             <Link
@@ -92,38 +86,36 @@ export default function Sidebar() {
               onClick={() => {
                 if (isDrawer) setIsMobileOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive
-                ? "bg-[#1e2235] text-white font-semibold shadow-md"
-                : "text-gray-800 hover:bg-gray-50 active:bg-gray-100"
-                }`}
+              className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 transition-all ${
+                isActive
+                  ? "bg-[linear-gradient(135deg,#6679ff_0%,#5667ff_100%)] text-white shadow-[0_12px_30px_rgba(86,103,255,0.28)]"
+                  : "text-[#42507f] hover:bg-white/70"
+              }`}
             >
               <div className="relative shrink-0">
-                <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
-                {item.id === 'notifications' && unreadCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">
-                    {unreadCount > 9 ? '9+' : unreadCount}
+                <Icon size={22} strokeWidth={isActive ? 2.5 : 2.1} />
+                {item.id === "notifications" && unreadCount > 0 && (
+                  <span className="absolute -right-1.5 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full border-2 border-white bg-red-500 px-1 text-[10px] font-black text-white shadow-sm">
+                    {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
               </div>
-              <span className="text-[15px]">{item.label}</span>
+              <span className="text-[15px] font-semibold">{item.label}</span>
             </Link>
           );
         })}
       </nav>
 
-      {/* Fokus kartasi */}
-      <div className="m-5 p-6 rounded-3xl bg-linear-to-br from-gray-900 to-gray-800 text-white relative overflow-hidden shadow-xl">
-        <div className="absolute inset-0 opacity-30 pointer-events-none">
-        </div>
+      <div className="m-5 overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#6577ff_0%,#8b7cf6_100%)] p-6 text-white shadow-[0_24px_50px_rgba(90,96,195,0.28)]">
         <div className="relative z-10 text-center">
-          <h3 className="text-lg font-bold mb-4">{t('sidebar.focus_title')}</h3>
-          <div className="space-y-1.5 text-base font-medium">
-            <p>{todayAppointments} {todayAppointments === 1 ? t('sidebar.focus_appointment_single') : t('sidebar.focus_appointments_plural')}</p>
-            <p>{newPatientsToday} {newPatientsToday === 1 ? t('sidebar.focus_new_patient_single') : t('sidebar.focus_new_patients_plural')}</p>
+          <h3 className="mb-4 font-space text-lg font-bold">{t("sidebar.focus_title")}</h3>
+          <div className="space-y-1.5 text-base font-semibold">
+            <p>{todayAppointments} {todayAppointments === 1 ? t("sidebar.focus_appointment_single") : t("sidebar.focus_appointments_plural")}</p>
+            <p>{newPatientsToday} {newPatientsToday === 1 ? t("sidebar.focus_new_patient_single") : t("sidebar.focus_new_patients_plural")}</p>
           </div>
           <Link to={paths.analytics}>
-            <button className="mt-5 w-full bg-white text-gray-900 py-3 rounded-2xl font-semibold shadow hover:bg-gray-100 transition-colors">
-              {t('sidebar.analytics')}
+            <button className="mt-5 w-full rounded-2xl bg-white py-3 font-space font-bold text-[#5667ff] transition-colors hover:bg-gray-100">
+              {t("sidebar.analytics")}
             </button>
           </Link>
         </div>
@@ -133,43 +125,37 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:w-[280px] lg:shrink-0 lg:border-r lg:border-gray-100 lg:h-screen lg:sticky lg:top-0 bg-white z-10">
+      <aside className="hidden bg-transparent lg:flex lg:h-screen lg:w-[280px] lg:shrink-0 lg:sticky lg:top-0 lg:p-4">
         <SidebarInner />
       </aside>
 
-      {/* Mobile header */}
-      <header className="lg:hidden fixed top-0 inset-x-0 z-40 bg-white border-b shadow-sm">
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-white/40 bg-white/70 shadow-sm backdrop-blur-xl lg:hidden">
         <div className="flex items-center justify-between px-4 py-3.5">
-          <Link to="/" className="flex items-center gap-3">
-            <GoSmileLogo variant="full" size="sm" auto />
+          <Link to={paths.menu} className="flex items-center gap-3">
+            <img src={GoSmileLogo} alt="GoSmile" />
           </Link>
           <button
             onClick={() => setIsMobileOpen(true)}
-            className="p-2 -mr-2 rounded-lg hover:bg-gray-100 transition-colors"
-            aria-label="Menyuni ochish"
+            className="rounded-lg p-2 transition-colors hover:bg-white"
+            aria-label="Открыть меню"
           >
-            <Menu size={26} className="text-gray-800" />
+            <Menu size={26} className="text-[#42507f]" />
           </button>
         </div>
       </header>
 
-      {/* Mobile drawer */}
       <div className={`fixed inset-0 z-50 lg:hidden ${isMobileOpen ? "pointer-events-auto" : "pointer-events-none"}`}>
-        {/* Backdrop */}
         <div
-          className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${isMobileOpen ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 bg-[#1f2758]/35 backdrop-blur-sm transition-opacity duration-300 ${isMobileOpen ? "opacity-100" : "opacity-0"}`}
           onClick={() => setIsMobileOpen(false)}
         />
 
-        {/* Sidebar panel */}
         <aside
-          className={`absolute inset-y-0 left-0 w-[85vw] max-w-xs bg-white shadow-2xl transform transition-transform duration-300 ease-in-out ${isMobileOpen ? "translate-x-0" : "-translate-x-full"
-            }`}
+          className={`absolute inset-y-0 left-0 w-[85vw] max-w-xs bg-transparent p-3 shadow-2xl transform transition-transform duration-300 ease-in-out ${
+            isMobileOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
         >
-          <div className="h-full overflow-y-auto">
-            <SidebarInner isDrawer />
-          </div>
+          <SidebarInner isDrawer />
         </aside>
       </div>
     </>

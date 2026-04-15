@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import type { RegisterData, LoginData, TokenResponse } from "../interfaces"
 import api from "./api"
-import { setToken, setUser } from "../utils/auth"
 
 export const useRegister = () => {
   return useMutation({
@@ -10,14 +9,12 @@ export const useRegister = () => {
 
     onSuccess: async ({ data }) => {
       if (data?.access_token) {
-        setToken(data.access_token)
         localStorage.setItem('access_token', data.access_token)
         
         // Получаем данные пользователя после успешной регистрации
         try {
           const userResponse = await api.get('/auth/me')
           if (userResponse.data) {
-            setUser(userResponse.data)
             localStorage.setItem('user_data', JSON.stringify(userResponse.data))
           }
         } catch (error) {
@@ -41,14 +38,12 @@ export const useLogin = () => {
 
     onSuccess: async ({ data }) => {
       if (data?.access_token) {
-        setToken(data.access_token)
         localStorage.setItem('access_token', data.access_token)
         
         // Получаем данные пользователя после успешного логина
         try {
           const userResponse = await api.get('/auth/me')
           if (userResponse.data) {
-            setUser(userResponse.data)
             localStorage.setItem('user_data', JSON.stringify(userResponse.data))
           }
         } catch (error) {
@@ -73,4 +68,20 @@ export const useCurrentUser = () => {
     enabled: !!accessToken && !isLocalMode, // Disable if local mode
     select: (response) => response.data,
   })
+}
+
+// Change password function
+export const changePassword = async (data: { current_password: string; new_password: string }) => {
+  const response = await api.put('/auth/change-password', data)
+  return response.data
+}
+
+export const getBackupPhone = async (): Promise<{ backup_phone: string | null }> => {
+  const response = await api.get('/auth/backup-phone')
+  return response.data
+}
+
+export const updateBackupPhone = async (data: { backup_phone: string | null }) => {
+  const response = await api.put('/auth/backup-phone', data)
+  return response.data
 }
