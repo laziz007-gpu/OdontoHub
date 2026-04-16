@@ -70,6 +70,9 @@ const PatientNavbar = () => {
                     <div className="mb-10 hidden px-6 lg:block">
                         <img src={GoSmileLogo} alt="GoSmile" />
                     </div>
+                    <div className="flex justify-center mb-10 lg:hidden">
+                        <img src={GoSmileLogo} alt="GoSmile" className="h-11 w-11 object-contain" />
+                    </div>
                     <div className="space-y-4 px-4 lg:px-6">
                         {navItems.map((item, index) => {
                             const isActive = location.pathname === item.path;

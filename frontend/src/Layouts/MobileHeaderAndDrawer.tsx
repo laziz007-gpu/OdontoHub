@@ -1,7 +1,7 @@
-import React, { useState, useEffect, type FC } from 'react';
-import { Menu, X, LayoutDashboard, Users, Calendar, MessageCircle, type LucideIcon } from 'lucide-react';
+import React, { useEffect, useState, type FC } from 'react';
+import { Calendar, LayoutDashboard, Menu, MessageCircle, Users, X, type LucideIcon } from 'lucide-react';
+
 import GoSmileLogo from '../assets/img/icons/logo1.png';
-// import NotificationBadge from '../components/Shared/NotificationBadge';
 
 interface MenuItem {
   icon: LucideIcon;
@@ -12,14 +12,11 @@ interface MenuItem {
 const MobileHeaderAndDrawer: FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  // Scroll bloklash (mobil menyuni ochganda sahifa siljimaydi)
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    return () => {
       document.body.style.overflow = '';
-    }
-    return () => { document.body.style.overflow = ''; };
+    };
   }, [isOpen]);
 
   const menuItems: MenuItem[] = [
@@ -31,78 +28,60 @@ const MobileHeaderAndDrawer: FC = () => {
 
   return (
     <>
-      {/* MOBIL HEADER — burger shu yerda */}
-      <header className="
-        lg:hidden fixed top-0 left-0 right-0 z-50 
-        bg-white border-b border-gray-200 shadow-sm
-      ">
-        <div className="px-4 py-3.5 flex items-center justify-between">
-          {/* Logo chapda */}
+      <header className="fixed left-0 right-0 top-0 z-50 border-b border-white/40 bg-white/70 shadow-sm backdrop-blur-xl lg:hidden">
+        <div className="flex items-center justify-between px-4 py-3.5">
           <div className="flex items-center gap-3">
-            <img src={GoSmileLogo} alt="" />
+            <img src={GoSmileLogo} alt="GoSmile" />
           </div>
 
-          {/* BURGER — o'ngda */}
-          <div className="flex items-center gap-2">
-            {/* <NotificationBadge /> */}
-            <button
-              onClick={() => setIsOpen(true)}
-              className="p-2 -mr-2 rounded-lg hover:bg-gray-100 transition-colors"
-              aria-label="Menyuni ochish"
-            >
-              <Menu size={28} className="text-gray-800" />
-            </button>
-          </div>
+          <button
+            onClick={() => setIsOpen(true)}
+            className="rounded-lg p-2 transition-colors hover:bg-white"
+            aria-label="Открыть меню"
+          >
+            <Menu size={28} className="text-[#42507f]" />
+          </button>
         </div>
       </header>
 
-      {/* DRAWER (yon panel) — burger bosilganda chiqadi */}
       <div
-        className={`
-          fixed inset-0 z-[100] lg:hidden transition-all duration-300
-          ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
-        `}
+        className={`fixed inset-0 z-[100] transition-all duration-300 lg:hidden ${
+          isOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+        }`}
       >
-        {/* Orqa qoraytirish */}
         <div
-          className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute inset-0 bg-[#1f2758]/35 backdrop-blur-sm transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
           onClick={() => setIsOpen(false)}
         />
 
-        {/* Sidebar panel */}
         <div
-          className={`
-            absolute top-0 bottom-0 left-0 w-[85vw] max-w-[320px] bg-white shadow-2xl
-            transform transition-transform duration-300 ease-in-out
-            ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-          `}
+          className={`absolute bottom-0 left-0 top-0 w-[85vw] max-w-[320px] bg-transparent p-3 shadow-2xl transform transition-transform duration-300 ease-in-out ${
+            isOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
         >
-          {/* Header ichida yopish tugmasi + logo */}
-          <div className="p-5 flex items-center justify-between border-b">
-            <div className="flex items-center gap-3">
-              <img src={GoSmileLogo} alt="" />
-            </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="p-2 rounded-full hover:bg-gray-100"
-            >
-              <X size={28} className="text-gray-700" />
-            </button>
-          </div>
-
-          {/* Menyu */}
-          <nav className="p-4 space-y-2">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                className="w-full flex items-center gap-4 px-5 py-4 rounded-xl text-left hover:bg-gray-50 active:bg-gray-100 transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                <item.icon size={24} className="text-gray-700" />
-                <span className="text-base font-medium">{item.label}</span>
+          <div className="app-panel flex h-full flex-col rounded-[32px] border border-white/70">
+            <div className="flex items-center justify-between border-b border-white/50 p-5">
+              <div className="flex items-center gap-3">
+                <img src={GoSmileLogo} alt="GoSmile" />
+              </div>
+              <button onClick={() => setIsOpen(false)} className="rounded-full p-2 hover:bg-white/60">
+                <X size={28} className="text-[#42507f]" />
               </button>
-            ))}
-          </nav>
+            </div>
+
+            <nav className="space-y-2 p-4">
+              {menuItems.map((item) => (
+                <button
+                  key={item.id}
+                  className="flex w-full items-center gap-4 rounded-xl px-5 py-4 text-left transition-colors hover:bg-white/70 active:bg-white"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <item.icon size={24} className="text-[#42507f]" />
+                  <span className="font-railway text-base font-semibold text-[#42507f]">{item.label}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
         </div>
       </div>
     </>

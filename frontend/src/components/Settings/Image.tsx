@@ -1,17 +1,16 @@
 import { useTranslation } from 'react-i18next';
-import Img from "../../assets/img/icons/Ondevelopment.svg"
+
+import Img from '../../assets/img/icons/Ondevelopment.svg';
 
 const Image = () => {
   const { t } = useTranslation();
+
   return (
-    <div>
-      <div className="flex flex-col justify-center items-center  mt-[60px] ml-[200px]">
-        <img className="w-[100px] h-[100px]" src={Img} alt="" />
-        <p className="text-[#635D5D] text-[38px] font-extrabold">{t('settings.in_development')}</p>
-      </div>
-
+    <div className="flex min-h-[320px] flex-col items-center justify-center rounded-[28px] border border-[#e6ebff] bg-white px-6 py-10 text-center shadow-sm">
+      <img className="h-[100px] w-[100px]" src={Img} alt="" />
+      <p className="mt-6 text-3xl font-extrabold text-[#635D5D] sm:text-[38px]">{t('settings.in_development')}</p>
     </div>
-  )
-}
+  );
+};
 
-export default Image
+export default Image;

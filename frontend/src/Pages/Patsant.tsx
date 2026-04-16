@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import Qidiruv from "../components/Bosh sahifa/Qidiruv"
 import PatientsTable from "../components/Bosh sahifa/PatsentTable"
+import DoctorPageShell from '../components/Layout/DoctorPageShell'
 import Rasm from "../assets/img/photos/Subtract.png"
 import { type Patient } from '../data/patients'
 import { useTranslation } from 'react-i18next'
@@ -101,20 +102,37 @@ const Patsant: FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 pt-4 sm:pt-6 lg:pt-8 pb-6">
-        <div className="flex items-center gap-2 sm:gap-4 mb-3 sm:mb-6">
+    <DoctorPageShell
+      badge="Patients"
+      title={t('sidebar.patients')}
+      accent="Карточки и поиск"
+      description="Просматривайте базу пациентов, применяйте фильтры и добавляйте новые карточки в едином интерфейсе врача."
+      contentClassName="p-4 sm:p-6 lg:p-8"
+    >
+      <div className="mx-auto max-w-6xl">
+        <div className="mb-5 flex items-center gap-3 sm:mb-6 sm:gap-4">
           <button
             type="button"
             onClick={() => navigate(paths.menu)}
-            className="p-1.5 sm:p-2.5 text-[#1e2235] hover:bg-white rounded-xl transition-colors shrink-0"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#dfe4ff] bg-[#eef1ff] text-[#5667ff] transition hover:bg-[#e4e9ff]"
             aria-label="Orqaga qaytish"
           >
-            <ArrowLeft size={20} className="sm:size-6" />
+            <ArrowLeft size={20} />
           </button>
-          <h1 className="text-xl sm:text-3xl font-black text-[#1e2235] leading-tight flex-1">
-            {t('sidebar.patients')}
-          </h1>
+          <div className="min-w-0">
+            <p
+              className="text-sm font-semibold uppercase tracking-[0.22em] text-[#7080ff]"
+              style={{ fontFamily: '"Space Grotesk", sans-serif' }}
+            >
+              Patient base
+            </p>
+            <h2
+              className="mt-1 text-2xl font-bold text-[#141b33] sm:text-3xl"
+              style={{ fontFamily: '"Space Grotesk", sans-serif' }}
+            >
+              {t('sidebar.patients')}
+            </h2>
+          </div>
         </div>
 
         <Qidiruv
@@ -124,9 +142,11 @@ const Patsant: FC = () => {
           onApplyFilter={setFilters}
         />
 
-        <PatientsTable patients={filteredPatients} />
+        <div className="mt-5 sm:mt-6">
+          <PatientsTable patients={filteredPatients} />
+        </div>
       </div>
-    </div>
+    </DoctorPageShell>
   )
 }
 

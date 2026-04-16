@@ -125,12 +125,12 @@ const DoctorProfile: FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F3F6FB]">
-      <div className="max-w-[1440px] mx-auto px-6 py-6">
+      <div className="mx-auto max-w-[1440px] px-4 py-4 sm:px-6 sm:py-6">
 
         {/* PAGE HEADER */}
         <PageHeader />
 
-        <div className="mt-8 space-y-8">
+        <div className="mt-6 space-y-6 sm:mt-8 sm:space-y-8">
           <input
             type="file"
             ref={fileInputRef}
@@ -140,7 +140,7 @@ const DoctorProfile: FC = () => {
           />
 
           {/* Doctor info + Contacts */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
             <div className="lg:col-span-12 xl:col-span-4">
               <DoctorInfoCard
                 name={profileData.name}
@@ -171,7 +171,7 @@ const DoctorProfile: FC = () => {
           <WorksSection />
 
           {/* Schedule + Socials */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-12">
+          <div className="grid grid-cols-1 gap-6 pb-10 lg:grid-cols-2 lg:gap-8 lg:pb-12">
             <ScheduleCard
               workStart={profileData.workStart}
               startMinute={profileData.startMinute}

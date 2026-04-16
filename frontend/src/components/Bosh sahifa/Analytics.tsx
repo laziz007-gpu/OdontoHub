@@ -50,7 +50,7 @@ export default function Analytics() {
   }, [appointments, patients]);
 
   return (
-    <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-8">
       {stats.map((item) => {
         const isPositive = item.change > 0;
         const isNegative = item.change < 0;
@@ -65,7 +65,7 @@ export default function Analytics() {
         return (
           <div
             key={item.titleKey}
-            className="bg-white rounded-xl sm:rounded-2xl px-3 sm:px-6 py-3 sm:py-5 shadow-md flex flex-col justify-center items-center text-center"
+            className="min-h-[120px] sm:min-h-[140px] bg-white rounded-xl sm:rounded-2xl px-5 sm:px-6 py-5 sm:py-6 shadow-md flex flex-col justify-center items-center text-center"
           >
             <div className="flex items-center justify-center mb-1 sm:mb-3 w-full">
               <h2 className="text-2xl sm:text-5xl font-bold text-gray-900">

@@ -163,10 +163,7 @@ export default function Register1() {
                 GoSmile
               </h1>
               <div className="mx-auto mt-3 h-px w-44 bg-white/80 lg:mx-0" />
-              <p
-                className="mt-4 text-4xl leading-none text-white/95"
-                style={{ fontFamily: '"Great Vibes", cursive' }}
-              >
+              <p className="mt-4 text-4xl leading-none text-white/95" style={{ fontFamily: '"Great Vibes", cursive' }}>
                 Создайте аккаунт
               </p>
               <p className="mx-auto mt-6 max-w-md text-base leading-7 text-white/82 lg:mx-0" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>
@@ -287,7 +284,6 @@ export default function Register1() {
                       Пароль
                     </label>
                     <div className={`flex items-center rounded-2xl border bg-white px-4 ${errors.password ? 'border-red-400' : 'border-[#d9def7]'}`}>
-                      <Eye size={0} className="hidden" />
                       <LockKeyholeShim />
                       <input
                         type={showPassword ? 'text' : 'password'}

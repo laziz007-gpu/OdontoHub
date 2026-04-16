@@ -1,5 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
+<<<<<<< HEAD
 from sqlalchemy.exc import IntegrityError
+=======
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+>>>>>>> 94c6405039f6828ace5a6f052f8c8477a8647c96
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -21,12 +25,21 @@ router = APIRouter()
 
 @router.post("/register", response_model=TokenSchema)
 def register(data: RegisterSchema, db: Session = Depends(get_db)):
+<<<<<<< HEAD
     normalized_phone = data.phone.strip()
     existing = db.query(User).filter(User.phone == normalized_phone).first()
+=======
+    phone = data.phone.strip()
+    email = data.email.strip() if data.email else None
+    full_name = data.full_name.strip()
+
+    existing = db.query(User).filter(User.phone == phone).first()
+>>>>>>> 94c6405039f6828ace5a6f052f8c8477a8647c96
     if existing:
         raise HTTPException(status_code=400, detail="Номер уже зарегистрирован")
 
     role_value = data.role.value
+<<<<<<< HEAD
     user = User(
         phone=normalized_phone,
         email=data.email,
@@ -56,6 +69,41 @@ def register(data: RegisterSchema, db: Session = Depends(get_db)):
     except IntegrityError:
         db.rollback()
         raise HTTPException(status_code=400, detail="Номер уже зарегистрирован")
+=======
+
+    try:
+        user = User(
+            phone=phone,
+            email=email,
+            password=data.password,  # Store password directly for now (should be hashed in production)
+            role=UserRole(role_value),
+        )
+        db.add(user)
+        db.flush()
+
+        if role_value == "patient":
+            db.add(PatientProfile(user_id=user.id, full_name=full_name))
+        elif role_value == "dentist":
+            db.add(
+                DentistProfile(
+                    user_id=user.id,
+                    full_name=full_name,
+                    verification_status=VerificationStatus.APPROVED,
+                )
+            )
+
+        db.commit()
+        db.refresh(user)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Phone already registered")
+    except SQLAlchemyError as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Registration failed: {str(exc)}")
+
+    token = create_access_token({"sub": str(user.id), "role": user.role.value})
+    return {"access_token": token, "token_type": "bearer"}
+>>>>>>> 94c6405039f6828ace5a6f052f8c8477a8647c96
 
 
 @router.post("/login", response_model=TokenSchema)

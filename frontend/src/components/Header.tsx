@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Users, Calendar, MessageCircle, LayoutDashboard, Menu, X } from 'lucide-react';
-import GoSmileLogo from '../assets/img/icons/logo1.png';
-import { useDentistStats } from '../api/profile';
+import { Calendar, LayoutDashboard, Menu, MessageCircle, Users, X } from 'lucide-react';
 
-// Menu item turi
+import { useDentistStats } from '../api/profile';
+import GoSmileLogo from '../assets/img/icons/logo1.png';
+
 type MenuItem = {
   id: string;
   label: string;
@@ -22,9 +22,8 @@ export default function Header() {
     { id: 'chats', label: 'Чаты', icon: MessageCircle },
   ];
 
-  // Sidebar content
   const SidebarContent: React.FC = () => (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex h-full flex-col">
       <nav className="flex-1 px-4 py-8">
         {menuItems.map((item) => {
           const Icon = item.icon;
@@ -37,16 +36,16 @@ export default function Header() {
                 setActiveItem(item.id);
                 setIsMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-4 px-5 py-4 mb-2 rounded-[22px] transition-all duration-200 ${
+              className={`mb-2 flex w-full items-center gap-4 rounded-[22px] px-5 py-4 transition-all duration-200 ${
                 isActive
-                  ? 'bg-[#1e2235] text-white shadow-lg'
-                  : 'text-[#1e2235] hover:bg-gray-50'
+                  ? 'bg-[linear-gradient(135deg,#6679ff_0%,#5667ff_100%)] text-white shadow-[0_16px_34px_rgba(86,103,255,0.28)]'
+                  : 'text-[#42507f] hover:bg-white/70'
               }`}
             >
-              <div className="w-6 h-6 flex items-center justify-center shrink-0">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center">
                 <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
               </div>
-              <span className={`text-[17px] whitespace-nowrap ${isActive ? 'font-bold' : 'font-semibold'}`}>
+              <span className={`font-railway whitespace-nowrap text-[17px] ${isActive ? 'font-bold' : 'font-semibold'}`}>
                 {item.label}
               </span>
             </button>
@@ -54,21 +53,17 @@ export default function Header() {
         })}
       </nav>
 
-      <div className="mx-4 mb-8 p-6 rounded-[32px] relative overflow-hidden bg-black text-center min-h-[220px] flex flex-col justify-between shadow-2xl">
-        <div className="absolute inset-0 opacity-60">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-orange-500 blur-2xl transform scale-150 rotate-12"></div>
-        </div>
-
+      <div className="m-4 mb-8 rounded-[32px] bg-[linear-gradient(135deg,#6577ff_0%,#8b7cf6_100%)] p-6 text-center text-white shadow-[0_24px_50px_rgba(90,96,195,0.28)]">
         <div className="relative z-10">
-          <h3 className="text-[19px] font-bold text-white mb-6">Сегодняшний фокус</h3>
-          <div className="space-y-1 text-white text-[19px] font-extrabold leading-tight tracking-tight">
+          <h3 className="mb-6 font-space text-[19px] font-bold">Сегодняшний фокус</h3>
+          <div className="space-y-1 font-railway text-[19px] font-extrabold leading-tight tracking-tight">
             <p>{stats?.appointments_today || 0} приёмов</p>
             <p>3 онлайн-консульт.</p>
             <p>{stats?.new_patients_this_week || 0} новых пациентов</p>
           </div>
         </div>
 
-        <button className="relative z-10 mt-6 w-full bg-white text-[#4e6ef2] py-3.5 px-4 rounded-[18px] font-bold text-[15px] shadow-sm hover:bg-gray-50 transition-colors">
+        <button className="relative z-10 mt-6 w-full rounded-[18px] bg-white px-4 py-3.5 font-space text-[15px] font-bold text-[#5667ff] shadow-sm transition-colors hover:bg-gray-50">
           Аналитика
         </button>
       </div>
@@ -77,41 +72,44 @@ export default function Header() {
 
   return (
     <>
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:w-[280px] lg:h-screen lg:bg-white lg:flex-col border-r border-gray-100">
-        <div className="p-8 pb-2">
-          <div className="flex items-center gap-2">
-            <img src={GoSmileLogo} alt="" />
+      <aside className="hidden border-r border-white/50 bg-transparent lg:flex lg:h-screen lg:w-[280px] lg:flex-col lg:p-4">
+        <div className="app-panel flex h-full flex-col rounded-[32px] border border-white/70">
+          <div className="p-8 pb-2">
+            <div className="flex items-center gap-2">
+              <img src={GoSmileLogo} alt="GoSmile" />
+            </div>
           </div>
+          <SidebarContent />
         </div>
-        <SidebarContent />
       </aside>
 
-      {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white p-4 border-b flex justify-between items-center">
+      <div className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between border-b border-white/40 bg-white/70 p-4 backdrop-blur-xl lg:hidden">
         <div className="flex items-center gap-2">
-          <img src={GoSmileLogo} alt="" />
+          <img src={GoSmileLogo} alt="GoSmile" />
         </div>
-        <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 rounded-lg bg-gray-50">
-          <Menu className="w-6 h-6 text-[#1e2235]" />
+        <button onClick={() => setIsMobileMenuOpen(true)} className="rounded-lg bg-white/60 p-2">
+          <Menu className="h-6 w-6 text-[#1e2235]" />
         </button>
       </div>
 
-      {/* Mobile Sidebar */}
       {isMobileMenuOpen && (
         <>
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden"
+            className="fixed inset-0 z-40 bg-[#1f2758]/35 backdrop-blur-sm lg:hidden"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <aside className="fixed left-0 top-0 bottom-0 w-[280px] bg-white z-50 flex flex-col shadow-2xl">
-            <div className="p-6 flex justify-between items-center border-b">
-              <div className="flex items-center gap-2"></div>
-              <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 hover:bg-gray-100 rounded-full">
-                <X size={24} />
-              </button>
+          <aside className="fixed bottom-0 left-0 top-0 z-50 flex w-[280px] flex-col bg-transparent p-3 shadow-2xl">
+            <div className="app-panel flex h-full flex-col rounded-[32px] border border-white/70">
+              <div className="flex items-center justify-between border-b border-white/50 p-6">
+                <div className="flex items-center gap-2">
+                  <img src={GoSmileLogo} alt="GoSmile" />
+                </div>
+                <button onClick={() => setIsMobileMenuOpen(false)} className="rounded-full p-2 hover:bg-white/60">
+                  <X size={24} />
+                </button>
+              </div>
+              <SidebarContent />
             </div>
-            <SidebarContent />
           </aside>
         </>
       )}

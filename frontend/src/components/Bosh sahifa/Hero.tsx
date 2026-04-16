@@ -96,35 +96,35 @@ const Hero: React.FC<HeroProps> = ({ onSearch }) => {
   return (
     <>
       <header className="w-full bg-white border-b border-gray-100 shadow-sm">
-        <div className="mx-auto max-w-7xl px-3 sm:px-6 py-3 sm:py-4">
-          <div className="flex items-center gap-2 sm:gap-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-6 py-3 sm:py-4">
+          <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:gap-6">
             {/* Search bar */}
-            <div className="relative flex-1 min-w-0 sm:max-w-md">
+            <div className="relative w-full min-w-0 xl:flex-1 xl:max-w-[600px]">
               <input
                 value={searchValue}
                 onChange={handleSearch}
                 placeholder={t('dashboard.search_placeholder')}
-                className="w-full h-9 sm:h-[52px] pl-9 sm:pl-12 pr-3 sm:pr-5 bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl text-xs sm:text-sm"
+                className="w-full h-11 pl-10 sm:pl-11 pr-4 bg-gray-50 border border-gray-200 rounded-2xl text-sm"
               />
-              <Search className="absolute left-2.5 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
+              <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-[18px] sm:h-[18px] text-gray-500" />
             </div>
 
             {/* Action buttons */}
-            <div className="flex items-center gap-1.5 sm:gap-4 shrink-0">
+            <div className="flex items-center justify-between gap-3 sm:gap-4 xl:justify-end xl:gap-5 shrink-0">
               <button
                 onClick={() => setIsRatingModalOpen(true)}
-                className="hidden lg:flex h-[52px] px-5 items-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl shadow-lg shadow-blue-200 transition-all hover:scale-[1.02] active:scale-95"
+                className="flex h-11 min-w-[158px] sm:min-w-[180px] px-5 sm:px-7 items-center gap-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl shadow-lg shadow-blue-200 transition-all hover:scale-[1.02] active:scale-95"
               >
-                <img src={StarIcon} className="w-6 h-6 brightness-0 invert" />
-                <div className="flex flex-col items-start leading-none gap-0.5">
-                  <span className="font-black text-xl">{stats?.average_rating || '0.0'}</span>
-                  <span className="text-[10px] uppercase font-bold opacity-80">{stats?.total_reviews || 0} ta sharh</span>
+                <img src={StarIcon} className="w-4 h-4 sm:w-5 sm:h-5 brightness-0 invert shrink-0" />
+                <div className="flex min-w-0 flex-col items-start leading-none gap-0.5">
+                  <span className="font-black text-lg sm:text-xl">{stats?.average_rating || '0.0'}</span>
+                  <span className="text-[9px] sm:text-[10px] uppercase font-bold opacity-80 whitespace-nowrap">{stats?.total_reviews || 0} ta sharh</span>
                 </div>
               </button>
 
               {/* Notifications */}
               <div className="relative" ref={notifRef}>
-                <button onClick={() => setIsNotifOpen(!isNotifOpen)} className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl border transition-all flex items-center justify-center hover:bg-gray-50 bg-white relative">
+                <button onClick={() => setIsNotifOpen(!isNotifOpen)} className="w-11 h-11 p-2.5 rounded-xl border border-gray-200 transition-all flex items-center justify-center hover:bg-gray-50 bg-white relative shrink-0">
                   <img src={NotificationIcon} className="w-5 h-5 sm:w-6 sm:h-6" />
                   {unread > 0 && (
                     <span className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-red-500 text-white text-[9px] sm:text-[10px] font-black rounded-full flex items-center justify-center">
@@ -162,16 +162,16 @@ const Hero: React.FC<HeroProps> = ({ onSearch }) => {
                 )}
               </div>
 
-              <Link to={paths.settings} className="w-9 h-9 sm:w-11 sm:h-11 border rounded-xl flex items-center justify-center transition-opacity hover:opacity-70 bg-white">
-                <img src={SettingsIcon} className="w-4 h-4 sm:w-5 sm:h-5 opacity-70" />
+              <Link to={paths.settings} className="w-11 h-11 p-2.5 border border-gray-200 rounded-xl flex items-center justify-center transition-opacity hover:opacity-70 bg-white shrink-0">
+                <img src={SettingsIcon} className="w-[18px] h-[18px] opacity-70" />
               </Link>
 
-              <Link to={user?.role === 'dentist' ? paths.profile : paths.patientProfileSettings} className="flex h-10 sm:h-[52px] pl-1.5 sm:pl-2 pr-2 sm:pr-4 items-center gap-2 sm:gap-3 bg-gray-900 text-white rounded-xl sm:rounded-2xl hover:bg-gray-800 transition-all active:scale-95 shadow-lg shadow-gray-200">
-                <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl overflow-hidden border border-gray-700">
+              <Link to={user?.role === 'dentist' ? paths.profile : paths.patientProfileSettings} className="flex min-w-0 h-11 pl-2.5 pr-4 sm:pr-5 items-center gap-3 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition-all active:scale-95 shadow-lg shadow-gray-200">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden border border-gray-700 shrink-0">
                   <img src={DentistImg} alt="Profile" className="w-full h-full object-cover" />
                 </div>
-                <div className="hidden md:flex flex-col leading-tight">
-                  <span className="font-bold text-xs truncate max-w-[120px]">{user?.full_name || 'Shifokor'}</span>
+                <div className="flex min-w-0 flex-col leading-tight">
+                  <span className="font-bold text-xs truncate max-w-[110px]">{user?.full_name || 'Shifokor'}</span>
                   <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">Boshqaruv</span>
                 </div>
               </Link>
