@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Video, Edit3, Save, Loader2, X } from 'lucide-react';
+import { Video, Edit3, Save, Loader2, X, CheckCircle } from 'lucide-react';
 import { type AppointmentStatus } from './AppointmentCard';
 import { useCancelAppointment, useRescheduleAppointment, useUpdateAppointment } from '../../api/appointments';
 import RescheduleModal from './RescheduleModal';
@@ -26,11 +26,11 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
-    
+
     // Notes editing state
     const [isEditingNotes, setIsEditingNotes] = useState(false);
     const [notes, setNotes] = useState(appointment?.raw?.notes || '');
-    
+
     const cancelMutation = useCancelAppointment();
     const rescheduleMutation = useRescheduleAppointment();
     const updateMutation = useUpdateAppointment();
@@ -48,7 +48,7 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
     const handleCancel = async () => {
         if (confirm('Вы уверены что хотите отменить этот приём?')) {
             try {
-                await cancelMutation.mutateAsync(appointment.id);
+                await cancelMutation.mutateAsync({ id: appointment.id });
                 onSuccess?.('Приём успешно отменён', 'success');
                 onClose();
             } catch (error) {
@@ -79,7 +79,21 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
                 notes: notes
             });
             setIsEditingNotes(false);
-            toast.success('Заметка сақланди');
+            toast.success(t('appointments.toasts.notes_saved'));
+        } catch (error) {
+            toast.error('Хатолик юз берди');
+        }
+    };
+
+    const handleStart = async () => {
+        try {
+            await updateMutation.mutateAsync({
+                id: appointment.id,
+                status: 'confirmed'
+            });
+            toast.success(t('appointments.toasts.started'));
+            onClose();
+            // Transitions to InProgressView happens via Appointments.tsx logic
         } catch (error) {
             toast.error('Хатолик юз берди');
         }
@@ -91,7 +105,10 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
         'rescheduled': 'text-[#feb019]',
         'in_progress': 'text-[#4f6bff]',
         'in_queue': 'text-[#6c757d]',
+        'pending': 'text-[#feb019]',
     };
+
+    const isPending = appointment.status === 'pending';
 
     return (
         <div
@@ -139,7 +156,7 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
                         <div className="flex justify-between items-center mb-3">
                             <span className="text-gray-500 font-bold">Эслатмалар (Заметки):</span>
                             {!isEditingNotes && (
-                                <button 
+                                <button
                                     onClick={() => setIsEditingNotes(true)}
                                     className="p-2 bg-amber-50 text-[#fdbc31] rounded-lg hover:bg-[#fdbc31] hover:text-white transition-all cursor-pointer"
                                 >
@@ -147,7 +164,7 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
                                 </button>
                             )}
                         </div>
-                        
+
                         {isEditingNotes ? (
                             <div className="space-y-3">
                                 <textarea
@@ -158,13 +175,13 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
                                     autoFocus
                                 />
                                 <div className="flex gap-2">
-                                    <button 
+                                    <button
                                         onClick={() => setIsEditingNotes(false)}
                                         className="flex-1 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors"
                                     >
                                         Бекор қилиш
                                     </button>
-                                    <button 
+                                    <button
                                         onClick={handleSaveNotes}
                                         disabled={updateMutation.isPending}
                                         className="flex-2 py-3 bg-[#fdbc31] text-white font-black rounded-xl shadow-lg shadow-[#fdbc31]/20 hover:bg-[#e09d15] transition-all flex items-center justify-center gap-2"
@@ -214,6 +231,17 @@ const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({ isOpen,
                         >
                             <Video size={22} />
                             Онлайн консультация
+                        </button>
+                    )}
+
+                    {isPending && (
+                        <button
+                            onClick={handleStart}
+                            disabled={updateMutation.isPending}
+                            className="w-full py-5 bg-[#10d16d] text-white text-xl font-black rounded-[24px] shadow-lg shadow-[#10d16d]/30 hover:bg-[#0eca69] transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-60"
+                        >
+                            {updateMutation.isPending ? <Loader2 size={22} className="animate-spin" /> : <CheckCircle size={22} className="text-white" />}
+                            {t('appointments.actions.start')}
                         </button>
                     )}
                     <div className="flex gap-3">

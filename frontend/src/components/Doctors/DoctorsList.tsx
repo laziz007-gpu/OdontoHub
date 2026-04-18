@@ -104,7 +104,7 @@ const DoctorsList: React.FC = () => {
                 ...d,
                 name: d.full_name,
                 direction: d.specialization || "Stomatolog",
-                experience: d.experience_years ? `${d.experience_years} yil tajriba` : "5 yil tajriba",
+                experience: d.experience_years ? `${d.experience_years} yil tajriba` : "",
                 rating: d.rating || 0,
                 review_count: d.review_count || 0,
                 image: DoctorImg,

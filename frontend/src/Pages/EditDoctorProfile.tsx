@@ -17,12 +17,13 @@ function MapPicker({
   onPick: (nextLat: number, nextLng: number) => void;
 }) {
   useMapEvents({
-    click(event) {
+    click(event: any) {
       onPick(event.latlng.lat, event.latlng.lng);
     },
   });
 
   return (
+    // @ts-ignore
     <CircleMarker
       center={[lat, lng]}
       radius={10}
@@ -43,13 +44,16 @@ export default function EditDoctorProfile() {
   const [mapLoading, setMapLoading] = useState(false);
   const [mapError, setMapError] = useState('');
   const [hasPickedLocation, setHasPickedLocation] = useState(false);
-  const [coordinates, setCoordinates] = useState({ lat: 41.2995, lng: 69.2401 }); // Tashkent default
+  const [coordinates, setCoordinates] = useState({ lat: 41.2995, lng: 69.2401 });
+  const [avatar, setAvatar] = useState<string>(DentistImg);
 
   const [formData, setFormData] = useState({
     specialization: '',
     phone: '',
     address: '',
     clinic: '',
+    birthDate: '',
+    experienceYears: '',
     schedule: 'Каждый день',
     workStartHour: '08',
     workStartMinute: '00',
@@ -58,72 +62,53 @@ export default function EditDoctorProfile() {
     telegram: '',
     instagram: '',
     whatsapp: '',
-    age: '',
     gender: '',
   });
 
-  // Обновляем formData когда приходят данные с сервера
   useEffect(() => {
-    if (dentist) {
-      const workHours = dentist.work_hours?.split('-') || ['08:00', '16:00'];
-      const [startHour, startMinute] = workHours[0]?.split(':') || ['08', '00'];
-      const [endHour, endMinute] = workHours[1]?.split(':') || ['16', '00'];
+    if (!dentist) return;
 
-      setFormData({
-        specialization: dentist.specialization || '',
-        phone: dentist.phone || '',
-        address: dentist.address || '',
-        clinic: dentist.clinic || '',
-        schedule: dentist.schedule || 'Каждый день',
-        workStartHour: startHour,
-        workStartMinute: startMinute,
-        workEndHour: endHour,
-        workEndMinute: endMinute,
-        telegram: dentist.telegram || '',
-        instagram: dentist.instagram || '',
-        whatsapp: dentist.whatsapp || '',
-        age: dentist.age != null ? String(dentist.age) : '',
-        gender: dentist.gender || '',
-      });
-      if (dentist.latitude && dentist.longitude) {
-        setCoordinates({ lat: dentist.latitude, lng: dentist.longitude });
-        setHasPickedLocation(true);
-      }
+    const workHours = dentist.work_hours?.split('-') || ['08:00', '16:00'];
+    const [startHour, startMinute] = workHours[0]?.split(':') || ['08', '00'];
+    const [endHour, endMinute] = workHours[1]?.split(':') || ['16', '00'];
+
+    setFormData({
+      specialization: dentist.specialization || '',
+      phone: dentist.phone || '',
+      address: dentist.address || '',
+      clinic: dentist.clinic || '',
+      birthDate: dentist.birth_date ? dentist.birth_date.slice(0, 10) : '',
+      experienceYears: dentist.experience_years != null ? String(dentist.experience_years) : '',
+      schedule: dentist.schedule || 'Каждый день',
+      workStartHour: startHour,
+      workStartMinute: startMinute,
+      workEndHour: endHour,
+      workEndMinute: endMinute,
+      telegram: dentist.telegram || '',
+      instagram: dentist.instagram || '',
+      whatsapp: dentist.whatsapp || '',
+      gender: dentist.gender || '',
+    });
+
+    if (dentist.latitude && dentist.longitude) {
+      setCoordinates({ lat: dentist.latitude, lng: dentist.longitude });
+      setHasPickedLocation(true);
     }
   }, [dentist]);
 
-  const [avatar, setAvatar] = useState<string>(DentistImg);
-
-  const specializations = [
-    'Хирург',
-    'Терапевт',
-    'Ортодонт',
-    'Ортопед',
-    'Пародонтолог',
-    'Имплантолог'
-  ];
-
-  const scheduleOptions = [
-    'Каждый день',
-    'Будние дни',
-    'Выходные',
-    'Понедельник - Пятница',
-    'Индивидуальный график'
-  ];
+  const specializations = ['Хирург', 'Терапевт', 'Ортодонт', 'Ортопед', 'Пародонтолог', 'Имплантолог', 'Общая стоматология'];
+  const scheduleOptions = ['Каждый день', 'Будние дни', 'Выходные', 'Понедельник - Пятница', 'Индивидуальный график'];
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setAvatar(url);
-    }
+    if (!file) return;
+    setAvatar(URL.createObjectURL(file));
   };
 
   const handleDiplomaChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
-    // Using a toast message
+
     toast.success('Загрузка диплома...');
     try {
       await uploadDiploma.mutateAsync(file);
@@ -135,27 +120,19 @@ export default function EditDoctorProfile() {
     }
   };
 
-  const handleMapClick = () => {
-    setMapAddress(formData.address);
-    setMapError('');
-    setIsMapModalOpen(true);
-  };
-
   const pickLocation = async (lat: number, lng: number) => {
     setCoordinates({ lat, lng });
     setHasPickedLocation(true);
     setMapError('');
 
     try {
-      const reverse = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-      );
+      const reverse = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
       const data = await reverse.json();
       if (data?.display_name) {
         setMapAddress(data.display_name);
       }
     } catch {
-      // Keep manual input as fallback if reverse-geocoding fails.
+      // Ignore reverse geocoding failures.
     }
   };
 
@@ -165,6 +142,7 @@ export default function EditDoctorProfile() {
       setMapError('Сначала введите адрес');
       return;
     }
+
     setMapLoading(true);
     setMapError('');
     try {
@@ -176,17 +154,13 @@ export default function EditDoctorProfile() {
         setMapError('Адрес не найден. Уточните адрес и попробуйте снова.');
         return;
       }
+
       setCoordinates({
         lat: Number(data[0].lat),
         lng: Number(data[0].lon),
       });
       setHasPickedLocation(true);
-      if (data[0].display_name) {
-        setMapAddress(data[0].display_name);
-      }
-      if (!formData.address && data[0].display_name) {
-        setMapAddress(data[0].display_name);
-      }
+      setMapAddress(data[0].display_name || query);
     } catch {
       setMapError('Не удалось найти адрес. Проверьте интернет и попробуйте снова.');
     } finally {
@@ -214,11 +188,8 @@ export default function EditDoctorProfile() {
     }
 
     setMapAddress(finalAddress);
+    setFormData((prev) => ({ ...prev, address: finalAddress }));
     setHasPickedLocation(true);
-    setFormData({
-      ...formData,
-      address: finalAddress,
-    });
     setIsMapModalOpen(false);
   };
 
@@ -229,28 +200,25 @@ export default function EditDoctorProfile() {
         phone: formData.phone,
         address: formData.address,
         clinic: formData.clinic,
+        birth_date: formData.birthDate || null,
+        experience_years: formData.experienceYears ? parseInt(formData.experienceYears, 10) : null,
         schedule: formData.schedule,
         work_hours: `${formData.workStartHour}:${formData.workStartMinute}-${formData.workEndHour}:${formData.workEndMinute}`,
         telegram: formData.telegram,
         instagram: formData.instagram,
         whatsapp: formData.whatsapp,
-        age: formData.age ? parseInt(formData.age, 10) : null,
         gender: formData.gender || null,
       };
+
       if (hasPickedLocation) {
         payload.latitude = coordinates.lat;
         payload.longitude = coordinates.lng;
       }
+
       await updateProfile.mutateAsync(payload);
-      
-      // Обновляем данные профиля
       await refetch();
-      
-      // Показываем уведомление
       toast.success('Профиль успешно обновлён!');
-      setTimeout(() => {
-        navigate('/profile');
-      }, 2000);
+      setTimeout(() => navigate('/profile'), 1200);
     } catch (error) {
       console.error('Failed to update profile:', error);
       toast.error('Ошибка при сохранении профиля');
@@ -259,215 +227,163 @@ export default function EditDoctorProfile() {
 
   return (
     <div className="min-h-screen bg-[#F3F6FB] p-6">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
+      <div className="mx-auto max-w-5xl">
+        <div className="mb-8 flex items-center gap-4">
           <button
             onClick={() => navigate('/profile')}
-            className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm hover:bg-gray-50"
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="h-6 w-6" />
           </button>
           <h1 className="text-3xl font-bold">Редактирование</h1>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Column */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div className="space-y-6">
-            {/* Specialization */}
             <div>
-              <label className="block text-sm text-gray-600 mb-2">Специализация</label>
+              <label className="mb-2 block text-sm text-gray-600">Специализация</label>
               <div className="relative">
                 <select
                   value={formData.specialization}
                   onChange={(e) => setFormData({ ...formData, specialization: e.target.value })}
-                  className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold appearance-none cursor-pointer focus:outline-none focus:border-blue-400"
+                  className="h-14 w-full appearance-none rounded-2xl border-2 border-blue-200 bg-white px-4 text-lg font-semibold focus:border-blue-400 focus:outline-none"
                 >
-                  <option value="">Танланмаган</option>
+                  <option value="">Не выбрано</option>
                   {specializations.map((spec) => (
                     <option key={spec} value={spec}>{spec}</option>
                   ))}
                 </select>
-                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
               </div>
             </div>
 
-            {/* Age and Gender */}
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <label className="block text-sm text-gray-600 mb-2">Ёш</label>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div>
+                <label className="mb-2 block text-sm text-gray-600">Дата рождения</label>
                 <input
-                  type="number"
-                  min="18"
-                  max="99"
-                  value={formData.age}
-                  onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-                  className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold focus:outline-none focus:border-blue-400"
-                  placeholder="30"
+                  type="date"
+                  value={formData.birthDate}
+                  onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+                  className="h-14 w-full rounded-2xl border-2 border-blue-200 bg-white px-4 text-lg font-semibold focus:border-blue-400 focus:outline-none"
                 />
               </div>
-              <div className="flex-1">
-                <label className="block text-sm text-gray-600 mb-2">Жинс</label>
+              <div>
+                <label className="mb-2 block text-sm text-gray-600">Стаж</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="80"
+                  value={formData.experienceYears}
+                  onChange={(e) => setFormData({ ...formData, experienceYears: e.target.value })}
+                  className="h-14 w-full rounded-2xl border-2 border-blue-200 bg-white px-4 text-lg font-semibold focus:border-blue-400 focus:outline-none"
+                  placeholder="5"
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm text-gray-600">Пол</label>
                 <div className="relative">
                   <select
                     value={formData.gender}
                     onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                    className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold appearance-none cursor-pointer focus:outline-none focus:border-blue-400"
+                    className="h-14 w-full appearance-none rounded-2xl border-2 border-blue-200 bg-white px-4 text-lg font-semibold focus:border-blue-400 focus:outline-none"
                   >
-                    <option value="">Танланмаган</option>
-                    <option value="male">Эркак</option>
-                    <option value="female">Аёл</option>
+                    <option value="">Не выбрано</option>
+                    <option value="male">Мужской</option>
+                    <option value="female">Женский</option>
                   </select>
-                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
                 </div>
               </div>
             </div>
 
-            {/* Phone */}
             <div>
-              <label className="block text-sm text-gray-600 mb-2">Телефонный номер</label>
+              <label className="mb-2 block text-sm text-gray-600">Телефонный номер</label>
               <input
                 type="tel"
                 value={formData.phone}
-                onChange={(e) => {
-                  let val = e.target.value.replace(/\D/g, '');
-                  if (val.startsWith('998')) {
-                    val = val.slice(0, 12);
-                  } else {
-                    val = val.slice(0, 9);
-                  }
-                  setFormData({ ...formData, phone: val });
-                }}
-                onBlur={(e) => {
-                  let val = e.target.value.replace(/\D/g, '');
-                  if (val && !val.startsWith('998')) {
-                    val = '998' + val;
-                  }
-                  if (val.length === 12) {
-                    const formatted = `+${val.slice(0, 3)} ${val.slice(3, 5)} ${val.slice(5, 8)} ${val.slice(8, 10)} ${val.slice(10, 12)}`;
-                    setFormData({ ...formData, phone: formatted });
-                  }
-                }}
-                className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold focus:outline-none focus:border-blue-400"
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                className="h-14 w-full rounded-2xl border-2 border-blue-200 bg-white px-4 text-lg font-semibold focus:border-blue-400 focus:outline-none"
                 placeholder="+998 93 123 45 67"
               />
             </div>
 
-            {/* Address */}
             <div>
-              <label className="block text-sm text-gray-600 mb-2">Адрес</label>
-              <div className="relative group">
+              <label className="mb-2 block text-sm text-gray-600">Адрес</label>
+              <div className="group relative">
                 <input
                   type="text"
                   value={formData.address}
-                  onClick={handleMapClick}
-                  className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 pr-28 text-lg font-semibold focus:outline-none focus:border-blue-400 cursor-pointer group-hover:border-blue-300 transition-colors"
+                  onClick={() => {
+                    setMapAddress(formData.address);
+                    setMapError('');
+                    setIsMapModalOpen(true);
+                  }}
+                  className="h-14 w-full cursor-pointer rounded-2xl border-2 border-blue-200 bg-white px-4 pr-28 text-lg font-semibold transition-colors group-hover:border-blue-300 focus:border-blue-400 focus:outline-none"
                   placeholder="Выбрать на карте"
                   readOnly
                 />
-                <span className="absolute right-11 top-1/2 -translate-y-1/2 text-xs font-bold text-blue-600">
-                  Открыть карту
-                </span>
-                <MapPin className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                <span className="absolute right-11 top-1/2 -translate-y-1/2 text-xs font-bold text-blue-600">Открыть карту</span>
+                <MapPin className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
               </div>
             </div>
 
-            {/* Clinic */}
             <div>
+              <label className="mb-2 block text-sm text-gray-600">Клиника</label>
               <input
                 type="text"
                 value={formData.clinic}
                 onChange={(e) => setFormData({ ...formData, clinic: e.target.value })}
-                className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold focus:outline-none focus:border-blue-400"
+                className="h-14 w-full rounded-2xl border-2 border-blue-200 bg-white px-4 text-lg font-semibold focus:border-blue-400 focus:outline-none"
                 placeholder="Клиника"
               />
             </div>
 
-            {/* Schedule */}
             <div>
-              <label className="block text-sm text-gray-600 mb-2">График работы</label>
+              <label className="mb-2 block text-sm text-gray-600">График работы</label>
               <div className="relative">
                 <select
                   value={formData.schedule}
                   onChange={(e) => setFormData({ ...formData, schedule: e.target.value })}
-                  className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold appearance-none cursor-pointer focus:outline-none focus:border-blue-400"
+                  className="h-14 w-full appearance-none rounded-2xl border-2 border-blue-200 bg-white px-4 text-lg font-semibold focus:border-blue-400 focus:outline-none"
                 >
                   {scheduleOptions.map((option) => (
                     <option key={option} value={option}>{option}</option>
                   ))}
                 </select>
-                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
               </div>
             </div>
 
-            {/* Work Hours */}
             <div>
-              <label className="block text-sm text-gray-600 mb-2">Время работы</label>
+              <label className="mb-2 block text-sm text-gray-600">Время работы</label>
               <div className="flex gap-4">
-                <div className="flex items-center gap-2 bg-white border-2 border-blue-200 rounded-2xl px-4 h-14">
+                <div className="flex h-14 items-center gap-2 rounded-2xl border-2 border-blue-200 bg-white px-4">
                   <input
                     type="text"
                     value={formData.workStartHour}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '').slice(0, 2);
-                      const num = parseInt(val) || 0;
-                      setFormData({ ...formData, workStartHour: num > 23 ? '23' : val });
-                    }}
-                    onBlur={(e) => {
-                      const val = e.target.value;
-                      if (val.length === 1) setFormData({ ...formData, workStartHour: '0' + val });
-                      if (val === '') setFormData({ ...formData, workStartHour: '00' });
-                    }}
+                    onChange={(e) => setFormData({ ...formData, workStartHour: e.target.value.replace(/\D/g, '').slice(0, 2) })}
                     className="w-12 bg-transparent text-center text-2xl font-black outline-none"
                   />
-                  <div className="h-8 w-[2px] bg-gray-300"></div>
+                  <div className="h-8 w-[2px] bg-gray-300" />
                   <input
                     type="text"
                     value={formData.workStartMinute}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '').slice(0, 2);
-                      const num = parseInt(val) || 0;
-                      setFormData({ ...formData, workStartMinute: num > 59 ? '59' : val });
-                    }}
-                    onBlur={(e) => {
-                      const val = e.target.value;
-                      if (val.length === 1) setFormData({ ...formData, workStartMinute: '0' + val });
-                      if (val === '') setFormData({ ...formData, workStartMinute: '00' });
-                    }}
+                    onChange={(e) => setFormData({ ...formData, workStartMinute: e.target.value.replace(/\D/g, '').slice(0, 2) })}
                     className="w-12 bg-transparent text-center text-2xl font-black outline-none"
                   />
                 </div>
-
-                <div className="flex items-center gap-2 bg-white border-2 border-blue-200 rounded-2xl px-4 h-14">
+                <div className="flex h-14 items-center gap-2 rounded-2xl border-2 border-blue-200 bg-white px-4">
                   <input
                     type="text"
                     value={formData.workEndHour}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '').slice(0, 2);
-                      const num = parseInt(val) || 0;
-                      setFormData({ ...formData, workEndHour: num > 23 ? '23' : val });
-                    }}
-                    onBlur={(e) => {
-                      const val = e.target.value;
-                      if (val.length === 1) setFormData({ ...formData, workEndHour: '0' + val });
-                      if (val === '') setFormData({ ...formData, workEndHour: '00' });
-                    }}
+                    onChange={(e) => setFormData({ ...formData, workEndHour: e.target.value.replace(/\D/g, '').slice(0, 2) })}
                     className="w-12 bg-transparent text-center text-2xl font-black outline-none"
                   />
-                  <div className="h-8 w-[2px] bg-gray-300"></div>
+                  <div className="h-8 w-[2px] bg-gray-300" />
                   <input
                     type="text"
                     value={formData.workEndMinute}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '').slice(0, 2);
-                      const num = parseInt(val) || 0;
-                      setFormData({ ...formData, workEndMinute: num > 59 ? '59' : val });
-                    }}
-                    onBlur={(e) => {
-                      const val = e.target.value;
-                      if (val.length === 1) setFormData({ ...formData, workEndMinute: '0' + val });
-                      if (val === '') setFormData({ ...formData, workEndMinute: '00' });
-                    }}
+                    onChange={(e) => setFormData({ ...formData, workEndMinute: e.target.value.replace(/\D/g, '').slice(0, 2) })}
                     className="w-12 bg-transparent text-center text-2xl font-black outline-none"
                   />
                 </div>
@@ -475,235 +391,141 @@ export default function EditDoctorProfile() {
             </div>
           </div>
 
-          {/* Right Column */}
           <div className="space-y-6">
-            {/* Avatar */}
             <div className="flex flex-col items-center gap-4">
-              <div className="w-48 h-48 rounded-3xl overflow-hidden bg-gray-200">
-                <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
+              <div className="h-48 w-48 overflow-hidden rounded-3xl bg-gray-200">
+                <img src={avatar} alt="Avatar" className="h-full w-full object-cover" />
               </div>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleAvatarChange}
-                className="hidden"
-                accept="image/*"
-              />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="text-blue-600 font-semibold text-lg hover:underline"
-              >
+              <input type="file" ref={fileInputRef} onChange={handleAvatarChange} className="hidden" accept="image/*" />
+              <button onClick={() => fileInputRef.current?.click()} className="text-lg font-semibold text-blue-600 hover:underline">
                 Изменить фото
-              </button>
-              <button className="text-blue-600 font-semibold text-lg hover:underline">
-                Добавить аватарку
               </button>
             </div>
 
-            {/* Diploma Upload */}
-            <div className="bg-white p-6 rounded-3xl border-2 border-blue-200">
-              <h3 className="text-xl font-bold mb-4">Ваш Диплом</h3>
+            <div className="rounded-3xl border-2 border-blue-200 bg-white p-6">
+              <h3 className="mb-4 text-xl font-bold">Ваш диплом</h3>
               {dentist?.diploma_photo_url ? (
                 <div className="mb-4">
-                  <div className="w-full h-48 bg-gray-100 rounded-xl overflow-hidden mb-3 border border-gray-200">
-                    <img 
-                      src={`http://localhost:8000${dentist.diploma_photo_url}`} 
-                      alt="Diploma" 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-sm font-semibold text-gray-500">Статус верификации:</span>
-                    {dentist.verification_status === 'approved' && <span className="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-sm font-bold">Одобрено</span>}
-                    {dentist.verification_status === 'pending' && <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-lg text-sm font-bold">Ожидает проверки</span>}
-                    {dentist.verification_status === 'rejected' && <span className="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-sm font-bold">Отклонено</span>}
+                  <div className="mb-3 h-48 w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-100">
+                    <img src={`http://localhost:8000${dentist.diploma_photo_url}`} alt="Diploma" className="h-full w-full object-cover" />
                   </div>
                 </div>
               ) : (
-                <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200 text-center text-gray-500 text-sm">
+                <div className="mb-4 rounded-xl border border-gray-200 bg-gray-50 p-4 text-center text-sm text-gray-500">
                   Диплом еще не загружен
                 </div>
               )}
-              
-              <input
-                type="file"
-                ref={diplomaInputRef}
-                onChange={handleDiplomaChange}
-                className="hidden"
-                accept="image/*,application/pdf"
-              />
+
+              <input type="file" ref={diplomaInputRef} onChange={handleDiplomaChange} className="hidden" accept="image/*,application/pdf" />
               <button
                 onClick={() => diplomaInputRef.current?.click()}
                 disabled={uploadDiploma.isPending}
-                className="w-full py-3 bg-blue-50 text-blue-600 font-bold rounded-xl hover:bg-blue-100 transition-colors disabled:opacity-50"
+                className="w-full rounded-xl bg-blue-50 py-3 font-bold text-blue-600 transition-colors hover:bg-blue-100 disabled:opacity-50"
               >
-                {uploadDiploma.isPending ? 'Загрузка...' : (dentist?.diploma_photo_url ? 'Загрузить новый диплом' : 'Добавить копию диплома')}
+                {uploadDiploma.isPending ? 'Загрузка...' : dentist?.diploma_photo_url ? 'Загрузить новый диплом' : 'Добавить копию диплома'}
               </button>
             </div>
 
-            {/* Telegram */}
             <div>
-              <label className="block text-sm text-gray-600 mb-2">Telegram</label>
+              <label className="mb-2 block text-sm text-gray-600">Telegram</label>
               <input
                 type="text"
                 value={formData.telegram}
                 onChange={(e) => setFormData({ ...formData, telegram: e.target.value })}
-                className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold focus:outline-none focus:border-blue-400"
+                className="h-14 w-full rounded-2xl border-2 border-blue-200 bg-white px-4 text-lg font-semibold focus:border-blue-400 focus:outline-none"
                 placeholder="@stomatolog"
               />
             </div>
 
-            {/* Instagram */}
             <div>
-              <label className="block text-sm text-gray-600 mb-2">Instagram</label>
+              <label className="mb-2 block text-sm text-gray-600">Instagram</label>
               <input
                 type="text"
                 value={formData.instagram}
                 onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
-                className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold focus:outline-none focus:border-blue-400"
+                className="h-14 w-full rounded-2xl border-2 border-blue-200 bg-white px-4 text-lg font-semibold focus:border-blue-400 focus:outline-none"
                 placeholder="stomatolog.uz"
               />
             </div>
 
-            {/* Instagram (duplicate in screenshot) */}
             <div>
-              <label className="block text-sm text-gray-600 mb-2">Instagram</label>
-              <input
-                type="text"
-                value={formData.instagram}
-                onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
-                className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold focus:outline-none focus:border-blue-400"
-                placeholder="stomatolog.uz"
-              />
-            </div>
-
-            {/* WhatsApp */}
-            <div>
-              <label className="block text-sm text-gray-600 mb-2">Whatsapp</label>
+              <label className="mb-2 block text-sm text-gray-600">Whatsapp</label>
               <input
                 type="tel"
                 value={formData.whatsapp}
-                onChange={(e) => {
-                  let val = e.target.value.replace(/\D/g, '');
-                  if (val.startsWith('998')) {
-                    val = val.slice(0, 12);
-                  } else {
-                    val = val.slice(0, 9);
-                  }
-                  setFormData({ ...formData, whatsapp: val });
-                }}
-                onBlur={(e) => {
-                  let val = e.target.value.replace(/\D/g, '');
-                  if (val && !val.startsWith('998')) {
-                    val = '998' + val;
-                  }
-                  if (val.length === 12) {
-                    const formatted = `+${val.slice(0, 3)} ${val.slice(3, 5)} ${val.slice(5, 8)} ${val.slice(8, 10)} ${val.slice(10, 12)}`;
-                    setFormData({ ...formData, whatsapp: formatted });
-                  }
-                }}
-                className="w-full h-14 bg-white border-2 border-blue-200 rounded-2xl px-4 text-lg font-semibold focus:outline-none focus:border-blue-400"
+                onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                className="h-14 w-full rounded-2xl border-2 border-blue-200 bg-white px-4 text-lg font-semibold focus:border-blue-400 focus:outline-none"
                 placeholder="+998 90 123 45 67"
               />
             </div>
           </div>
         </div>
 
-        {/* Save Button */}
         <div className="mt-8 flex justify-end">
           <button
             onClick={handleSave}
             disabled={updateProfile.isPending}
-            className="px-12 py-4 bg-blue-600 text-white text-lg font-bold rounded-2xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+            className="rounded-2xl bg-blue-600 px-12 py-4 text-lg font-bold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
           >
             {updateProfile.isPending ? 'Сохранение...' : 'Сохранить'}
           </button>
         </div>
       </div>
 
-      {/* Map Modal */}
       {isMapModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b p-4">
               <h2 className="text-xl font-bold">Выберите адрес на карте</h2>
-              <button
-                onClick={() => setIsMapModalOpen(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="w-5 h-5" />
+              <button onClick={() => setIsMapModalOpen(false)} className="rounded-full p-2 transition-colors hover:bg-gray-100">
+                <X className="h-5 w-5" />
               </button>
             </div>
 
-            {/* Map Container */}
             <div className="relative h-[350px] bg-gray-100">
-              <MapContainer
-                center={[coordinates.lat, coordinates.lng]}
-                zoom={14}
-                scrollWheelZoom
-                className="w-full h-full"
-              >
+              {/* @ts-ignore */}
+              <MapContainer center={[coordinates.lat, coordinates.lng]} zoom={14} scrollWheelZoom className="h-full w-full">
+                {/* @ts-ignore */}
                 <TileLayer
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                <MapPicker
-                  lat={coordinates.lat}
-                  lng={coordinates.lng}
-                  onPick={pickLocation}
-                />
+                <MapPicker lat={coordinates.lat} lng={coordinates.lng} onPick={pickLocation} />
               </MapContainer>
-              <div className="absolute left-3 top-3 bg-white/90 rounded-xl px-3 py-1 text-xs text-gray-700 shadow">
-                Нажмите на карту, чтобы выбрать точку
-              </div>
             </div>
 
-            {/* Address Input */}
-            <div className="p-4 border-t">
-              <label className="block text-sm text-gray-600 mb-2">Адрес</label>
+            <div className="border-t p-4">
+              <label className="mb-2 block text-sm text-gray-600">Адрес</label>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={mapAddress}
                   onChange={(e) => setMapAddress(e.target.value)}
-                  className="w-full h-12 bg-gray-50 border-2 border-gray-200 rounded-2xl px-4 text-base font-semibold focus:outline-none focus:border-blue-400"
+                  className="h-12 w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-4 text-base font-semibold focus:border-blue-400 focus:outline-none"
                   placeholder="Введите адрес"
                 />
                 <button
                   onClick={handleSearchAddress}
                   disabled={mapLoading}
-                  className="px-4 h-12 bg-blue-600 text-white text-sm font-bold rounded-2xl hover:bg-blue-700 disabled:opacity-60 transition-colors"
+                  className="h-12 rounded-2xl bg-blue-600 px-4 text-sm font-bold text-white transition-colors hover:bg-blue-700 disabled:opacity-60"
                 >
                   {mapLoading ? 'Поиск...' : 'Найти'}
                 </button>
               </div>
-              {mapError ? (
-                <p className="text-xs text-red-500 mt-2">{mapError}</p>
-              ) : null}
-              <p className="text-xs text-gray-500 mt-2">
-                Координаты: {coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}
-              </p>
-              <button
-                onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${coordinates.lat},${coordinates.lng}`, '_blank')}
-                className="text-xs text-blue-600 mt-1 hover:underline"
-              >
-                Открыть эту точку в Google Maps
-              </button>
+              {mapError ? <p className="mt-2 text-xs text-red-500">{mapError}</p> : null}
+              <p className="mt-2 text-xs text-gray-500">Координаты: {coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}</p>
             </div>
 
-            {/* Actions */}
-            <div className="flex gap-3 p-4 border-t">
+            <div className="flex gap-3 border-t p-4">
               <button
                 onClick={() => setIsMapModalOpen(false)}
-                className="flex-1 px-6 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-2xl hover:bg-gray-200 transition-colors"
+                className="flex-1 rounded-2xl bg-gray-100 px-6 py-2.5 font-bold text-gray-700 transition-colors hover:bg-gray-200"
               >
                 Отмена
               </button>
               <button
                 onClick={handleMapConfirm}
-                className="flex-1 px-6 py-2.5 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition-colors"
+                className="flex-1 rounded-2xl bg-blue-600 px-6 py-2.5 font-bold text-white transition-colors hover:bg-blue-700"
               >
                 Подтвердить
               </button>
@@ -711,8 +533,6 @@ export default function EditDoctorProfile() {
           </div>
         </div>
       )}
-
-      {/* Profile edit ends */}
     </div>
   );
 }

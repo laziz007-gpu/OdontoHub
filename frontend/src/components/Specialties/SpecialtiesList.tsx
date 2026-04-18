@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from "react-i18next";
 import { FiArrowUpRight } from 'react-icons/fi';
 import { paths } from '../../Routes/path';
+import { useSpecializationCounts } from '../../api/profile';
 
 interface Specialty {
     id: string;
@@ -13,26 +14,27 @@ interface Specialty {
 const SpecialtiesList: React.FC = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const { data: counts } = useSpecializationCounts();
 
     const specialtyIds = [
         'therapist', 'surgeon', 'orthopedist', 'orthodontist',
-        'periodontist', 'pediatric', 'hygienist', 'aesthetic'
+        'periodontist', 'pediatric', 'hygienist', 'aesthetic', 'general'
     ];
 
     const specialties: Specialty[] = specialtyIds.map(id => ({
         id: id,
         name: t(`patient.specialties.items.${id}.name`),
         description: t(`patient.specialties.items.${id}.desc`),
-        count: 245 // Hardcoded for now per user screenshot
+        count: (counts && typeof counts[id] === 'number') ? counts[id] : 0
     }));
 
     const handleView = (specialty: Specialty) => {
         // Navigate to doctors list, filtered by specialty and passing the stable ID
-        navigate(paths.doctors, { 
-            state: { 
+        navigate(paths.doctors, {
+            state: {
                 specialty: specialty.name,
-                specialtyId: specialty.id 
-            } 
+                specialtyId: specialty.id
+            }
         });
     };
 

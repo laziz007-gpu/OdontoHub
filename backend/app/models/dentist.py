@@ -31,6 +31,7 @@ class DentistProfile(Base):
     phone: Mapped[str | None] = mapped_column(String, nullable=True)
     address: Mapped[str | None] = mapped_column(String, nullable=True)
     clinic: Mapped[str | None] = mapped_column(String, nullable=True)
+    birth_date: Mapped[datetime | None] = mapped_column(nullable=True)
     age: Mapped[int | None] = mapped_column(nullable=True)
     experience_years: Mapped[int | None] = mapped_column(nullable=True)
     schedule: Mapped[str | None] = mapped_column(String, nullable=True)

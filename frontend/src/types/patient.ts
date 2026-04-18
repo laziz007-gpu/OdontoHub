@@ -13,8 +13,10 @@ export interface QuickAction {
 export interface Doctor {
     id?: number;
     name: string;
+    full_name?: string;
     direction?: string;
     experience?: string;
+    experience_years?: number | null;
     rating?: string | number;
     review_count?: number;
     image: string;
@@ -22,6 +24,9 @@ export interface Doctor {
     phone?: string;
     address?: string;
     clinic?: string;
+    birth_date?: string | null;
+    gender?: string;
+    email?: string;
     work_hours?: string;
     works_photos?: string;
     telegram?: string;

@@ -1,5 +1,6 @@
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import DentistImg from "../assets/img/photos/Dentist.png";
 import DoctorInfoCard from "../components/PatientAppointmentDetail/DoctorInfoCard";
 import AppointmentDetailsCard from "../components/PatientAppointmentDetail/AppointmentDetailsCard";
@@ -13,6 +14,7 @@ import { useAllDentists } from "../api/profile";
 import type { AppointmentDetail } from "../types/patient";
 
 const PatientAppointmentDetail = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
     const [isComplaintModalOpen, setIsComplaintModalOpen] = useState(false);
@@ -105,7 +107,7 @@ const PatientAppointmentDetail = () => {
             details: {
                 status: appointmentData.status === "pending" ? "запланирован" :
                     appointmentData.status === "completed" ? "завершён" :
-                    appointmentData.status === "cancelled" ? "отменён" : "запланирован",
+                        appointmentData.status === "cancelled" ? "отменён" : "запланирован",
                 date: startDate.toLocaleDateString('ru-RU'),
                 duration: `${duration} минут`,
                 tip: appointmentData.notes || "Нет подсказок",
@@ -144,9 +146,8 @@ const PatientAppointmentDetail = () => {
                     </div>
                 </div>
                 <div className="hidden md:block">
-                    <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${
-                        isActive ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'
-                    }`}>
+                    <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${isActive ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'
+                        }`}>
                         {isActive ? 'Предстоит' : appointment.details.status}
                     </span>
                 </div>
@@ -169,8 +170,12 @@ const PatientAppointmentDetail = () => {
                             {isActive ? (
                                 <ActionButtons phone={appointment.doctor.phone} doctorName={appointment.doctor.name} />
                             ) : (appointment.details.status === "завершён" || (appointmentData && new Date(appointmentData.end_time) < new Date() && appointmentData.status !== "cancelled")) ? (
-                                <div className="space-y-4">
-                                    <ReviewButton />
+                                <div className="space-y-6">
+                                    <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-50 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                        <h3 className="text-2xl font-black text-[#1D1D2B] mb-2 text-center">{t('patient.appointment_detail.rate_quality')}</h3>
+                                        <p className="text-gray-400 text-sm font-bold text-center mb-6 px-4">{t('patient.appointment_detail.rate_desc')}</p>
+                                        <ReviewButton inline={true} />
+                                    </div>
                                     <button
                                         onClick={() => setIsComplaintModalOpen(true)}
                                         className="w-full py-4 rounded-[20px] text-base font-bold transition-all active:scale-95 flex items-center justify-center gap-2 text-red-500 bg-white border border-red-100 hover:bg-red-50 shadow-sm"
@@ -187,12 +192,12 @@ const PatientAppointmentDetail = () => {
                     </div>
                 </div>
             </div>
-            
-            <ComplaintModal 
-                isOpen={isComplaintModalOpen} 
-                onClose={() => setIsComplaintModalOpen(false)} 
-                dentistId={appointmentData?.dentist_id || appointment.doctor.id || 0} 
-                dentistName={appointmentData?.dentist_name || appointment.doctor.name || "Доктор"} 
+
+            <ComplaintModal
+                isOpen={isComplaintModalOpen}
+                onClose={() => setIsComplaintModalOpen(false)}
+                dentistId={appointmentData?.dentist_id || appointment.doctor.id || 0}
+                dentistName={appointmentData?.dentist_name || appointment.doctor.name || "Доктор"}
             />
         </div>
     );

@@ -6,6 +6,7 @@ from app.core.security import get_current_user, require_role
 from app.models.user import User, UserRole
 from app.models.appointment import Appointment, AppointmentStatus
 from app.schemas.appointment import AppointmentCreate, AppointmentUpdate, AppointmentSchema
+from app.services.notification_service import NotificationService
 
 router = APIRouter(prefix="/appointments", tags=["Appointments"])
 

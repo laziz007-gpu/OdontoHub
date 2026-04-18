@@ -100,9 +100,9 @@ const EditProfileModal: FC<EditProfileModalProps> = ({ isOpen, onClose, initialD
                         <div className="space-y-2">
                             <label className="text-[14px] font-black text-[#1D1D2B] px-4">Дата рождения</label>
                             <input
-                                type="text"
-                                value={formData.age || '20.09.2000'}
-                                onChange={(e) => handleChange('age', e.target.value)}
+                                type="date"
+                                value={formData.birthDate || ''}
+                                onChange={(e) => handleChange('birthDate', e.target.value)}
                                 className="w-full bg-[#D9D9D9] border-none rounded-[20px] py-4 px-6 text-lg font-black text-[#1D1D2B] focus:ring-2 focus:ring-blue-500/20"
                             />
                         </div>

@@ -24,8 +24,10 @@ export interface DentistProfile {
     verification_status: "pending" | "approved" | "rejected";
     specialization?: string;
     phone?: string;
+    email?: string;
     address?: string;
     clinic?: string;
+    birth_date?: string | null;
     schedule?: string;
     work_hours?: string;
     telegram?: string;
@@ -192,6 +194,7 @@ export const useUpdateDentistProfile = () => {
             phone: string;
             address: string;
             clinic: string;
+            birth_date: string | null;
             schedule: string;
             work_hours: string;
             telegram: string;
@@ -200,6 +203,7 @@ export const useUpdateDentistProfile = () => {
             latitude: number;
             longitude: number;
             works_photos: string;
+            experience_years: number | null;
             age: number | null;
             gender: string | null;
         }>) => {
@@ -256,4 +260,15 @@ export const useDentistStats = () => {
         },
         enabled: !!accessToken && isAuthenticated() && isDentist() && userRole === 'dentist',
     })
+};
+
+export const useSpecializationCounts = () => {
+    return useQuery({
+        queryKey: ['specializationCounts'],
+        queryFn: async () => {
+            const response = await api.get<Record<string, number>>('/dentists/specialization-counts');
+            return response.data;
+        },
+        staleTime: 5 * 60 * 1000, // 5 minutes
+    });
 };

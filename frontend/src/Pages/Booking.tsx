@@ -25,6 +25,10 @@ const Booking = () => {
     const [comment, setComment] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Get current user and patient info from state
+    const currentUser = JSON.parse(localStorage.getItem('user_data') || '{}');
+    const patientFromState = location.state?.patientId;
+
     const { data: dentists = [] } = useAllDentists();
     const { data: servicesData = [] } = useServices(selectedDoctor ? parseInt(selectedDoctor) : undefined);
     const createAppointment = useCreateAppointment();
@@ -74,9 +78,17 @@ const Booking = () => {
             const endDateTime = new Date(startDateTime);
             endDateTime.setHours(startDateTime.getHours() + 1);
 
+            const targetPatientId = patientFromState || userData.patient_id;
+
+            if (userData.role === 'dentist' && !targetPatientId) {
+                toast.error("Для создания записи необходимо выбрать пациента");
+                setIsSubmitting(false);
+                return;
+            }
+
             await createAppointment.mutateAsync({
                 dentist_id: parseInt(selectedDoctor),
-                patient_id: userData.patient_id || undefined,
+                patient_id: targetPatientId || undefined,
                 start_time: startDateTime.toISOString(),
                 end_time: endDateTime.toISOString(),
                 service: serviceName,

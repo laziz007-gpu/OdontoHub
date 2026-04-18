@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StickyNote } from 'lucide-react';
 
-export type AppointmentStatus = 'completed' | 'cancelled' | 'rescheduled' | 'in_progress' | 'in_queue';
+export type AppointmentStatus = 'completed' | 'cancelled' | 'rescheduled' | 'in_progress' | 'in_queue' | 'pending';
 
 interface AppointmentCardProps {
     time: string;
@@ -19,6 +19,7 @@ const statusStyles: Record<AppointmentStatus, string> = {
     'rescheduled': 'border-[#feb019] text-[#feb019]',
     'in_progress': 'border-[#4f6bff] text-[#4f6bff]',
     'in_queue': 'border-[#6c757d] text-[#6c757d]',
+    'pending': 'border-[#feb019] text-[#feb019]',
 };
 
 const AppointmentCard: React.FC<AppointmentCardProps> = ({ time, service, patientName, status, notes, onClick }) => {
@@ -40,7 +41,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ time, service, patien
                 </h4>
                 <p className="text-[12px] font-bold text-[#1a1f36]">{patientName}</p>
             </div>
-            
+
             {notes && (
                 <div className="mt-auto pt-3 border-t border-gray-50 flex items-start gap-2">
                     <StickyNote size={14} className="text-gray-300 shrink-0 mt-0.5" />

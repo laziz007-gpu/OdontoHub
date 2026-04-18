@@ -107,7 +107,7 @@ const SuggestedDoctors = () => {
                                     direction: doctor.specialization || "Stomatolog",
                                     image: DoctorImg,
                                     specialty: doctor.specialization || "Umumiy stomatologiya",
-                                    experience: `${doctor.experience_years || 5} yil tajriba`,
+                                    experience: doctor.experience_years ? `${doctor.experience_years} yil tajriba` : "",
                                     rating: doctor.rating || "5.0"
                                 }
                             }

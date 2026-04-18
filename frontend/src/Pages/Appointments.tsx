@@ -52,7 +52,7 @@ const Appointments: React.FC = () => {
                 else if (app.status === 'cancelled') status = 'cancelled';
                 else if (app.status === 'moved') status = 'rescheduled';
                 else if (app.status === 'confirmed') status = 'in_progress';
-                else if (app.status === 'pending') status = 'in_queue';
+                else if (app.status === 'pending') status = 'pending';
 
                 const serviceLabel = app.service === 'implantation' ? t('modal.services.implantation') :
                     app.service === 'hygiene' ? 'Гигиена' :

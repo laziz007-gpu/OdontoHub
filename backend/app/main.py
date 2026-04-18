@@ -131,6 +131,8 @@ def on_startup():
             existing_columns = [col['name'] for col in inspector.get_columns('dentist_profiles')]
             
             fields_to_add = []
+            if 'birth_date' not in existing_columns:
+                fields_to_add.append(('birth_date', 'TIMESTAMP'))
             if 'age' not in existing_columns:
                 fields_to_add.append(('age', 'INTEGER'))
             if 'experience_years' not in existing_columns:
@@ -236,6 +238,8 @@ def migrate_dentist_fields():
         existing_columns = [col['name'] for col in inspector.get_columns('dentist_profiles')]
 
         fields_to_add = []
+        if 'birth_date' not in existing_columns:
+            fields_to_add.append(('birth_date', 'TIMESTAMP'))
         if 'age' not in existing_columns:
             fields_to_add.append(('age', 'INTEGER'))
         if 'experience_years' not in existing_columns:
@@ -251,7 +255,7 @@ def migrate_dentist_fields():
             return {
                 "status": "success",
                 "message": "All fields already exist",
-                "existing_fields": ["age", "experience_years", "works_photos", "latitude", "longitude"]
+                "existing_fields": ["birth_date", "age", "experience_years", "works_photos", "latitude", "longitude"]
             }
 
         with engine.begin() as conn:
@@ -396,6 +400,7 @@ async def get_all_dentists(db: Session = Depends(get_db)):
                 "specialization": dentist.specialization,
                 "clinic": dentist.clinic,
                 "address": dentist.address,
+                "birth_date": dentist.birth_date.isoformat() if dentist.birth_date else None,
                 "age": dentist.age,
                 "experience_years": dentist.experience_years,
                 "schedule": dentist.schedule,

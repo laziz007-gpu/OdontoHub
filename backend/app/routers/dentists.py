@@ -48,7 +48,8 @@ def get_all_dentists(
             'periodontist': ['пародонтолог', 'parodontolog', 'periodontist'],
             'pediatric': ['детский', 'bolalar', 'pediatric'],
             'hygienist': ['гигиенист', 'gigiyenist', 'hygienist'],
-            'aesthetic': ['эстетик', 'estetik', 'aesthetic']
+            'aesthetic': ['эстетик', 'estetik', 'aesthetic'],
+            'general': ['общая стоматология', 'umumiy', 'general']
         }
         
         keywords = spec_map.get(specialty.lower(), [specialty.lower()])
@@ -120,6 +121,7 @@ def get_all_dentists(
             "email": dentist.user.email if dentist.user else None,
             "address": dentist.address,
             "clinic": dentist.clinic,
+            "birth_date": dentist.birth_date.isoformat() if dentist.birth_date else None,
             "schedule": dentist.schedule,
             "work_hours": dentist.work_hours,
             "telegram": dentist.telegram,
@@ -135,6 +137,36 @@ def get_all_dentists(
             "verification_status": dentist.verification_status.value if hasattr(dentist.verification_status, 'value') else dentist.verification_status
         })
     
+    return result
+
+@router.get("/specialization-counts")
+def get_specialization_counts(db: Session = Depends(get_db)):
+    """Get counts of approved dentists for each specialization"""
+    from sqlalchemy import func, or_
+    
+    spec_map = {
+        'therapist': ['терапевт', 'terapevt', 'therapist'],
+        'surgeon': ['хирург', 'xirurg', 'surgeon'],
+        'orthopedist': ['ортопед', 'ortoped', 'orthopedist', 'ortopedik'],
+        'orthodontist': ['ортодонт', 'ortodont', 'orthodontist'],
+        'periodontist': ['пародонтолог', 'parodontolog', 'periodontist'],
+        'pediatric': ['детский', 'bolalar', 'pediatric'],
+        'hygienist': ['гигиенист', 'gigiyenist', 'hygienist'],
+        'aesthetic': ['эстетик', 'estetik', 'aesthetic'],
+        'general': ['общая стоматология', 'umumiy', 'general']
+    }
+    
+    # We'll count by keywords in specialization field for each category
+    result = {}
+    
+    for spec_id, keywords in spec_map.items():
+        conditions = [func.lower(DentistProfile.specialization).like(f"%{kw}%") for kw in keywords]
+        count = db.query(func.count(DentistProfile.id)).filter(
+            DentistProfile.verification_status == "approved",
+            or_(*conditions)
+        ).scalar() or 0
+        result[spec_id] = count
+        
     return result
 
 @router.get("/me")
@@ -165,6 +197,7 @@ def dentist_me(
         "email": user.email,  # Добавляем email
         "address": profile.address,
         "clinic": profile.clinic,
+        "birth_date": profile.birth_date.isoformat() if profile.birth_date else None,
         "age": profile.age,
         "experience_years": profile.experience_years,
         "schedule": profile.schedule,
@@ -249,12 +282,12 @@ def get_dentist_stats(
         Appointment.dentist_id == dentist_id,
         Appointment.start_time >= week_ago
     ).scalar() or 0
-
+    
     # Reviews
     from app.models.review import Review
     avg_rating = db.query(func.avg(Review.rating)).filter(Review.dentist_id == dentist_id).scalar()
     total_reviews = db.query(func.count(Review.id)).filter(Review.dentist_id == dentist_id).scalar() or 0
-
+    
     return {
         "total_patients": total_patients,
         "total_appointments": total_appointments,
@@ -284,7 +317,7 @@ def update_dentist_profile(
     # Список разрешенных полей для обновления
     allowed_fields = [
         'full_name', 'specialization', 'clinic', 'address', 'age', 
-        'experience_years', 'schedule', 'work_hours', 'telegram', 
+        'birth_date', 'experience_years', 'schedule', 'work_hours', 'telegram', 
         'instagram', 'whatsapp', 'latitude', 'longitude', 'works_photos',
         'pinfl', 'diploma_number', 'gender'
     ]
@@ -342,6 +375,7 @@ def get_pending_dentists(db: Session = Depends(get_db)):
             "specialization": dentist.specialization,
             "clinic": dentist.clinic,
             "address": dentist.address,
+            "birth_date": dentist.birth_date.isoformat() if dentist.birth_date else None,
             "pinfl": dentist.pinfl,
             "diploma_number": dentist.diploma_number,
             "diploma_photo_url": dentist.diploma_photo_url,
@@ -354,7 +388,7 @@ def get_pending_dentists(db: Session = Depends(get_db)):
     
     return result
 
-@router.put("/{dentist_id}/approve")
+@router.get("/{dentist_id}/approve")
 def approve_dentist(dentist_id: int, db: Session = Depends(get_db)):
     """Approve a pending dentist (admin only)"""
     from app.models.dentist import VerificationStatus
@@ -375,7 +409,7 @@ def approve_dentist(dentist_id: int, db: Session = Depends(get_db)):
         "message": "Dentist approved successfully"
     }
 
-@router.put("/{dentist_id}/reject")
+@router.get("/{dentist_id}/reject")
 def reject_dentist(dentist_id: int, db: Session = Depends(get_db)):
     """Reject a pending dentist (admin only)"""
     from app.models.dentist import VerificationStatus

@@ -29,9 +29,16 @@ interface ProfileData {
   workEnd: string;
   endMinute: string;
   gender: string;
-  age: string;
+  birthDate: string;
+  experienceYears: string;
   name: string;
 }
+
+const formatDate = (value?: string | null) => {
+  if (!value) return '';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString('ru-RU');
+};
 
 const DoctorProfile: FC = () => {
   const { t } = useTranslation();
@@ -41,8 +48,8 @@ const DoctorProfile: FC = () => {
   const [profileData, setProfileData] = useState<ProfileData>({
     phone: user?.phone || '+998 (93) 123 45 67',
     email: user?.email || 'example@gmail.com',
-    address: t('doctor_profile.address_placeholder') || 'ул. Амира Темура, 11кв, 20дом',
-    education: 'ТашПМИ (Факультет)',
+    address: t('doctor_profile.address_placeholder') || 'Не указано',
+    education: 'ТашПМИ',
     clinic: 'OdontoHub',
     specialization: t('patient.specialties.items.surgeon.name') || 'Хирург',
     telegram: '@stom',
@@ -54,69 +61,65 @@ const DoctorProfile: FC = () => {
     workEnd: '16',
     endMinute: '00',
     gender: t('patient_profile.male') || 'Мужчина',
-    age: '',
-    name: user?.full_name || 'Пулатов Махмуд'
+    birthDate: '',
+    experienceYears: '',
+    name: user?.full_name || 'Врач',
   });
 
-  // Обновляем данные из API
   useEffect(() => {
-    if (dentistData) {
-      const workHours = dentistData.work_hours?.split('-') || ['08:00', '16:00'];
-      const [startHour, startMinute] = workHours[0]?.split(':') || ['08', '00'];
-      const [endHour, endMinute] = workHours[1]?.split(':') || ['16', '00'];
+    if (!dentistData) return;
 
-      setProfileData(prev => ({
-        ...prev,
-        name: dentistData.full_name || prev.name,
-        phone: dentistData.phone || prev.phone,
-        specialization: dentistData.specialization || prev.specialization,
-        address: dentistData.address || prev.address,
-        clinic: dentistData.clinic || prev.clinic,
-        schedule: dentistData.schedule || prev.schedule,
-        telegram: dentistData.telegram || prev.telegram,
-        instagram: dentistData.instagram || prev.instagram,
-        whatsapp: dentistData.whatsapp || prev.whatsapp,
-        workStart: startHour,
-        startMinute: startMinute,
-        workEnd: endHour,
-        endMinute: endMinute,
-        age: dentistData.age != null
-          ? `${dentistData.age} ${t('patients_list.table.age_label')}`
-          : prev.age,
-        gender: dentistData.gender === 'male'
-          ? t('patient_profile.male')
-          : dentistData.gender === 'female'
-            ? t('patient_profile.female')
-            : prev.gender,
-      }));
-    }
-  }, [dentistData]);
+    const workHours = dentistData.work_hours?.split('-') || ['08:00', '16:00'];
+    const [startHour, startMinute] = workHours[0]?.split(':') || ['08', '00'];
+    const [endHour, endMinute] = workHours[1]?.split(':') || ['16', '00'];
+
+    setProfileData((prev) => ({
+      ...prev,
+      name: dentistData.full_name || prev.name,
+      phone: dentistData.phone || prev.phone,
+      specialization: dentistData.specialization || prev.specialization,
+      address: dentistData.address || prev.address,
+      clinic: dentistData.clinic || prev.clinic,
+      schedule: dentistData.schedule || prev.schedule,
+      telegram: dentistData.telegram || prev.telegram,
+      instagram: dentistData.instagram || prev.instagram,
+      whatsapp: dentistData.whatsapp || prev.whatsapp,
+      workStart: startHour,
+      startMinute,
+      workEnd: endHour,
+      endMinute,
+      birthDate: formatDate(dentistData.birth_date),
+      experienceYears: dentistData.experience_years != null ? `${dentistData.experience_years} лет` : '',
+      gender: dentistData.gender === 'male'
+        ? t('patient_profile.male')
+        : dentistData.gender === 'female'
+          ? t('patient_profile.female')
+          : prev.gender,
+    }));
+  }, [dentistData, t]);
 
   useEffect(() => {
-    if (user) {
-      setProfileData(prev => ({
-        ...prev,
-        name: user.full_name || prev.name,
-        phone: user.phone || prev.phone,
-        email: user.email || prev.email,
-        whatsapp: user.phone || prev.whatsapp
-      }));
-    }
+    if (!user) return;
+    setProfileData((prev) => ({
+      ...prev,
+      name: user.full_name || prev.name,
+      phone: user.phone || prev.phone,
+      email: user.email || prev.email,
+      whatsapp: user.phone || prev.whatsapp,
+    }));
   }, [user]);
 
   const [avatarUrl, setAvatarUrl] = useState<string>(DentistImg);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUpdateProfile = (newData: Partial<ProfileData>) => {
-    setProfileData(prev => ({ ...prev, ...newData }));
+    setProfileData((prev) => ({ ...prev, ...newData }));
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setAvatarUrl(url);
-    }
+    if (!file) return;
+    setAvatarUrl(URL.createObjectURL(file));
   };
 
   const triggerAvatarUpload = () => {
@@ -126,51 +129,32 @@ const DoctorProfile: FC = () => {
   return (
     <div className="min-h-screen bg-[#F3F6FB]">
       <div className="mx-auto max-w-[1440px] px-4 py-4 sm:px-6 sm:py-6">
-
-        {/* PAGE HEADER */}
         <PageHeader />
 
         <div className="mt-6 space-y-6 sm:mt-8 sm:space-y-8">
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleAvatarChange}
-            className="hidden"
-            accept="image/*"
-          />
+          <input type="file" ref={fileInputRef} onChange={handleAvatarChange} className="hidden" accept="image/*" />
 
-          {/* Doctor info + Contacts */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
             <div className="lg:col-span-12 xl:col-span-4">
               <DoctorInfoCard
                 name={profileData.name}
                 specialization={profileData.specialization}
                 gender={profileData.gender}
-                age={profileData.age}
+                birthDate={profileData.birthDate}
+                experienceYears={profileData.experienceYears}
                 avatar={avatarUrl}
                 onAvatarClick={triggerAvatarUpload}
               />
             </div>
             <div className="lg:col-span-12 xl:col-span-8">
-              <ContactInfoCard
-                data={profileData}
-                onSave={handleUpdateProfile}
-                avatar={avatarUrl}
-                triggerAvatarUpload={triggerAvatarUpload}
-              />
+              <ContactInfoCard data={profileData} onSave={handleUpdateProfile} avatar={avatarUrl} triggerAvatarUpload={triggerAvatarUpload} />
             </div>
           </div>
 
-          {/* Stats */}
           <StatsSection />
-
-          {/* Services */}
           <ServicesSection />
-
-          {/* Works */}
           <WorksSection />
 
-          {/* Schedule + Socials */}
           <div className="grid grid-cols-1 gap-6 pb-10 lg:grid-cols-2 lg:gap-8 lg:pb-12">
             <ScheduleCard
               workStart={profileData.workStart}
@@ -179,13 +163,8 @@ const DoctorProfile: FC = () => {
               endMinute={profileData.endMinute}
               onSave={handleUpdateProfile}
             />
-            <SocialNetworksCard
-              telegram={profileData.telegram}
-              instagram={profileData.instagram}
-              whatsapp={profileData.whatsapp}
-            />
+            <SocialNetworksCard telegram={profileData.telegram} instagram={profileData.instagram} whatsapp={profileData.whatsapp} />
           </div>
-
         </div>
       </div>
     </div>

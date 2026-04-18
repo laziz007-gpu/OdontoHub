@@ -232,11 +232,21 @@ def update_patient(
     patient_id: int,
     data: PatientUpdate,
     db: Session = Depends(get_db),
-    user: User = Depends(require_role(UserRole.DENTIST))
+    user: User = Depends(get_current_user)
 ):
     profile = db.query(PatientProfile).filter(PatientProfile.id == patient_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="Patient not found")
+
+    is_dentist = user.role == UserRole.DENTIST
+    is_own_patient_profile = (
+        user.role == UserRole.PATIENT
+        and user.patient_profile
+        and user.patient_profile.id == patient_id
+    )
+
+    if not (is_dentist or is_own_patient_profile):
+        raise HTTPException(status_code=403, detail="Not authorized to update this patient")
     
     for key, value in data.dict(exclude_unset=True).items():
         setattr(profile, key, value)

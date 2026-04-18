@@ -1,10 +1,17 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FaStar } from 'react-icons/fa';
+import { Loader2 } from 'lucide-react';
 import api from '../../api/api';
 import { toast } from '../Shared/Toast';
 
-const ReviewButton = () => {
+interface ReviewButtonProps {
+    inline?: boolean;
+}
+
+const ReviewButton: React.FC<ReviewButtonProps> = ({ inline = false }) => {
+    const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const [showModal, setShowModal] = useState(false);
     const [rating, setRating] = useState(0);
@@ -17,7 +24,6 @@ const ReviewButton = () => {
         if (!rating) { toast.warning('Yulduz tanlang'); return; }
         setSubmitting(true);
         try {
-            const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
             // appointment dan dentist_id ni olish
             const aptRes = await api.get(`/appointments/${id}`);
             const dentist_id = aptRes.data.dentist_id;
@@ -28,7 +34,7 @@ const ReviewButton = () => {
                 rating,
                 comment: comment || null,
             });
-            toast.success('Bahoyingiz qabul qilindi!');
+            toast.success(t('patient.appointment_detail.review_success'));
             setSubmitted(true);
             setShowModal(false);
         } catch {
@@ -38,17 +44,66 @@ const ReviewButton = () => {
         }
     };
 
+    if (inline) {
+        if (submitted) {
+            return (
+                <div className="text-center py-6 bg-green-50 rounded-2xl border border-green-100 animate-in fade-in duration-500">
+                    <p className="text-[#11D76A] font-black text-lg">✓ {t('patient.appointment_detail.review_success')}</p>
+                    <p className="text-gray-500 text-sm font-bold mt-1">{t('patient.appointment_detail.thanks_review')}</p>
+                </div>
+            );
+        }
+
+        return (
+            <div className="space-y-6">
+                {/* Stars */}
+                <div className="flex justify-center gap-3">
+                    {[1, 2, 3, 4, 5].map(star => (
+                        <FaStar
+                            key={star}
+                            size={44}
+                            className="cursor-pointer transition-all duration-150 hover:scale-110 active:scale-90"
+                            color={star <= (hover || rating) ? '#FFC107' : '#E4E5E9'}
+                            onMouseEnter={() => setHover(star)}
+                            onMouseLeave={() => setHover(0)}
+                            onClick={() => setRating(star)}
+                        />
+                    ))}
+                </div>
+                {rating > 0 && (
+                    <p className="text-center text-sm font-black text-[#FFC107] animate-in zoom-in duration-200">
+                        {['', 'Плохо', 'Удовлетворительно', 'Хорошо', 'Очень хорошо', 'Отлично!'][rating]}
+                    </p>
+                )}
+
+                <textarea
+                    className="w-full h-32 bg-[#f5f7fb] rounded-[24px] p-5 text-[#1D1D2B] placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-[#5377f7]/20 border-none text-base font-bold shadow-inner"
+                    placeholder={t('patient.appointment_detail.placeholder_review')}
+                    value={comment}
+                    onChange={e => setComment(e.target.value)}
+                />
+
+                <button
+                    onClick={handleSubmit}
+                    disabled={submitting || !rating}
+                    className="w-full py-5 rounded-[20px] bg-[#11D76A] text-white text-xl font-black shadow-lg shadow-[#11D76A]/20 hover:bg-[#0eca69] transition-all active:scale-[0.98] disabled:opacity-50 disabled:grayscale flex items-center justify-center gap-3"
+                >
+                    {submitting ? <Loader2 size={24} className="animate-spin text-white" /> : t('patient.appointment_detail.send_review')}
+                </button>
+            </div>
+        );
+    }
+
     return (
         <>
             <div className="space-y-4">
                 <button
                     onClick={() => setShowModal(true)}
                     disabled={submitted}
-                    className={`w-full h-14 rounded-[20px] text-white text-lg font-bold transition-all active:scale-95 shadow-lg ${
-                        submitted
-                            ? 'bg-gray-300 cursor-not-allowed'
-                            : 'bg-[#5377f7] hover:bg-[#4156d9] shadow-blue-500/20'
-                    }`}
+                    className={`w-full h-14 rounded-[20px] text-white text-lg font-bold transition-all active:scale-95 shadow-lg ${submitted
+                        ? 'bg-gray-300 cursor-not-allowed'
+                        : 'bg-[#5377f7] hover:bg-[#4156d9] shadow-blue-500/20'
+                        }`}
                 >
                     {submitted ? '✓ Baho qoldirildi' : '⭐ Baho qoldirish'}
                 </button>
@@ -62,7 +117,7 @@ const ReviewButton = () => {
 
                         {/* Stars */}
                         <div className="flex justify-center gap-3 mb-6">
-                            {[1,2,3,4,5].map(star => (
+                            {[1, 2, 3, 4, 5].map(star => (
                                 <FaStar
                                     key={star}
                                     size={44}

@@ -622,7 +622,7 @@
       "select_language": "Tilni tanlang",
       "settings": "Sozlamalar",
       "support": "Yordam"
-      },
+    },
     "appointment_detail": {
       "title": "Qabul tafsilotlari",
       "doctor": "Shifokor",
@@ -662,14 +662,42 @@
       "found_count": "Topildi: {{count}} ta mutaxassis",
       "view_btn": "Ko'rish",
       "items": {
-        "therapist": { "name": "Terapevt", "desc": "Karies va kanallarni davolash" },
-        "surgeon": { "name": "Xirurg", "desc": "Tish olish, implantatsiya" },
-        "orthopedist": { "name": "Ortoped", "desc": "Protezlash, vinirlar" },
-        "orthodontist": { "name": "Ortodont", "desc": "Tishlarni tekislash (breket)" },
-        "periodontist": { "name": "Parodontolog", "desc": "Mulklar davolash" },
-        "pediatric": { "name": "Bolalar stomatologi", "desc": "Bolalar tishlarini davolash" },
-        "hygienist": { "name": "Gigiyenist", "desc": "Tishlarni tozalash, gigiyena" },
-        "aesthetic": { "name": "Estetik stomatolog", "desc": "Tishlarni oqartirish, restavratsiya" }
+        "therapist": {
+          "name": "Terapevt",
+          "desc": "Karies va kanallarni davolash"
+        },
+        "surgeon": {
+          "name": "Xirurg",
+          "desc": "Tish olish, implantatsiya"
+        },
+        "orthopedist": {
+          "name": "Ortoped",
+          "desc": "Protezlash, vinirlar"
+        },
+        "orthodontist": {
+          "name": "Ortodont",
+          "desc": "Tishlarni tekislash (breket)"
+        },
+        "periodontist": {
+          "name": "Parodontolog",
+          "desc": "Mulklar davolash"
+        },
+        "pediatric": {
+          "name": "Bolalar stomatologi",
+          "desc": "Bolalar tishlarini davolash"
+        },
+        "hygienist": {
+          "name": "Gigiyenist",
+          "desc": "Tishlarni tozalash, gigiyena"
+        },
+        "aesthetic": {
+          "name": "Estetik stomatolog",
+          "desc": "Tishlarni oqartirish, restavratsiya"
+        },
+        "general": {
+          "name": "Umumiy stomatologiya",
+          "desc": "Universal tekshirish va tishlarni davolash"
+        }
       }
     },
     "alerts": {

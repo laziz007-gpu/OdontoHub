@@ -18,6 +18,9 @@ const DoctorServicesPage = () => {
     const [services, setServices] = useState<Service[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+    const isDentist = userData.role === 'dentist';
+
     useEffect(() => {
         fetchServices();
     }, [dentist_id]);
@@ -79,12 +82,14 @@ const DoctorServicesPage = () => {
                                             {formatPrice(service.price)} {service.currency}
                                         </p>
                                     </div>
-                                    <button
-                                        onClick={() => navigate('/booking')}
-                                        className="bg-[#11D76A] text-white font-bold py-2 px-6 rounded-full text-sm hover:bg-[#0fc460] transition-all active:scale-95"
-                                    >
-                                        Записаться
-                                    </button>
+                                    {!isDentist && (
+                                        <button
+                                            onClick={() => navigate('/booking')}
+                                            className="bg-[#11D76A] text-white font-bold py-2 px-6 rounded-full text-sm hover:bg-[#0fc460] transition-all active:scale-95"
+                                        >
+                                            Записаться
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))

@@ -146,3 +146,15 @@ class NotificationService:
             message=message,
             data=data
         )
+
+    @staticmethod
+    def notify_appointment_completed(db: Session, user_id: int, appointment_data: Dict[str, Any]):
+        """Уведомление о завершении приёма"""
+        return NotificationService.create_notification(
+            db=db,
+            user_id=user_id,
+            notification_type=NotificationType.APPOINTMENT_COMPLETED,
+            title="Приём завершён",
+            message="Приём завершён, оцените качество приёма. Нам важно ваше мнение!",
+            data=appointment_data
+        )
