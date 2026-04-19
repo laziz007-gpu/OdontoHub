@@ -41,6 +41,11 @@ class Appointment(Base):
         nullable=False
     )
 
+    actual_start_time: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+
     status: Mapped[AppointmentStatus] = mapped_column(
         PgEnum(
             AppointmentStatus,
