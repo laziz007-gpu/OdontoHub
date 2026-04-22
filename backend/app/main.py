@@ -99,7 +99,7 @@ def on_startup():
         enum_types = [
             ("userrole", ["patient", "dentist"]),
             ("verificationstatus", ["pending", "approved", "rejected"]),
-            ("appointment_status", ["pending", "confirmed", "moved", "cancelled", "completed"]),
+            ("appointment_status", ["pending", "confirmed", "in_progress", "moved", "cancelled", "completed"]),
             ("notificationtype", ["appointment_confirmed", "appointment_cancelled", "appointment_reminder", "payment_received", "review_received", "profile_approved", "profile_rejected", "system_message", "new_message"]),
         ]
         with engine.begin() as conn:
@@ -341,7 +341,7 @@ def init_database():
             enum_types = [
                 ("userrole", ["patient", "dentist"]),
                 ("verificationstatus", ["pending", "approved", "rejected"]),
-                ("appointment_status", ["pending", "confirmed", "moved", "cancelled", "completed"]),
+                ("appointment_status", ["pending", "confirmed", "in_progress", "moved", "cancelled", "completed"]),
             ]
             with engine.begin() as conn:
                 for type_name, values in enum_types:
