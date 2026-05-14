@@ -6,6 +6,35 @@
 
 ---
 
+## Phase 2 Doctor (2026-05-14) — to'liq yakunlandi
+
+Bir kunda Phase 2'ning hamma 10 ta task'i bajarildi. Doctor flow Vite versiyasiga teng (modulo Phase 2c uchun qoldirilgan AppointmentDetailModal + InProgressView + PrivacySettings).
+
+**Phase 2b/c — yangi commit'lar (Task 6-10):**
+```
+f7a074a0 feat(frontend-next): port /profile/edit page (538-line form with leaflet map picker)
+b4ec79b8 feat(frontend-next): port /profile page (DoctorProfile with 8 sub-sections)
+051f8e2f feat(frontend-next): port /appointments page with list view, calendar, and record modal
+094c8a6d feat(frontend-next): port /settings page with 5 tabs (notification/privacy/language/data/support)
+663d4cf6 feat(frontend-next): port /patients page with search, filter, and add modal
+```
+
+**Bajarilgan sahifalar:** /menu, /patients, /profile, /profile/edit, /appointments, /settings.
+
+**Yangi infra:** ServiceModal, AddPatientModal, AppointmentModal, RescheduleModal, CalendarView, MapModal (next/dynamic ssr:false), 5 ta Settings sub-tab, 8 ta DoctorProfile sub-section.
+
+**Build:** 47 ta static sahifa.
+
+**Phase 2c'ga qoldi:**
+- `AppointmentDetailModal` + `InProgressView` (Appointments detail flow)
+- `PrivacySettings` to'liq forma (password change + backup phone, 500 satr)
+- `PatientDetailPage` (`/patients/[id]` — 8+ sub-komponent: Medcard, Allergy, Prescription, Payments, Notes, Photos, Appointments)
+- Tezroq.tsx'dagi 3 modal'ni real modalga ulash (AddNoteModal hali port qilinmagan)
+
+**Lucide-react incompat:** `^1.14.0` Instagram/Facebook ko'rsatkichlarini olib tashlagan. Hozir `react-icons/fa`'ga moslashtirildi. Kelajakda butun loyihaga `npm i lucide-react@latest` qilish mumkin.
+
+---
+
 ## Phase 2a (2026-05-14, kech) — Foundation polish + /menu yakunlandi
 
 5 ta yangi commit `patient/abduvoris`'da:
