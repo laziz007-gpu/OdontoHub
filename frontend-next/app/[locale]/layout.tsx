@@ -6,6 +6,7 @@ import { routing } from '@/i18n/routing';
 import { ReduxProvider } from '@/providers/ReduxProvider';
 import { QueryProvider } from '@/providers/QueryProvider';
 import { AuthInit } from '@/providers/AuthInit';
+import { ToastContainer } from '@/components/Shared/Toast';
 import '../globals.css';
 
 type Locale = (typeof routing.locales)[number];
@@ -35,6 +36,7 @@ export default async function LocaleLayout({
           <ReduxProvider>
             <QueryProvider>
               <AuthInit>{children}</AuthInit>
+              <ToastContainer />
             </QueryProvider>
           </ReduxProvider>
         </NextIntlClientProvider>

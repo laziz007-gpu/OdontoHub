@@ -9,6 +9,7 @@ import api from '@/api/api';
 import { paths } from '@/lib/paths';
 import { setUser } from '@/store/slices/userSlice';
 import { useAppDispatch } from '@/store/hooks';
+import { toast } from '@/components/Shared/Toast';
 
 interface LoginData {
   phone: string;
@@ -50,7 +51,7 @@ export default function LoginPage() {
       }
     } catch (err: any) {
       const detail = err?.response?.data?.detail;
-      alert(detail || 'Ошибка подключения к серверу');
+      toast.error(detail || 'Ошибка подключения к серверу');
     }
   };
 

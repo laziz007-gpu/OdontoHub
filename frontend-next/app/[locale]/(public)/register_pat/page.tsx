@@ -9,6 +9,7 @@ import api from '@/api/api';
 import { paths } from '@/lib/paths';
 import { setUser } from '@/store/slices/userSlice';
 import { useAppDispatch } from '@/store/hooks';
+import { toast } from '@/components/Shared/Toast';
 
 interface RegisterFormData {
   full_name: string;
@@ -64,7 +65,7 @@ export default function RegisterPatientPage() {
       router.replace(paths.patientHome);
     } catch (err: any) {
       const detail = err?.response?.data?.detail;
-      alert(detail || 'Ошибка регистрации');
+      toast.error(detail || 'Ошибка регистрации');
     } finally {
       setIsLoading(false);
     }
