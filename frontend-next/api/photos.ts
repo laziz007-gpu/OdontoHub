@@ -1,3 +1,4 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from './api';
 
 export interface PatientPhoto {
@@ -42,6 +43,43 @@ export const updatePhoto = async (
   return response.data;
 };
 
-export const deletePhoto = async (patientId: number, photoId: number): Promise<void> => {
+export const deletePhotoApi = async (patientId: number, photoId: number): Promise<void> => {
   await api.delete(`/api/patients/${patientId}/photos/${photoId}`);
+};
+
+export const usePatientPhotos = (patientId: number, category?: string) => {
+  return useQuery({
+    queryKey: ['photos', patientId, category ?? 'all'],
+    queryFn: () => getPatientPhotos(patientId, category),
+    enabled: !!patientId,
+  });
+};
+
+const invalidatePhotos = (queryClient: ReturnType<typeof useQueryClient>, patientId: number) => {
+  queryClient.invalidateQueries({ queryKey: ['photos', patientId] });
+};
+
+export const useCreatePhoto = (patientId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: Parameters<typeof createPhoto>[1]) => createPhoto(patientId, data),
+    onSuccess: () => invalidatePhotos(queryClient, patientId),
+  });
+};
+
+export const useUpdatePhoto = (patientId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ photoId, data }: { photoId: number; data: Partial<PatientPhoto> }) =>
+      updatePhoto(patientId, photoId, data),
+    onSuccess: () => invalidatePhotos(queryClient, patientId),
+  });
+};
+
+export const useDeletePhoto = (patientId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (photoId: number) => deletePhotoApi(patientId, photoId),
+    onSuccess: () => invalidatePhotos(queryClient, patientId),
+  });
 };
