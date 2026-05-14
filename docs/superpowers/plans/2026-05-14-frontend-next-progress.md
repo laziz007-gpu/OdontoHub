@@ -2,7 +2,59 @@
 
 **Sana:** 2026-05-14
 **Branch:** `patient/abduvoris`
-**Holat:** Phase 1 yakunlangan (foundation + 4 public sahifa + 2 stub). Phase 2 boshlanmagan.
+**Holat:** Phase 1 yakunlangan + Phase 2a (Task 1-5: Foundation polish + /menu to'liq UI). Phase 2b (qolgan 5 sahifa) hali boshlanmagan.
+
+---
+
+## Phase 2a (2026-05-14, kech) — Foundation polish + /menu yakunlandi
+
+5 ta yangi commit `patient/abduvoris`'da:
+
+```
+93bd940e feat(frontend-next): port /menu page (Hero + Analytics + NewPatients + PatientSearch + Tezroq + Section)
+8f51e81c feat(frontend-next): port DoctorPageShell visual chrome
+410bb5d7 feat(frontend-next): port Doshboard sidebar with mobile drawer + focus panel
+14bce0e2 feat(frontend-next): port API hook modules (profile, appointments, notifications, services, auth) + auth utils
+947f2461 feat(frontend-next): port Toast component + restore toast calls in Login/Register
+```
+
+**Yangi fayllar:**
+- `components/Shared/Toast.tsx` + ToastContainer mount in `[locale]/layout.tsx`
+- `utils/auth.ts` — SSR-safe getToken/getUser/isAuthenticated/getUserRole/isPatient/isDentist/logout
+- `api/profile.ts`, `api/appointments.ts`, `api/notifications.ts`, `api/services.ts`, `api/auth.ts`, `api/reviews.ts`
+- `layouts/Doshboard.tsx` (163 satr — mobile drawer + focus panel + 5-item nav + badge)
+- `components/Layout/DoctorPageShell.tsx` (visual chrome)
+- `components/Bosh sahifa/{Hero,Analytics,NewPatients,PatientSearch,Tezroq,Section}.tsx`
+
+**Stubs (port qilinmagan):**
+- `Tezroq.tsx`'dagi 3 modal: `AppointmentModal`, `AddPatientModal`, `AddNoteModal` — hozir `toast.info('function in development')` chiqaradi. Real modallarni Task 6 (/patients) va Task 9 (/appointments) ko'chirilganda port qilinadi.
+
+**Build:** 27 static pages (Phase 1: 24 + new `/menu` real content + 4 locale = ko'paymagan, faqat menu real bo'ldi).
+
+## Sinash uchun
+
+```powershell
+# Terminal 1
+cd backend
+python run.py
+
+# Terminal 2
+cd frontend-next
+npm run dev
+```
+
+Browser: `http://localhost:3000` → `/ru` redirect → Welcome. Dentist bilan login → `/ru/menu` to'liq UI (Hero search/notifs/profile + Analytics stat cards + NewPatients carousel + Tezroq quick actions + Section daily appointments).
+
+## Phase 2b uchun qoladi (`2026-05-14-frontend-next-phase-2-doctor.md` plan)
+
+- Task 6: `/patients` (Patsant) — search + jadval + Add Patient modal — `Qidiruv`, `PatsentTable`, `AddPatientModal`
+- Task 7: `/profile` (DoctorProfile) — 7 sub-section
+- Task 8: `/profile/edit` (EditDoctorProfile, 538 satr) — bonus
+- Task 9: `/appointments` (Appointments) — kalendar + reschedule — bonus
+- Task 10: `/settings` (Settings) — bonus
+- Task 11: Phase 2 yakuniy build + progress log update
+
+**PatientDetailPage (`/patients/[id]`) Phase 2c'ga qoldirildi** — 8+ sub-komponent, alohida spec kerak.
 
 ---
 
