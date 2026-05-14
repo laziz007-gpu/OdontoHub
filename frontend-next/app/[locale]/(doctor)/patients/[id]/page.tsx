@@ -12,6 +12,7 @@ import { paths } from '@/lib/paths';
 import PatientInfoSection from '@/components/Patients/PatientInfoSection';
 import AllergySection from '@/components/Patients/AllergySection';
 import PrescriptionSection from '@/components/Patients/PrescriptionSection';
+import PaymentsSection from '@/components/Patients/PaymentsSection';
 
 type TabType = 'info' | 'appointments' | 'prescriptions' | 'allergies' | 'photos' | 'payments' | 'medcard';
 
@@ -110,7 +111,8 @@ const PatientDetailPage: FC = () => {
           {activeTab === 'info' && <PatientInfoSection patientId={patientId} />}
           {activeTab === 'allergies' && <AllergySection patientId={patientId} />}
           {activeTab === 'prescriptions' && <PrescriptionSection patientId={patientId} />}
-          {activeTab !== 'info' && activeTab !== 'allergies' && activeTab !== 'prescriptions' && (
+          {activeTab === 'payments' && <PaymentsSection patientId={patientId} />}
+          {activeTab !== 'info' && activeTab !== 'allergies' && activeTab !== 'prescriptions' && activeTab !== 'payments' && (
             <div className="flex min-h-[320px] items-center justify-center text-gray-500">
               <p>{t('settings.in_development')}</p>
               <span className="ml-2 text-xs text-gray-400">[{activeTab}] — dentistId={dentistId}</span>

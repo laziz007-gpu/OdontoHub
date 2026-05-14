@@ -1,3 +1,4 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from './api';
 
 export interface Payment {
@@ -53,6 +54,51 @@ export const updatePayment = async (
   return response.data;
 };
 
-export const deletePayment = async (patientId: number, paymentId: number): Promise<void> => {
+export const deletePaymentApi = async (patientId: number, paymentId: number): Promise<void> => {
   await api.delete(`/api/patients/${patientId}/payments/${paymentId}`);
+};
+
+export const usePatientPayments = (patientId: number) => {
+  return useQuery({
+    queryKey: ['payments', patientId],
+    queryFn: () => getPatientPayments(patientId),
+    enabled: !!patientId,
+  });
+};
+
+export const usePaymentStats = (patientId: number) => {
+  return useQuery({
+    queryKey: ['payments', patientId, 'stats'],
+    queryFn: () => getPaymentStats(patientId),
+    enabled: !!patientId,
+  });
+};
+
+const invalidatePayments = (queryClient: ReturnType<typeof useQueryClient>, patientId: number) => {
+  queryClient.invalidateQueries({ queryKey: ['payments', patientId] });
+};
+
+export const useCreatePayment = (patientId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: Parameters<typeof createPayment>[1]) => createPayment(patientId, data),
+    onSuccess: () => invalidatePayments(queryClient, patientId),
+  });
+};
+
+export const useUpdatePayment = (patientId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ paymentId, data }: { paymentId: number; data: Partial<Payment> }) =>
+      updatePayment(patientId, paymentId, data),
+    onSuccess: () => invalidatePayments(queryClient, patientId),
+  });
+};
+
+export const useDeletePayment = (patientId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (paymentId: number) => deletePaymentApi(patientId, paymentId),
+    onSuccess: () => invalidatePayments(queryClient, patientId),
+  });
 };
