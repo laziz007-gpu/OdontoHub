@@ -10,6 +10,7 @@ import { useDentistProfile, useDeletePatient } from '@/api/profile';
 import { toast } from '@/components/Shared/Toast';
 import { paths } from '@/lib/paths';
 import PatientInfoSection from '@/components/Patients/PatientInfoSection';
+import AllergySection from '@/components/Patients/AllergySection';
 
 type TabType = 'info' | 'appointments' | 'prescriptions' | 'allergies' | 'photos' | 'payments' | 'medcard';
 
@@ -106,7 +107,8 @@ const PatientDetailPage: FC = () => {
       <div className="px-4 mt-6">
         <div className="bg-white rounded-2xl p-6 shadow-sm min-h-[400px]">
           {activeTab === 'info' && <PatientInfoSection patientId={patientId} />}
-          {activeTab !== 'info' && (
+          {activeTab === 'allergies' && <AllergySection patientId={patientId} />}
+          {activeTab !== 'info' && activeTab !== 'allergies' && (
             <div className="flex min-h-[320px] items-center justify-center text-gray-500">
               <p>{t('settings.in_development')}</p>
               <span className="ml-2 text-xs text-gray-400">[{activeTab}] — dentistId={dentistId}</span>

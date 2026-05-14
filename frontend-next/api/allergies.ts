@@ -1,5 +1,6 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from './api';
-import { Allergy, AllergyCreate, AllergyUpdate } from '@/types/allergy';
+import type { Allergy, AllergyCreate, AllergyUpdate } from '@/types/allergy';
 
 export const getAllergies = async (patientId: number): Promise<Allergy[]> => {
   const response = await api.get(`/api/patients/${patientId}/allergies`);
@@ -23,6 +24,48 @@ export const updateAllergy = async (
   return response.data;
 };
 
-export const deleteAllergy = async (patientId: number, allergyId: number): Promise<void> => {
+export const deleteAllergyApi = async (patientId: number, allergyId: number): Promise<void> => {
   await api.delete(`/api/patients/${patientId}/allergies/${allergyId}`);
+};
+
+export const useAllergies = (patientId: number) => {
+  return useQuery({
+    queryKey: ['allergies', patientId],
+    queryFn: () => getAllergies(patientId),
+    enabled: !!patientId,
+  });
+};
+
+export const useAddAllergy = (patientId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: AllergyCreate) => addAllergy(patientId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['allergies', patientId] });
+      queryClient.invalidateQueries({ queryKey: ['medcard', patientId] });
+    },
+  });
+};
+
+export const useUpdateAllergy = (patientId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ allergyId, data }: { allergyId: number; data: AllergyUpdate }) =>
+      updateAllergy(patientId, allergyId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['allergies', patientId] });
+      queryClient.invalidateQueries({ queryKey: ['medcard', patientId] });
+    },
+  });
+};
+
+export const useDeleteAllergy = (patientId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (allergyId: number) => deleteAllergyApi(patientId, allergyId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['allergies', patientId] });
+      queryClient.invalidateQueries({ queryKey: ['medcard', patientId] });
+    },
+  });
 };
