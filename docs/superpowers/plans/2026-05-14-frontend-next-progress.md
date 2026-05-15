@@ -2,7 +2,7 @@
 
 **Sana:** 2026-05-14
 **Branch:** `patient/abduvoris`
-**Holat:** Phase 1 yakunlangan + Phase 2a (Task 1-5: Foundation polish + /menu to'liq UI). Phase 2b (qolgan 5 sahifa) hali boshlanmagan.
+**Holat:** Phase 1 + 2a/2b/2c + **Phase 2d yakunlandi (2026-05-16)**. Doctor flow Vite versiyasiga ~100% teng — qolgani faqat `/chats` WebSocket (spec yozilgan, implementatsiya kutmoqda).
 
 ---
 
@@ -32,6 +32,40 @@ b4ec79b8 feat(frontend-next): port /profile page (DoctorProfile with 8 sub-secti
 - Tezroq.tsx'dagi 3 modal'ni real modalga ulash (AddNoteModal hali port qilinmagan)
 
 **Lucide-react incompat:** `^1.14.0` Instagram/Facebook ko'rsatkichlarini olib tashlagan. Hozir `react-icons/fa`'ga moslashtirildi. Kelajakda butun loyihaga `npm i lucide-react@latest` qilish mumkin.
+
+---
+
+## Phase 2d Doctor finish (2026-05-16) — yakunlandi
+
+Reja: `docs/superpowers/plans/2026-05-15-frontend-next-phase-2d-doctor-finish.md`. 8 ta task'dan 7 tasi bajarildi (8-chi = chats spec, implementatsiya alohida session).
+
+**Yangi commit'lar (Phase 2d):**
+```
+feat(frontend-next): wire Tezroq quick-actions + port AddNoteModal
+feat(frontend-next): port AppointmentDetailModal + wire detail flow
+feat(frontend-next): port InProgressView + wire in_progress view
+feat(frontend-next): port /notifications page
+feat(frontend-next): port /analytics page
+feat(frontend-next): port /analytics/finance page
+docs(frontend-next): chats WebSocket port implementation plan
+```
+
+**Bajarilgan:**
+- `Tezroq.tsx`: 4 ta quick-action'dan 3 tasi real modal'ga ulandi (AppointmentModal, AddPatientModal, **AddNoteModal port qilindi**). Faqat "message" stub qoldi (chat Phase 2d-chats'ga bog'liq).
+- `AppointmentDetailModal` (cancel/reschedule/notes/start) + `InProgressView` (visit_type, finish appointment/treatment + createPayment) port qilindi va `/appointments` page'ga ulandi (`view: 'list'|'calendar'|'in_progress'`, in_progress status InProgressView'ga yo'naltiriladi).
+- Yangi sahifalar: `/notifications`, `/analytics`, `/analytics/finance`. Sidebar (`Doshboard.tsx`) allaqachon `paths.*`'ga link berardi — endi reachable.
+- Yangi komponentlar: `AddNoteModal`, `AppointmentDetailModal`, `InProgressView`, `Analytics/AnalyticsFilter`, `Analytics/AnalyticsHeader`.
+
+**Muhim qarorlar:**
+- Video-call tugmasi (`AppointmentDetailModal`) `function_in_development` toast bilan stub — `/video-call` Phase 3 patient flow.
+- `Analitic.tsx` chart kutubxonasi ishlatmaydi (sof CSS bar chart) — `next/dynamic ssr:false` kerak emas edi (reja shubhasi noto'g'ri chiqdi).
+- `Finance.tsx` to'liq mock UI (statik data) — sodiq port qilindi, payments API'ga ulanmadi (Vite manbasi mock).
+- Vite→Next pattern: `react-router-dom` → `@/i18n/navigation` (locale-aware), `react-i18next` → `next-intl`, nisbiy import → `@/` alias, `'use client'`, asset import → `/public` string path.
+
+**Build:** 51 static + 1 dynamic (`/patients/[id]`). Chats qo'shilgach: 51 static + 2 dynamic kutilmoqda.
+
+**Qoldi (Phase 2d-chats — alohida spec):**
+- `docs/superpowers/plans/2026-05-16-frontend-next-chats-websocket.md` — to'liq, placeholder'siz 5-task reja. `api/chat.ts` + `MessageBubble` + shared `ChatsView` (WebSocket) + `/chats` & `/chats/[id]` route'lar.
 
 ---
 
