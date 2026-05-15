@@ -1,6 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
+import AppointmentModal from '@/components/Appointments/AppointmentModal';
+import AddPatientModal from '@/components/Patients/AddPatientModal';
+import AddNoteModal from '@/components/Patients/AddNoteModal';
 import { toast } from '@/components/Shared/Toast';
 
 type Action = {
@@ -10,6 +15,10 @@ type Action = {
 
 const Tezroq: React.FC = () => {
   const t = useTranslations();
+  const router = useRouter();
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+  const [isPatientModalOpen, setIsPatientModalOpen] = useState(false);
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
 
   const actions: Action[] = [
     { titleKey: 'dashboard.quick_actions.add_appointment', action: 'appointment' },
@@ -19,11 +28,35 @@ const Tezroq: React.FC = () => {
   ];
 
   const handleActionClick = (action: Action) => {
-    if (action.action === 'message') {
-      toast.info(t('patient.alerts.function_in_development'));
-    } else {
-      toast.info(t('patient.alerts.function_in_development'));
+    switch (action.action) {
+      case 'appointment':
+        setIsAppointmentModalOpen(true);
+        break;
+      case 'patient':
+        setIsPatientModalOpen(true);
+        break;
+      case 'note':
+        setIsNoteModalOpen(true);
+        break;
+      case 'message':
+        toast.info(t('patient.alerts.function_in_development'));
+        break;
     }
+  };
+
+  const handleNoteSuccess = (patientId: number, note: string) => {
+    const notesKey = `patient_notes_${patientId}`;
+    const existingNotes = localStorage.getItem(notesKey);
+    const notes = existingNotes ? JSON.parse(existingNotes) : [];
+
+    notes.push({
+      id: Date.now(),
+      text: note,
+      date: new Date().toISOString(),
+      createdBy: 'Врач',
+    });
+
+    localStorage.setItem(notesKey, JSON.stringify(notes));
   };
 
   return (
@@ -47,6 +80,30 @@ const Tezroq: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* Modals */}
+      <AppointmentModal
+        isOpen={isAppointmentModalOpen}
+        onClose={() => setIsAppointmentModalOpen(false)}
+        onSuccess={() => {
+          setIsAppointmentModalOpen(false);
+          router.push('/appointments');
+        }}
+      />
+
+      <AddPatientModal
+        isOpen={isPatientModalOpen}
+        onClose={() => setIsPatientModalOpen(false)}
+        onSuccess={() => {
+          setIsPatientModalOpen(false);
+        }}
+      />
+
+      <AddNoteModal
+        isOpen={isNoteModalOpen}
+        onClose={() => setIsNoteModalOpen(false)}
+        onSuccess={handleNoteSuccess}
+      />
     </div>
   );
 };
