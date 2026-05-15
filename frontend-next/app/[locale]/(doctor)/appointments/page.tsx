@@ -9,6 +9,7 @@ import DateStrip from '@/components/Appointments/DateStrip';
 import AppointmentCard, { type AppointmentStatus } from '@/components/Appointments/AppointmentCard';
 import CalendarView from '@/components/Appointments/CalendarView';
 import AppointmentModal from '@/components/Appointments/AppointmentModal';
+import AppointmentDetailModal from '@/components/Appointments/AppointmentDetailModal';
 import { toast } from '@/components/Shared/Toast';
 import { useMyAppointments } from '@/api/appointments';
 import { useServices } from '@/api/services';
@@ -18,6 +19,8 @@ const AppointmentsPage: React.FC = () => {
     const router = useRouter();
     const [view, setView] = useState<'list' | 'calendar'>('list');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
+    const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
     const { data: apiAppointments, isLoading } = useMyAppointments();
@@ -95,9 +98,27 @@ const AppointmentsPage: React.FC = () => {
         return allAppointmentsData.filter(a => a.dateStr === selectedDateStr);
     }, [allAppointmentsData, effectiveDate]);
 
-    const handleAptClick = () => {
-        // AppointmentDetailModal + InProgressView stub — Phase 2c'da port qilinadi
-        toast.info(t('patient.alerts.function_in_development'));
+    const showToast = (message: string, type: 'success' | 'error' | 'info' | 'warning' = 'success') => {
+        if (type === 'success') toast.success(message);
+        else if (type === 'error') toast.error(message);
+        else if (type === 'warning') toast.warning(message);
+        else toast.info(message);
+    };
+
+    const handleAptClick = (apt: typeof appointmentsData[number]) => {
+        setSelectedAppointment({
+            id: apt.id,
+            time: apt.time,
+            date: apt.date,
+            status: apt.status,
+            service: apt.service,
+            patientName: apt.patientName,
+            notes: apt.notes,
+            raw: apt.raw
+        });
+        // InProgressView (status === 'in_progress') is ported in the next task;
+        // for now every appointment opens the detail modal.
+        setIsDetailOpen(true);
     };
 
     const day = effectiveDate.getDate();
@@ -161,7 +182,7 @@ const AppointmentsPage: React.FC = () => {
                                         patientName={apt.patientName}
                                         status={apt.status}
                                         notes={apt.notes}
-                                        onClick={handleAptClick}
+                                        onClick={() => handleAptClick(apt)}
                                     />
                                 ))}
                             </div>
@@ -179,6 +200,12 @@ const AppointmentsPage: React.FC = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSuccess={() => toast.success(t('appointments.success_toast'))}
+            />
+            <AppointmentDetailModal
+                isOpen={isDetailOpen}
+                onClose={() => setIsDetailOpen(false)}
+                appointment={selectedAppointment}
+                onSuccess={showToast}
             />
         </div>
     );
