@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import DoctorPageShell from '@/components/Layout/DoctorPageShell';
 import Hero from '@/components/Bosh sahifa/Hero';
 import NewPatients from '@/components/Bosh sahifa/NewPatients';
@@ -10,14 +11,15 @@ import Tezroq from '@/components/Bosh sahifa/Tezroq';
 import Section from '@/components/Bosh sahifa/Section';
 
 export default function MenuPage() {
+  const t = useTranslations();
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
     <DoctorPageShell
-      badge="Dashboard"
+      badge={t('dashboard.shell.badge')}
       title="GoSmile"
-      accent="Рабочее пространство"
-      description="Главный экран врача с быстрым доступом к пациентам, аналитике, уведомлениям и ежедневным задачам."
+      accent={t('dashboard.shell.accent')}
+      description={t('dashboard.shell.description')}
       contentClassName="p-0"
     >
       <div>

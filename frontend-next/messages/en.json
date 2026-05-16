@@ -4,10 +4,12 @@
     "patients": "Patients",
     "appointments": "Appointments",
     "chats": "Chats",
+    "notifications": "Notifications",
     "focus_title": "Today's Focus",
-    "focus_appointments": "7 appointments",
-    "focus_consultations": "3 online consults",
-    "focus_patients": "2 new patients",
+    "focus_appointment_single": "appointment today",
+    "focus_appointments_plural": "appointments today",
+    "focus_new_patient_single": "new patient today",
+    "focus_new_patients_plural": "new patients today",
     "analytics": "Analytics"
   },
   "common": {
@@ -60,7 +62,14 @@
     },
     "confirm_delete": "Are you sure?",
     "delete": "Delete",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "save": "Save",
+    "no_results": "No results",
+    "errors": {
+      "something_went_wrong": "Something went wrong"
+    }
   },
   "appointments": {
     "title": "Appointments",
@@ -80,7 +89,8 @@
       "cancelled": "Cancelled",
       "rescheduled": "Rescheduled",
       "in_progress": "In progress",
-      "in_queue": "In queue"
+      "in_queue": "In queue",
+      "pending": "Pending"
     },
     "progress": {
       "recipe": "Prescription",
@@ -97,6 +107,13 @@
       "date": "Date",
       "status": "Status",
       "initial": "Initial"
+    },
+    "actions": {
+      "start": "Start appointment"
+    },
+    "toasts": {
+      "notes_saved": "Note saved",
+      "started": "Appointment started"
     }
   },
   "modal": {
@@ -115,7 +132,8 @@
     "patient_statuses": {
       "primary": "Primary",
       "recurring": "Recurring"
-    }
+    },
+    "record": "Add"
   },
   "settings": {
     "title": "Settings",
@@ -163,6 +181,11 @@
       "feedback_request": "If you have any questions or technical problems, please contact",
       "support_link": "support service",
       "thanks": "Thank you for helping us develop the product."
+    },
+    "shell": {
+      "badge": "Settings",
+      "accent": "Profile and security",
+      "description": "Configure notifications, privacy, interface language, and auxiliary settings in the same visual style as the login screens."
     }
   },
   "patient_profile": {
@@ -304,7 +327,8 @@
       "delete_confirm": "Are you sure you want to delete this patient? All data will be permanently removed.",
       "delete_success": "Patient successfully deleted",
       "delete_error": "Error deleting patient"
-    }
+    },
+    "no_notes": "No notes yet"
   },
   "patients_list": {
     "search_placeholder": "Search patient...",
@@ -405,7 +429,12 @@
       "quick_actions": "Quick Actions",
       "today": "Today",
       "no_comment": "No comment",
-      "urgent": "Urgent"
+      "urgent": "Urgent",
+      "age_unit": "yo",
+      "status": "Status",
+      "status_new": "New",
+      "accept_btn": "Accept",
+      "accepted_success": "Patient accepted"
     },
     "appointments_card": {
       "title": "Appointments",
@@ -473,6 +502,11 @@
       "status_new": "New",
       "status_recorded": "Recorded",
       "apply_button": "Apply"
+    },
+    "shell": {
+      "badge": "Dashboard",
+      "accent": "Workspace",
+      "description": "The doctor's main screen with quick access to patients, analytics, notifications, and daily tasks."
     }
   },
   "analytics": {
@@ -568,6 +602,12 @@
         "prosthetics": "Periostotomy",
         "crown": "Crown"
       }
+    },
+    "shell": {
+      "badge": "Analytics",
+      "title": "Analytics",
+      "accent": "Appointment statistics",
+      "description": "Track appointment trends, statuses, and overall clinic load in a unified visual interface."
     }
   },
   "patient": {
@@ -619,7 +659,9 @@
       "logout": "Logout",
       "language": "Language",
       "notification": "Notification",
-      "select_language": "Select Language"
+      "select_language": "Select Language",
+      "settings": "Settings",
+      "support": "Support"
     },
     "appointment_detail": {
       "title": "Appointment details",
@@ -637,7 +679,14 @@
       "contact_btn": "Contact",
       "reschedule_btn": "Reschedule",
       "cancel_btn": "Cancel",
-      "view_doctor": "View"
+      "view_doctor": "View",
+      "placeholder_review": "Write your review (optional)...",
+      "rate_desc": "Your feedback helps other patients choose a doctor and improves our service",
+      "rate_quality": "Rate the appointment quality",
+      "review_success": "Your rating has been submitted!",
+      "send_review": "Send review",
+      "thanks_review": "Thank you for your review",
+      "cancel_confirm": "Confirm appointment cancellation"
     },
     "appointments": {
       "title": "Appointments",
@@ -659,14 +708,42 @@
       "found_count": "Found: {count} specialists",
       "view_btn": "View",
       "items": {
-        "therapist": { "name": "Therapist", "desc": "Treatment of caries, canals" },
-        "surgeon": { "name": "Surgeon", "desc": "Extraction, implantation" },
-        "orthopedist": { "name": "Orthopedist", "desc": "Prosthetics, veneers" },
-        "orthodontist": { "name": "Orthodontist", "desc": "Bite correction (braces)" },
-        "periodontist": { "name": "Periodontist", "desc": "Gum treatment" },
-        "pediatric": { "name": "Pediatric Dentist", "desc": "Dental treatment for children" },
-        "hygienist": { "name": "Hygienist", "desc": "Professional cleaning, hygiene" },
-        "aesthetic": { "name": "Aesthetic Dentist", "desc": "Whitening, restoration" }
+        "therapist": {
+          "name": "Therapist",
+          "desc": "Treatment of caries, canals"
+        },
+        "surgeon": {
+          "name": "Surgeon",
+          "desc": "Extraction, implantation"
+        },
+        "orthopedist": {
+          "name": "Orthopedist",
+          "desc": "Prosthetics, veneers"
+        },
+        "orthodontist": {
+          "name": "Orthodontist",
+          "desc": "Bite correction (braces)"
+        },
+        "periodontist": {
+          "name": "Periodontist",
+          "desc": "Gum treatment"
+        },
+        "pediatric": {
+          "name": "Pediatric Dentist",
+          "desc": "Dental treatment for children"
+        },
+        "hygienist": {
+          "name": "Hygienist",
+          "desc": "Professional cleaning, hygiene"
+        },
+        "aesthetic": {
+          "name": "Aesthetic Dentist",
+          "desc": "Whitening, restoration"
+        },
+        "general": {
+          "desc": "General check-up and dental treatment",
+          "name": "General dentistry"
+        }
       }
     },
     "alerts": {
@@ -685,6 +762,21 @@
       "auth_error": "Authorization error. Please log in again.",
       "note_add_error": "Error adding note",
       "function_in_development": "Feature in development"
+    }
+  },
+  "finance": {
+    "shell": {
+      "badge": "Finance",
+      "title": "Finance",
+      "accent": "Income and expenses",
+      "description": "Track the clinic's income, expenses, and profit, and analyze popular services and daily metrics in a unified interface."
+    }
+  },
+  "patients": {
+    "shell": {
+      "badge": "Patients",
+      "accent": "Cards and search",
+      "description": "Browse the patient database, apply filters, and add new cards in a unified doctor interface."
     }
   }
 }

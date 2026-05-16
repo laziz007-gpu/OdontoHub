@@ -26,10 +26,10 @@ const SettingsPage: React.FC = () => {
 
     return (
         <DoctorPageShell
-            badge="Settings"
+            badge={t('settings.shell.badge')}
             title={t('settings.title')}
-            accent="Профиль и безопасность"
-            description="Настройте уведомления, конфиденциальность, язык интерфейса и вспомогательные параметры в том же визуальном стиле, что и экраны входа."
+            accent={t('settings.shell.accent')}
+            description={t('settings.shell.description')}
             contentClassName="p-4 sm:p-6 lg:p-8"
         >
             <div className="mx-auto max-w-6xl font-onest">

@@ -59,10 +59,10 @@ const FinancePage: React.FC = () => {
 
     return (
         <DoctorPageShell
-            badge="Finance"
-            title="Финансы"
-            accent="Доходы и расходы"
-            description="Отслеживайте доходы, расходы и прибыль клиники, анализируйте популярные услуги и ежедневные показатели в едином интерфейсе."
+            badge={t('finance.shell.badge')}
+            title={t('finance.shell.title')}
+            accent={t('finance.shell.accent')}
+            description={t('finance.shell.description')}
             contentClassName="p-4 sm:p-6 lg:p-8"
         >
             <div className="mx-auto max-w-[1600px]">

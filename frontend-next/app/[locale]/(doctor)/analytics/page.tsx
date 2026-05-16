@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { Users, CalendarCheck, CalendarClock, TrendingUp, CheckCircle, Clock, CalendarDays } from 'lucide-react';
 
 import { useDentistStats } from '@/api/profile';
@@ -11,6 +12,7 @@ import DoctorPageShell from '@/components/Layout/DoctorPageShell';
 type Period = 'week' | 'month';
 
 const AnalyticsPage = () => {
+    const t = useTranslations();
     const { data: stats, isLoading } = useDentistStats();
     const { data: allAppointments = [] } = useMyAppointments();
     const [period, setPeriod] = useState<Period>('month');
@@ -50,10 +52,10 @@ const AnalyticsPage = () => {
 
     return (
         <DoctorPageShell
-            badge="Analytics"
-            title="Аналитика"
-            accent="Статистика по приёмам"
-            description="Следите за динамикой записей, статусами приёмов и общей загрузкой кабинета в визуально едином интерфейсе."
+            badge={t('analytics.shell.badge')}
+            title={t('analytics.shell.title')}
+            accent={t('analytics.shell.accent')}
+            description={t('analytics.shell.description')}
             contentClassName="p-4 sm:p-6 lg:p-8"
         >
             <div className="mx-auto max-w-[1600px]">

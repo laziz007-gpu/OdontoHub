@@ -6,9 +6,10 @@
     "chats": "Chatlar",
     "notifications": "Bildirishnomalar",
     "focus_title": "Bugungi fokus",
-    "focus_appointments": "7 ta qabul",
-    "focus_consultations": "3 onlayn konsultatsiya",
-    "focus_patients": "2 yangi bemor",
+    "focus_appointment_single": "ta qabul bugun",
+    "focus_appointments_plural": "ta qabul bugun",
+    "focus_new_patient_single": "ta yangi bemor bugun",
+    "focus_new_patients_plural": "ta yangi bemor bugun",
     "analytics": "Analitika"
   },
   "common": {
@@ -61,7 +62,14 @@
     },
     "confirm_delete": "Ishonchingiz komilmi?",
     "delete": "O'chirish",
-    "cancel": "Bekor qilish"
+    "cancel": "Bekor qilish",
+    "loading": "Yuklanmoqda...",
+    "saving": "Saqlanmoqda...",
+    "save": "Saqlash",
+    "no_results": "Hech narsa topilmadi",
+    "errors": {
+      "something_went_wrong": "Nimadir xato ketdi"
+    }
   },
   "appointments": {
     "title": "Qabullar",
@@ -81,7 +89,8 @@
       "cancelled": "Bekor qilindi",
       "rescheduled": "Ko'chirildi",
       "in_progress": "Jarayonda",
-      "in_queue": "Navbatda"
+      "in_queue": "Navbatda",
+      "pending": "Kutilmoqda"
     },
     "progress": {
       "recipe": "Retsept",
@@ -98,6 +107,13 @@
       "date": "Sanasi",
       "status": "Holati",
       "initial": "Birlamchi"
+    },
+    "actions": {
+      "start": "Qabulni boshlash"
+    },
+    "toasts": {
+      "notes_saved": "Eslatma saqlandi",
+      "started": "Qabul boshlandi"
     }
   },
   "modal": {
@@ -116,7 +132,8 @@
     "patient_statuses": {
       "primary": "Birinchi marta",
       "recurring": "Takroriy"
-    }
+    },
+    "record": "Qo'shish"
   },
   "settings": {
     "title": "Sozlamalar",
@@ -164,6 +181,11 @@
       "feedback_request": "Agar sizda savollar yoki texnik muammolar yuzaga kelsa, iltimos,",
       "support_link": "qo'llab-quvvatlash xizmatiga",
       "thanks": "Mahsulotni rivojlantirishda yordam berganingiz uchun rahmat."
+    },
+    "shell": {
+      "badge": "Settings",
+      "accent": "Profil va xavfsizlik",
+      "description": "Bildirishnomalar, maxfiylik, interfeys tili va yordamchi parametrlarni kirish ekranlari bilan bir xil vizual uslubda sozlang."
     }
   },
   "patient_profile": {
@@ -304,7 +326,8 @@
       "delete_confirm": "Ushbu bemorni o'chirishga ishonchingiz komilmi? Barcha ma'lumotlar butunlay o'chiriladi.",
       "delete_success": "Bemor muvaffaqiyatli o'chirildi",
       "delete_error": "Bemorni o'chirishda xatolik"
-    }
+    },
+    "no_notes": "Hozircha eslatmalar yo'q"
   },
   "patients_list": {
     "search_placeholder": "Bemor qidirish...",
@@ -405,7 +428,12 @@
       "quick_actions": "Tezkor harakatlar",
       "today": "Bugun",
       "no_comment": "Izohsiz",
-      "urgent": "Shoshilinch"
+      "urgent": "Shoshilinch",
+      "age_unit": "yosh",
+      "status": "Holati",
+      "status_new": "Yangi",
+      "accept_btn": "Qabul qilish",
+      "accepted_success": "Bemor qabul qilindi"
     },
     "appointments_card": {
       "title": "Qabullar",
@@ -473,6 +501,11 @@
       "status_new": "Yangi",
       "status_recorded": "Yozilgan",
       "apply_button": "Qo'llash"
+    },
+    "shell": {
+      "badge": "Dashboard",
+      "accent": "Ish maydoni",
+      "description": "Bemorlar, analitika, bildirishnomalar va kundalik vazifalarga tezkor kirish imkonini beruvchi shifokorning asosiy ekrani."
     }
   },
   "analytics": {
@@ -568,6 +601,12 @@
         "prosthetics": "Periostotomiya",
         "crown": "Toj"
       }
+    },
+    "shell": {
+      "badge": "Analytics",
+      "title": "Analitika",
+      "accent": "Qabullar statistikasi",
+      "description": "Yozuvlar dinamikasi, qabul holatlari va kabinetning umumiy bandligini yagona vizual interfeysda kuzating."
     }
   },
   "patient": {
@@ -640,7 +679,13 @@
       "reschedule_btn": "Ko'chirish",
       "cancel_btn": "Bekor qilish",
       "view_doctor": "O'tish",
-      "cancel_confirm": "Qabulni bekor qilishni tasdiqlaysizmi?"
+      "cancel_confirm": "Qabulni bekor qilishni tasdiqlaysizmi?",
+      "placeholder_review": "Sharhingizni yozing (ixtiyoriy)...",
+      "rate_desc": "Sizning fikringiz boshqa bemorlarga shifokor tanlashda yordam beradi va xizmatimizni yaxshilaydi",
+      "rate_quality": "Qabul sifatini baholang",
+      "review_success": "Bahoyingiz qabul qilindi!",
+      "send_review": "Sharh yuborish",
+      "thanks_review": "Sharhingiz uchun rahmat"
     },
     "appointments": {
       "title": "Qabullar",
@@ -716,6 +761,21 @@
       "auth_error": "Avtorizatsiya xatosi. Iltimos, tizimga qayta kiring.",
       "note_add_error": "Eslatma qo'shishda xatolik",
       "function_in_development": "Funksiya ishlab chiqilmoqda"
+    }
+  },
+  "finance": {
+    "shell": {
+      "badge": "Finance",
+      "title": "Moliya",
+      "accent": "Daromad va xarajatlar",
+      "description": "Klinikaning daromadlari, xarajatlari va foydasini kuzating, ommabop xizmatlar va kunlik ko'rsatkichlarni yagona interfeysda tahlil qiling."
+    }
+  },
+  "patients": {
+    "shell": {
+      "badge": "Patients",
+      "accent": "Kartochkalar va qidiruv",
+      "description": "Bemorlar bazasini ko'ring, filtrlar qo'llang va shifokorning yagona interfeysida yangi kartochkalar qo'shing."
     }
   }
 }

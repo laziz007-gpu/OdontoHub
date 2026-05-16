@@ -105,10 +105,10 @@ const PatientsPage: FC = () => {
 
   return (
     <DoctorPageShell
-      badge="Patients"
+      badge={t('patients.shell.badge')}
       title={t('sidebar.patients')}
-      accent="Карточки и поиск"
-      description="Просматривайте базу пациентов, применяйте фильтры и добавляйте новые карточки в едином интерфейсе врача."
+      accent={t('patients.shell.accent')}
+      description={t('patients.shell.description')}
       contentClassName="p-4 sm:p-6 lg:p-8"
     >
       <div className="mx-auto max-w-6xl">
