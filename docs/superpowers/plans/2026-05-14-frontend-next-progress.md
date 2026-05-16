@@ -57,7 +57,13 @@ Next port (`register_pat`) faqat patientga hardcode qilingan, tanlov yo'q edi
 - Login register link allaqachon `paths.registerPat`'ga ketardi — o'zgartirilmadi.
   Backend `/auth/register` `role:'dentist'`ni allaqachon qabul qiladi.
 
-Verifikatsiya: `npx tsc --noEmit` (exit 0) ×2 + `npm run build` (✓, 0 warning).
+**Follow-up fix (user feedback, screenshot):** Vite 2-col hero+form faqat
+`lg` (≥1024px)'da ishlaydi — undan past ekranda card 980px'gacha cho'zilib,
+input/tugmalar juda keng ko'rinardi. Outer container `max-w-[520px]
+lg:max-w-[980px]` qilindi (lg'dan past = 520 markazlangan, lg+ = Vite 2-col
+980). Commit `53ae42e4`.
+
+Verifikatsiya: `npx tsc --noEmit` (exit 0) ×3 + `npm run build` (✓, 0 warning).
 Static sahifalar **63 → 67** (`/register_doc` ×4 locale qo'shildi),
 `/register_pat` va `/register_doc` ikkalasi SSG ●. **Qoldi:** manual smoke
 (backend + dev) — user vizual tekshiradi: selektor, route toggle, redirectlar.
