@@ -235,7 +235,9 @@ export default function ChatsView({ appointmentId }: ChatsViewProps) {
     };
 
     return (
-        <div className="flex h-[calc(100dvh-56px)] md:h-[calc(100vh-88px)] lg:h-[calc(100vh-32px)] md:m-4 bg-white md:rounded-[24px] overflow-hidden border border-gray-100 shadow-sm transition-all duration-300">
+        // Height = viewport minus MainLayout <main> chrome: below lg it reserves pt-20 (80px);
+        // md+ also has m-4 (32px); at lg pt-0 with m-4 (32px). Keeps the message input on-screen.
+        <div className="flex h-[calc(100dvh-80px)] md:h-[calc(100vh-112px)] lg:h-[calc(100vh-32px)] md:m-4 bg-white md:rounded-[24px] overflow-hidden border border-gray-100 shadow-sm transition-all duration-300">
             {/* Chat list */}
             <div className={`w-full lg:w-[350px] border-r border-gray-100 flex flex-col shrink-0 ${appointmentId ? 'hidden lg:flex' : 'flex'}`}>
                 <div className="p-4 sm:p-6 border-b border-gray-100 bg-white sticky top-0 z-10">
