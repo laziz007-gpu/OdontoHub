@@ -2,7 +2,7 @@
 
 **Sana:** 2026-05-14
 **Branch:** `patient/abduvoris`
-**Holat:** Phase 1 + 2a/2b/2c/2d + chats WebSocket + **Phase 3a yakunlandi (2026-05-17)**. Doctor flow ~100% teng. Patient flow: 3a (chrome + /home) tayyor, gate 1 user tomonidan tasdiqlandi ("davom et"). 3b (Discovery+Booking) reja yozildi, implementatsiya kutmoqda.
+**Holat:** Phase 1 + 2a/2b/2c/2d + chats WebSocket + 3a + **Phase 3b implementatsiya yakunlandi (2026-05-17)**. Doctor flow ~100% teng. Patient flow: 3a (chrome + /home) ✓ gate 1; 3b (Discovery+Booking, 8 route) ✓ build gate, **gate 2 manual smoke user'da**. 3c hali boshlanmagan.
 
 ---
 
@@ -30,13 +30,64 @@ b8da5f6c feat(frontend-next): port PatientHome sub-components (search/upcoming/.
 
 **Gate 1:** build avtomatik ✓; user smoke test'siz "davom et" bilan tasdiqladi → 3b'ga o'tildi.
 
-## Phase 3b Discovery + Booking (2026-05-17) — reja yozildi
+## Phase 3b Discovery + Booking (2026-05-17) — implementatsiya yakunlandi, gate 2 user'da
 
 Reja: `docs/superpowers/plans/2026-05-17-frontend-next-phase-3b-discovery-booking.md`.
-14 task (1 infra `api/search.ts` → 4 shared komponent guruh → 8 route → gate). Phase-2d
-uslubidagi reja (Vite manba yo'li = faithful port'ning haqiqat manbai, ~2850 satr inline
-emas). Handoff: `gosmile:{booking_doctor,doctors_specialty,doctor_services_dentist_id,checkup_preview}`.
-Implementatsiya kutmoqda (gate 2 da to'xtaydi).
+14 task'ning hammasi bajarildi. Task 1-5 oldingi sessiyada (`d5001b27` api/search,
+`525a4d43` Doctors, `af749a24` /doctors, `f0315a78` /specialties, `16dce2b3` /search).
+Task 6-13 shu sessiyada (8 commit `fad37f5b..be63f1d2`):
+```
+fad37f5b port Complaints/ComplaintModal                 # Task 6
+035f5f39 wire /my-dentist (DoctorProfilePreview)        # Task 7
+906dad23 wire /doctor-services                          # Task 8
+8babefa1 wire /doctor-cases                             # Task 9
+d75c91e8 port Booking components (4)                     # Task 10
+3f1afe56 wire /booking                                   # Task 11
+dc9dd427 port PatientAppointmentDetail cards (4)         # Task 12
+be63f1d2 wire /booking/checkup-preview                   # Task 13
+```
+
+**Build (gate 2 Step 1, avtomatik) ✓:** `npm run build` exit 0, `✓ Compiled
+successfully`, TypeScript no errors, **99/99 static** (= 67 pre-3b + 8 route ×4
+locale). 8 ta yangi route hammasi **SSG ●** (`/search` ham — CP2 Suspense split
+`ƒ` bo'lishdan saqladi; `/booking*` handoff `useEffect`da o'qiganidan SSG).
+**0 yangi warning** — faqat oldindan mavjud `middleware`→`proxy` next-intl v4
+deprecation (har fazada bor, 3b kiritmadi).
+
+**Muhim qarorlar / deviation'lar:**
+- **Plan-prose vs Vite source nomuvofiqligi (user qaror qildi):** plan Task 11/13
+  `Booking`→`/booking/checkup-preview` handoff (`gosmile:checkup_preview`) deb
+  yozgan edi, lekin haqiqiy Vite `Booking.tsx:100` = `navigate('/calendar')`
+  (state'siz) va `CheckupBookingPreview` = sof statik mock (state o'qimaydi);
+  `/booking/checkup-preview` butun Vite'da hech qachon navigatsiya qilinmaydi
+  (orphan route). `AskUserQuestion` → user **"Follow plan prose"** tanladi
+  (faithful emas, qayta-dizayn, lekin user instruction = eng yuqori prioritet).
+  Implementatsiya: Booking success → `appointment`-shaped `previewPayload`
+  yozadi `gosmile:checkup_preview`'ga + `router.push(paths.checkupPreview)`;
+  CheckupBookingPreview o'sha key'ni read+clear qiladi, Vite statik mock =
+  absent fallback. **Vite endi `/calendar`'ga bormaydi** — bu ataylab,
+  regressiya emas. (`/calendar` baribir 3c, hali yo'q.)
+- Task 7 & 11: plan prose "useMemo/preSelectedDoctor → `useAllDentists()[0]`
+  fallback" deb yozgan edi, lekin Vite manbada bunday fallback **yo'q**
+  (`source = matched || fromState || {}` / faqat name-match effect). Faithful
+  doctrine ("cited Vite file IS the spec") bo'yicha fabrikatsiya qilinmadi.
+- Task 9 (`/doctor-cases`): Vite/esbuild typecheck qilmaydi → `useState([])`
+  `never[]` + `caseItem.x` Vite'da error bermagan; frontend-next real `tsc`
+  ishlatadi → TS2339. `CaseItem` interface qo'shildi (`useState<CaseItem[]>([])`),
+  runtime o'zgarmaydi (massiv bo'sh qoladi). Task 8 inline `interface Service`'ga
+  o'xshash.
+- SSR pattern: render-top `localStorage` (`getUser`/`user_data`) → `useEffect`da
+  o'qib state'ga (hydration mismatch'dan qochish — `isDentist` shartli tugma).
+  O'lik `currentUser` render-top read (Booking:29) olib tashlandi.
+- Handoff'lar end-to-end izchil: `gosmile:preview_doctor` (DoctorCard/DoctorInfoCard
+  yozadi → /my-dentist read+clear), `gosmile:booking_doctor` (DoctorsList/Search/
+  my-dentist book → /booking), `gosmile:doctor_services_dentist_id`,
+  `gosmile:doctors_specialty`, `gosmile:checkup_preview` (/booking → checkup-preview).
+
+**Gate 2:** build avtomatik ✓. Manual smoke (backend + dev, patient login,
+Vite bilan yonma-yon) — **user bajaradi/waive qiladi** (gate-1 precedent: user
+"davom et" bilan smoke'siz tasdiqlagan edi). Push qilinmadi (oldingi fazalar
+kabi local, 13 commit `patient/abduvoris`). 3c **boshlanmadi** — gate 2 kutmoqda.
 
 ---
 

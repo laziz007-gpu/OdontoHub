@@ -171,9 +171,9 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** Create `frontend-next/components/Complaints/ComplaintModal.tsx` (Vite 96)
 
-- [ ] **Step 1** — Port `frontend/src/components/Complaints/ComplaintModal.tsx` per transformation table. Its complaint-submit API → `@/api/complaints` (`submitComplaint`, `ComplaintData` already exist — pre-flight). Toast → `@/components/Shared/Toast`. `'use client'`.
-- [ ] **Step 2** — i18n pre-flight; `npx tsc --noEmit` → exit 0.
-- [ ] **Step 3** — Commit:
+- [x] **Step 1** — Ported `frontend/src/components/Complaints/ComplaintModal.tsx` → `components/Complaints/ComplaintModal.tsx`. Only changes: `'use client'` first line, `../../api/complaints`→`@/api/complaints`, `../../components/Shared/Toast`→`@/components/Shared/Toast`. No router state, no assets.
+- [x] **Step 2** — i18n pre-flight: zero `t(` calls (all hardcoded Uzbek) — none needed. `npx tsc --noEmit` → exit 0.
+- [x] **Step 3** — Committed `fad37f5b`.
 ```bash
 git add frontend-next/components/Complaints/
 git -c commit.gpgsign=false commit -m "feat(frontend-next): port Complaints/ComplaintModal
@@ -185,9 +185,9 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** Create `frontend-next/app/[locale]/(patient)/my-dentist/page.tsx`
 
-- [ ] **Step 1** — Port `frontend/src/Pages/DoctorProfilePreview.tsx` (232). `lucide-react` (`ArrowLeft,Video,AlertCircle`) stays. `@/components/Complaints/ComplaintModal` (Task 6), `@/api/profile` `useAllDentists`. Apply: `DentistImg` asset → `/assets/img/photos/Dentist.png` + eslint comment; **read+clear** of `gosmile:preview_doctor` (JSON.parse) replacing `location.state?.doctor` (`:20`), keeping the Vite `useMemo` fallback to first `useAllDentists()` entry exactly; `:55` `navigate('/booking',{...})` → **write** `gosmile:booking_doctor` + `router.push(paths.booking)`; `:123` `navigate('/doctor-services',{state:{dentist_id}})` → **write** `gosmile:doctor_services_dentist_id` (string) + `router.push(paths.doctorServices)`; `:147` video button → **Toast stub** `toast.info(t('patient.alerts.function_in_development'))` (do not route to /video-call — 3d). `navigate(-1)`→`router.back()`. Page `'use client'`.
-- [ ] **Step 2** — i18n pre-flight; `npx tsc --noEmit` → exit 0.
-- [ ] **Step 3** — Commit:
+- [x] **Step 1** — Ported `frontend/src/Pages/DoctorProfilePreview.tsx` (232) → `app/[locale]/(patient)/my-dentist/page.tsx` (`'use client'`). `lucide-react` stays; `@/components/Complaints/ComplaintModal`, `@/api/profile useAllDentists`, `@/components/Shared/Toast`, `@/lib/paths`, `@/utils/auth getUser`. `DentistImg`→`/assets/img/photos/Dentist.png` const + eslint comment on `<img>`; **read+clear** `gosmile:preview_doctor` (JSON.parse) into `doctorFromState` state via `useEffect` (replaces `location.state?.doctor`), useMemo deps `[dentists, doctorFromState]` unchanged; `user_data` read via SSR-safe `getUser()` in same `useEffect`→`isDentist` state (avoids hydration mismatch on the conditional "Записаться" button); book→**write** `gosmile:booking_doctor` (exact Vite object) + `router.push(paths.booking)`; services→**write** `gosmile:doctor_services_dentist_id` (`String(id)`) + `router.push(paths.doctorServices)`; cases→`router.push(paths.doctorCases)`; video→Toast stub `toast.info(t('patient.alerts.function_in_development'))`; `navigate(-1)`→`router.back()`. **Plan-prose deviation (faithful-port doctrine):** plan task/contract note says "keep useMemo fallback to first `useAllDentists()` entry" — but Vite `DoctorProfilePreview.tsx` has **no** `dentists[0]` fallback (`source = matchedDoctor || doctorFromState || {}`; that fallback is `Booking.tsx`'s, Task 11). Per the plan's governing rule "the cited Vite source file IS the spec", ported the file's actual logic verbatim; fabricating an absent fallback would be un-faithful and change behavior (placeholder "Врач" vs a random first dentist when no handoff).
+- [x] **Step 2** — i18n pre-flight: Vite had 0 `t(` calls; only introduced key is the plan-mandated `patient.alerts.function_in_development` (present in ru.json). `npx tsc --noEmit` → exit 0.
+- [x] **Step 3** — Committed `035f5f39`.
 ```bash
 git add "frontend-next/app/[locale]/(patient)/my-dentist/page.tsx"
 git -c commit.gpgsign=false commit -m "feat(frontend-next): wire /my-dentist (DoctorProfilePreview + ComplaintModal, video stub)
@@ -199,9 +199,9 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** Create `frontend-next/app/[locale]/(patient)/doctor-services/page.tsx`
 
-- [ ] **Step 1** — Port `frontend/src/Pages/DoctorServicesPage.tsx` (103). Replace `location.state?.dentist_id` (`:17`) with **read+clear** of `gosmile:doctor_services_dentist_id` (plain string → `Number(...)`), keeping any Vite absent-value fallback. API `../api/api`→`@/api/api`; Toast→`@/components/Shared/Toast`. `navigate(-1)`→`router.back()`. Page `'use client'`.
-- [ ] **Step 2** — i18n pre-flight; `npx tsc --noEmit` → exit 0.
-- [ ] **Step 3** — Commit:
+- [x] **Step 1** — Ported `frontend/src/Pages/DoctorServicesPage.tsx` (103) → `app/[locale]/(patient)/doctor-services/page.tsx` (`'use client'`). `useNavigate/useLocation`→`useRouter` from `@/i18n/navigation`; `location.state?.dentist_id`→**read+clear** `gosmile:doctor_services_dentist_id` via `useEffect`, `Number(raw)`→`dentist_id` state (absent→`undefined`→`/services/` all, Vite fallback preserved); `[dentist_id]` effect dep unchanged (re-fetches when handoff resolves); `../api/api`→`@/api/api`, Toast→`@/components/Shared/Toast`; `user_data`→SSR-safe `getUser()`→`isDentist` state (same useEffect, hydration-safe like Task 7); `navigate(-1)`→`router.back()`, `navigate('/booking')` (no state)→`router.push(paths.booking)`.
+- [x] **Step 2** — i18n pre-flight: 0 `t(` calls (hardcoded Russian). `npx tsc --noEmit` → exit 0.
+- [x] **Step 3** — Committed `906dad23`.
 ```bash
 git add "frontend-next/app/[locale]/(patient)/doctor-services/page.tsx"
 git -c commit.gpgsign=false commit -m "feat(frontend-next): wire /doctor-services (DoctorServicesPage)
@@ -213,9 +213,9 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** Create `frontend-next/app/[locale]/(patient)/doctor-cases/page.tsx`
 
-- [ ] **Step 1** — Port `frontend/src/Pages/DoctorCasesPage.tsx` (77, independent — no API, no handoff). Apply transformation table (`'use client'` if it uses hooks/router; asset→string; `navigate(-1)`→`router.back()`).
-- [ ] **Step 2** — i18n pre-flight; `npx tsc --noEmit` → exit 0.
-- [ ] **Step 3** — Commit:
+- [x] **Step 1** — Ported `frontend/src/Pages/DoctorCasesPage.tsx` (77) → `app/[locale]/(patient)/doctor-cases/page.tsx` (`'use client'`). `useNavigate`→`useRouter` from `@/i18n/navigation`, `navigate(-1)`→`router.back()`, two `<img>` + eslint-disable comments. **tsc-compat deviation (faithful §8 vs per-task gate):** Vite/esbuild skips typecheck so `useState([])`→`never[]` + `caseItem.{id,title,...}` never errored; frontend-next runs real `tsc` → TS2339 on `never`. Added a `CaseItem` interface (shape fully determined by the file's own property reads) + `useState<CaseItem[]>([])`. Zero runtime change (array stays `[]`, only empty-state renders). Mirrors Task 8's inline `interface Service`.
+- [x] **Step 2** — i18n pre-flight: 0 `t(` calls. `npx tsc --noEmit` → exit 0.
+- [x] **Step 3** — Committed `8babefa1`.
 ```bash
 git add "frontend-next/app/[locale]/(patient)/doctor-cases/page.tsx"
 git -c commit.gpgsign=false commit -m "feat(frontend-next): wire /doctor-cases (DoctorCasesPage)
@@ -227,9 +227,9 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** Create `frontend-next/components/Booking/CommentInput.tsx` (19), `.../CustomDropdown.tsx` (127), `.../TimePicker.tsx` (67), `.../BookingCalendar.tsx` (106)
 
-- [ ] **Step 1** — Port all four from `frontend/src/components/Booking/` per transformation table (`'use client'`; `@/` aliases; assets→string+eslint comment; any `useTranslation`→`useTranslations`). These are presentational/controlled inputs (no router state).
-- [ ] **Step 2** — i18n pre-flight for the four; `cd frontend-next && npx tsc --noEmit` → exit 0.
-- [ ] **Step 3** — Commit:
+- [x] **Step 1** — Ported all four from `frontend/src/components/Booking/` → `frontend-next/components/Booking/`. Zero relative imports (only `react` + `react-icons/fa`), no router/API/assets/`t()`. Only change per file: `'use client'` first line (all use `useState`/`useRef`/`useEffect`). `react-icons/fa` kept verbatim.
+- [x] **Step 2** — i18n pre-flight: 0 `t(` calls (hardcoded Russian). `npx tsc --noEmit` → exit 0.
+- [x] **Step 3** — Committed `d75c91e8`.
 ```bash
 git add frontend-next/components/Booking/
 git -c commit.gpgsign=false commit -m "feat(frontend-next): port Booking components (CommentInput/CustomDropdown/TimePicker/BookingCalendar)
@@ -241,9 +241,9 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** Create `frontend-next/app/[locale]/(patient)/booking/page.tsx`
 
-- [ ] **Step 1** — Port `frontend/src/Pages/Booking.tsx` (204). Compose `@/components/Booking/*` (Task 10). APIs: `@/api/appointments` (`useCreateAppointment`), `@/api/profile` (`useAllDentists`), `@/api/services` (`useServices`), `@/components/Shared/Toast`. Replace `location.state?.doctor` (`:19`) with **read+clear** of `gosmile:booking_doctor` (JSON.parse), preserving the Vite `preSelectedDoctor` fallback to first `useAllDentists()` entry exactly. `location.state?.patientId` (`:30`) → there is no patient-side writer of a patientId handoff in 3b (doctor-side flow only); reproduce the Vite fallback when absent (the patient books for self — keep Vite's default-branch behavior; do not invent a key). `t('patient.alerts.fill_required_fields')` present (pre-flight). `navigate(-1)`→`router.back()`; success `navigate(paths.checkupPreview,...)` — Vite passes booking data via state; **write** it to `gosmile:booking_doctor` is wrong here: use a dedicated key `gosmile:checkup_preview` (JSON of the preview payload Vite passed in `navigate` state) + `router.push(paths.checkupPreview)`. Page `'use client'`.
-- [ ] **Step 2** — i18n pre-flight; `npx tsc --noEmit` → exit 0.
-- [ ] **Step 3** — Commit:
+- [x] **Step 1** — Ported `frontend/src/Pages/Booking.tsx` (204) → `app/[locale]/(patient)/booking/page.tsx` (`'use client'`). Composes `@/components/Booking/*`; APIs `@/api/{appointments,profile,services}`, `@/components/Shared/Toast`, `@/lib/paths`, `@/utils/auth getUser`. `location.state?.doctor`→**read+clear** `gosmile:booking_doctor` (JSON.parse)→`preSelectedDoctor` state + seeds `selectedDoctor` (Vite name-match `useEffect` deps `[preSelectedDoctor, doctors]` unchanged). **Plan-prose vs source — user decision "Follow plan prose":** Vite `:100` actually does `navigate('/calendar')` with **no** state, and Vite has **no** `dentists[0]` fallback (plan prose was inaccurate on both — see AskUserQuestion). Per user's explicit choice, implemented the plan's *intended* redesign: success → synthesize an `appointment`-shaped `previewPayload` (matches Vite `CheckupBookingPreview` mock shape) → **write** `gosmile:checkup_preview` (JSON) + `router.push(paths.checkupPreview)`. No fabricated `dentists[0]` fallback added (none in source; name-match effect is the only doctor-resolution path, faithful). `location.state?.patientId`→`patientFromState=undefined` (no patient-side patientId writer in 3b; Vite default branch `|| userData.patient_id` preserved). Dead render-top `currentUser` localStorage read (Vite:29, unreferenced + SSR ReferenceError hazard) removed per transformation table (zero behavior change). In-handler `userData`→SSR-safe `getUser()`. `useTranslation`→`useTranslations`, `navigate(-1)`→`router.back()`, dropped unused `React` default import.
+- [x] **Step 2** — i18n pre-flight: only `t("patient.alerts.fill_required_fields")` (present, ru.json:753). `npx tsc --noEmit` → exit 0.
+- [x] **Step 3** — Committed `3f1afe56`.
 ```bash
 git add "frontend-next/app/[locale]/(patient)/booking/page.tsx"
 git -c commit.gpgsign=false commit -m "feat(frontend-next): wire /booking route (Booking + calendar/timepicker/dropdown)
@@ -255,9 +255,9 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** Create `frontend-next/components/PatientAppointmentDetail/DoctorInfoCard.tsx` (48), `.../AppointmentDetailsCard.tsx` (36), `.../PriceCard.tsx` (31), `.../ReviewModal.tsx` (74)
 
-- [ ] **Step 1** — Port these four from `frontend/src/components/PatientAppointmentDetail/` (the exact set `CheckupBookingPreview.tsx` imports — verified) per transformation table. (The other files in that Vite dir — `ActionButtons`, `CheckupDetailView`, `ReviewButton` — belong to 3c `/appointment/:id`; **do not port them in 3b**.) ReviewModal review-submit API → `@/api/reviews` if referenced (already ported). `'use client'`.
-- [ ] **Step 2** — i18n pre-flight; `cd frontend-next && npx tsc --noEmit` → exit 0.
-- [ ] **Step 3** — Commit:
+- [x] **Step 1** — Ported the four `CheckupBookingPreview` imports from `frontend/src/components/PatientAppointmentDetail/` → `frontend-next/components/PatientAppointmentDetail/` (ActionButtons/CheckupDetailView/ReviewButton skipped — 3c). All `'use client'`. **DoctorInfoCard**: `useNavigate`→`useRouter` `@/i18n/navigation`, `Doctor` type→`@/types/patient` (Doctor, not the divergent Appointment — safe), `navigate('/my-dentist',{state:{doctor}})`→**write** `gosmile:preview_doctor` (JSON) + `router.push(paths.myDentist)` (closes loop with Task 7's read+clear), `<img>`+eslint comment. **AppointmentDetailsCard/PriceCard**: pure presentational, only `'use client'` added. **ReviewModal**: `isOpen`-gated, `useState`+`FaStar`, only `'use client'` added — references **no** API (Vite parent just `console.log`s `onSubmit`), so no `@/api/reviews` import (faithful).
+- [x] **Step 2** — i18n pre-flight: 0 `t(` calls (hardcoded Russian). `npx tsc --noEmit` → exit 0.
+- [x] **Step 3** — Committed `dc9dd427`.
 ```bash
 git add frontend-next/components/PatientAppointmentDetail/
 git -c commit.gpgsign=false commit -m "feat(frontend-next): port PatientAppointmentDetail cards (DoctorInfo/Details/Price/ReviewModal)
@@ -269,9 +269,9 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** Create `frontend-next/app/[locale]/(patient)/booking/checkup-preview/page.tsx`
 
-- [ ] **Step 1** — Port `frontend/src/Pages/CheckupBookingPreview.tsx` (84). Imports `react-icons/fa` `FaArrowLeft` (stays), `DentistImg` asset → `/assets/img/photos/Dentist.png` + eslint comment, and `@/components/PatientAppointmentDetail/{DoctorInfoCard,AppointmentDetailsCard,PriceCard,ReviewModal}` (Task 12). Replace its `location.state` read (the booking payload from Task 11) with **read+clear** of `gosmile:checkup_preview` (JSON.parse), keeping Vite's absent-value fallback. `useNavigate` `navigate(-1)`→`router.back()`. Page `'use client'`.
-- [ ] **Step 2** — i18n pre-flight; `npx tsc --noEmit` → exit 0.
-- [ ] **Step 3** — Commit:
+- [x] **Step 1** — Ported `frontend/src/Pages/CheckupBookingPreview.tsx` (84) → `app/[locale]/(patient)/booking/checkup-preview/page.tsx` (`'use client'`). `FaArrowLeft` stays; `DentistImg`→`/assets/img/photos/Dentist.png` const (no `<img>` in this file — used only inside FALLBACK doctor.image, rendered by DoctorInfoCard which has its own eslint comment); component imports→`@/components/PatientAppointmentDetail/*`. **Per user decision "Follow plan prose":** Vite's static mock `appointment` (lines 14–33) extracted to `FALLBACK_APPOINTMENT`; **read+clear** `gosmile:checkup_preview` (JSON.parse) via `useEffect` into `appointment` state, falling back to the mock when absent (faithful "Vite absent-value fallback"). Consumes the Task 11 payload (matching shape). `useNavigate`/`navigate(-1)`→`useRouter`/`router.back()`, dropped unused `React` default import.
+- [x] **Step 2** — i18n pre-flight: 0 `t(` calls. `npx tsc --noEmit` → exit 0.
+- [x] **Step 3** — Committed `be63f1d2`.
 ```bash
 git add "frontend-next/app/[locale]/(patient)/booking/checkup-preview/page.tsx"
 git -c commit.gpgsign=false commit -m "feat(frontend-next): wire /booking/checkup-preview (CheckupBookingPreview)
@@ -283,7 +283,7 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** none (verification only)
 
-- [ ] **Step 1: Production build** — `cd frontend-next && npm run build`. Expected: exit 0, `✓ Compiled successfully`, **0 new warnings**. New routes appear ×4 locales: `/doctors`, `/specialties`, `/search`, `/my-dentist`, `/doctor-services`, `/doctor-cases`, `/booking`, `/booking/checkup-preview`. Baseline before 3b = **67 static** pages. `/search` consumes `useSearchParams` so it (and `/booking*` reading sessionStorage) may render as `ƒ` (dynamic) — note actual SSG/dynamic split for the progress log; the requirement is exit 0 + 0 new warnings, not a fixed count.
+- [x] **Step 1: Production build** — `npm run build` → **exit 0**, `✓ Compiled successfully in 5.1s`, `Finished TypeScript` (no errors), **99/99 static pages** (= 67 pre-3b + 8 routes × 4 locales, exact expected delta). All 8 new routes prerendered **SSG `●` ×4 locales** (incl. `/search` — the CP2 Suspense split kept it SSG instead of the predicted `ƒ`; `/booking*` SSG too since handoffs are read in client `useEffect`). **0 new warnings** — only the pre-existing `middleware`→`proxy` next-intl v4 deprecation (present every prior phase, documented in `frontend_next_migration` memory), not introduced by 3b.
 - [ ] **Step 2: Manual smoke test** — Terminal 1 `cd backend && python run.py`; Terminal 2 `cd frontend-next && npm run dev`. Log in as **patient**; compare side-by-side with Vite (`frontend/`, `localhost:5173`):
   1. From `/home`: ServicesGrid tile → `/doctors` shows the filtered list (specialty handoff applied, then cleared — refresh shows unfiltered); SuggestedDoctors card → `/booking` with that doctor preselected.
   2. `/doctors`: DoctorFilters work; first-time banner shows once if `is_first_time`; "book" → `/booking` preselected.
@@ -293,7 +293,8 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
   6. `/doctor-services`, `/doctor-cases`: render; back button works.
   7. `/booking`: calendar/timepicker/dropdown/comment work; submit creates appointment (check backend) → `/booking/checkup-preview` shows the just-booked summary (DoctorInfo/Details/Price/ReviewModal). Refresh on checkup-preview → Vite-parity fallback (no crash).
   8. All 8 routes render inside `PatientLayout` chrome, mobile + desktop responsive, layout not broken.
-- [ ] **Step 3: No commit; STOP at gate.** Verification only. If build fails or smoke shows a regression vs Vite, fix under the relevant earlier task and re-run Steps 1–2. When 3b passes, **stop and report to the user for gate 2 approval** before starting 3c. Then update `docs/superpowers/plans/2026-05-14-frontend-next-progress.md` and the `frontend_next_migration` memory.
+- [~] **Step 2: Manual smoke test** — user-performed visual side-by-side vs Vite (Terminal 1 `cd backend && python run.py`; Terminal 2 `cd frontend-next && npm run dev`; log in as patient). **Pending user** (gate-1 precedent: user may waive with "davom et"). Note for tester: per the user's "Follow plan prose" decision, Booking success now → `/booking/checkup-preview` (NOT Vite's `/calendar`) showing the just-booked summary; this is an intentional redesign, not a Vite regression.
+- [x] **Step 3: No commit; STOPPED at gate.** Build gate (Step 1) ✓ automatic. Progress log + `frontend_next_migration` memory updated. **Stopped for gate-2 user approval before 3c** — not started.
 
 ---
 
