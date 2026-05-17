@@ -159,17 +159,13 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 ### Task 5: Wire `/search` route
 
-**Files:** Create `frontend-next/app/[locale]/(patient)/search/page.tsx`
+**Files:** Create `frontend-next/components/PatientSearch/SearchResultsView.tsx` + `frontend-next/app/[locale]/(patient)/search/page.tsx`
 
-- [ ] **Step 1** — Port `frontend/src/Pages/SearchResultsPage.tsx` (159). Reuses `@/components/Doctors/DoctorCard`. Replace `api/search` import → `@/api/search` (Task 1). Read the `q` query param: Vite reads it from the route (the 3a `SearchBar` pushes `/search?q=...`) — use `useSearchParams` from `next/navigation` to read `q`. Replace `SearchResultsPage.tsx:32` `navigate(paths.booking,{state:{doctor}})` with the **write** idiom (`gosmile:booking_doctor` + `router.push(paths.booking)`). Page component `'use client'`.
-- [ ] **Step 2** — i18n pre-flight (grep `t(`); `npx tsc --noEmit` → exit 0.
-- [ ] **Step 3** — Commit:
-```bash
-git add "frontend-next/app/[locale]/(patient)/search/page.tsx"
-git -c commit.gpgsign=false commit -m "feat(frontend-next): wire /search route (SearchResultsPage + api/search)
+*(CP2 deviation: Next 16 requires a `useSearchParams` client component to sit under a `<Suspense>` boundary on a prerendered route — without it the build hard-errors with the CSR-bailout message, violating the gate's 0-warning rule. Verified against `node_modules/next/dist/docs/01-app/03-api-reference/04-functions/use-search-params.md`. So the port splits into a `'use client'` `SearchResultsView` + a **server** `page.tsx` that wraps it in `<Suspense fallback={spinner}>`, instead of the plan's original single `'use client'` page.)*
 
-Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
-```
+- [x] **Step 1** — Ported `frontend/src/Pages/SearchResultsPage.tsx` (159) into `components/PatientSearch/SearchResultsView.tsx` (`'use client'`). Reuses `@/components/Doctors/DoctorCard`; `api/search` → `@/api/search`; `useSearchParams` from `next/navigation` (reads `q`); `useNavigate`→`useRouter` from `@/i18n/navigation` (`navigate(-1)`→`router.back()`, service "Band qilish" `navigate(paths.doctors)`→`router.push`); `:32` `navigate(paths.booking,{state:{doctor}})` → **write** `gosmile:booking_doctor` + `router.push(paths.booking)`; `DoctorImg` asset → string. `app/[locale]/(patient)/search/page.tsx` = server component wrapping `<Suspense>` + `<SearchResultsView/>`.
+- [x] **Step 2** — i18n pre-flight: SearchResultsPage uses no `t(` keys (all hardcoded Uzbek) — none needed. `npx tsc --noEmit` → exit 0.
+- [x] **Step 3** — Committed `16dce2b3` "feat(frontend-next): wire /search route (SearchResultsView + Suspense + api/search)".
 
 ### Task 6: Port `Complaints/ComplaintModal`
 
