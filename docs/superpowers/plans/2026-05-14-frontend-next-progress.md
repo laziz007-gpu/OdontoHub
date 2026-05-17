@@ -2,7 +2,41 @@
 
 **Sana:** 2026-05-14
 **Branch:** `patient/abduvoris`
-**Holat:** Phase 1 + 2a/2b/2c + **Phase 2d yakunlandi (2026-05-16)**. Doctor flow Vite versiyasiga ~100% teng — qolgani faqat `/chats` WebSocket (spec yozilgan, implementatsiya kutmoqda).
+**Holat:** Phase 1 + 2a/2b/2c/2d + chats WebSocket + **Phase 3a yakunlandi (2026-05-17)**. Doctor flow ~100% teng. Patient flow: 3a (chrome + /home) tayyor, gate 1 user tomonidan tasdiqlandi ("davom et"). 3b (Discovery+Booking) reja yozildi, implementatsiya kutmoqda.
+
+---
+
+## Phase 3a Patient Foundation (2026-05-17) — yakunlandi, gate 1 tasdiqlandi
+
+Reja: `docs/superpowers/plans/2026-05-16-frontend-next-phase-3-patient.md` (sub-faza 3a).
+5 ta task'dan 5 tasi bajarildi (Task 1-2 oldingi sessiyada, Task 3-5 shu sessiyada).
+
+**Commit'lar (3a):**
+```
+2e7f24aa feat(frontend-next): full PatientLayout chrome (app-shell + PatientNavbar)   # Task 2 (oldin)
+b403d439 feat(frontend-next): port PatientNavbar (bottom nav + desktop sidebar)        # Task 1 (oldin)
+b8da5f6c feat(frontend-next): port PatientHome sub-components (search/upcoming/...)     # Task 3
+196d95ef feat(frontend-next): wire real /home (PatientHome composition)                 # Task 4
+```
+
+**Bajarilgan:** `PatientNavbar` (bottom nav mobil / desktop sidebar, unread badge), to'liq `PatientLayout` chrome (`app-shell`+`<main>`), 5 ta `PatientHome/*` (`SearchBar`,`UpcomingAppointment`,`SuggestedDoctors`,`ServicesGrid`,`QuickActionsGrid`), real `/home` kompozitsiyasi (server component + client bolalar).
+
+**Muhim qarorlar:**
+- App Router'da router state yo'q → 3a `sessionStorage` handoff yozadi: `gosmile:booking_doctor` (SuggestedDoctors→/booking), `gosmile:doctors_specialty` (ServicesGrid→/doctors). 3b consumer'lari o'qib tozalaydi.
+- `patient.home.suggested_doctors`/`see_all` kalitlari hech qaysi locale'da yo'q — Vite'dagidek hardcoded Uzbek literal (`"Sizga yaqin shifokorlar"`/`"Barchasi"`), faithful, ru.json o'zgarmadi.
+- **Gotcha topildi:** `frontend-next`'da 2 ta `Appointment` interfeysi bor (eski mock `types/patient.ts:42` vs backend DTO `api/appointments.ts:5`). Komponentlar hook return type'ini iste'mol qiladi, `@/types/patient` import qilmaydi. Memory: `frontend-next-appointment-type.md`.
+
+**Build:** `✓ Compiled successfully`, exit 0, **0 warning**, `/home` SSG ×4 locale, **67 static** (o'zgarmadi — /home oldin stub route edi). Push qilinmadi (local).
+
+**Gate 1:** build avtomatik ✓; user smoke test'siz "davom et" bilan tasdiqladi → 3b'ga o'tildi.
+
+## Phase 3b Discovery + Booking (2026-05-17) — reja yozildi
+
+Reja: `docs/superpowers/plans/2026-05-17-frontend-next-phase-3b-discovery-booking.md`.
+14 task (1 infra `api/search.ts` → 4 shared komponent guruh → 8 route → gate). Phase-2d
+uslubidagi reja (Vite manba yo'li = faithful port'ning haqiqat manbai, ~2850 satr inline
+emas). Handoff: `gosmile:{booking_doctor,doctors_specialty,doctor_services_dentist_id,checkup_preview}`.
+Implementatsiya kutmoqda (gate 2 da to'xtaydi).
 
 ---
 
