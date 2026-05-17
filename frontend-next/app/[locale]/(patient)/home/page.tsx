@@ -1,19 +1,17 @@
-'use client';
-
-import { useAppSelector } from '@/store/hooks';
+import SearchBar from '@/components/PatientHome/SearchBar';
+import UpcomingAppointment from '@/components/PatientHome/UpcomingAppointment';
+import SuggestedDoctors from '@/components/PatientHome/SuggestedDoctors';
+import ServicesGrid from '@/components/PatientHome/ServicesGrid';
+import QuickActionsGrid from '@/components/PatientHome/QuickActionsGrid';
 
 export default function PatientHomePage() {
-  const user = useAppSelector((s) => s.user.user);
-
   return (
-    <div>
-      <h1 className="text-3xl font-bold">Patient Home</h1>
-      <p className="mt-2 text-slate-600">
-        Welcome, {user?.full_name || user?.first_name || user?.name || 'Patient'}!
-      </p>
-      <p className="mt-4 text-sm text-slate-500">
-        (Phase 1 stub — full home UI is ported in Phase 2)
-      </p>
+    <div className="p-4 space-y-8 max-w-7xl mx-auto w-full">
+      <SearchBar />
+      <UpcomingAppointment />
+      <SuggestedDoctors />
+      <ServicesGrid />
+      <QuickActionsGrid />
     </div>
   );
 }
