@@ -91,21 +91,21 @@ export default function RegisterView({ role }: RegisterViewProps) {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.14),transparent_30%)]" />
 
       <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-8">
-        <div className="w-full max-w-[520px] lg:max-w-[980px] rounded-[40px] border border-white/25 bg-white/10 px-6 py-8 shadow-[0_30px_90px_rgba(39,45,116,0.35)] backdrop-blur-[18px] sm:px-10 sm:py-10">
-          <div className="grid items-start gap-8 lg:grid-cols-[0.92fr_1.08fr]">
-            <section className="text-center lg:text-left">
-              <div className="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-md lg:mx-0">
+        <div className="w-full max-w-[480px] rounded-[40px] border border-white/25 bg-white/10 px-6 py-8 shadow-[0_30px_90px_rgba(39,45,116,0.35)] backdrop-blur-[18px] sm:px-10 sm:py-10 xl:max-w-[1140px] 2xl:max-w-[1240px]">
+          <div className="grid items-center gap-8 xl:grid-cols-[0.8fr_1.05fr] xl:gap-12">
+            <section className="text-center xl:text-left">
+              <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-md sm:h-28 sm:w-28 xl:mx-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/assets/img/icons/logo-icon1.png" alt="GoSmile icon" className="h-20 w-20 object-contain brightness-0 invert" />
+                <img src="/assets/img/icons/logo-icon1.png" alt="GoSmile icon" className="h-16 w-16 object-contain brightness-0 invert sm:h-20 sm:w-20" />
               </div>
-              <h1 className="text-5xl font-bold tracking-tight text-white sm:text-6xl" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>
+              <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl xl:text-6xl" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>
                 GoSmile
               </h1>
-              <div className="mx-auto mt-3 h-px w-44 bg-white/80 lg:mx-0" />
+              <div className="mx-auto mt-3 h-px w-44 bg-white/80 xl:mx-0" />
               <p className="mt-4 text-4xl leading-none text-white/95" style={{ fontFamily: '"Great Vibes", cursive' }}>
                 Создайте аккаунт
               </p>
-              <p className="mx-auto mt-6 max-w-md text-base leading-7 text-white/82 lg:mx-0" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>
+              <p className="mx-auto mt-6 max-w-md text-base leading-7 text-white/82 xl:mx-0" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>
                 Выберите роль, заполните данные и начните пользоваться GoSmile в нужном режиме.
               </p>
             </section>

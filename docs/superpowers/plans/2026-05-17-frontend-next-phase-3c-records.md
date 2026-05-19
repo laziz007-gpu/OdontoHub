@@ -89,9 +89,9 @@ Each task: (a) port the listed Vite source file(s) → exact target path applyin
 
 **Files:** Create `frontend-next/components/Shared/EditProfileModal.tsx`
 
-- [ ] **Step 1** — Port `frontend/src/components/Shared/EditProfileModal.tsx` (170) verbatim. Changes only: add `'use client';` first line; `import { type FC, useState, useEffect } from 'react'` stays; `import DentistImg from '../../assets/img/photos/Dentist.png'` → `const DentistImg = "/assets/img/photos/Dentist.png";`; precede the single `<img src={avatar || DentistImg}>` with `{/* eslint-disable-next-line @next/next/no-img-element */}`. No router/API/`t()` (all hardcoded Russian). Default export.
-- [ ] **Step 2** — i18n pre-flight: 0 `t(` calls — none needed. `cd frontend-next && npx tsc --noEmit` → exit 0.
-- [ ] **Step 3** — Commit:
+- [x] **Step 1** — Ported `frontend/src/components/Shared/EditProfileModal.tsx` (170) → `frontend-next/components/Shared/EditProfileModal.tsx`. `'use client'`; `import DentistImg`→`const DentistImg = "/assets/img/photos/Dentist.png"`; eslint-disable comment on the avatar `<img>`. No router/API/`t()`. Default export.
+- [x] **Step 2** — i18n pre-flight: 0 `t(` calls. `npx tsc --noEmit` → exit 0.
+- [x] **Step 3** — Committed `3df3fff7`.
 ```bash
 git add frontend-next/components/Shared/EditProfileModal.tsx
 git -c commit.gpgsign=false commit -m "feat(frontend-next): port Shared/EditProfileModal
@@ -103,11 +103,11 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** Create `frontend-next/components/PatientAppointments/AppointmentTabs.tsx`, `.../UpcomingAppointmentCard.tsx`, `.../PastAppointmentCard.tsx`
 
-- [ ] **Step 1** — Port `frontend/src/components/PatientAppointments/AppointmentTabs.tsx`: `'use client'`; `useTranslation`→`useTranslations` (`const t = useTranslations()`); keys `patient.appointments.{upcoming_tab,past_tab}` (i18n pre-flight). No router/assets.
-- [ ] **Step 2** — Port `frontend/src/components/PatientAppointments/UpcomingAppointmentCard.tsx`: `'use client'`; `lucide-react` stays; `useNavigate`→`useRouter` `@/i18n/navigation`; `paths` `../../Routes/path`→`@/lib/paths`; `type Appointment` `../../types/patient`→`@/types/patient`; `navigate(paths.patientAppointmentDetail.replace(":id", appointment.id.toString()))` → `router.push(paths.patientAppointmentDetail.replace(":id", String(appointment.id)))`. Any `<img>` → eslint comment.
-- [ ] **Step 3** — Port `frontend/src/components/PatientAppointments/PastAppointmentCard.tsx`: same transforms as Step 2 plus `useTranslation`→`useTranslations`; keys `patient.appointments.{doctor_label,date_time_label}` (i18n pre-flight). `lucide-react Star` stays.
-- [ ] **Step 4** — i18n pre-flight for the 3 files (`grep -nE "t\(['\"]"` → confirm/hardcode). `cd frontend-next && npx tsc --noEmit` → exit 0.
-- [ ] **Step 5** — Commit:
+- [x] **Step 1** — Ported `AppointmentTabs.tsx`: `'use client'`; `useTranslation`→`useTranslations`. No router/assets.
+- [x] **Step 2** — Ported `UpcomingAppointmentCard.tsx`: `'use client'`; `lucide-react` stays; `useNavigate`→`useRouter` `@/i18n/navigation`; `paths`→`@/lib/paths`; `Appointment`→`@/types/patient`; `navigate(...replace(":id", id.toString()))`→`router.push(...replace(":id", String(appointment.id)))`; `<img>`+eslint comment.
+- [x] **Step 3** — Ported `PastAppointmentCard.tsx`: same + `useTranslation`→`useTranslations`; `lucide-react Star` stays.
+- [x] **Step 4** — i18n pre-flight: `patient.appointments.{upcoming_tab,past_tab,doctor_label,date_time_label}` all present in ru.json (692–695) — no hardcoding. `@/types/patient` `Appointment` (L42–58) has all consumed fields (statusText/newDate/commentTitle/etc). `npx tsc --noEmit` → exit 0.
+- [x] **Step 5** — Committed `ba2cbfce`.
 ```bash
 git add frontend-next/components/PatientAppointments/
 git -c commit.gpgsign=false commit -m "feat(frontend-next): port PatientAppointments components (AppointmentTabs/UpcomingCard/PastCard)
@@ -119,9 +119,9 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** Create `frontend-next/app/[locale]/(patient)/calendar/page.tsx`
 
-- [ ] **Step 1** — Port `frontend/src/Pages/PatientAppointments.tsx` (94) → the route (`'use client'`). `lucide-react ArrowLeft` stays; `useNavigate`→`useRouter` `@/i18n/navigation` (`navigate(-1)`→`router.back()`); `useTranslation`→`useTranslations`; `DentistImg` `../assets/...`→`const DentistImg = "/assets/img/photos/Dentist.png"`; `import type { Appointment as UIAppointment } from "../types/patient"` → `from "@/types/patient"` (the UI card shape — correct here, see pre-flight ⚠); `useMyAppointments` `../api/appointments`→`@/api/appointments`; composes `@/components/PatientAppointments/{AppointmentTabs,UpcomingAppointmentCard,PastAppointmentCard}` (Task 2). i18n keys `patient.appointments.{title,success_status,cancelled_status,rescheduled_status,pending_status,comment_label,empty_list}` — pre-flight each; Vite's `t('patient.appointments.pending_status', "Kutilmoqda")` 2-arg + `|| 'РћС‚РјРµРЅС‘РЅ'`-style fallbacks: keep the literal only if the key is absent in ru.json. Reproduce the mojibake/Cyrillic literals **exactly as in the Vite source** (faithful — do not "fix" encoding). No `location.state`.
-- [ ] **Step 2** — i18n pre-flight; `cd frontend-next && npx tsc --noEmit` → exit 0.
-- [ ] **Step 3** — Commit:
+- [x] **Step 1** — Ported `frontend/src/Pages/PatientAppointments.tsx` (94) → `app/[locale]/(patient)/calendar/page.tsx` (`'use client'`). `useNavigate`→`useRouter` (`navigate(-1)`→`router.back()`); `useTranslation`→`useTranslations`; `DentistImg`→string const; `Appointment as UIAppointment`→`@/types/patient`; `useMyAppointments`→`@/api/appointments`; composes Task-2 components. Mojibake Cyrillic literals (`"РџСЂРёС‘Рј Сѓ РІСЂР°С‡Р°"` etc.) reproduced byte-for-byte (faithful, encoding not fixed). No `location.state`.
+- [x] **Step 2** — i18n pre-flight: `patient.appointments.{title,success_status,cancelled_status,rescheduled_status,comment_label}` present (ru.json 690–698) → plain `t()`; `pending_status` + `empty_list` **absent** → `t.has(k) ? t(k) : <exact Vite literal>` ("Kutilmoqda" / "РЈ РІР°СЃ РїРѕРєР° РЅРµС‚ РїСЂРёС‘РјРѕРІ"). `npx tsc --noEmit` → exit 0.
+- [x] **Step 3** — Committed `d3eb15ec`.
 ```bash
 git add "frontend-next/app/[locale]/(patient)/calendar/page.tsx"
 git -c commit.gpgsign=false commit -m "feat(frontend-next): wire /calendar route (PatientAppointments)
@@ -133,10 +133,10 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** Create `frontend-next/components/PatientAppointmentDetail/ActionButtons.tsx`, `.../ReviewButton.tsx`
 
-- [ ] **Step 1** — Port `frontend/src/components/PatientAppointmentDetail/ActionButtons.tsx` (235): `'use client'`; `useNavigate,useParams`→`useRouter` from `@/i18n/navigation` + `useParams` from `next/navigation`; `useTranslation`→`useTranslations`; `toast` `../../components/Shared/Toast`→`@/components/Shared/Toast`; `lucide-react` stays. Render-top/handler `localStorage.getItem('access_token')` → `getToken()` from `@/utils/auth` (the `JSON.parse(localStorage.getItem('appointments'))` isLocalMode branches run only client-side when `getToken()` starts with `local_token_` — guard the bare reads with `typeof window` or keep inside the isLocalMode branch which is unreachable on SSR). Dynamic `import('../../api/api')` → `import('@/api/api')` (both occurrences). `navigate('/calendar')` (×2) → `router.push(paths.patientCalendar)` (add `import { paths } from '@/lib/paths'`). **`navigate('/video-call', { state: {...} })` → Toast stub** `toast.info(t('patient.alerts.function_in_development'))` (3d; do not route, no sessionStorage key). i18n keys `patient.alerts.{appointment_cancelled,select_new_date,appointment_rescheduled,function_in_development}`, `patient.appointment_detail.cancel_confirm` — pre-flight.
-- [ ] **Step 2** — Port `frontend/src/components/PatientAppointmentDetail/ReviewButton.tsx` (169): `'use client'`; `useParams` `react-router-dom`→`next/navigation`; `useTranslation`→`useTranslations`; `react-icons/fa FaStar` + `lucide-react Loader2` stay; `api` `../../api/api`→`@/api/api`; `toast` `../Shared/Toast`→`@/components/Shared/Toast`. `React.FC<ReviewButtonProps>` keeps `import type React`-free usage — if `React.FC` is referenced, add `import type React from 'react'` (or rewrite as `({ inline = false }: ReviewButtonProps)` — match how other ported components did it; faithful default is keep `React.FC` + `import React from 'react'`). i18n keys `patient.appointment_detail.{review_success,thanks_review,placeholder_review,send_review}` — pre-flight.
-- [ ] **Step 3** — i18n pre-flight for both; `cd frontend-next && npx tsc --noEmit` → exit 0.
-- [ ] **Step 4** — Commit:
+- [x] **Step 1** — Ported `ActionButtons.tsx` (235): `'use client'`; `useNavigate`→`useRouter` `@/i18n/navigation` + `useParams` `next/navigation`; `useTranslation`→`useTranslations`; `toast`→`@/components/Shared/Toast`; `lucide-react` stays. `localStorage.getItem('access_token')`→`getToken()` (`@/utils/auth`); appointments localStorage kept inside isLocalMode branches (event-handler/client-only). Dynamic `import('../../api/api')`→`import('@/api/api')` (×2). `navigate('/calendar')` (×2)→`router.push(paths.patientCalendar)` (`@/lib/paths`). `navigate('/video-call',{state})`→**Toast stub** `toast.info(t('patient.alerts.function_in_development'))`.
+- [x] **Step 2** — Ported `ReviewButton.tsx` (169): `'use client'`; `useParams`→`next/navigation`; `useTranslation`→`useTranslations`; `FaStar`+`Loader2` stay; `api`/`toast`→`@/`; `import React, { useState } from 'react'` (default React added to satisfy `React.FC` under strict tsc — ComplaintModal precedent). Hardcoded Uzbek toasts/arrays kept.
+- [x] **Step 3** — i18n pre-flight: all keys present in ru.json (`cancel_confirm` 682, `rate_quality/desc` 683-684, `review_success/thanks_review/placeholder_review/send_review` 685-688, `appointment_cancelled/select_new_date/appointment_rescheduled` 749-751, `function_in_development` 763) → plain `t()`, no hardcoding. `npx tsc --noEmit` → exit 0.
+- [x] **Step 4** — Committed `edcb3fb5`.
 ```bash
 git add frontend-next/components/PatientAppointmentDetail/ActionButtons.tsx frontend-next/components/PatientAppointmentDetail/ReviewButton.tsx
 git -c commit.gpgsign=false commit -m "feat(frontend-next): port PatientAppointmentDetail ActionButtons + ReviewButton (video stub)
@@ -148,9 +148,9 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** Create `frontend-next/app/[locale]/(patient)/appointment/[id]/page.tsx`
 
-- [ ] **Step 1** — Port `frontend/src/Pages/PatientAppointmentDetail.tsx` (206) → the route (`'use client'`). `react-icons/fa FaArrowLeft` stays; `useNavigate,useParams`→`useRouter` `@/i18n/navigation` + `useParams` `next/navigation` (`const { id } = useParams<{ id: string }>()`; `navigate(-1)`→`router.back()`); `useTranslation`→`useTranslations`; `DentistImg`→`const DentistImg = "/assets/img/photos/Dentist.png"`; component imports → `@/components/PatientAppointmentDetail/{DoctorInfoCard,AppointmentDetailsCard,PriceCard,ReviewButton,ActionButtons}` (cards = 3b, ActionButtons/ReviewButton = Task 4) + `@/components/Complaints/ComplaintModal` (3b); `useAppointment`,`useAllDentists` → `@/api/{appointments,profile}`; `type AppointmentDetail` → `@/types/patient`. Render-top `localStorage.getItem('access_token')` (Vite:33, after the `isLoading` early-return) → `getToken()` from `@/utils/auth`; the `isLocalMode` branch's `JSON.parse(localStorage.getItem('appointments'))` only runs client-side when token starts `local_token_` (SSR-safe since `getToken()` is null on server). i18n keys `patient.appointment_detail.{rate_quality,rate_desc}` — pre-flight; keep hardcoded RU/UZ literals. Reproduce Vite's exact branching (isLocalMode / appointmentData / fallback) verbatim.
-- [ ] **Step 2** — i18n pre-flight; `cd frontend-next && npx tsc --noEmit` → exit 0.
-- [ ] **Step 3** — Commit:
+- [x] **Step 1** — Ported `frontend/src/Pages/PatientAppointmentDetail.tsx` (206) → `app/[locale]/(patient)/appointment/[id]/page.tsx` (`'use client'`). `FaArrowLeft` stays; `useNavigate`→`useRouter` `@/i18n/navigation` + `useParams` `next/navigation` (`navigate(-1)`→`router.back()`); `useTranslation`→`useTranslations`; `DentistImg`→string const; component imports→`@/components/PatientAppointmentDetail/*` (3b cards + Task-4 ActionButtons/ReviewButton) + `@/components/Complaints/ComplaintModal`; `useAppointment`/`useAllDentists`→`@/api/{appointments,profile}`; `AppointmentDetail`→`@/types/patient`. Render-top `localStorage.getItem('access_token')`→`getToken()` (SSR→null→appointmentData branch; isLocalMode `JSON.parse(localStorage.appointments)` client-only). Vite's 3-way branching (isLocalMode/appointmentData/fallback) reproduced verbatim, incl. all hardcoded RU/UZ literals. tsc confirms AppointmentDetail accepts built objects + doctor→DoctorInfoCard `Doctor` (faithful type parity).
+- [x] **Step 2** — i18n pre-flight: `patient.appointment_detail.{rate_quality,rate_desc}` present (ru.json 683-684) → plain `t()`. `npx tsc --noEmit` → exit 0.
+- [x] **Step 3** — Committed `1ccda2f3`.
 ```bash
 git add "frontend-next/app/[locale]/(patient)/appointment/[id]/page.tsx"
 git -c commit.gpgsign=false commit -m "feat(frontend-next): wire /appointment/[id] (PatientAppointmentDetail)
@@ -162,12 +162,12 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** Create `frontend-next/components/PatientHistory/ProfileCard.tsx`, `.../MedicalInfoCard.tsx`, `.../PrescriptionCard.tsx`, `.../TreatmentsTable.tsx` (XRaySection EXCLUDED — orphan, see pre-flight)
 
-- [ ] **Step 1** — Port `frontend/src/components/PatientHistory/ProfileCard.tsx`: `'use client'`; `import avatar from "../../assets/img/photos/Dentist.png"` → `const avatar = "/assets/img/photos/Dentist.png";`; precede its `<img>` with the eslint-disable comment; any `lucide-react` stays.
-- [ ] **Step 2** — Port `frontend/src/components/PatientHistory/MedicalInfoCard.tsx`: `'use client'`; `import type { MedcardAllergy } from "../../api/medcard"` → `from "@/api/medcard"`. Anything else per table.
-- [ ] **Step 3** — Port `frontend/src/components/PatientHistory/PrescriptionCard.tsx`: `'use client'`; `import type { MedcardPrescription } from "../../api/medcard"` → `from "@/api/medcard"`.
-- [ ] **Step 4** — Port `frontend/src/components/PatientHistory/TreatmentsTable.tsx`: `'use client'`; `useState` + `lucide-react ChevronDown/ChevronUp` stay; `import type { MedcardAppointment } from "../../api/medcard"` → `from "@/api/medcard"`.
-- [ ] **Step 5** — i18n pre-flight for the 4 (expected: 0 `t(` calls — confirm). `cd frontend-next && npx tsc --noEmit` → exit 0.
-- [ ] **Step 6** — Commit:
+- [x] **Step 1** — Ported `ProfileCard.tsx`: `'use client'`; `import avatar`→`const avatar = "/assets/img/photos/Dentist.png"`; `<img>`+eslint comment.
+- [x] **Step 2** — Ported `MedicalInfoCard.tsx`: `'use client'`; `MedcardAllergy` type import→`@/api/medcard`.
+- [x] **Step 3** — Ported `PrescriptionCard.tsx`: `'use client'`; `MedcardPrescription`→`@/api/medcard`.
+- [x] **Step 4** — Ported `TreatmentsTable.tsx`: `'use client'`; `useState`+`lucide-react` stay; `MedcardAppointment`→`@/api/medcard`.
+- [x] **Step 5** — i18n pre-flight: 0 `t(` calls (hardcoded Uzbek/Russian). `npx tsc --noEmit` → exit 0.
+- [x] **Step 6** — Committed `22f14ea5`.
 ```bash
 git add frontend-next/components/PatientHistory/
 git -c commit.gpgsign=false commit -m "feat(frontend-next): port PatientHistory components (Profile/MedicalInfo/Prescription/TreatmentsTable)
@@ -179,9 +179,9 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** Create `frontend-next/app/[locale]/(patient)/history/page.tsx`
 
-- [ ] **Step 1** — Port `frontend/src/Pages/PatientHistory.tsx` (128) → the route (`'use client'`). `import React, { useMemo } from "react"` stays (uses `React.FC`); `lucide-react ArrowLeft,Loader2` stays; `useNavigate`→`useRouter` `@/i18n/navigation` (`navigate(-1)`→`router.back()`); `useMyMedcard` `../api/medcard`→`@/api/medcard`; component imports → `@/components/PatientHistory/{ProfileCard,MedicalInfoCard,PrescriptionCard,TreatmentsTable}` (Task 6). No `t()`, no assets, no `location.state` — reproduce the `toUTC`/`formatDate`/`diffDays` helpers + `treatmentGroups` `useMemo` verbatim.
-- [ ] **Step 2** — i18n pre-flight (0 `t(`); `cd frontend-next && npx tsc --noEmit` → exit 0.
-- [ ] **Step 3** — Commit:
+- [x] **Step 1** — Ported `frontend/src/Pages/PatientHistory.tsx` (128) → `app/[locale]/(patient)/history/page.tsx` (`'use client'`). `import React, { useMemo }` stays (`React.FC`); `lucide-react` stays; `useNavigate`→`useRouter` (`navigate(-1)`×2→`router.back()`); `useMyMedcard`→`@/api/medcard`; component imports→`@/components/PatientHistory/*` (Task 6). `toUTC`/`formatDate`/`diffDays`/`treatmentGroups` reproduced verbatim. No `t()`/assets/`location.state`.
+- [x] **Step 2** — i18n pre-flight: 0 `t(` calls. `npx tsc --noEmit` → exit 0.
+- [x] **Step 3** — Committed `746ba80a`.
 ```bash
 git add "frontend-next/app/[locale]/(patient)/history/page.tsx"
 git -c commit.gpgsign=false commit -m "feat(frontend-next): wire /history route (PatientHistory medcard)
@@ -193,9 +193,9 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** Create `frontend-next/app/[locale]/(patient)/profile_pat/page.tsx`
 
-- [ ] **Step 1** — Port `frontend/src/Pages/PatientProfilePage.tsx` (363) → the route (`'use client'`). Transforms: `useDispatch,useSelector` → match the established frontend-next redux pattern (use `@/store/hooks` typed hooks if present, else `react-redux` `useDispatch/useSelector` with `RootState` from `@/store/store` — mirror an existing ported redux file e.g. `components/Auth/RegisterView.tsx`); `clearUser` `../store/slices/userSlice`→`@/store/slices/userSlice`; `paths` `../Routes/path`→`@/lib/paths`; `useNavigate`→`useRouter` `@/i18n/navigation` (`navigate(-1)`→`router.back()`, `navigate(paths.login,{replace:true})`→`router.replace(paths.login)`); `useTranslation`→`useTranslations`; **`i18n.changeLanguage`/`i18n.language` → Locale-switch contract** (`useLocale()` for current; `localStorage.setItem('appLanguage',code)` guarded + `router.replace(pathname,{locale:code})` via `usePathname` from `@/i18n/navigation`); `lucide-react` icon list stays; `DentistImg`→`const DentistImg = "/assets/img/photos/Dentist.png"`; `type {Language,MenuItem,SupportItem}` `../types/patient`→`@/types/patient`; `EditProfileModal` `../components/Shared/EditProfileModal`→`@/components/Shared/EditProfileModal` (Task 1); `usePatientProfile,useUpdatePatient` `../api/profile`→`@/api/profile`; `toast` `../components/Shared/Toast`→`@/components/Shared/Toast`. Render-top/effect `localStorage` (`access_token`,`user_data`,`patient_profile`) → keep inside the existing `useEffect` (already client-only) but guard with `if (typeof window === 'undefined') return;` at its top; `handleSaveProfile`/`handleLogout` localStorage reads guarded the same way or via `@/utils/auth`. Precede the avatar `<img>` with the eslint-disable comment. i18n keys `patient.profile.{notification,language,gender,male,female,edit,logout,settings,support,title,select_language}` + `settings.support_items.{privacy_policy,faq,contact,about}` — pre-flight each; keep Vite hardcoded literals (e.g. "Дата рождения", "Местоположение").
-- [ ] **Step 2** — i18n pre-flight; `cd frontend-next && npx tsc --noEmit` → exit 0.
-- [ ] **Step 3** — Commit:
+- [x] **Step 1** — Ported `frontend/src/Pages/PatientProfilePage.tsx` (363) → `app/[locale]/(patient)/profile_pat/page.tsx` (`'use client'`). `useDispatch/useSelector`→`@/store/hooks` `useAppDispatch`/`useAppSelector` (RegisterView precedent; dropped `RootState` import — typed hook); `clearUser`→`@/store/slices/userSlice`; `paths`→`@/lib/paths`; `useNavigate`→`useRouter`+`usePathname` `@/i18n/navigation` (`navigate(-1)`→`router.back()`, `navigate(paths.login,{replace})`→`router.replace(paths.login)`); `useTranslation`→`useTranslations`+`useLocale`; **locale-switch contract**: `i18n.language`→`locale` (3×), `i18n.changeLanguage(code)`→`localStorage.setItem('appLanguage',code)` (guarded) + `router.replace(pathname,{locale:code})`; `DentistImg`→string const; `Language/MenuItem/SupportItem`→`@/types/patient`; `EditProfileModal`→`@/components/Shared/EditProfileModal` (Task 1); `usePatientProfile/useUpdatePatient`→`@/api/profile`; `toast`→`@/components/Shared/Toast`. `useEffect` localStorage guarded `if (typeof window==='undefined') return;`; `handleSaveProfile` access_token→`getToken()`; `handleLogout`/`changeLanguage` localStorage writes `typeof window` guarded. Avatar `<img>`+eslint comment. **tsc-compat:** Vite `React.ChangeEvent` (relied on global React) → `import { ..., type ChangeEvent }` + `ChangeEvent<HTMLInputElement>` (minimal, behavior-identical).
+- [x] **Step 2** — i18n pre-flight: `patient.profile.{title,gender,male,female,edit,logout,language,notification,select_language,settings,support}` (ru.json 652-662) + `settings.support_items.{privacy_policy,faq,contact,about}` (172-175) all present → plain `t()`; Vite hardcoded literals ("Дата рождения","Местоположение") kept. `npx tsc --noEmit` → exit 0.
+- [x] **Step 3** — Committed `db9426d3`.
 ```bash
 git add "frontend-next/app/[locale]/(patient)/profile_pat/page.tsx"
 git -c commit.gpgsign=false commit -m "feat(frontend-next): wire /profile_pat (PatientProfilePage + EditProfileModal, locale switch)
@@ -207,9 +207,9 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** Create `frontend-next/app/[locale]/(patient)/treatments/page.tsx`
 
-- [ ] **Step 1** — Port `frontend/src/Pages/TreatmentsListPage.tsx` (88) → the route (`'use client'`). `lucide-react ArrowLeft` stays; `useNavigate`→`useRouter` `@/i18n/navigation` (`navigate(-1)`→`router.back()`). The local `interface TreatmentDetail` + `const treatments: TreatmentDetail[] = []` are already explicitly typed (no `never[]` issue) — reproduce verbatim. No API/handoff/`t()`/assets.
-- [ ] **Step 2** — i18n pre-flight (0 `t(`); `cd frontend-next && npx tsc --noEmit` → exit 0.
-- [ ] **Step 3** — Commit:
+- [x] **Step 1** — Ported `frontend/src/Pages/TreatmentsListPage.tsx` (88) → `app/[locale]/(patient)/treatments/page.tsx` (`'use client'`). `lucide-react ArrowLeft` stays; `useNavigate`→`useRouter` `@/i18n/navigation` (`navigate(-1)`→`router.back()`). Local `interface TreatmentDetail` + `const treatments: TreatmentDetail[] = []` reproduced verbatim (explicitly typed, no `never[]`). Cyrillic literals (Лечения / Промежуток / Статус / Приёмов / Оплата / Завершено / В процессе / Отменено) + double-space className kept byte-for-byte. No API/handoff/`t()`/assets.
+- [x] **Step 2** — i18n pre-flight: 0 `t(` calls. `npx tsc --noEmit` → exit 0, no output.
+- [x] **Step 3** — Committed `0d1cf19f`.
 ```bash
 git add "frontend-next/app/[locale]/(patient)/treatments/page.tsx"
 git -c commit.gpgsign=false commit -m "feat(frontend-next): wire /treatments route (TreatmentsListPage)
@@ -221,7 +221,7 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 
 **Files:** none (verification only)
 
-- [ ] **Step 1: Production build** — `cd frontend-next && npm run build`. Expected: exit 0, `✓ Compiled successfully`, **0 new warnings** (the pre-existing `middleware`→`proxy` next-intl deprecation is NOT new — documented in `frontend_next_migration` memory). New routes appear ×4 locales: `/calendar`, `/appointment/[id]`, `/history`, `/profile_pat`, `/treatments`. Baseline before 3c = **99 static** pages. `/calendar`,`/history`,`/profile_pat`,`/treatments` should be SSG `●` ×4; `/appointment/[id]` is a dynamic segment → `ƒ` (like `/patients/[id]`, `/chats/[id]`). Record the actual SSG/dynamic split + page count for the progress log; the requirement is exit 0 + 0 new warnings, not a fixed count.
+- [x] **Step 1: Production build** — `cd frontend-next && npm run build` → **exit 0**, `✓ Compiled successfully in 20.8s`, TypeScript finished clean. Only warning is the pre-existing `middleware`→`proxy` next-intl deprecation (**NOT new** — documented in `frontend_next_migration` memory); **0 new warnings**. Route delta as expected: **99 → 115 static pages** (+16 = 4 SSG routes ×4 locales). `/calendar`,`/history`,`/profile_pat`,`/treatments` = SSG `●` ×4 (uz/ru/en/kz each); `/appointment/[id]` = dynamic `ƒ` (matches `/patients/[id]`, `/chats/[id]`). Exit 0 + 0 new warnings + expected delta all met.
 - [ ] **Step 2: Manual smoke test** — Terminal 1 `cd backend && python run.py`; Terminal 2 `cd frontend-next && npm run dev`. Log in as **patient**; compare side-by-side with Vite (`frontend/`, `localhost:5173`):
   1. `/calendar`: upcoming/past tabs switch; cards render from `useMyAppointments`; tap a card → `/appointment/<id>`. Back button works.
   2. `/appointment/<id>`: renders the appointment (API or local-mode); active appt shows ActionButtons (Связаться/Перенести/Отменить + reschedule/cancel modals); completed appt shows ReviewButton inline + complaint button (ComplaintModal opens). **Video/«Онлайн консультация» button → "function in development" toast, NOT navigation.** Cancel/Reschedule success → returns to `/calendar`.

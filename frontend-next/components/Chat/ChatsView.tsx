@@ -13,9 +13,11 @@ const DENTIST_IMG = '/assets/img/photos/Dentist.png';
 
 interface ChatsViewProps {
     appointmentId: number | null;
+    variant?: 'doctor' | 'patient';
 }
 
-export default function ChatsView({ appointmentId }: ChatsViewProps) {
+export default function ChatsView({ appointmentId, variant = 'doctor' }: ChatsViewProps) {
+    const isPatient = variant === 'patient';
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('');
     const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -38,15 +40,17 @@ export default function ChatsView({ appointmentId }: ChatsViewProps) {
         return Number(userData.id) || 0;
     });
 
+    // Patient view groups conversations by dentist; doctor view by patient.
     const chatMap = new Map<number, typeof appointments[number]>();
     appointments.filter(a => a.status !== 'cancelled').forEach(a => {
-        const existing = chatMap.get(a.patient_id);
+        const key = isPatient ? a.dentist_id : a.patient_id;
+        const existing = chatMap.get(key);
         if (!existing || new Date(a.start_time) > new Date(existing.start_time)) {
-            chatMap.set(a.patient_id, a);
+            chatMap.set(key, a);
         }
     });
     const chats = Array.from(chatMap.values())
-        .filter(a => (a.patient_name || '').toLowerCase().includes(searchQuery.toLowerCase()));
+        .filter(a => ((isPatient ? a.dentist_name : a.patient_name) || '').toLowerCase().includes(searchQuery.toLowerCase()));
 
     const activeApt = appointmentId ? appointments.find(a => a.id === appointmentId) : null;
 
@@ -244,7 +248,7 @@ export default function ChatsView({ appointmentId }: ChatsViewProps) {
                     <div className="flex items-center gap-3 mb-4">
                         <button
                             type="button"
-                            onClick={() => router.push(paths.menu)}
+                            onClick={() => router.push(isPatient ? paths.patientHome : paths.menu)}
                             className="p-2 rounded-full hover:bg-gray-100 transition-colors shrink-0"
                             aria-label="Orqaga qaytish"
                         >
@@ -285,7 +289,7 @@ export default function ChatsView({ appointmentId }: ChatsViewProps) {
                                         }
                                     }).catch(() => {});
                                     setChatPreviews(prev => ({ ...prev, [apt.id]: { ...prev[apt.id], unread: 0 } }));
-                                    router.push(paths.chatDetail.replace(':id', String(apt.id)));
+                                    router.push((isPatient ? paths.patientChatDetail : paths.chatDetail).replace(':id', String(apt.id)));
                                 }}
                                 className={`flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50 transition-all border-b border-gray-50/50 ${isActive ? 'bg-blue-50/80 border-l-4 border-l-[#4D71F8]' : ''}`}
                             >
@@ -296,7 +300,7 @@ export default function ChatsView({ appointmentId }: ChatsViewProps) {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-baseline mb-0.5">
-                                        <p className={`font-bold text-sm truncate ${isActive ? 'text-[#4D71F8]' : 'text-gray-900'}`}>{apt.patient_name || 'Bemor'}</p>
+                                        <p className={`font-bold text-sm truncate ${isActive ? 'text-[#4D71F8]' : 'text-gray-900'}`}>{isPatient ? (apt.dentist_name || 'Shifokor') : (apt.patient_name || 'Bemor')}</p>
                                         <span className="text-[10px] font-bold text-gray-400 shrink-0 ml-1 uppercase">{preview?.time || ''}</span>
                                     </div>
                                     <div className="flex justify-between items-center">
@@ -319,13 +323,13 @@ export default function ChatsView({ appointmentId }: ChatsViewProps) {
                 {activeApt ? (
                     <>
                         <div className="p-3 sm:p-4 bg-white border-b border-gray-100 flex items-center gap-4 shrink-0 shadow-sm z-10">
-                            <button onClick={() => router.push(paths.chats)} className="lg:hidden p-2 hover:bg-gray-100 rounded-full transition-colors shrink-0">
+                            <button onClick={() => router.push(isPatient ? paths.patientChats : paths.chats)} className="lg:hidden p-2 hover:bg-gray-100 rounded-full transition-colors shrink-0">
                                 <ArrowLeft size={20} className="text-gray-600" />
                             </button>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={DENTIST_IMG} alt="" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-sm" />
                             <div className="min-w-0">
-                                <p className="font-bold text-gray-900 text-sm sm:text-base truncate">{activeApt.patient_name || 'Bemor'}</p>
+                                <p className="font-bold text-gray-900 text-sm sm:text-base truncate">{isPatient ? (activeApt.dentist_name || 'Shifokor') : (activeApt.patient_name || 'Bemor')}</p>
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                                     <p className="text-[10px] sm:text-xs font-bold text-emerald-500 uppercase tracking-wider">Online</p>
@@ -337,7 +341,7 @@ export default function ChatsView({ appointmentId }: ChatsViewProps) {
                             {messages.length === 0 && (
                                 <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-2">
                                     <MessageCircle size={40} className="opacity-10" />
-                                    <p className="text-sm italic font-medium">Bemor bilan muloqotni boshlang</p>
+                                    <p className="text-sm italic font-medium">{isPatient ? 'Shifokor bilan muloqotni boshlang' : 'Bemor bilan muloqotni boshlang'}</p>
                                 </div>
                             )}
                             {messages.map(msg => (
